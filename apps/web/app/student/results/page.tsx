@@ -22,7 +22,45 @@ export default function StudentResultsPage() {
     try {
       if (user) {
         const userAttempts = await ExamService.getUserAttempts(user.id)
-        setAttempts(userAttempts)
+        
+        // Filter out not_started attempts
+        const validAttempts = userAttempts.filter(attempt => attempt.status !== 'not_started')
+        
+        // Group attempts by exam_id and keep only the most recent in_progress attempt per exam
+        const attemptsByExam = new Map<string, TestAttempt[]>()
+        
+        validAttempts.forEach(attempt => {
+          if (!attemptsByExam.has(attempt.exam_id)) {
+            attemptsByExam.set(attempt.exam_id, [])
+          }
+          attemptsByExam.get(attempt.exam_id)!.push(attempt)
+        })
+        
+        const consolidatedAttempts: TestAttempt[] = []
+        
+        attemptsByExam.forEach((attempts, examId) => {
+          // Separate completed and in_progress attempts
+          const completedAttempts = attempts.filter(a => a.status === 'completed')
+          const inProgressAttempts = attempts.filter(a => a.status === 'in_progress')
+          
+          // Add all completed attempts
+          consolidatedAttempts.push(...completedAttempts)
+          
+          // Add only the most recent in_progress attempt if any
+          if (inProgressAttempts.length > 0) {
+            const mostRecentInProgress = inProgressAttempts.sort((a, b) => 
+              new Date(b.updated_at || b.created_at).getTime() - new Date(a.updated_at || a.created_at).getTime()
+            )[0]
+            consolidatedAttempts.push(mostRecentInProgress)
+          }
+        })
+        
+        // Sort by created_at descending
+        const sortedAttempts = consolidatedAttempts.sort((a, b) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        
+        setAttempts(sortedAttempts)
       }
     } catch (err: any) {
       setError(err.message)
@@ -57,6 +95,20 @@ export default function StudentResultsPage() {
   const calculateTotalScore = (moduleScores: any) => {
     if (!moduleScores) return 0
     return Object.values(moduleScores).reduce((sum: number, score: any) => sum + (score || 0), 0)
+  }
+
+  const handleDeleteAttempt = async (attemptId: string) => {
+    if (!confirm('Are you sure you want to discard this exam attempt? This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      await ExamService.deleteTestAttempt(attemptId)
+      // Reload attempts after deletion
+      await loadAttempts()
+    } catch (err: any) {
+      setError(`Failed to delete attempt: ${err.message}`)
+    }
   }
 
   if (loading) {
@@ -170,13 +222,27 @@ export default function StudentResultsPage() {
                   )}
                   
                   {attempt.status === 'in_progress' && (
-                    <div className="text-right">
-                      <Link
-                        href={`/student/exam/${attempt.exam_id}`}
-                        className="text-blue-600 hover:text-blue-700 font-medium"
-                      >
-                        Continue Exam
-                      </Link>
+                    <div className="text-right space-y-2">
+                      <div>
+                        <Link
+                          href={`/student/exam/${attempt.exam_id}`}
+                          className="text-blue-600 hover:text-blue-700 font-medium"
+                        >
+                          Continue Exam
+                        </Link>
+                      </div>
+                      <div>
+                        <button
+                          onClick={() => handleDeleteAttempt(attempt.id)}
+                          className="text-red-600 hover:text-red-700 font-medium text-sm flex items-center space-x-1"
+                          title="Discard this exam attempt"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          <span>Discard</span>
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>

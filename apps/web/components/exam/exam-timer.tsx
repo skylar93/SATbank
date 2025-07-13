@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 interface ExamTimerProps {
   initialTimeSeconds: number // Total time for this module in seconds
@@ -17,6 +17,19 @@ export function ExamTimer({
 }: ExamTimerProps) {
   const [remainingSeconds, setRemainingSeconds] = useState(initialTimeSeconds)
   const [isRunning, setIsRunning] = useState(true)
+  
+  // Use refs to store callbacks to prevent infinite re-renders
+  const onTimeUpdateRef = useRef(onTimeUpdate)
+  const onTimeExpiredRef = useRef(onTimeExpired)
+  
+  // Update refs when callbacks change
+  useEffect(() => {
+    onTimeUpdateRef.current = onTimeUpdate
+  }, [onTimeUpdate])
+  
+  useEffect(() => {
+    onTimeExpiredRef.current = onTimeExpired
+  }, [onTimeExpired])
 
   // Format time as MM:SS
   const formatTime = useCallback((seconds: number) => {
@@ -51,15 +64,17 @@ export function ExamTimer({
 
   // Separate effect for callbacks to avoid setState during render
   useEffect(() => {
-    if (onTimeUpdate) {
-      onTimeUpdate(remainingSeconds)
+    if (onTimeUpdateRef.current) {
+      onTimeUpdateRef.current(remainingSeconds)
     }
 
     if (remainingSeconds === 0 && isRunning) {
       setIsRunning(false)
-      onTimeExpired()
+      if (onTimeExpiredRef.current) {
+        onTimeExpiredRef.current()
+      }
     }
-  }, [remainingSeconds, onTimeUpdate, onTimeExpired, isRunning])
+  }, [remainingSeconds, isRunning])
 
   // Reset timer when initialTimeSeconds changes (new module)
   useEffect(() => {

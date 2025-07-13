@@ -47,7 +47,7 @@ export interface TestAttempt {
   id: string
   user_id: string
   exam_id: string
-  status: 'not_started' | 'in_progress' | 'completed' | 'expired'
+  status: 'not_started' | 'in_progress' | 'completed' | 'expired' | 'abandoned'
   current_module: ModuleType | null
   current_question_number: number
   started_at: string | null
@@ -155,6 +155,67 @@ export class ExamService {
     return data || []
   }
 
+  // Check for existing in-progress attempt for specific exam
+  static async getInProgressAttempt(userId: string, examId: string): Promise<TestAttempt | null> {
+    const { data, error } = await supabase
+      .from('test_attempts')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('exam_id', examId)
+      .in('status', ['not_started', 'in_progress'])
+      .order('created_at', { ascending: false })
+      .limit(1)
+
+    if (error) throw error
+    return data?.[0] || null
+  }
+
+  // Delete test attempt
+  static async deleteTestAttempt(attemptId: string): Promise<void> {
+    // First delete all associated user answers
+    const { error: answersError } = await supabase
+      .from('user_answers')
+      .delete()
+      .eq('attempt_id', attemptId)
+
+    if (answersError) throw answersError
+
+    // Then delete the test attempt
+    const { error } = await supabase
+      .from('test_attempts')
+      .delete()
+      .eq('id', attemptId)
+
+    if (error) throw error
+  }
+
+  // Clean up duplicate in_progress attempts for same exam (keep only the most recent)
+  static async cleanupDuplicateAttempts(userId: string, examId: string): Promise<void> {
+    try {
+      // Get all in_progress/not_started attempts for this user and exam
+      const { data: attempts, error } = await supabase
+        .from('test_attempts')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('exam_id', examId)
+        .in('status', ['not_started', 'in_progress'])
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      if (attempts && attempts.length > 1) {
+        // Keep the most recent, delete the rest
+        const attemptsToDelete = attempts.slice(1)
+        for (const attempt of attemptsToDelete) {
+          await this.deleteTestAttempt(attempt.id)
+        }
+      }
+    } catch (error) {
+      console.error('Error cleaning up duplicate attempts:', error)
+      // Don't throw error as this is cleanup - continue with normal flow
+    }
+  }
+
   // Update test attempt
   static async updateTestAttempt(attemptId: string, updates: Partial<TestAttempt>): Promise<TestAttempt> {
     const { data, error } = await supabase
@@ -244,5 +305,44 @@ export class ExamService {
       status: 'completed',
       completed_at: new Date().toISOString()
     })
+  }
+
+  // Get dashboard statistics for user
+  static async getDashboardStats(userId: string): Promise<{
+    examsTaken: number
+    bestScore: number | null
+    recentAttempts: TestAttempt[]
+  }> {
+    try {
+      // Get all completed attempts for user
+      const { data: completedAttempts, error } = await supabase
+        .from('test_attempts')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('status', 'completed')
+        .order('completed_at', { ascending: false })
+
+      if (error) throw error
+
+      const attempts = completedAttempts || []
+      const examsTaken = attempts.length
+      const bestScore = attempts.length > 0 
+        ? Math.max(...attempts.map(attempt => attempt.total_score || 0))
+        : null
+      const recentAttempts = attempts.slice(0, 5) // Last 5 attempts
+
+      return {
+        examsTaken,
+        bestScore,
+        recentAttempts
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error)
+      return {
+        examsTaken: 0,
+        bestScore: null,
+        recentAttempts: []
+      }
+    }
   }
 }

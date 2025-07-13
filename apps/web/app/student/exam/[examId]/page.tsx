@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '../../../../contexts/auth-context'
 import { useExamState } from '../../../../hooks/use-exam-state'
+import { ExamService } from '../../../../lib/exam-service'
 import { ExamTimer } from '../../../../components/exam/exam-timer'
 import { QuestionDisplay } from '../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../components/exam/exam-navigation'
@@ -21,7 +22,8 @@ export default function ExamPage() {
     error,
     initializeExam,
     startExam,
-    submitAnswer,
+    setLocalAnswer,
+    saveModuleAnswers,
     nextQuestion,
     previousQuestion,
     goToQuestion,
@@ -30,19 +32,37 @@ export default function ExamPage() {
     handleTimeExpired,
     updateTimer,
     getCurrentQuestion,
-    getCurrentAnswer
+    getCurrentAnswer,
+    continueExistingAttempt,
+    discardAndStartNew,
+    closeConflictModal,
+    forceCleanup
   } = useExamState()
 
   const [showStartScreen, setShowStartScreen] = useState(true)
   const [currentAnswer, setCurrentAnswer] = useState('')
   const [isUserSelecting, setIsUserSelecting] = useState(false)
+  const [showExitConfirm, setShowExitConfirm] = useState(false)
+  const [hasInitialized, setHasInitialized] = useState(false)
+  const forcingExitRef = useRef(false)
 
   // Initialize exam when component mounts
   useEffect(() => {
-    if (!authLoading && user && examId) {
+    console.log('ExamPage useEffect: Checking initialization conditions', {
+      authLoading,
+      user: !!user,
+      examId,
+      hasInitialized,
+      loading,
+      shouldInitialize: !authLoading && user && examId && !hasInitialized && !loading
+    })
+    
+    if (!authLoading && user && examId && !hasInitialized && !loading) {
+      console.log('ExamPage useEffect: Starting exam initialization')
+      setHasInitialized(true)
       initializeExam(examId)
     }
-  }, [authLoading, user, examId, initializeExam])
+  }, [authLoading, user, examId, hasInitialized, loading, initializeExam])
 
   // Update current answer when question changes (but not when user is actively selecting)
   useEffect(() => {
@@ -64,55 +84,131 @@ export default function ExamPage() {
     setShowStartScreen(false)
   }
 
+  // Hide start screen when continuing existing attempt or when exam is already in progress
+  useEffect(() => {
+    if (examState.status === 'in_progress') {
+      setShowStartScreen(false)
+    }
+  }, [examState.status])
+
   // Handle answer change
-  const handleAnswerChange = async (answer: string) => {
+  const handleAnswerChange = (answer: string) => {
     setIsUserSelecting(true)
     setCurrentAnswer(answer)
-    // Immediately submit the answer to persist it
-    await submitAnswer(answer)
+    // Store answer locally only - not saved to database until module completion
+    setLocalAnswer(answer)
     // Clear the flag after a short delay to allow answer loading on navigation
     setTimeout(() => setIsUserSelecting(false), 100)
   }
 
-  // Save current answer before navigation
-  const saveCurrentAnswer = async () => {
+  // Save current answer locally before navigation
+  const saveCurrentAnswer = () => {
     if (currentAnswer.trim()) {
-      await submitAnswer(currentAnswer)
+      setLocalAnswer(currentAnswer)
     }
   }
 
   // Handle previous question
-  const handlePrevious = async () => {
-    await saveCurrentAnswer()
+  const handlePrevious = () => {
+    saveCurrentAnswer()
     setIsUserSelecting(false)
     previousQuestion()
   }
 
   // Handle go to specific question
-  const handleGoToQuestion = async (questionIndex: number) => {
-    await saveCurrentAnswer()
+  const handleGoToQuestion = (questionIndex: number) => {
+    saveCurrentAnswer()
     setIsUserSelecting(false)
     goToQuestion(questionIndex)
   }
 
   // Handle next question
-  const handleNext = async () => {
-    await saveCurrentAnswer()
+  const handleNext = () => {
+    saveCurrentAnswer()
     setIsUserSelecting(false)
     nextQuestion()
   }
 
   // Handle module completion
   const handleSubmitModule = async () => {
-    await saveCurrentAnswer()
-    await nextModule()
+    saveCurrentAnswer()
+    try {
+      await nextModule()
+    } catch (error) {
+      console.error('Failed to submit module:', error)
+      // Show error to user or handle accordingly
+    }
   }
 
   // Handle exam completion
   const handleSubmitExam = async () => {
-    await saveCurrentAnswer()
-    await completeExam()
-    router.push('/student/results')
+    saveCurrentAnswer()
+    try {
+      await completeExam()
+      router.push('/student/results')
+    } catch (error) {
+      console.error('Failed to complete exam:', error)
+      // Show error to user or handle accordingly
+    }
+  }
+
+  // Handle browser navigation/refresh/close attempts
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (examState.status === 'in_progress' && !forcingExitRef.current) {
+        e.preventDefault()
+        e.returnValue = 'You have an exam in progress. Your answers will be lost if you leave. Are you sure?'
+        return e.returnValue
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [examState.status])
+
+  // Cleanup effect when component unmounts during forced exit
+  useEffect(() => {
+    return () => {
+      if (forcingExitRef.current) {
+        // Clean up exam state when component unmounts during forced exit
+        forceCleanup()
+      }
+    }
+  }, [forceCleanup])
+
+  // Handle back navigation from Navigation component
+  const handleExitAttempt = () => {
+    if (examState.status === 'in_progress') {
+      setShowExitConfirm(true)
+    } else {
+      router.push('/student/dashboard')
+    }
+  }
+
+  const handleConfirmExit = async () => {
+    setShowExitConfirm(false)
+    // Set flag to prevent beforeunload interference
+    forcingExitRef.current = true
+    
+    try {
+      // Update exam state to properly exit
+      if (examState.attempt && examState.status === 'in_progress') {
+        // Update the attempt status to abandoned in the database
+        await ExamService.updateTestAttempt(examState.attempt.id, {
+          status: 'abandoned'
+        })
+      }
+    } catch (error) {
+      console.error('Error updating exam status on exit:', error)
+      // Continue with navigation even if database update fails
+    }
+    
+    // Navigate immediately without waiting for state updates
+    router.push('/student/dashboard')
+  }
+
+  const handleCancelExit = () => {
+    setShowExitConfirm(false)
   }
 
   // Get answered questions for current module
@@ -127,6 +223,60 @@ export default function ExamPage() {
       }
     })
     return answeredSet
+  }
+
+  // Show conflict modal FIRST if there's an existing attempt
+  if (examState.showConflictModal && examState.existingAttempt && examState.exam) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-lg mx-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Existing Exam Attempt Found
+              </h3>
+              <p className="text-gray-600 mb-4">
+                You already have an ongoing exam attempt for this test. You can either:
+              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <h4 className="font-medium text-blue-900 mb-2">Current attempt details:</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• Status: {examState.existingAttempt.status.replace('_', ' ').toUpperCase()}</li>
+                  <li>• Current Module: {examState.existingAttempt.current_module?.replace(/(\d)/, ' $1').toUpperCase()}</li>
+                  {examState.existingAttempt.started_at && (
+                    <li>• Started: {new Date(examState.existingAttempt.started_at).toLocaleString()}</li>
+                  )}
+                </ul>
+              </div>
+              <div className="flex space-x-4">
+                <button
+                  onClick={continueExistingAttempt}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                  disabled={loading}
+                >
+                  {loading ? 'Loading...' : 'Continue Existing Attempt'}
+                </button>
+                <button
+                  onClick={discardAndStartNew}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+                  disabled={loading}
+                >
+                  {loading ? 'Loading...' : 'Discard & Start New'}
+                </button>
+              </div>
+              <button
+                onClick={() => closeConflictModal(router)}
+                className="w-full mt-3 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition-colors"
+                disabled={loading}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   // Loading state
@@ -247,12 +397,64 @@ export default function ExamPage() {
   const currentModule = examState.modules[examState.currentModuleIndex]
   const currentQuestion = getCurrentQuestion()
   
+  // Debug logging - only when needed for debugging
+  // console.log('Debug exam state:', {
+  //   examStateStatus: examState.status,
+  //   modulesLength: examState.modules.length,
+  //   currentModuleIndex: examState.currentModuleIndex,
+  //   currentModule: currentModule ? {
+  //     module: currentModule.module,
+  //     questionsLength: currentModule.questions.length,
+  //     currentQuestionIndex: currentModule.currentQuestionIndex
+  //   } : null,
+  //   currentQuestion: currentQuestion ? {
+  //     id: currentQuestion.id,
+  //     questionNumber: currentQuestion.question_number
+  //   } : null,
+  //   attempt: examState.attempt ? {
+  //     id: examState.attempt.id,
+  //     status: examState.attempt.status
+  //   } : null
+  // })
+  
   if (!currentModule || !currentQuestion) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
         <div className="flex items-center justify-center min-h-screen">
-          <p className="text-gray-600">Loading question...</p>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600 mb-4">Loading question...</p>
+            <div className="text-xs text-gray-500 mb-4 max-w-md">
+              Debug info:<br/>
+              Modules: {examState.modules.length}<br/>
+              Current Module Index: {examState.currentModuleIndex}<br/>
+              Current Module: {currentModule ? `${currentModule.module} (${currentModule.questions.length} questions)` : 'null'}<br/>
+              Current Question: {currentQuestion ? 'loaded' : 'null'}<br/>
+              Status: {examState.status}<br/>
+              Error: {error || 'none'}
+            </div>
+            <div className="space-y-2">
+              <button
+                onClick={() => {
+                  console.log('Retry clicked, resetting...')
+                  setHasInitialized(false)
+                  if (examState.exam?.id) {
+                    initializeExam(examState.exam.id)
+                  }
+                }}
+                className="block text-sm text-blue-600 hover:text-blue-700 underline"
+              >
+                Having trouble? Click to retry
+              </button>
+              <button
+                onClick={() => router.push('/student/dashboard')}
+                className="block text-sm text-red-600 hover:text-red-700 underline"
+              >
+                Return to Dashboard
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -267,6 +469,12 @@ export default function ExamPage() {
       <div className="bg-white shadow-sm border-b px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
+            <button
+              onClick={handleExitAttempt}
+              className="text-gray-500 hover:text-gray-700 text-sm"
+            >
+              ← Exit Exam
+            </button>
             <h1 className="text-xl font-semibold text-gray-900">
               {examState.exam.title}
             </h1>
@@ -311,6 +519,35 @@ export default function ExamPage() {
         answeredQuestions={getAnsweredQuestions()}
         disabled={examState.status !== 'in_progress'}
       />
+
+      {/* Exit Confirmation Modal */}
+      {showExitConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Exit Exam?
+            </h3>
+            <p className="text-gray-600 mb-6">
+              You have an exam in progress. If you exit now, your current answers will be lost and will not be saved until you complete the current module.
+            </p>
+            <div className="flex space-x-4">
+              <button
+                onClick={handleCancelExit}
+                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition-colors"
+              >
+                Continue Exam
+              </button>
+              <button
+                onClick={handleConfirmExit}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Exit Anyway
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
