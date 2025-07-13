@@ -1,0 +1,70 @@
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+import { useAuth } from '../contexts/auth-context'
+
+interface RouteGuardProps {
+  children: React.ReactNode
+}
+
+export function RouteGuard({ children }: RouteGuardProps) {
+  const { user, loading, isAdmin, isStudent } = useAuth()
+  const router = useRouter()
+  const pathname = usePathname()
+
+  useEffect(() => {
+    if (loading) return // Wait for auth to load
+
+    // Public routes that don't require authentication
+    const publicRoutes = ['/login', '/signup', '/']
+    const isPublicRoute = publicRoutes.includes(pathname)
+
+    // If not authenticated and trying to access protected route
+    if (!user && !isPublicRoute) {
+      console.log('🛡️ RouteGuard: Redirecting unauthenticated user to login')
+      window.location.href = '/login'
+      return
+    }
+
+    // If authenticated but on login/signup, redirect to appropriate dashboard
+    if (user && (pathname === '/login' || pathname === '/signup')) {
+      console.log('🛡️ RouteGuard: Authenticated user on auth page, redirecting...')
+      if (isAdmin) {
+        window.location.href = '/admin/dashboard'
+      } else if (isStudent) {
+        window.location.href = '/student/dashboard'
+      }
+      return
+    }
+
+    // Admin route protection
+    if (user && pathname.startsWith('/admin') && !isAdmin) {
+      console.log('🛡️ RouteGuard: Non-admin trying to access admin route')
+      window.location.href = '/student/dashboard'
+      return
+    }
+
+    // Student route protection
+    if (user && pathname.startsWith('/student') && !isStudent) {
+      console.log('🛡️ RouteGuard: Non-student trying to access student route')
+      window.location.href = '/admin/dashboard'
+      return
+    }
+
+  }, [user, loading, isAdmin, isStudent, pathname])
+
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return <>{children}</>
+}
