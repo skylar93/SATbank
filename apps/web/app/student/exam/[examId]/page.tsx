@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '../../../../contexts/auth-context'
 import { useExamState } from '../../../../hooks/use-exam-state'
@@ -16,6 +16,12 @@ export default function ExamPage() {
   const { user, loading: authLoading } = useAuth()
   const examId = params.examId as string
 
+  // Handle invalid examId early
+  if (!examId || examId === 'null' || examId === 'undefined') {
+    router.push('/student/dashboard')
+    return <div>Redirecting...</div>
+  }
+
   const {
     examState,
     loading,
@@ -29,7 +35,7 @@ export default function ExamPage() {
     goToQuestion,
     nextModule,
     completeExam,
-    handleTimeExpired,
+    handleTimeExpired: handleTimeExpiredFromHook,
     updateTimer,
     getCurrentQuestion,
     getCurrentAnswer,
@@ -43,8 +49,11 @@ export default function ExamPage() {
   const [currentAnswer, setCurrentAnswer] = useState('')
   const [isUserSelecting, setIsUserSelecting] = useState(false)
   const [showExitConfirm, setShowExitConfirm] = useState(false)
+  const [showTimeExpiredModal, setShowTimeExpiredModal] = useState(false)
   const [hasInitialized, setHasInitialized] = useState(false)
   const forcingExitRef = useRef(false)
+  const timeExpiredRef = useRef(false)
+  const isAdvancingModuleRef = useRef(false)
 
   // Initialize exam when component mounts
   useEffect(() => {
@@ -93,6 +102,11 @@ export default function ExamPage() {
 
   // Handle answer change
   const handleAnswerChange = (answer: string) => {
+    // Prevent input if time has expired
+    if (timeExpiredRef.current) {
+      return
+    }
+    
     setIsUserSelecting(true)
     setCurrentAnswer(answer)
     // Store answer locally only - not saved to database until module completion
@@ -107,6 +121,51 @@ export default function ExamPage() {
       setLocalAnswer(currentAnswer)
     }
   }
+
+  // Handle timer expiration with popup notification
+  const handleTimeExpired = useCallback(async () => {
+    console.log('Timer expired! Current module:', examState.currentModuleIndex, 'Total modules:', examState.modules.length)
+    
+    // Set flag to prevent further input
+    timeExpiredRef.current = true
+    
+    // Show notification popup
+    setShowTimeExpiredModal(true)
+    
+    // Use a more reliable approach with useEffect instead of setTimeout
+    // The actual advance will be handled by a separate useEffect
+  }, [examState.currentModuleIndex, examState.modules.length])
+
+  // Handle the actual module advancement when time expires
+  useEffect(() => {
+    if (showTimeExpiredModal && !isAdvancingModuleRef.current) {
+      const timer = setTimeout(async () => {
+        console.log('Auto-advancing to next module...')
+        isAdvancingModuleRef.current = true
+        setShowTimeExpiredModal(false)
+        
+        try {
+          // Call the original handler from hook
+          await handleTimeExpiredFromHook()
+          console.log('Successfully advanced module')
+          
+          // Navigate to results if exam is complete
+          if (examState.currentModuleIndex >= examState.modules.length - 1) {
+            console.log('Exam complete, navigating to results')
+            router.push('/student/results')
+          }
+        } catch (error) {
+          console.error('Error advancing module:', error)
+        }
+        
+        // Reset flags for next module
+        timeExpiredRef.current = false
+        isAdvancingModuleRef.current = false
+      }, 1500) // 1.5 second delay to show notification
+      
+      return () => clearTimeout(timer)
+    }
+  }, [showTimeExpiredModal, handleTimeExpiredFromHook, examState.currentModuleIndex, examState.modules.length, router])
 
   // Handle previous question
   const handlePrevious = () => {
@@ -193,9 +252,9 @@ export default function ExamPage() {
     try {
       // Update exam state to properly exit
       if (examState.attempt && examState.status === 'in_progress') {
-        // Update the attempt status to abandoned in the database
+        // Update the attempt status to expired in the database
         await ExamService.updateTestAttempt(examState.attempt.id, {
-          status: 'abandoned'
+          status: 'expired'
         })
       }
     } catch (error) {
@@ -483,12 +542,25 @@ export default function ExamPage() {
             </span>
           </div>
           
-          <ExamTimer
-            initialTimeSeconds={currentModule.timeRemaining}
-            onTimeExpired={handleTimeExpired}
-            onTimeUpdate={updateTimer}
-            isPaused={examState.status !== 'in_progress'}
-          />
+          <div className="flex items-center space-x-4">
+            <ExamTimer
+              initialTimeSeconds={currentModule.timeRemaining}
+              onTimeExpired={handleTimeExpired}
+              onTimeUpdate={updateTimer}
+              isPaused={examState.status !== 'in_progress' || showTimeExpiredModal}
+            />
+            {process.env.NODE_ENV === 'development' && (
+              <button
+                onClick={() => {
+                  console.log('Test button clicked - simulating timer expiry')
+                  handleTimeExpired()
+                }}
+                className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
+              >
+                Test Timer Expiry
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -500,6 +572,7 @@ export default function ExamPage() {
           totalQuestions={currentModule.questions.length}
           userAnswer={currentAnswer}
           onAnswerChange={handleAnswerChange}
+          disabled={examState.status !== 'in_progress' || timeExpiredRef.current}
         />
       </div>
 
@@ -517,8 +590,34 @@ export default function ExamPage() {
         onSubmitModule={handleSubmitModule}
         onSubmitExam={handleSubmitExam}
         answeredQuestions={getAnsweredQuestions()}
-        disabled={examState.status !== 'in_progress'}
+        disabled={examState.status !== 'in_progress' || timeExpiredRef.current}
       />
+
+      {/* Time Expired Modal */}
+      {showTimeExpiredModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4 border-2 border-red-200">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-red-700 mb-2">
+                Time's Up!
+              </h3>
+              <p className="text-gray-600 mb-4">
+                {examState.currentModuleIndex < examState.modules.length - 1 
+                  ? `${currentModule.module.replace(/(\d)/, ' $1').toUpperCase()} time has expired. Moving to the next module...`
+                  : 'Exam time has expired. Submitting your answers...'}
+              </p>
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Exit Confirmation Modal */}
       {showExitConfirm && (

@@ -47,7 +47,7 @@ export interface TestAttempt {
   id: string
   user_id: string
   exam_id: string
-  status: 'not_started' | 'in_progress' | 'completed' | 'expired' | 'abandoned'
+  status: 'not_started' | 'in_progress' | 'completed' | 'expired'
   current_module: ModuleType | null
   current_question_number: number
   started_at: string | null
@@ -162,7 +162,7 @@ export class ExamService {
       .select('*')
       .eq('user_id', userId)
       .eq('exam_id', examId)
-      .in('status', ['not_started', 'in_progress'])
+      .eq('status', 'in_progress')
       .order('created_at', { ascending: false })
       .limit(1)
 
@@ -170,8 +170,15 @@ export class ExamService {
     return data?.[0] || null
   }
 
-  // Delete test attempt
+  // Delete test attempt and cleanup orphaned not_started attempts
   static async deleteTestAttempt(attemptId: string): Promise<void> {
+    // Get the attempt details before deletion to clean up related attempts
+    const { data: attemptData } = await supabase
+      .from('test_attempts')
+      .select('user_id, exam_id')
+      .eq('id', attemptId)
+      .single()
+
     // First delete all associated user answers
     const { error: answersError } = await supabase
       .from('user_answers')
@@ -187,6 +194,16 @@ export class ExamService {
       .eq('id', attemptId)
 
     if (error) throw error
+
+    // Clean up any orphaned not_started attempts for the same user/exam
+    if (attemptData) {
+      await supabase
+        .from('test_attempts')
+        .delete()
+        .eq('user_id', attemptData.user_id)
+        .eq('exam_id', attemptData.exam_id)
+        .eq('status', 'not_started')
+    }
   }
 
   // Clean up duplicate in_progress attempts for same exam (keep only the most recent)

@@ -26,7 +26,7 @@ interface ExamState {
   attempt: TestAttempt | null
   modules: ModuleState[]
   currentModuleIndex: number
-  status: 'not_started' | 'in_progress' | 'completed' | 'expired' | 'abandoned'
+  status: 'not_started' | 'in_progress' | 'completed' | 'expired'
   startedAt: Date | null
   existingAttempt: TestAttempt | null
   showConflictModal: boolean
@@ -312,50 +312,6 @@ export function useExamState() {
     })
   }, [])
 
-  // Move to next module
-  const nextModule = useCallback(async () => {
-    if (!examState.attempt) return
-
-    const nextModuleIndex = examState.currentModuleIndex + 1
-    
-    try {
-      // First, save all answers for the current module
-      await saveModuleAnswers()
-      
-      if (nextModuleIndex >= examState.modules.length) {
-        // Complete exam
-        await completeExam()
-        return
-      }
-
-      const nextModule = MODULE_ORDER[nextModuleIndex]
-      
-      // Update attempt in database
-      await ExamService.updateTestAttempt(examState.attempt.id, {
-        current_module: nextModule,
-        current_question_number: 1
-      })
-
-      setExamState(prev => {
-        const newModules = [...prev.modules]
-        // Mark current module as completed
-        newModules[prev.currentModuleIndex] = {
-          ...newModules[prev.currentModuleIndex],
-          completed: true
-        }
-
-        return {
-          ...prev,
-          modules: newModules,
-          currentModuleIndex: nextModuleIndex
-        }
-      })
-    } catch (err: any) {
-      setError(err.message)
-      throw err
-    }
-  }, [examState, saveModuleAnswers])
-
   // Complete exam
   const completeExam = useCallback(async () => {
     if (!examState.attempt) return
@@ -376,13 +332,98 @@ export function useExamState() {
     }
   }, [examState.attempt, saveModuleAnswers])
 
+  // Move to next module
+  const nextModule = useCallback(async () => {
+    console.log('nextModule called:', {
+      hasAttempt: !!examState.attempt,
+      currentModuleIndex: examState.currentModuleIndex,
+      totalModules: examState.modules.length
+    })
+    
+    if (!examState.attempt) {
+      console.error('No attempt found, cannot advance module')
+      return
+    }
+
+    const nextModuleIndex = examState.currentModuleIndex + 1
+    console.log('Attempting to advance to module index:', nextModuleIndex)
+    
+    try {
+      // First, save all answers for the current module
+      console.log('Saving module answers...')
+      await saveModuleAnswers()
+      console.log('Module answers saved successfully')
+      
+      if (nextModuleIndex >= examState.modules.length) {
+        // Complete exam
+        console.log('Reached end of modules, completing exam')
+        await completeExam()
+        return
+      }
+
+      const nextModuleName = MODULE_ORDER[nextModuleIndex]
+      console.log('Advancing to module:', nextModuleName)
+      
+      // Update attempt in database
+      await ExamService.updateTestAttempt(examState.attempt.id, {
+        current_module: nextModuleName,
+        current_question_number: 1
+      })
+      console.log('Database updated successfully')
+
+      setExamState(prev => {
+        const newModules = [...prev.modules]
+        // Mark current module as completed
+        newModules[prev.currentModuleIndex] = {
+          ...newModules[prev.currentModuleIndex],
+          completed: true
+        }
+        
+        // Reset the next module's timer to full time
+        if (newModules[nextModuleIndex]) {
+          newModules[nextModuleIndex] = {
+            ...newModules[nextModuleIndex],
+            timeRemaining: newModules[nextModuleIndex].timeLimit * 60 // Reset to full time in seconds
+          }
+        }
+
+        console.log('Updating exam state to module index:', nextModuleIndex)
+        return {
+          ...prev,
+          modules: newModules,
+          currentModuleIndex: nextModuleIndex
+        }
+      })
+      console.log('Exam state updated successfully')
+    } catch (err: any) {
+      console.error('Error in nextModule:', err)
+      setError(err.message)
+      throw err
+    }
+  }, [examState, saveModuleAnswers, completeExam])
+
   // Handle timer expiration for current module
   const handleTimeExpired = useCallback(async () => {
-    // Auto-advance to next module or complete exam
-    if (examState.currentModuleIndex < examState.modules.length - 1) {
-      await nextModule()
-    } else {
-      await completeExam()
+    console.log('Hook handleTimeExpired called:', {
+      currentModuleIndex: examState.currentModuleIndex,
+      totalModules: examState.modules.length,
+      isLastModule: examState.currentModuleIndex >= examState.modules.length - 1
+    })
+    
+    try {
+      // Auto-advance to next module or complete exam
+      if (examState.currentModuleIndex < examState.modules.length - 1) {
+        console.log('Advancing to next module...')
+        await nextModule()
+        console.log('Successfully advanced to next module')
+      } else {
+        console.log('Completing exam...')
+        await completeExam()
+        console.log('Successfully completed exam')
+      }
+    } catch (error) {
+      console.error('Error in handleTimeExpired:', error)
+      throw error
     }
   }, [examState.currentModuleIndex, examState.modules.length, nextModule, completeExam])
 

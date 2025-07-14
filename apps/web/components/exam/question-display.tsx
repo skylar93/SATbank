@@ -9,6 +9,7 @@ interface QuestionDisplayProps {
   userAnswer?: string
   onAnswerChange: (answer: string) => void
   showExplanation?: boolean
+  disabled?: boolean
 }
 
 export function QuestionDisplay({
@@ -17,7 +18,8 @@ export function QuestionDisplay({
   totalQuestions,
   userAnswer,
   onAnswerChange,
-  showExplanation = false
+  showExplanation = false,
+  disabled = false
 }: QuestionDisplayProps) {
   
   const renderAnswerOptions = () => {
@@ -28,10 +30,13 @@ export function QuestionDisplay({
             <label
               key={key}
               className={`
-                flex items-start p-3 rounded-lg cursor-pointer transition-all
+                flex items-start p-3 rounded-lg transition-all
+                ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
                 ${userAnswer === key 
                   ? 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200' 
-                  : 'bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  : disabled 
+                    ? 'bg-gray-50 border-2 border-gray-200'
+                    : 'bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }
                 ${showExplanation && question.correct_answer === key
                   ? 'bg-green-50 border-green-500'
@@ -50,7 +55,7 @@ export function QuestionDisplay({
                 checked={userAnswer === key}
                 onChange={(e) => onAnswerChange(e.target.value)}
                 className="mt-1 mr-3 text-blue-600 focus:ring-blue-500"
-                disabled={showExplanation}
+                disabled={showExplanation || disabled}
               />
               <div className="flex-1">
                 <div className="flex items-center mb-1">
@@ -81,9 +86,13 @@ export function QuestionDisplay({
               type="text"
               value={userAnswer || ''}
               onChange={(e) => onAnswerChange(e.target.value)}
-              className="w-full p-3 text-lg font-mono border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+              className={`w-full p-3 text-lg font-mono border-2 rounded-lg ${
+                disabled || showExplanation 
+                  ? 'border-gray-300 bg-gray-50 cursor-not-allowed' 
+                  : 'border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200'
+              }`}
               placeholder="Enter your answer"
-              disabled={showExplanation}
+              disabled={showExplanation || disabled}
             />
           </div>
           {showExplanation && (

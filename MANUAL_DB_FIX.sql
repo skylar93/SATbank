@@ -194,3 +194,45 @@ CREATE POLICY "users_read_own_profile" ON user_profiles
 
 CREATE POLICY "authenticated_users_read_own_profile" ON user_profiles
     FOR SELECT USING (auth.uid() IS NOT NULL AND auth.uid() = id);
+
+-- 7. Allow users to delete their own test attempts (for the discard functionality)
+CREATE POLICY "users_delete_own_test_attempts" ON test_attempts
+    FOR DELETE USING (
+        auth.uid() = user_id 
+        AND status = 'in_progress'
+    );
+
+-- Also ensure user_answers can be deleted by users for their own attempts
+DROP POLICY IF EXISTS "Users can delete own answers" ON user_answers;
+CREATE POLICY "users_delete_own_answers" ON user_answers
+    FOR DELETE USING (
+        EXISTS (
+            SELECT 1 FROM test_attempts 
+            WHERE test_attempts.id = user_answers.attempt_id 
+            AND test_attempts.user_id = auth.uid()
+            AND test_attempts.status = 'in_progress'
+        )
+    );
+
+-- 8. Clean up leftover in-progress attempts
+-- First, run this to see what in-progress attempts exist:
+-- SELECT id, user_id, status, created_at, updated_at 
+-- FROM test_attempts 
+-- WHERE status = 'in_progress' 
+-- ORDER BY created_at DESC;
+
+-- To delete a specific leftover attempt (replace 'ATTEMPT_ID_HERE' with the actual ID):
+-- DELETE FROM user_answers WHERE attempt_id = 'ATTEMPT_ID_HERE';
+-- DELETE FROM test_attempts WHERE id = 'ATTEMPT_ID_HERE';
+
+-- Or to clean up ALL old in-progress attempts older than 24 hours:
+-- DELETE FROM user_answers 
+-- WHERE attempt_id IN (
+--     SELECT id FROM test_attempts 
+--     WHERE status = 'in_progress' 
+--     AND updated_at < NOW() - INTERVAL '24 hours'
+-- );
+-- 
+-- DELETE FROM test_attempts 
+-- WHERE status = 'in_progress' 
+-- AND updated_at < NOW() - INTERVAL '24 hours';

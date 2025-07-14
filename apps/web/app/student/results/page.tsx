@@ -11,6 +11,7 @@ export default function StudentResultsPage() {
   const [attempts, setAttempts] = useState<TestAttempt[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [deletingAttempts, setDeletingAttempts] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (user) {
@@ -23,8 +24,10 @@ export default function StudentResultsPage() {
       if (user) {
         const userAttempts = await ExamService.getUserAttempts(user.id)
         
-        // Filter out not_started attempts
-        const validAttempts = userAttempts.filter(attempt => attempt.status !== 'not_started')
+        // Filter out not_started and expired attempts
+        const validAttempts = userAttempts.filter(attempt => 
+          attempt.status !== 'not_started' && attempt.status !== 'expired'
+        )
         
         // Group attempts by exam_id and keep only the most recent in_progress attempt per exam
         const attemptsByExam = new Map<string, TestAttempt[]>()
@@ -103,11 +106,21 @@ export default function StudentResultsPage() {
     }
 
     try {
+      setDeletingAttempts(prev => new Set(prev).add(attemptId))
+      setError(null)
+      
       await ExamService.deleteTestAttempt(attemptId)
-      // Reload attempts after deletion
       await loadAttempts()
+      
     } catch (err: any) {
-      setError(`Failed to delete attempt: ${err.message}`)
+      console.error('Delete attempt error:', err)
+      setError(`Failed to delete attempt: ${err.message || err.toString()}`)
+    } finally {
+      setDeletingAttempts(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(attemptId)
+        return newSet
+      })
     }
   }
 
@@ -221,7 +234,7 @@ export default function StudentResultsPage() {
                     </div>
                   )}
                   
-                  {attempt.status === 'in_progress' && (
+                  {attempt.status === 'in_progress' && attempt.exam_id && (
                     <div className="text-right space-y-2">
                       <div>
                         <Link
@@ -234,13 +247,22 @@ export default function StudentResultsPage() {
                       <div>
                         <button
                           onClick={() => handleDeleteAttempt(attempt.id)}
-                          className="text-red-600 hover:text-red-700 font-medium text-sm flex items-center space-x-1"
+                          disabled={deletingAttempts.has(attempt.id)}
+                          className={`font-medium text-sm flex items-center space-x-1 ${
+                            deletingAttempts.has(attempt.id)
+                              ? 'text-gray-400 cursor-not-allowed'
+                              : 'text-red-600 hover:text-red-700'
+                          }`}
                           title="Discard this exam attempt"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                          <span>Discard</span>
+                          {deletingAttempts.has(attempt.id) ? (
+                            <div className="w-4 h-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                          ) : (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          )}
+                          <span>{deletingAttempts.has(attempt.id) ? 'Deleting...' : 'Discard'}</span>
                         </button>
                       </div>
                     </div>

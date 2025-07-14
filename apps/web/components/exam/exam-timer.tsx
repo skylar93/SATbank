@@ -69,9 +69,13 @@ export function ExamTimer({
     }
 
     if (remainingSeconds === 0 && isRunning) {
+      console.log('Timer reached 0, calling onTimeExpired')
       setIsRunning(false)
       if (onTimeExpiredRef.current) {
+        console.log('Calling onTimeExpired callback')
         onTimeExpiredRef.current()
+      } else {
+        console.error('onTimeExpired callback not found!')
       }
     }
   }, [remainingSeconds, isRunning])
