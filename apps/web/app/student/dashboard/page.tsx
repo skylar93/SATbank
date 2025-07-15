@@ -3,8 +3,19 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
-import { Navigation } from '../../../components/navigation'
 import { ExamService, type TestAttempt } from '../../../lib/exam-service'
+import { ProgressChart, SubjectPerformanceChart, WeeklyActivityChart, CircularProgress } from '../../../components/charts'
+import { Calendar } from '../../../components/calendar'
+import { 
+  ChartBarIcon, 
+  TrophyIcon, 
+  FireIcon,
+  BookOpenIcon,
+  ClockIcon,
+  CalendarIcon,
+  ArrowTrendingUpIcon,
+  AcademicCapIcon
+} from '@heroicons/react/24/outline'
 
 interface DashboardStats {
   examsTaken: number
@@ -49,198 +60,292 @@ export default function StudentDashboard() {
     })
   }
 
+  // Mock data for charts - replace with real data
+  const progressData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+    scores: [1200, 1250, 1300, 1280, 1350]
+  }
+
+  const subjectData = {
+    reading: 650,
+    writing: 670,
+    math: 720
+  }
+
+  const weeklyData = {
+    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    studyTime: [2, 3, 1, 4, 2, 0, 1],
+    practiceTests: [1, 0, 0, 1, 1, 0, 0]
+  }
+
+  const studyStreakDays = [
+    '2024-03-15', '2024-03-16', '2024-03-17', '2024-03-19', '2024-03-20'
+  ]
+
   if (!user) return null
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Welcome back, {user.profile?.full_name?.split(' ')[0]}!
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Ready to continue your SAT preparation?
-            </p>
+      {/* Top Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+            <p className="text-gray-600">Hello {user.profile?.full_name?.split(' ')[0]}, welcome back</p>
           </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">{loading ? '-' : stats.examsTaken}</span>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Exams Taken
-                      </dt>
-                      <dd className="text-lg font-medium text-gray-900">{loading ? 'Loading...' : stats.examsTaken}</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search everything..."
+                className="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+              />
             </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">
-                        {loading ? '-' : stats.bestScore ? Math.floor(stats.bestScore / 100) : '-'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Best Score
-                      </dt>
-                      <dd className="text-lg font-medium text-gray-900">
-                        {loading ? 'Loading...' : stats.bestScore ? stats.bestScore : 'Not yet taken'}
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">
-                        {user.profile?.target_score ? Math.floor(user.profile.target_score / 100) : '-'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Target Score
-                      </dt>
-                      <dd className="text-lg font-medium text-gray-900">
-                        {user.profile?.target_score || 'Not set'}
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
+            <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {user.profile?.full_name?.charAt(0) || 'U'}
+              </span>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Main Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Take Mock Exam
-                </h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  Take a full-length SAT practice test with all 4 modules. 
-                  This simulates the real exam experience.
-                </p>
-                <Link href="/student/exams" className="block w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors text-center">
-                  Start Mock Exam
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Problem Bank
-                </h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  Practice with targeted questions, review mistakes, and create custom quizzes.
-                </p>
-                <Link href="/student/problem-bank" className="block w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition-colors text-center">
-                  Browse Questions
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  View Results
-                </h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  Review your exam performance and track your progress over time.
-                </p>
-                <Link href="/student/results" className="block w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition-colors text-center">
-                  View Results
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="mt-8">
-            <div className="bg-white shadow rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Recent Activity
-                </h3>
-                {loading ? (
-                  <div className="text-center py-8">
-                    <div className="animate-pulse">
-                      <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
-                      <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
-                    </div>
-                  </div>
-                ) : stats.recentAttempts.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500">No recent activity yet.</p>
-                    <p className="text-sm text-gray-400 mt-2">
-                      Take your first exam to see your progress here.
+      <div className="p-6">
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-12 gap-6">
+          {/* Left Column - 8 cols */}
+          <div className="col-span-12 lg:col-span-8 space-y-6">
+            {/* Top Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Your earnings this month equivalent */}
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Your score this month</p>
+                    <p className="text-3xl font-bold text-gray-900">
+                      {loading ? '...' : stats.bestScore || 'No scores yet'}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {stats.recentAttempts.map((attempt) => (
-                      <div key={attempt.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span className="text-blue-600 font-semibold text-sm">
-                              {attempt.total_score}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900">SAT Practice Test</p>
-                            <p className="text-sm text-gray-500">
-                              {attempt.completed_at ? formatDate(attempt.completed_at) : 'In Progress'}
-                            </p>
-                          </div>
-                        </div>
-                        <Link
-                          href={`/student/results/${attempt.id}`}
-                          className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                        >
-                          View Details
-                        </Link>
-                      </div>
-                    ))}
-                    {stats.recentAttempts.length > 0 && (
-                      <div className="text-center pt-4">
-                        <Link
-                          href="/student/results"
-                          className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                        >
-                          View All Results →
-                        </Link>
-                      </div>
-                    )}
+                  <div className="w-16 h-16 bg-violet-100 rounded-2xl flex items-center justify-center">
+                    <TrophyIcon className="w-8 h-8 text-violet-600" />
+                  </div>
+                </div>
+                <button className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors">
+                  View All Results
+                </button>
+              </div>
+
+              {/* Progress Stats */}
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Total exams</span>
+                    <span className="text-lg font-bold text-gray-900">{stats.examsTaken}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Practice tests</span>
+                    <span className="text-lg font-bold text-violet-600">{stats.examsTaken}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Study streak</span>
+                    <span className="text-lg font-bold text-orange-600">7 days</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Action */}
+              <div className="bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
+                <h3 className="text-lg font-semibold mb-2">Ready for next exam?</h3>
+                <p className="text-violet-100 text-sm mb-4">Take a practice test to improve your score</p>
+                <Link 
+                  href="/student/exams"
+                  className="inline-flex items-center bg-white text-violet-600 font-semibold py-2 px-4 rounded-lg hover:bg-violet-50 transition-colors"
+                >
+                  Start Now
+                </Link>
+              </div>
+            </div>
+
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Progress Chart */}
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900">Score Progress</h3>
+                  <div className="flex items-center space-x-2">
+                    <button className="px-3 py-1 text-sm bg-violet-100 text-violet-600 rounded-lg">This Week</button>
+                    <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Last Week</button>
+                  </div>
+                </div>
+                <ProgressChart data={progressData} />
+              </div>
+
+              {/* Subject Performance */}
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Subject Performance</h3>
+                <SubjectPerformanceChart data={subjectData} />
+              </div>
+            </div>
+
+            {/* Weekly Activity */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">Weekly Activity</h3>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-500">This Week</span>
+                  <select className="text-sm border border-gray-300 rounded-lg px-2 py-1">
+                    <option>This Week</option>
+                    <option>Last Week</option>
+                    <option>This Month</option>
+                  </select>
+                </div>
+              </div>
+              <WeeklyActivityChart data={weeklyData} />
+            </div>
+
+            {/* Featured Projects equivalent - Quick Actions */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
+                <button className="text-sm text-violet-600 hover:text-violet-700 font-medium">See all</button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Link href="/student/exams" className="p-4 border border-gray-200 rounded-xl hover:border-violet-300 transition-colors group">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <AcademicCapIcon className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Take Mock Exam</h4>
+                      <p className="text-xs text-gray-500">Full SAT Practice</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-violet-600 font-medium">Start</span>
+                    <span className="text-sm font-bold text-gray-900">Ready</span>
+                  </div>
+                </Link>
+
+                <Link href="/student/problem-bank" className="p-4 border border-gray-200 rounded-xl hover:border-violet-300 transition-colors group">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <BookOpenIcon className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Problem Bank</h4>
+                      <p className="text-xs text-gray-500">Practice Questions</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-green-600 font-medium">Practice</span>
+                    <span className="text-sm font-bold text-gray-900">Available</span>
+                  </div>
+                </Link>
+
+                <Link href="/student/results" className="p-4 border border-gray-200 rounded-xl hover:border-violet-300 transition-colors group">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <ChartBarIcon className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">View Results</h4>
+                      <p className="text-xs text-gray-500">Score Analysis</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-purple-600 font-medium">Review</span>
+                    <span className="text-sm font-bold text-gray-900">{stats.examsTaken}</span>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - 4 cols */}
+          <div className="col-span-12 lg:col-span-4 space-y-6">
+            {/* Calendar */}
+            <Calendar events={studyStreakDays.map(date => ({ date: new Date(date), type: 'visit' as const }))} />
+
+            {/* Affiliate impressions equivalent - Performance Summary */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">Performance Summary</h3>
+                <button className="text-sm text-gray-500 hover:text-gray-700">Update</button>
+              </div>
+              
+              <div className="flex justify-center mb-6">
+                <CircularProgress percentage={75} size={140} />
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 rounded-full bg-violet-500"></div>
+                  <span className="text-sm text-gray-700">Math</span>
+                  <span className="ml-auto text-sm font-semibold">720</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                  <span className="text-sm text-gray-700">Reading & Writing</span>
+                  <span className="ml-auto text-sm font-semibold">680</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 rounded-full bg-pink-500"></div>
+                  <span className="text-sm text-gray-700">Overall</span>
+                  <span className="ml-auto text-sm font-semibold">1400</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Latest Activities */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">Latest Activities</h3>
+                <button className="text-sm text-violet-600 hover:text-violet-700 font-medium">View all</button>
+              </div>
+              
+              <div className="space-y-4">
+                {stats.recentAttempts.slice(0, 3).map((attempt, index) => (
+                  <div key={attempt.id} className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
+                      <span className="text-violet-600 font-semibold text-sm">
+                        {attempt.total_score}
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900">SAT Practice Test</p>
+                      <p className="text-xs text-gray-500">
+                        {attempt.completed_at ? formatDate(attempt.completed_at) : 'In Progress'}
+                      </p>
+                    </div>
+                    <span className="text-xs text-gray-400">
+                      {index === 0 ? '1h30m' : index === 1 ? '2 days' : '1 week'}
+                    </span>
+                  </div>
+                ))}
+                
+                {stats.recentAttempts.length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 text-sm">No recent activity</p>
+                    <p className="text-xs text-gray-400 mt-1">Take your first exam to see progress here</p>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Call to Action - Invite User equivalent */}
+            <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <FireIcon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Keep Your Streak!</h3>
+                <p className="text-blue-100 text-sm mb-4">You're doing great! Continue your daily practice to reach your target score.</p>
+                <button className="bg-white text-blue-600 font-semibold py-2 px-6 rounded-lg hover:bg-blue-50 transition-colors">
+                  Continue Practice
+                </button>
               </div>
             </div>
           </div>

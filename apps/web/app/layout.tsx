@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '../contexts/auth-context'
+import { SidebarProvider } from '../contexts/sidebar-context'
 import { RouteGuard } from '../components/route-guard'
+import { Sidebar } from '../components/sidebar'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,9 +22,16 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <RouteGuard>
-            {children}
-          </RouteGuard>
+          <SidebarProvider>
+            <RouteGuard>
+              <div className="flex h-screen bg-gray-50">
+                <Sidebar />
+                <main className="flex-1 overflow-auto">
+                  {children}
+                </main>
+              </div>
+            </RouteGuard>
+          </SidebarProvider>
         </AuthProvider>
       </body>
     </html>
