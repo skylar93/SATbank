@@ -1,12 +1,15 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Nunito } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '../contexts/auth-context'
 import { SidebarProvider } from '../contexts/sidebar-context'
 import { RouteGuard } from '../components/route-guard'
 import { Sidebar } from '../components/sidebar'
 
-const inter = Inter({ subsets: ['latin'] })
+const nunito = Nunito({ 
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '700', '900'] 
+})
 
 export const metadata: Metadata = {
   title: 'SAT Mock Exam & Problem Bank',
@@ -20,15 +23,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={nunito.className}>
         <AuthProvider>
           <SidebarProvider>
             <RouteGuard>
               <div className="flex h-screen bg-gray-50">
                 <Sidebar />
-                <main className="flex-1 overflow-auto">
+                <div className="flex-1 overflow-auto">
                   {children}
-                </main>
+                </div>
               </div>
             </RouteGuard>
           </SidebarProvider>

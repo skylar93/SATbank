@@ -88,17 +88,15 @@ export function Sidebar() {
       )}
 
       {/* Desktop sidebar */}
-      <div className={`hidden md:flex md:flex-shrink-0 ${isSidebarOpen ? 'md:w-64' : 'md:w-16'} transition-all duration-300`}>
-        <div className="flex flex-col">
-          <SidebarContent 
-            navigationItems={navigationItems}
-            pathname={pathname}
-            user={user}
-            isAdmin={isAdmin}
-            handleSignOut={handleSignOut}
-            isSidebarOpen={isSidebarOpen}
-          />
-        </div>
+      <div className={`hidden md:flex md:flex-shrink-0 transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-16'}`}>
+        <SidebarContent 
+          navigationItems={navigationItems}
+          pathname={pathname}
+          user={user}
+          isAdmin={isAdmin}
+          handleSignOut={handleSignOut}
+          isSidebarOpen={isSidebarOpen}
+        />
       </div>
     </>
   )
@@ -117,32 +115,32 @@ function SidebarContent({ navigationItems, pathname, user, isAdmin, handleSignOu
   const { setIsSidebarOpen } = useSidebar()
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 bg-white border-r border-gray-200 shadow-sm">
+    <div className="flex flex-col w-full h-full bg-white border-r border-gray-100 shadow-sm">
       {/* Header */}
-      <div className="flex items-center justify-between h-16 px-4 bg-gradient-to-r from-violet-600 to-purple-600">
+      <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
         <Link href={isAdmin ? '/admin/dashboard' : '/student/dashboard'} className="flex items-center">
-          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <span className="text-violet-600 font-bold text-lg">S</span>
+          <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl flex items-center justify-center shadow-md">
+            <span className="text-white font-bold text-lg">S</span>
           </div>
           {isSidebarOpen && (
-            <span className="ml-2 text-white font-semibold text-lg">SAT Practice</span>
+            <span className="ml-3 text-gray-900 font-semibold text-lg">SAT Practice</span>
           )}
         </Link>
         
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="hidden md:flex items-center justify-center w-8 h-8 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+          className="hidden md:flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
         >
           {isSidebarOpen ? (
-            <ChevronLeftIcon className="w-5 h-5" />
+            <ChevronLeftIcon className="w-4 h-4" />
           ) : (
-            <ChevronRightIcon className="w-5 h-5" />
+            <ChevronRightIcon className="w-4 h-4" />
           )}
         </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
         {navigationItems.map((item) => {
           const isActive = pathname === item.href
           const IconComponent = item.icon
@@ -152,10 +150,10 @@ function SidebarContent({ navigationItems, pathname, user, isAdmin, handleSignOu
               key={item.name}
               href={item.href}
               className={`
-                group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200
+                group relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200
                 ${isActive 
-                  ? 'bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-lg shadow-violet-500/25' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/20' 
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }
                 ${!isSidebarOpen ? 'justify-center' : ''}
               `}
@@ -163,7 +161,7 @@ function SidebarContent({ navigationItems, pathname, user, isAdmin, handleSignOu
               <IconComponent className={`flex-shrink-0 w-5 h-5 ${!isSidebarOpen ? '' : 'mr-3'}`} />
               {isSidebarOpen && <span>{item.name}</span>}
               {!isSidebarOpen && (
-                <div className="absolute left-16 bg-gray-900 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+                <div className="absolute left-14 bg-gray-900 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
                   {item.name}
                 </div>
               )}
@@ -173,9 +171,9 @@ function SidebarContent({ navigationItems, pathname, user, isAdmin, handleSignOu
       </nav>
 
       {/* User section */}
-      <div className="flex-shrink-0 p-2 border-t border-gray-200">
+      <div className="flex-shrink-0 p-3 border-t border-gray-100">
         <div className={`flex items-center ${!isSidebarOpen ? 'justify-center' : ''}`}>
-          <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center shadow-md">
             <span className="text-white text-sm font-bold">
               {user.profile?.full_name?.charAt(0) || 'U'}
             </span>
@@ -188,17 +186,17 @@ function SidebarContent({ navigationItems, pathname, user, isAdmin, handleSignOu
                     {user.profile?.full_name || 'User'}
                   </p>
                   {isAdmin && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-violet-100 text-violet-800">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-violet-100 text-violet-800 mt-0.5">
                       Admin
                     </span>
                   )}
                 </div>
                 <button
                   onClick={handleSignOut}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1 transition-colors"
                 >
                   <span className="sr-only">Sign out</span>
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
                 </button>

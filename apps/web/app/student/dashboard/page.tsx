@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
 import { ExamService, type TestAttempt } from '../../../lib/exam-service'
 import { ProgressChart, SubjectPerformanceChart, WeeklyActivityChart, CircularProgress } from '../../../components/charts'
+import { ModernScoreProgress, StatsCard } from '../../../components/modern-charts'
 import { Calendar } from '../../../components/calendar'
 import { 
   ChartBarIcon, 
@@ -62,8 +63,23 @@ export default function StudentDashboard() {
 
   // Mock data for charts - replace with real data
   const progressData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-    scores: [1200, 1250, 1300, 1280, 1350]
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [
+      {
+        label: 'Math Score',
+        data: [720, 740, 760, 730, 780, 790],
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        fill: true
+      },
+      {
+        label: 'Reading & Writing',
+        data: [650, 670, 690, 680, 720, 710],
+        borderColor: '#f59e0b',
+        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        fill: true
+      }
+    ]
   }
 
   const subjectData = {
@@ -85,7 +101,7 @@ export default function StudentDashboard() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-full bg-gray-50">
       {/* Top Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
@@ -113,81 +129,60 @@ export default function StudentDashboard() {
       <div className="p-6">
         {/* Main Grid Layout */}
         <div className="grid grid-cols-12 gap-6">
-          {/* Left Column - 8 cols */}
-          <div className="col-span-12 lg:col-span-8 space-y-6">
+          {/* Left Column - 9 cols */}
+          <div className="col-span-12 lg:col-span-9 space-y-6">
             {/* Top Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Your earnings this month equivalent */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Your score this month</p>
-                    <p className="text-3xl font-bold text-gray-900">
-                      {loading ? '...' : stats.bestScore || 'No scores yet'}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
-                  <div className="w-16 h-16 bg-violet-100 rounded-2xl flex items-center justify-center">
-                    <TrophyIcon className="w-8 h-8 text-violet-600" />
-                  </div>
-                </div>
-                <button className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors">
-                  View All Results
-                </button>
-              </div>
-
-              {/* Progress Stats */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Total exams</span>
-                    <span className="text-lg font-bold text-gray-900">{stats.examsTaken}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Practice tests</span>
-                    <span className="text-lg font-bold text-violet-600">{stats.examsTaken}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Study streak</span>
-                    <span className="text-lg font-bold text-orange-600">7 days</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Action */}
-              <div className="bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
-                <h3 className="text-lg font-semibold mb-2">Ready for next exam?</h3>
-                <p className="text-violet-100 text-sm mb-4">Take a practice test to improve your score</p>
-                <Link 
-                  href="/student/exams"
-                  className="inline-flex items-center bg-white text-violet-600 font-semibold py-2 px-4 rounded-lg hover:bg-violet-50 transition-colors"
-                >
-                  Start Now
-                </Link>
-              </div>
+              <StatsCard
+                title="Your Score This Month"
+                value={loading ? '...' : stats.bestScore || 'No scores yet'}
+                change="+2.5%"
+                changeType="positive"
+                miniChart={{
+                  data: [1200, 1250, 1300, 1280, 1350, 1400],
+                  color: '#10b981'
+                }}
+              />
+              
+              <StatsCard
+                title="Total Exams"
+                value={stats.examsTaken}
+                change="+0.8%"
+                changeType="positive"
+                miniChart={{
+                  data: [8, 12, 15, 18, 22, 25],
+                  color: '#8b5cf6'
+                }}
+              />
+              
+              <StatsCard
+                title="Study Streak"
+                value="7 days"
+                change="+12%"
+                changeType="positive"
+                miniChart={{
+                  data: [3, 5, 4, 6, 7, 7],
+                  color: '#f59e0b'
+                }}
+              />
             </div>
 
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Progress Chart */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">Score Progress</h3>
-                  <div className="flex items-center space-x-2">
-                    <button className="px-3 py-1 text-sm bg-violet-100 text-violet-600 rounded-lg">This Week</button>
-                    <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Last Week</button>
-                  </div>
+            {/* Score Progress Chart - Full Width */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">Score Progress</h3>
+                <div className="flex items-center space-x-2">
+                  <button className="px-3 py-1 text-sm bg-violet-100 text-violet-600 rounded-lg">This Week</button>
+                  <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Last Week</button>
                 </div>
-                <ProgressChart data={progressData} />
               </div>
+              <ModernScoreProgress data={progressData} />
+            </div>
 
-              {/* Subject Performance */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Subject Performance</h3>
-                <SubjectPerformanceChart data={subjectData} />
-              </div>
+            {/* Subject Performance */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">Subject Performance</h3>
+              <SubjectPerformanceChart data={subjectData} />
             </div>
 
             {/* Weekly Activity */}
@@ -264,8 +259,8 @@ export default function StudentDashboard() {
             </div>
           </div>
 
-          {/* Right Column - 4 cols */}
-          <div className="col-span-12 lg:col-span-4 space-y-6">
+          {/* Right Column - 3 cols */}
+          <div className="col-span-12 lg:col-span-3 space-y-6">
             {/* Calendar */}
             <Calendar events={studyStreakDays.map(date => ({ date: new Date(date), type: 'visit' as const }))} />
 
