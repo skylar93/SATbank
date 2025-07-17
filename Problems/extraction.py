@@ -8,7 +8,7 @@ def extract_pdf_content(pdf_path, output_dir):
     """
     Extracts text and images from a PDF file.
 
-    :param pdf_path: The path to the PDF file.
+    :param pdf_path: The path to the PDF file.d
     :param output_dir: The directory where extracted images will be saved.
     """
     # 1. Ensure the output directory exists.
@@ -86,7 +86,7 @@ def extract_pdf_content(pdf_path, output_dir):
 if __name__ == "__main__":
     # NOTE: Replace 'sample.pdf' with the path to your PDF file.
     # You can create a dummy PDF or use an existing one to test the script.
-    pdf_file_path = "Digital-SAT-October-2024-C.pdf"
+    pdf_file_path = "SAT202312A.pdf"
     
     # Create a dummy PDF for demonstration if it doesn't exist.
     if not os.path.exists(pdf_file_path):
