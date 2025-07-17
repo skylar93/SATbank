@@ -5,6 +5,7 @@ import { Question } from '../../lib/exam-service'
 import { InlineMath, BlockMath } from 'react-katex'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { RichTextEditor } from '../rich-text-editor'
+import { ImageUpload } from '../image-upload'
 
 interface QuestionDisplayProps {
   question: Question
@@ -173,8 +174,8 @@ export function QuestionDisplay({
     const parts = [];
     let lastIndex = 0;
     
-    // Combined regex for math expressions, formatting, line breaks, dashes, and long blanks
-    const combinedRegex = /(\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|\*\*(.*?)\*\*|\*(.*?)\*|_{5,}|__(.*?)__|_(.*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|\\n|\n)/g;
+    // Combined regex for math expressions, formatting, line breaks, dashes, long blanks, and images
+    const combinedRegex = /(\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|!\[(.*?)\]\((.*?)\)|\*\*(.*?)\*\*|\*(.*?)\*|_{5,}|__(.*?)__|_(.*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|\\n|\n)/g;
     let match;
     
     while ((match = combinedRegex.exec(text)) !== null) {
@@ -218,51 +219,62 @@ export function QuestionDisplay({
           );
         }
       }
+      // Handle markdown images ![alt](url)
+      else if (match[2] !== undefined && match[3] !== undefined) {
+        parts.push(
+          <img 
+            key={`image-${match.index}`} 
+            src={match[3]} 
+            alt={match[2]} 
+            className="max-w-full h-auto my-2 border border-gray-200 rounded"
+          />
+        );
+      }
       // Handle bold formatting **text**
-      else if (match[2] !== undefined) {
+      else if (match[4] !== undefined) {
         parts.push(
           <strong key={`bold-${match.index}`} className="font-bold">
-            {match[2]}
+            {match[4]}
           </strong>
         );
       }
       // Handle italic formatting *text*
-      else if (match[3] !== undefined) {
-        parts.push(
-          <em key={`italic-${match.index}`} className="italic">
-            {match[3]}
-          </em>
-        );
-      }
-      // Handle underline formatting __text__
-      else if (match[4] !== undefined) {
-        parts.push(
-          <span key={`underline-${match.index}`} className="underline">
-            {match[4]}
-          </span>
-        );
-      }
-      // Handle italic formatting _text_
       else if (match[5] !== undefined) {
         parts.push(
-          <em key={`italic2-${match.index}`} className="italic">
+          <em key={`italic-${match.index}`} className="italic">
             {match[5]}
           </em>
         );
       }
-      // Handle superscript formatting ^^text^^
+      // Handle underline formatting __text__
       else if (match[6] !== undefined) {
         parts.push(
-          <sup key={`superscript-${match.index}`} className="text-sm">
+          <span key={`underline-${match.index}`} className="underline">
             {match[6]}
+          </span>
+        );
+      }
+      // Handle italic formatting _text_
+      else if (match[7] !== undefined) {
+        parts.push(
+          <em key={`italic2-${match.index}`} className="italic">
+            {match[7]}
+          </em>
+        );
+      }
+      // Handle superscript formatting ^^text^^
+      else if (match[8] !== undefined) {
+        parts.push(
+          <sup key={`superscript-${match.index}`} className="text-sm">
+            {match[8]}
           </sup>
         );
       }
       // Handle subscript formatting ~~text~~
-      else if (match[7] !== undefined) {
+      else if (match[9] !== undefined) {
         parts.push(
           <sub key={`subscript-${match.index}`} className="text-sm">
-            {match[7]}
+            {match[9]}
           </sub>
         );
       }
@@ -349,14 +361,42 @@ export function QuestionDisplay({
   };
   
   const renderAnswerChoiceContent = (value: string) => {
-    // Try to parse as JSON to check if it's table data
+    // Try to parse as JSON to check if it's table data or has image URL
     try {
       const parsed = JSON.parse(value);
       if (parsed.table_data && parsed.table_data.headers && parsed.table_data.rows) {
         return renderTable(parsed.table_data, true);
       }
+      // Check if it has both text and imageUrl
+      if (parsed.text || parsed.imageUrl) {
+        return (
+          <div className="space-y-2">
+            {parsed.text && (
+              <div>{renderTextWithFormattingAndMath(parsed.text)}</div>
+            )}
+            {parsed.imageUrl && (
+              <img
+                src={parsed.imageUrl}
+                alt="Answer choice image"
+                className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
+              />
+            )}
+          </div>
+        );
+      }
     } catch (e) {
       // Not JSON, continue with regular text rendering
+    }
+    
+    // Check if it's a simple image URL
+    if (typeof value === 'string' && (value.startsWith('http') && (value.includes('.jpg') || value.includes('.png') || value.includes('.jpeg') || value.includes('.gif') || value.includes('.svg')))) {
+      return (
+        <img
+          src={value}
+          alt="Answer choice image"
+          className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
+        />
+      );
     }
     
     // Regular text rendering with formatting
@@ -371,25 +411,96 @@ export function QuestionDisplay({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Answer Options
             </label>
-            {Object.entries(editForm.options).map(([key, value]) => (
-              <div key={key} className="space-y-2">
-                <div className="flex items-center">
-                  <span className="font-medium text-gray-700 w-8">{key}.</span>
-                  <span className="text-sm text-gray-600">Option {key}</span>
+            {Object.entries(editForm.options).map(([key, value]) => {
+              let optionData;
+              try {
+                optionData = typeof value === 'string' ? JSON.parse(value) : value;
+                if (typeof optionData !== 'object') {
+                  optionData = { text: String(value) };
+                }
+              } catch {
+                optionData = { text: String(value) };
+              }
+
+              return (
+                <div key={key} className="space-y-3 p-4 border border-gray-200 rounded-lg">
+                  <div className="flex items-center">
+                    <span className="font-medium text-gray-700 w-8">{key}.</span>
+                    <span className="text-sm text-gray-600">Option {key}</span>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Text Content
+                    </label>
+                    <RichTextEditor
+                      value={optionData.text || ''}
+                      onChange={(newValue) => {
+                        const updatedOption = { ...optionData, text: newValue };
+                        setEditForm({
+                          ...editForm,
+                          options: {...editForm.options, [key]: JSON.stringify(updatedOption)}
+                        });
+                      }}
+                      placeholder={`Enter text for option ${key}...`}
+                      rows={2}
+                      showPreview={true}
+                      compact={true}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Image URL (Optional)
+                    </label>
+                    <input
+                      type="url"
+                      value={optionData.imageUrl || ''}
+                      onChange={(e) => {
+                        const updatedOption = { ...optionData, imageUrl: e.target.value };
+                        setEditForm({
+                          ...editForm,
+                          options: {...editForm.options, [key]: JSON.stringify(updatedOption)}
+                        });
+                      }}
+                      placeholder="https://example.com/image.jpg"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                    <div className="mt-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Or upload an image:
+                      </label>
+                      <ImageUpload
+                        onImageUploaded={(imageUrl) => {
+                          const updatedOption = { ...optionData, imageUrl };
+                          setEditForm({
+                            ...editForm,
+                            options: {...editForm.options, [key]: JSON.stringify(updatedOption)}
+                          });
+                        }}
+                        maxSize={2}
+                      />
+                    </div>
+                  </div>
+                  
+                  {optionData.imageUrl && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Preview
+                      </label>
+                      <img
+                        src={optionData.imageUrl}
+                        alt={`Option ${key} preview`}
+                        className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
-                <RichTextEditor
-                  value={typeof value === 'string' ? value : JSON.stringify(value)}
-                  onChange={(newValue) => setEditForm({
-                    ...editForm,
-                    options: {...editForm.options, [key]: newValue}
-                  })}
-                  placeholder={`Enter option ${key}...`}
-                  rows={2}
-                  showPreview={true}
-                  compact={true}
-                />
-              </div>
-            ))}
+              );
+            })}
           </div>
         )
       }
@@ -580,6 +691,23 @@ export function QuestionDisplay({
                   rows={6}
                   showPreview={true}
                 />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Question Image Upload
+                </label>
+                <ImageUpload
+                  onImageUploaded={(imageUrl) => {
+                    // Add the image URL to the question text
+                    const newText = editForm.question_text + `\n\n![Question Image](${imageUrl})`;
+                    setEditForm({...editForm, question_text: newText});
+                  }}
+                  className="mb-2"
+                />
+                <p className="text-xs text-gray-500">
+                  Upload an image that will be inserted into the question text. You can also manually add image URLs in markdown format: ![alt text](image-url)
+                </p>
               </div>
               
               <div>

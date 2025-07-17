@@ -3,6 +3,7 @@ import type { QuestionType, DifficultyLevel, ModuleType } from '@satbank/databas
 export interface QuestionOption {
   id: string
   text: string
+  imageUrl?: string
   isCorrect?: boolean
 }
 

@@ -125,6 +125,19 @@ export class ExamService {
     return data || []
   }
 
+  // Update a question
+  static async updateQuestion(questionId: string, updates: Partial<Question>): Promise<Question> {
+    const { data, error } = await supabase
+      .from('questions')
+      .update(updates)
+      .eq('id', questionId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  }
+
   // Create new test attempt
   static async createTestAttempt(attempt: CreateTestAttempt): Promise<TestAttempt> {
     const { data, error } = await supabase

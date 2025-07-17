@@ -884,40 +884,119 @@ export default function ManageExamsPage() {
                 <h3 className="font-medium text-gray-900 mb-2">Answer Options:</h3>
                 {editingQuestion === question.id ? (
                   <div className="space-y-4">
-                    {Object.entries(editForm.options || {}).map(([key, value]) => (
-                      <div key={key} className="space-y-2">
-                        <div className="flex items-center">
-                          <span className="font-medium text-gray-700 w-6">{key}.</span>
-                          <span className="text-sm text-gray-600">Option {key}</span>
+                    {Object.entries(editForm.options || {}).map(([key, value]) => {
+                      let optionData;
+                      try {
+                        optionData = typeof value === 'string' ? JSON.parse(value) : value;
+                        if (typeof optionData !== 'object') {
+                          optionData = { text: String(value) };
+                        }
+                      } catch {
+                        optionData = { text: String(value) };
+                      }
+
+                      return (
+                        <div key={key} className="space-y-3 p-3 border border-gray-200 rounded">
+                          <div className="flex items-center">
+                            <span className="font-medium text-gray-700 w-6">{key}.</span>
+                            <span className="text-sm text-gray-600">Option {key}</span>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                              Text Content
+                            </label>
+                            <RichTextEditor
+                              value={optionData.text || ''}
+                              onChange={(newValue) => {
+                                const updatedOption = { ...optionData, text: newValue };
+                                setEditForm({
+                                  ...editForm,
+                                  options: {...(editForm.options || {}), [key]: JSON.stringify(updatedOption)}
+                                });
+                              }}
+                              placeholder={`Enter text for option ${key}...`}
+                              rows={2}
+                              showPreview={true}
+                              compact={true}
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                              Image URL (Optional)
+                            </label>
+                            <input
+                              type="url"
+                              value={optionData.imageUrl || ''}
+                              onChange={(e) => {
+                                const updatedOption = { ...optionData, imageUrl: e.target.value };
+                                setEditForm({
+                                  ...editForm,
+                                  options: {...(editForm.options || {}), [key]: JSON.stringify(updatedOption)}
+                                });
+                              }}
+                              placeholder="https://example.com/image.jpg"
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-violet-500"
+                            />
+                          </div>
+                          
+                          {optionData.imageUrl && (
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Preview
+                              </label>
+                              <img
+                                src={optionData.imageUrl}
+                                alt={`Option ${key} preview`}
+                                className="max-w-full h-auto max-h-20 border border-gray-200 rounded"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            </div>
+                          )}
                         </div>
-                        <RichTextEditor
-                          value={typeof value === 'object' ? JSON.stringify(value) : String(value)}
-                          onChange={(newValue) => setEditForm({
-                            ...editForm,
-                            options: {...(editForm.options || {}), [key]: newValue}
-                          })}
-                          placeholder={`Enter option ${key}...`}
-                          rows={2}
-                          showPreview={true}
-                          compact={true}
-                        />
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
-                  <div className="space-y-1">
-                    {Object.entries(question.options).map(([key, value]) => (
-                      <div key={key} className="flex items-start space-x-2">
-                        <span className={`font-medium w-6 ${
-                          question.correct_answer === key ? 'text-green-600' : 'text-gray-700'
-                        }`}>
-                          {key}.
-                        </span>
-                        <span className={question.correct_answer === key ? 'text-green-600 font-medium' : 'text-gray-900'}>
-                          {typeof value === 'object' ? JSON.stringify(value) : renderTextWithFormattingAndMath(String(value))}
-                        </span>
-                      </div>
-                    ))}
+                  <div className="space-y-2">
+                    {Object.entries(question.options).map(([key, value]) => {
+                      let optionData;
+                      try {
+                        optionData = typeof value === 'string' ? JSON.parse(value) : value;
+                        if (typeof optionData !== 'object') {
+                          optionData = { text: String(value) };
+                        }
+                      } catch {
+                        optionData = { text: String(value) };
+                      }
+
+                      return (
+                        <div key={key} className="flex items-start space-x-2">
+                          <span className={`font-medium w-6 ${
+                            question.correct_answer === key ? 'text-green-600' : 'text-gray-700'
+                          }`}>
+                            {key}.
+                          </span>
+                          <div className={`flex-1 ${question.correct_answer === key ? 'text-green-600 font-medium' : 'text-gray-900'}`}>
+                            {optionData.text && (
+                              <div className="mb-1">
+                                {renderTextWithFormattingAndMath(optionData.text)}
+                              </div>
+                            )}
+                            {optionData.imageUrl && (
+                              <img
+                                src={optionData.imageUrl}
+                                alt={`Option ${key}`}
+                                className="max-w-full h-auto max-h-20 border border-gray-200 rounded"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
