@@ -3,8 +3,21 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
-import { Navigation } from '../../../components/navigation'
 import { ExamService, type TestAttempt } from '../../../lib/exam-service'
+import { StatsCard, ModernScoreProgress } from '../../../components/modern-charts'
+import { Calendar } from '../../../components/calendar'
+import { 
+  ChartBarIcon, 
+  TrophyIcon, 
+  ClockIcon,
+  AcademicCapIcon,
+  MagnifyingGlassIcon,
+  TrashIcon,
+  EyeIcon,
+  PlayIcon,
+  ArrowTrendingUpIcon,
+  CalendarIcon
+} from '@heroicons/react/24/outline'
 
 export default function StudentResultsPage() {
   const { user } = useAuth()
@@ -124,13 +137,49 @@ export default function StudentResultsPage() {
     }
   }
 
+  const completedAttempts = attempts.filter(a => a.status === 'completed')
+  const averageScore = completedAttempts.length > 0 
+    ? Math.round(completedAttempts.reduce((sum, a) => sum + (a.total_score || 0), 0) / completedAttempts.length)
+    : 0
+  const bestScore = completedAttempts.length > 0 
+    ? Math.max(...completedAttempts.map(a => a.total_score || 0))
+    : 0
+  
+  // Mock progress data - replace with real data
+  const progressData = {
+    labels: ['Test 1', 'Test 2', 'Test 3', 'Test 4', 'Test 5'],
+    datasets: [
+      {
+        label: 'Total Score',
+        data: completedAttempts.slice(-5).map(a => a.total_score || 0),
+        borderColor: '#8b5cf6',
+        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+        fill: true
+      }
+    ]
+  }
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <div className="max-w-6xl mx-auto py-8 px-4">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+      <div className="h-full bg-gray-50">
+        <div className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Results</h1>
+              <p className="text-gray-600">Loading your exam results...</p>
+            </div>
+            <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {user?.profile?.full_name?.charAt(0) || 'U'}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="p-6">
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+              <ChartBarIcon className="w-8 h-8 text-white" />
+            </div>
             <p className="text-gray-600">Loading results...</p>
           </div>
         </div>
@@ -139,150 +188,283 @@ export default function StudentResultsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <div className="max-w-6xl mx-auto py-8 px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Your Exam Results
-          </h1>
-          <p className="text-gray-600">
-            Review your SAT practice test performance and track your progress over time.
-          </p>
+    <div className="h-full bg-gray-50">
+      {/* Top Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Results</h1>
+            <p className="text-gray-600">Review your SAT practice test performance and track progress</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search results..."
+                className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+              />
+            </div>
+            <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {user?.profile?.full_name?.charAt(0) || 'U'}
+              </span>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <p className="text-red-800">Error loading results: {error}</p>
-          </div>
-        )}
+      <div className="p-6">
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-12 gap-6">
+          {/* Left Column - 9 cols */}
+          <div className="col-span-12 lg:col-span-9 space-y-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <StatsCard
+                title="Total Exams Taken"
+                value={attempts.length}
+                change="+2.5%"
+                changeType="positive"
+                miniChart={{
+                  data: [5, 8, 12, 15, 18, attempts.length],
+                  color: '#10b981'
+                }}
+              />
+              
+              <StatsCard
+                title="Best Score"
+                value={bestScore || 'No scores yet'}
+                change="+8.4%"
+                changeType="positive"
+                miniChart={{
+                  data: completedAttempts.slice(-6).map(a => a.total_score || 0),
+                  color: '#8b5cf6'
+                }}
+              />
+              
+              <StatsCard
+                title="Average Score"
+                value={averageScore || 'No average yet'}
+                change="+5.2%"
+                changeType="positive"
+                miniChart={{
+                  data: [1200, 1250, 1300, 1350, 1380, averageScore],
+                  color: '#f59e0b'
+                }}
+              />
+            </div>
 
-        {attempts.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Results Yet</h3>
-            <p className="text-gray-600 mb-4">
-              You haven't completed any practice exams yet. Take your first exam to see your results here.
-            </p>
-            <Link
-              href="/student/exams"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              Take an Exam
-            </Link>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {attempts.map((attempt) => (
-              <div key={attempt.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      SAT Practice Test
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Attempt ID: {attempt.id.slice(0, 8)}...
-                    </p>
+            {/* Score Progress Chart */}
+            {completedAttempts.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900">Score Progress Over Time</h3>
+                  <div className="flex items-center space-x-2">
+                    <button className="px-3 py-1 text-sm bg-violet-100 text-violet-600 rounded-lg">All Tests</button>
+                    <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Last 5</button>
                   </div>
-                  
-                  <div className="flex items-center space-x-3">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(attempt.status)}`}>
-                      {attempt.status.replace('_', ' ').toUpperCase()}
-                    </span>
-                    {attempt.status === 'completed' && (
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-gray-900">
-                          {attempt.total_score}
+                </div>
+                <ModernScoreProgress data={progressData} />
+              </div>
+            )}
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
+                <p className="text-red-800">Error loading results: {error}</p>
+              </div>
+            )}
+
+            {/* Exam Results List */}
+            {attempts.length === 0 ? (
+              <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-8 text-center border border-violet-100">
+                <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ChartBarIcon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Results Yet</h3>
+                <p className="text-gray-600 mb-6">
+                  You haven't completed any practice exams yet. Take your first exam to see your results here.
+                </p>
+                <Link
+                  href="/student/exams"
+                  className="inline-flex items-center bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg"
+                >
+                  <AcademicCapIcon className="w-5 h-5 mr-2" />
+                  Take Your First Exam
+                </Link>
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+                <div className="p-6 border-b border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900">Recent Exam Attempts</h3>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-4">
+                    {attempts.map((attempt) => (
+                      <div key={attempt.id} className="border border-gray-200 rounded-xl p-6 hover:border-violet-300 transition-colors">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl flex items-center justify-center">
+                              <AcademicCapIcon className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                              <h4 className="text-lg font-semibold text-gray-900">SAT Practice Test</h4>
+                              <p className="text-sm text-gray-500">
+                                ID: {attempt.id.slice(0, 8)}...
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center space-x-3">
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(attempt.status)}`}>
+                              {attempt.status.replace('_', ' ').toUpperCase()}
+                            </span>
+                            {attempt.status === 'completed' && (
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-violet-600">
+                                  {attempt.total_score}
+                                </div>
+                                <div className="text-sm text-gray-500">Total Score</div>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-500">Total Score</div>
-                      </div>
-                    )}
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                  {attempt.module_scores && Object.entries(attempt.module_scores).map(([module, score]) => (
-                    <div key={module} className="bg-gray-50 p-3 rounded text-center">
-                      <div className="text-sm font-medium text-gray-900 mb-1">
-                        {module.replace(/(\d)/, ' $1').toUpperCase()}
-                      </div>
-                      <div className="text-lg font-semibold text-gray-700">
-                        {score || 0}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                        {/* Module Scores */}
+                        {attempt.module_scores && (
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                            {Object.entries(attempt.module_scores).map(([module, score]) => (
+                              <div key={module} className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-xl text-center">
+                                <div className="text-sm font-medium text-gray-900 mb-1">
+                                  {module.replace(/(\d)/, ' $1').toUpperCase()}
+                                </div>
+                                <div className="text-xl font-bold text-gray-700">
+                                  {score || 0}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
 
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200 text-sm text-gray-500">
-                  <div className="space-y-1">
-                    {attempt.started_at && (
-                      <div>Started: {formatDate(attempt.started_at)}</div>
-                    )}
-                    {attempt.completed_at && (
-                      <div>Completed: {formatDate(attempt.completed_at)}</div>
-                    )}
+                        {/* Action Row */}
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                          <div className="space-y-1 text-sm text-gray-500">
+                            {attempt.started_at && (
+                              <div className="flex items-center space-x-1">
+                                <CalendarIcon className="w-4 h-4" />
+                                <span>Started: {formatDate(attempt.started_at)}</span>
+                              </div>
+                            )}
+                            {attempt.completed_at && (
+                              <div className="flex items-center space-x-1">
+                                <ClockIcon className="w-4 h-4" />
+                                <span>Completed: {formatDate(attempt.completed_at)}</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="flex items-center space-x-3">
+                            {attempt.status === 'completed' && (
+                              <Link
+                                href={`/student/results/${attempt.id}`}
+                                className="inline-flex items-center px-4 py-2 bg-violet-100 hover:bg-violet-200 text-violet-700 rounded-lg font-medium transition-colors"
+                              >
+                                <EyeIcon className="w-4 h-4 mr-2" />
+                                View Details
+                              </Link>
+                            )}
+                            
+                            {attempt.status === 'in_progress' && attempt.exam_id && (
+                              <>
+                                <Link
+                                  href={`/student/exam/${attempt.exam_id}`}
+                                  className="inline-flex items-center px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg font-medium transition-colors"
+                                >
+                                  <PlayIcon className="w-4 h-4 mr-2" />
+                                  Continue
+                                </Link>
+                                <button
+                                  onClick={() => handleDeleteAttempt(attempt.id)}
+                                  disabled={deletingAttempts.has(attempt.id)}
+                                  className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${
+                                    deletingAttempts.has(attempt.id)
+                                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                      : 'bg-red-100 hover:bg-red-200 text-red-700'
+                                  }`}
+                                >
+                                  {deletingAttempts.has(attempt.id) ? (
+                                    <div className="w-4 h-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 mr-2"></div>
+                                  ) : (
+                                    <TrashIcon className="w-4 h-4 mr-2" />
+                                  )}
+                                  {deletingAttempts.has(attempt.id) ? 'Deleting...' : 'Discard'}
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  
-                  {attempt.status === 'completed' && (
-                    <div className="text-right">
-                      <Link
-                        href={`/student/results/${attempt.id}`}
-                        className="text-blue-600 hover:text-blue-700 font-medium"
-                      >
-                        View Detailed Results
-                      </Link>
-                    </div>
-                  )}
-                  
-                  {attempt.status === 'in_progress' && attempt.exam_id && (
-                    <div className="text-right space-y-2">
-                      <div>
-                        <Link
-                          href={`/student/exam/${attempt.exam_id}`}
-                          className="text-blue-600 hover:text-blue-700 font-medium"
-                        >
-                          Continue Exam
-                        </Link>
-                      </div>
-                      <div>
-                        <button
-                          onClick={() => handleDeleteAttempt(attempt.id)}
-                          disabled={deletingAttempts.has(attempt.id)}
-                          className={`font-medium text-sm flex items-center space-x-1 ${
-                            deletingAttempts.has(attempt.id)
-                              ? 'text-gray-400 cursor-not-allowed'
-                              : 'text-red-600 hover:text-red-700'
-                          }`}
-                          title="Discard this exam attempt"
-                        >
-                          {deletingAttempts.has(attempt.id) ? (
-                            <div className="w-4 h-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
-                          ) : (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          )}
-                          <span>{deletingAttempts.has(attempt.id) ? 'Deleting...' : 'Discard'}</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
-            ))}
+            )}
           </div>
-        )}
 
-        {attempts.length > 0 && (
-          <div className="mt-8 text-center">
-            <Link
-              href="/student/exams"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              Take Another Exam
-            </Link>
+          {/* Right Column - 3 cols */}
+          <div className="col-span-12 lg:col-span-3 space-y-6">
+            {/* Calendar */}
+            <Calendar events={attempts.filter(a => a.completed_at).map(attempt => ({ 
+              date: new Date(attempt.completed_at!), 
+              type: 'visit' as const 
+            }))} />
+
+            {/* Performance Summary */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">Performance Summary</h3>
+                <ArrowTrendingUpIcon className="w-5 h-5 text-violet-600" />
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl">
+                  <span className="text-sm font-medium text-gray-900">Tests Completed</span>
+                  <span className="text-lg font-bold text-violet-600">{completedAttempts.length}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
+                  <span className="text-sm font-medium text-gray-900">Best Score</span>
+                  <span className="text-lg font-bold text-green-600">{bestScore || '-'}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl">
+                  <span className="text-sm font-medium text-gray-900">Average Score</span>
+                  <span className="text-lg font-bold text-orange-600">{averageScore || '-'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Call to Action */}
+            <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <TrophyIcon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Keep Improving!</h3>
+                <p className="text-blue-100 text-sm mb-4">
+                  {attempts.length === 0 
+                    ? "Start your SAT journey today with your first practice test."
+                    : "Continue practicing to reach your target score."
+                  }
+                </p>
+                <Link
+                  href="/student/exams"
+                  className="bg-white text-blue-600 font-semibold py-2 px-6 rounded-lg hover:bg-blue-50 transition-colors"
+                >
+                  {attempts.length === 0 ? 'Take First Exam' : 'Take Another Exam'}
+                </Link>
+              </div>
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   )

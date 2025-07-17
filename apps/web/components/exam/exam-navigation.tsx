@@ -2,6 +2,12 @@
 
 import { ModuleType } from '../../lib/exam-service'
 
+interface MarkedQuestion {
+  question: any
+  index: number
+  isMarked: boolean
+}
+
 interface ExamNavigationProps {
   currentQuestion: number
   totalQuestions: number
@@ -15,7 +21,12 @@ interface ExamNavigationProps {
   onSubmitModule: () => void
   onSubmitExam: () => void
   answeredQuestions: Set<number>
+  markedQuestions: MarkedQuestion[]
   disabled?: boolean
+  isAdminPreview?: boolean
+  allModules?: { module: ModuleType; questions: any[]; currentQuestionIndex: number }[]
+  currentModuleIndex?: number
+  onGoToModule?: (moduleIndex: number, questionIndex: number) => void
 }
 
 export function ExamNavigation({
@@ -31,7 +42,12 @@ export function ExamNavigation({
   onSubmitModule,
   onSubmitExam,
   answeredQuestions,
-  disabled = false
+  markedQuestions,
+  disabled = false,
+  isAdminPreview = false,
+  allModules = [],
+  currentModuleIndex = 0,
+  onGoToModule
 }: ExamNavigationProps) {
 
   const getModuleName = (module: ModuleType) => {
@@ -74,6 +90,111 @@ export function ExamNavigation({
     }
   }
 
+  // Admin Preview: Show all modules and questions
+  if (isAdminPreview && allModules.length > 0) {
+    return (
+      <div className="bg-white border-t border-gray-200 px-6 py-4">
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm text-gray-600">
+              <span className="font-medium text-orange-600">Admin Preview - All Modules</span>
+            </div>
+            <div className="text-xs text-gray-500">
+              Navigate freely between all modules and questions
+            </div>
+          </div>
+          
+          {/* Show all modules */}
+          <div className="space-y-4">
+            {allModules.map((module, moduleIndex) => {
+              const isCurrentModule = moduleIndex === currentModuleIndex
+              return (
+                <div key={moduleIndex} className={`border rounded-lg p-3 ${
+                  isCurrentModule ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                }`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className={`text-sm font-medium ${
+                      isCurrentModule ? 'text-blue-800' : 'text-gray-700'
+                    }`}>
+                      {getModuleName(module.module)}
+                    </h4>
+                    <span className="text-xs text-gray-500">
+                      {module.questions.length} questions
+                    </span>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    {module.questions.map((_, qIndex) => {
+                      const questionNum = qIndex + 1
+                      const isCurrent = isCurrentModule && questionNum === currentQuestion
+                      const globalQuestionIndex = allModules.slice(0, moduleIndex)
+                        .reduce((acc, m) => acc + m.questions.length, 0) + qIndex + 1
+                      const isAnswered = answeredQuestions.has(globalQuestionIndex)
+                      const isMarked = markedQuestions.some(mq => mq.index === qIndex && mq.question?.module_type === module.module)
+                      
+                      return (
+                        <button
+                          key={qIndex}
+                          onClick={() => onGoToModule && onGoToModule(moduleIndex, qIndex)}
+                          disabled={disabled}
+                          className={`
+                            w-8 h-8 text-sm font-medium rounded transition-all relative
+                            disabled:opacity-50 disabled:cursor-not-allowed
+                            ${isCurrent 
+                              ? 'bg-blue-600 text-white border-2 border-blue-600' 
+                              : isAnswered
+                              ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
+                              : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
+                            }
+                          `}
+                        >
+                          {questionNum}
+                          {isMarked && (
+                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center">
+                              <span className="text-xs text-white">🏷️</span>
+                            </div>
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+        
+        {/* Admin Navigation Controls */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={onPrevious}
+              disabled={disabled}
+              className="px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ← Previous
+            </button>
+            <button
+              onClick={onNext}
+              disabled={disabled}
+              className="px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next →
+            </button>
+            <div className="text-sm text-gray-600">
+              Module {currentModuleIndex + 1} of {allModules.length} • Question {currentQuestion} of {totalQuestions}
+            </div>
+          </div>
+          
+          <div className="text-xs text-orange-600 font-medium">
+            🔍 Admin Preview Mode - Full Navigation Enabled
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Regular Student Navigation
   return (
     <div className="bg-white border-t border-gray-200 px-6 py-4">
       {/* Question Grid Navigation */}
@@ -92,6 +213,7 @@ export function ExamNavigation({
             const questionNum = index + 1
             const isAnswered = answeredQuestions.has(questionNum)
             const isCurrent = questionNum === currentQuestion
+            const isMarked = markedQuestions.some(mq => mq.index === index)
             
             return (
               <button
@@ -99,7 +221,7 @@ export function ExamNavigation({
                 onClick={() => onGoToQuestion(index)}
                 disabled={disabled}
                 className={`
-                  w-8 h-8 text-sm font-medium rounded transition-all
+                  w-8 h-8 text-sm font-medium rounded transition-all relative
                   disabled:opacity-50 disabled:cursor-not-allowed
                   ${isCurrent 
                     ? 'bg-blue-600 text-white border-2 border-blue-600' 
@@ -110,10 +232,41 @@ export function ExamNavigation({
                 `}
               >
                 {questionNum}
+                {isMarked && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-white">🏷️</span>
+                  </div>
+                )}
               </button>
             )
           })}
         </div>
+        
+        {/* Marked Questions Section */}
+        {markedQuestions.length > 0 && (
+          <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-sm font-medium text-yellow-800">
+                📝 Marked for Review ({markedQuestions.length})
+              </h4>
+              <span className="text-xs text-yellow-600">
+                Click to navigate to marked questions
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {markedQuestions.map((markedQuestion) => (
+                <button
+                  key={markedQuestion.index}
+                  onClick={() => onGoToQuestion(markedQuestion.index)}
+                  disabled={disabled}
+                  className="px-2 py-1 text-xs bg-yellow-200 text-yellow-800 rounded hover:bg-yellow-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Q{markedQuestion.index + 1}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center justify-between">
@@ -205,9 +358,11 @@ export function ExamNavigation({
       </div>
 
       {/* Updated SAT Notice */}
-      <div className="mt-3 text-xs text-gray-500 italic">
-        ⚠️ SAT Format: You can navigate between questions within this module, but cannot return to previous modules once completed.
-      </div>
+      {!isAdminPreview && (
+        <div className="mt-3 text-xs text-gray-500 italic">
+          ⚠️ SAT Format: You can navigate between questions within this module, but cannot return to previous modules once completed.
+        </div>
+      )}
     </div>
   )
 }

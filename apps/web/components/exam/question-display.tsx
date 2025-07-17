@@ -1,6 +1,10 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Question } from '../../lib/exam-service'
+import { InlineMath, BlockMath } from 'react-katex'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { RichTextEditor } from '../rich-text-editor'
 
 interface QuestionDisplayProps {
   question: Question
@@ -10,6 +14,10 @@ interface QuestionDisplayProps {
   onAnswerChange: (answer: string) => void
   showExplanation?: boolean
   disabled?: boolean
+  isAdminPreview?: boolean
+  onQuestionUpdate?: (updatedQuestion: Question) => void
+  isMarkedForReview?: boolean
+  onToggleMarkForReview?: () => void
 }
 
 export function QuestionDisplay({
@@ -19,14 +27,376 @@ export function QuestionDisplay({
   userAnswer,
   onAnswerChange,
   showExplanation = false,
-  disabled = false
+  disabled = false,
+  isAdminPreview = false,
+  onQuestionUpdate,
+  isMarkedForReview = false,
+  onToggleMarkForReview
 }: QuestionDisplayProps) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [localQuestion, setLocalQuestion] = useState(question)
+  const [editForm, setEditForm] = useState({
+    question_text: question.question_text,
+    options: question.options || {},
+    correct_answer: question.correct_answer,
+    explanation: question.explanation || ''
+  })
+  const [saving, setSaving] = useState(false)
+  const supabase = createClientComponentClient()
+
+  // Update local question when prop changes
+  useEffect(() => {
+    setLocalQuestion(question)
+    setEditForm({
+      question_text: question.question_text,
+      options: question.options || {},
+      correct_answer: question.correct_answer,
+      explanation: question.explanation || ''
+    })
+  }, [question.id, question.question_text, question.options, question.correct_answer, question.explanation])
+
+  const handleSaveEdit = async () => {
+    if (!onQuestionUpdate) return
+    
+    // Prevent multiple simultaneous saves
+    if (saving) {
+      console.log('🔄 Save already in progress, skipping...')
+      return
+    }
+    
+    setSaving(true)
+    let success = false
+    
+    try {
+      console.log('🔄 Attempting to save question:', {
+        questionId: question.id,
+        updates: {
+          question_text: editForm.question_text,
+          options: editForm.options,
+          correct_answer: editForm.correct_answer,
+          explanation: editForm.explanation
+        }
+      })
+
+      // Create a fresh supabase client instance to avoid stale state
+      const freshSupabase = createClientComponentClient()
+      
+      // Try with explicit auth session
+      const { data: { session } } = await freshSupabase.auth.getSession()
+      console.log('🔍 Current session:', session ? 'Authenticated' : 'Not authenticated')
+
+      if (!session) {
+        throw new Error('No authentication session found')
+      }
+
+      // Test if we can read the question first (to check RLS policies)
+      const { data: readTest, error: readError } = await freshSupabase
+        .from('questions')
+        .select('*')
+        .eq('id', question.id)
+        .single()
+      
+      console.log('🔍 Read test:', { readTest: !!readTest, readError })
+
+      if (readError) {
+        throw new Error(`Read test failed: ${readError.message}`)
+      }
+
+      // Match the admin panel approach exactly
+      const { data, error } = await freshSupabase
+        .from('questions')
+        .update({
+          question_text: editForm.question_text,
+          options: editForm.options,
+          correct_answer: editForm.correct_answer,
+          explanation: editForm.explanation,
+          table_data: localQuestion.table_data // Keep existing table_data
+        })
+        .eq('id', question.id)
+
+      console.log('🔍 Supabase response:', { data, error })
+
+      if (error) {
+        console.error('❌ Supabase error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        })
+        throw new Error(`Database error: ${error.message}`)
+      }
+
+      console.log('✅ Question updated successfully:', data)
+
+      // Update the local question object
+      const updatedQuestion = {
+        ...localQuestion,
+        question_text: editForm.question_text,
+        options: editForm.options,
+        correct_answer: editForm.correct_answer,
+        explanation: editForm.explanation
+      }
+      
+      setLocalQuestion(updatedQuestion)
+      
+      // Call the callback to update the parent state (exam state)
+      if (onQuestionUpdate) {
+        onQuestionUpdate(updatedQuestion)
+      }
+      
+      setIsEditing(false)
+      success = true
+      alert('Question saved successfully!')
+      
+    } catch (error) {
+      console.error('❌ Unexpected error saving question:', error)
+      alert(`Failed to save question: ${error instanceof Error ? error.message : String(error)}`)
+    } finally {
+      setSaving(false)
+      console.log('🔄 Save process completed, success:', success)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditForm({
+      question_text: localQuestion.question_text,
+      options: localQuestion.options || {},
+      correct_answer: localQuestion.correct_answer,
+      explanation: localQuestion.explanation || ''
+    })
+    setIsEditing(false)
+  }
+
+  const renderTextWithFormattingAndMath = (text: string) => {
+    if (!text) return text;
+    
+    const parts = [];
+    let lastIndex = 0;
+    
+    // Combined regex for math expressions, formatting, line breaks, dashes, and long blanks
+    const combinedRegex = /(\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|\*\*(.*?)\*\*|\*(.*?)\*|_{5,}|__(.*?)__|_(.*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|\\n|\n)/g;
+    let match;
+    
+    while ((match = combinedRegex.exec(text)) !== null) {
+      // Add text before current match
+      if (match.index > lastIndex) {
+        const textBefore = text.substring(lastIndex, match.index);
+        if (textBefore) {
+          parts.push(
+            <span key={`text-${lastIndex}`}>
+              {textBefore}
+            </span>
+          );
+        }
+      }
+      
+      const matchedContent = match[1];
+      
+      // Handle math expressions
+      if (matchedContent.startsWith('$')) {
+        const isBlock = matchedContent.startsWith('$$');
+        const cleanMath = matchedContent.replace(/^\$+|\$+$/g, '').trim();
+        
+        try {
+          if (isBlock) {
+            parts.push(
+              <div key={`math-${match.index}`} className="my-4">
+                <BlockMath math={cleanMath} />
+              </div>
+            );
+          } else {
+            parts.push(
+              <InlineMath key={`math-${match.index}`} math={cleanMath} />
+            );
+          }
+        } catch (error) {
+          console.error('KaTeX render error:', error);
+          parts.push(
+            <span key={`fallback-${match.index}`} className="text-red-500">
+              {matchedContent}
+            </span>
+          );
+        }
+      }
+      // Handle bold formatting **text**
+      else if (match[2] !== undefined) {
+        parts.push(
+          <strong key={`bold-${match.index}`} className="font-bold">
+            {match[2]}
+          </strong>
+        );
+      }
+      // Handle italic formatting *text*
+      else if (match[3] !== undefined) {
+        parts.push(
+          <em key={`italic-${match.index}`} className="italic">
+            {match[3]}
+          </em>
+        );
+      }
+      // Handle underline formatting __text__
+      else if (match[4] !== undefined) {
+        parts.push(
+          <span key={`underline-${match.index}`} className="underline">
+            {match[4]}
+          </span>
+        );
+      }
+      // Handle italic formatting _text_
+      else if (match[5] !== undefined) {
+        parts.push(
+          <em key={`italic2-${match.index}`} className="italic">
+            {match[5]}
+          </em>
+        );
+      }
+      // Handle superscript formatting ^^text^^
+      else if (match[6] !== undefined) {
+        parts.push(
+          <sup key={`superscript-${match.index}`} className="text-sm">
+            {match[6]}
+          </sup>
+        );
+      }
+      // Handle subscript formatting ~~text~~
+      else if (match[7] !== undefined) {
+        parts.push(
+          <sub key={`subscript-${match.index}`} className="text-sm">
+            {match[7]}
+          </sub>
+        );
+      }
+      // Handle triple dashes ---
+      else if (matchedContent === '---') {
+        parts.push(
+          <span key={`dash-${match.index}`} className="mx-1">
+            —
+          </span>
+        );
+      }
+      // Handle long blanks (5 or more underscores)
+      else if (matchedContent.match(/_{5,}/)) {
+        const blankLength = matchedContent.length;
+        parts.push(
+          <span 
+            key={`blank-${match.index}`} 
+            className="inline-block border-b border-gray-800 mx-1"
+            style={{ width: `${blankLength * 0.6}em`, minWidth: `${blankLength * 0.6}em` }}
+          >
+            &nbsp;
+          </span>
+        );
+      }
+      // Handle line breaks \n and literal \n
+      else if (matchedContent === '\n' || matchedContent === '\\n') {
+        parts.push(
+          <br key={`br-${match.index}`} />
+        );
+      }
+      
+      lastIndex = match.index + match[0].length;
+    }
+    
+    // Add remaining text
+    if (lastIndex < text.length) {
+      const remainingText = text.substring(lastIndex);
+      if (remainingText) {
+        parts.push(
+          <span key={`text-${lastIndex}`}>
+            {remainingText}
+          </span>
+        );
+      }
+    }
+    
+    // If no formatting was found, return the original text
+    if (parts.length === 0) {
+      return text;
+    }
+    
+    return <>{parts}</>;
+  };
+
+  const renderTable = (tableData: any, isCompact = false) => {
+    if (!tableData || !tableData.headers || !tableData.rows) return null;
+    
+    return (
+      <div className={isCompact ? "mt-2 mb-2" : "mt-4 mb-4"}>
+        <table className={`w-full border-collapse border border-gray-300 bg-white ${isCompact ? 'text-sm' : ''}`}>
+          <thead>
+            <tr className="bg-gray-50">
+              {tableData.headers.map((header: string, i: number) => (
+                <th key={i} className={`border border-gray-300 ${isCompact ? 'px-2 py-1' : 'px-4 py-2'} text-left font-semibold text-gray-900`}>
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {tableData.rows.map((row: string[], i: number) => (
+              <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                {row.map((cell: string, j: number) => (
+                  <td key={j} className={`border border-gray-300 ${isCompact ? 'px-2 py-1' : 'px-4 py-2'} text-gray-900`}>
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+  
+  const renderAnswerChoiceContent = (value: string) => {
+    // Try to parse as JSON to check if it's table data
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed.table_data && parsed.table_data.headers && parsed.table_data.rows) {
+        return renderTable(parsed.table_data, true);
+      }
+    } catch (e) {
+      // Not JSON, continue with regular text rendering
+    }
+    
+    // Regular text rendering with formatting
+    return renderTextWithFormattingAndMath(value);
+  };
   
   const renderAnswerOptions = () => {
-    if (question.question_type === 'multiple_choice' && question.options) {
+    if (localQuestion.question_type === 'multiple_choice' && localQuestion.options) {
+      if (isEditing) {
+        return (
+          <div className="space-y-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Answer Options
+            </label>
+            {Object.entries(editForm.options).map(([key, value]) => (
+              <div key={key} className="space-y-2">
+                <div className="flex items-center">
+                  <span className="font-medium text-gray-700 w-8">{key}.</span>
+                  <span className="text-sm text-gray-600">Option {key}</span>
+                </div>
+                <RichTextEditor
+                  value={typeof value === 'string' ? value : JSON.stringify(value)}
+                  onChange={(newValue) => setEditForm({
+                    ...editForm,
+                    options: {...editForm.options, [key]: newValue}
+                  })}
+                  placeholder={`Enter option ${key}...`}
+                  rows={2}
+                  showPreview={true}
+                  compact={true}
+                />
+              </div>
+            ))}
+          </div>
+        )
+      }
+
       return (
         <div className="space-y-3">
-          {Object.entries(question.options).map(([key, value]) => (
+          {Object.entries(localQuestion.options).map(([key, value]) => (
             <label
               key={key}
               className={`
@@ -38,11 +408,11 @@ export function QuestionDisplay({
                     ? 'bg-gray-50 border-2 border-gray-200'
                     : 'bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }
-                ${showExplanation && question.correct_answer === key
+                ${showExplanation && localQuestion.correct_answer === key
                   ? 'bg-green-50 border-green-500'
                   : ''
                 }
-                ${showExplanation && userAnswer === key && question.correct_answer !== key
+                ${showExplanation && userAnswer === key && localQuestion.correct_answer !== key
                   ? 'bg-red-50 border-red-500'
                   : ''
                 }
@@ -60,14 +430,14 @@ export function QuestionDisplay({
               <div className="flex-1">
                 <div className="flex items-center mb-1">
                   <span className="font-semibold text-gray-700 mr-2">{key}.</span>
-                  {showExplanation && question.correct_answer === key && (
+                  {showExplanation && localQuestion.correct_answer === key && (
                     <span className="text-green-600 text-sm font-medium">✓ Correct</span>
                   )}
-                  {showExplanation && userAnswer === key && question.correct_answer !== key && (
+                  {showExplanation && userAnswer === key && localQuestion.correct_answer !== key && (
                     <span className="text-red-600 text-sm font-medium">✗ Incorrect</span>
                   )}
                 </div>
-                <div className="text-gray-900 leading-relaxed">{value}</div>
+                <div className="text-gray-900 leading-relaxed">{renderAnswerChoiceContent(String(value))}</div>
               </div>
             </label>
           ))}
@@ -75,7 +445,7 @@ export function QuestionDisplay({
       )
     }
 
-    if (question.question_type === 'grid_in') {
+    if (localQuestion.question_type === 'grid_in') {
       return (
         <div className="space-y-4">
           <div className="bg-gray-50 p-4 rounded-lg">
@@ -98,7 +468,7 @@ export function QuestionDisplay({
           {showExplanation && (
             <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
               <p className="text-sm text-green-800">
-                <strong>Correct Answer:</strong> {question.correct_answer}
+                <strong>Correct Answer:</strong> {localQuestion.correct_answer}
               </p>
             </div>
           )}
@@ -119,23 +489,72 @@ export function QuestionDisplay({
               Question {questionNumber} of {totalQuestions}
             </h2>
             <div className="flex items-center space-x-2">
-              <span className={`
-                px-2 py-1 rounded text-xs font-medium
-                ${question.difficulty_level === 'easy' ? 'bg-green-100 text-green-800' : ''}
-                ${question.difficulty_level === 'medium' ? 'bg-yellow-100 text-yellow-800' : ''}
-                ${question.difficulty_level === 'hard' ? 'bg-red-100 text-red-800' : ''}
-              `}>
-                {question.difficulty_level}
-              </span>
-              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
-                {question.module_type.replace(/(\d)/, ' $1').toUpperCase()}
-              </span>
+              {!isAdminPreview && !showExplanation && onToggleMarkForReview && (
+                <button
+                  onClick={onToggleMarkForReview}
+                  disabled={disabled}
+                  className={`
+                    px-3 py-1 text-xs font-medium rounded transition-colors
+                    ${isMarkedForReview
+                      ? 'bg-yellow-100 text-yellow-800 border border-yellow-300 hover:bg-yellow-200'
+                      : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
+                    }
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                  `}
+                >
+                  {isMarkedForReview ? '🏷️ Marked for Review' : '🏷️ Mark for Review'}
+                </button>
+              )}
+              {isAdminPreview && (
+                <>
+                  <span className={`
+                    px-2 py-1 rounded text-xs font-medium
+                    ${localQuestion.difficulty_level === 'easy' ? 'bg-green-100 text-green-800' : ''}
+                    ${localQuestion.difficulty_level === 'medium' ? 'bg-yellow-100 text-yellow-800' : ''}
+                    ${localQuestion.difficulty_level === 'hard' ? 'bg-red-100 text-red-800' : ''}
+                  `}>
+                    {localQuestion.difficulty_level}
+                  </span>
+                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
+                    {localQuestion.module_type.replace(/(\d)/, ' $1').toUpperCase()}
+                  </span>
+                </>
+              )}
+              {isAdminPreview && (
+                <div className="flex space-x-2">
+                  {isEditing ? (
+                    <>
+                      <button
+                        onClick={handleSaveEdit}
+                        disabled={saving}
+                        className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded transition-colors disabled:opacity-50"
+                      >
+                        {saving ? 'Saving...' : 'Save'}
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        disabled={saving}
+                        className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded transition-colors disabled:opacity-50"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-xs rounded transition-colors"
+                    >
+                      Edit Question
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
           
-          {question.topic_tags && question.topic_tags.length > 0 && (
+          {isAdminPreview && localQuestion.topic_tags && localQuestion.topic_tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-4">
-              {question.topic_tags.map((tag, index) => (
+              {localQuestion.topic_tags.map((tag, index) => (
                 <span
                   key={index}
                   className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs"
@@ -148,20 +567,64 @@ export function QuestionDisplay({
         </div>
 
         <div className="prose prose-gray max-w-none">
-          <div 
-            className="text-gray-900 leading-relaxed whitespace-pre-wrap"
-            dangerouslySetInnerHTML={{ __html: question.question_text }}
-          />
+          {isEditing ? (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Question Text
+                </label>
+                <RichTextEditor
+                  value={editForm.question_text}
+                  onChange={(value) => setEditForm({...editForm, question_text: value})}
+                  placeholder="Enter question text..."
+                  rows={6}
+                  showPreview={true}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Correct Answer
+                </label>
+                <input
+                  type="text"
+                  value={editForm.correct_answer}
+                  onChange={(e) => setEditForm({...editForm, correct_answer: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="Correct answer (e.g., A, B, C, D or numeric value)"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Explanation (Optional)
+                </label>
+                <RichTextEditor
+                  value={editForm.explanation}
+                  onChange={(value) => setEditForm({...editForm, explanation: value})}
+                  placeholder="Explain the correct answer..."
+                  rows={3}
+                  showPreview={true}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="text-gray-900 leading-relaxed">
+              {renderTextWithFormattingAndMath(localQuestion.question_text)}
+            </div>
+          )}
           
-          {question.question_image_url && (
+          {!isEditing && localQuestion.question_image_url && (
             <div className="mt-4">
               <img
-                src={question.question_image_url}
+                src={localQuestion.question_image_url}
                 alt="Question diagram or image"
                 className="max-w-full h-auto border border-gray-200 rounded"
               />
             </div>
           )}
+          
+          {!isEditing && localQuestion.table_data && renderTable(localQuestion.table_data)}
         </div>
       </div>
 
@@ -169,7 +632,7 @@ export function QuestionDisplay({
       <div className="flex-1 lg:w-1/2 p-6 lg:pl-3">
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            {question.question_type === 'multiple_choice' ? 'Select your answer:' : 'Enter your answer:'}
+            {localQuestion.question_type === 'multiple_choice' ? 'Select your answer:' : 'Enter your answer:'}
           </h3>
           
           {renderAnswerOptions()}
@@ -185,10 +648,10 @@ export function QuestionDisplay({
         )}
 
         {/* Explanation (if showing results) */}
-        {showExplanation && question.explanation && (
+        {showExplanation && localQuestion.explanation && (
           <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
             <h4 className="font-semibold text-gray-900 mb-2">Explanation:</h4>
-            <p className="text-gray-700 leading-relaxed">{question.explanation}</p>
+            <div className="text-gray-700 leading-relaxed">{renderTextWithFormattingAndMath(localQuestion.explanation)}</div>
           </div>
         )}
       </div>

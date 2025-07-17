@@ -16,6 +16,7 @@ interface ModuleState {
   questions: Question[]
   currentQuestionIndex: number
   answers: Record<string, ExamAnswer>
+  markedForReview: Set<string> // question IDs marked for review
   timeLimit: number // minutes
   timeRemaining: number // seconds
   completed: boolean
@@ -51,13 +52,13 @@ export function useExamState() {
   const [error, setError] = useState<string | null>(null)
 
   // Initialize exam with questions
-  const initializeExam = useCallback(async (examId: string) => {
-    if (!user) {
+  const initializeExam = useCallback(async (examId: string, isPreview: boolean = false) => {
+    if (!user && !isPreview) {
       console.log('initializeExam: No user, skipping')
       return
     }
 
-    console.log('initializeExam: Starting initialization for exam:', examId, 'user:', user.email)
+    console.log('initializeExam: Starting initialization for exam:', examId, 'user:', user?.email, 'preview:', isPreview)
     setLoading(true)
     setError(null)
 
@@ -71,36 +72,42 @@ export function useExamState() {
       }
       console.log('initializeExam: Exam found:', exam.title)
 
-      // Check for existing in-progress attempt BEFORE cleanup
-      console.log('initializeExam: Checking for existing attempts...')
-      const existingAttempt = await ExamService.getInProgressAttempt(user.id, examId)
-      
-      if (existingAttempt) {
-        console.log('initializeExam: Found existing attempt, showing conflict modal')
-        // Show conflict modal
-        setExamState(prev => ({
-          ...prev,
-          exam,
-          existingAttempt,
-          showConflictModal: true
-        }))
-        setLoading(false)
-        return
+      let attempt = null
+
+      if (!isPreview) {
+        // Check for existing in-progress attempt BEFORE cleanup
+        console.log('initializeExam: Checking for existing attempts...')
+        const existingAttempt = await ExamService.getInProgressAttempt(user!.id, examId)
+        
+        if (existingAttempt) {
+          console.log('initializeExam: Found existing attempt, showing conflict modal')
+          // Show conflict modal
+          setExamState(prev => ({
+            ...prev,
+            exam,
+            existingAttempt,
+            showConflictModal: true
+          }))
+          setLoading(false)
+          return
+        }
+
+        // Clean up any duplicate attempts only after checking for valid existing attempts
+        console.log('initializeExam: Cleaning up duplicate attempts...')
+        await ExamService.cleanupDuplicateAttempts(user!.id, examId)
+
+        // Create new test attempt
+        console.log('initializeExam: Creating new test attempt...')
+        attempt = await ExamService.createTestAttempt({
+          user_id: user!.id,
+          exam_id: examId,
+          status: 'not_started',
+          current_module: 'english1'
+        })
+        console.log('initializeExam: Test attempt created:', attempt.id)
+      } else {
+        console.log('initializeExam: Preview mode - skipping attempt creation')
       }
-
-      // Clean up any duplicate attempts only after checking for valid existing attempts
-      console.log('initializeExam: Cleaning up duplicate attempts...')
-      await ExamService.cleanupDuplicateAttempts(user.id, examId)
-
-      // Create new test attempt
-      console.log('initializeExam: Creating new test attempt...')
-      const attempt = await ExamService.createTestAttempt({
-        user_id: user.id,
-        exam_id: examId,
-        status: 'not_started',
-        current_module: 'english1'
-      })
-      console.log('initializeExam: Test attempt created:', attempt.id)
 
       // Load questions for all modules
       const moduleStates: ModuleState[] = []
@@ -124,6 +131,7 @@ export function useExamState() {
           questions,
           currentQuestionIndex: 0,
           answers: {},
+          markedForReview: new Set(),
           timeLimit,
           timeRemaining: timeLimit * 60, // Convert to seconds
           completed: false
@@ -159,15 +167,17 @@ export function useExamState() {
   }, [user])
 
   // Start the exam
-  const startExam = useCallback(async () => {
-    if (!examState.attempt) return
+  const startExam = useCallback(async (isPreview: boolean = false) => {
+    if (!examState.attempt && !isPreview) return
 
     try {
-      await ExamService.updateTestAttempt(examState.attempt.id, {
-        status: 'in_progress',
-        started_at: new Date().toISOString(),
-        current_module: 'english1'
-      })
+      if (!isPreview && examState.attempt) {
+        await ExamService.updateTestAttempt(examState.attempt.id, {
+          status: 'in_progress',
+          started_at: new Date().toISOString(),
+          current_module: 'english1'
+        })
+      }
 
       setExamState(prev => ({
         ...prev,
@@ -180,8 +190,8 @@ export function useExamState() {
   }, [examState.attempt])
 
   // Store answer locally (not saved to database until module completion)
-  const setLocalAnswer = useCallback((answer: string) => {
-    if (!examState.attempt || examState.status !== 'in_progress') return
+  const setLocalAnswer = useCallback((answer: string, isPreview: boolean = false) => {
+    if ((!examState.attempt && !isPreview) || (examState.status !== 'in_progress' && !isPreview)) return
 
     const currentModule = examState.modules[examState.currentModuleIndex]
     const currentQuestion = currentModule.questions[currentModule.currentQuestionIndex]
@@ -311,6 +321,68 @@ export function useExamState() {
       }
     })
   }, [])
+  
+  // Admin-only: Navigate to any module and question (for preview mode)
+  const goToModuleAndQuestion = useCallback((moduleIndex: number, questionIndex: number) => {
+    setExamState(prev => {
+      if (moduleIndex < 0 || moduleIndex >= prev.modules.length) {
+        // Invalid module index
+        return prev
+      }
+      
+      const targetModule = prev.modules[moduleIndex]
+      if (questionIndex < 0 || questionIndex >= targetModule.questions.length) {
+        // Invalid question index
+        return prev
+      }
+
+      const newModules = [...prev.modules]
+      newModules[moduleIndex] = {
+        ...newModules[moduleIndex],
+        currentQuestionIndex: questionIndex
+      }
+
+      return {
+        ...prev,
+        modules: newModules,
+        currentModuleIndex: moduleIndex
+      }
+    })
+  }, [])
+  
+  // Update a question in the cached state after successful save
+  const updateQuestionInState = useCallback((updatedQuestion: Question) => {
+    setExamState(prev => {
+      const newModules = [...prev.modules]
+      
+      // Find the module containing this question
+      for (let moduleIndex = 0; moduleIndex < newModules.length; moduleIndex++) {
+        const module = newModules[moduleIndex]
+        if (module.module === updatedQuestion.module_type) {
+          // Find the question within this module
+          const questionIndex = module.questions.findIndex(q => q.id === updatedQuestion.id)
+          if (questionIndex !== -1) {
+            // Update the question in the module
+            const newQuestions = [...module.questions]
+            newQuestions[questionIndex] = updatedQuestion
+            
+            newModules[moduleIndex] = {
+              ...module,
+              questions: newQuestions
+            }
+            
+            console.log('📝 Question updated in exam state:', updatedQuestion.id)
+            break
+          }
+        }
+      }
+      
+      return {
+        ...prev,
+        modules: newModules
+      }
+    })
+  }, [])
 
   // Complete exam
   const completeExam = useCallback(async () => {
@@ -333,14 +405,15 @@ export function useExamState() {
   }, [examState.attempt, saveModuleAnswers])
 
   // Move to next module
-  const nextModule = useCallback(async () => {
+  const nextModule = useCallback(async (isPreview: boolean = false) => {
     console.log('nextModule called:', {
       hasAttempt: !!examState.attempt,
       currentModuleIndex: examState.currentModuleIndex,
-      totalModules: examState.modules.length
+      totalModules: examState.modules.length,
+      isPreview
     })
     
-    if (!examState.attempt) {
+    if (!examState.attempt && !isPreview) {
       console.error('No attempt found, cannot advance module')
       return
     }
@@ -349,27 +422,39 @@ export function useExamState() {
     console.log('Attempting to advance to module index:', nextModuleIndex)
     
     try {
-      // First, save all answers for the current module
-      console.log('Saving module answers...')
-      await saveModuleAnswers()
-      console.log('Module answers saved successfully')
+      // Save all answers for the current module (skip in preview mode)
+      if (!isPreview) {
+        console.log('Saving module answers...')
+        await saveModuleAnswers()
+        console.log('Module answers saved successfully')
+      } else {
+        console.log('Preview mode: skipping answer saving')
+      }
       
       if (nextModuleIndex >= examState.modules.length) {
         // Complete exam
         console.log('Reached end of modules, completing exam')
-        await completeExam()
+        if (!isPreview) {
+          await completeExam()
+        } else {
+          console.log('Preview mode: exam completed, not saving to database')
+        }
         return
       }
 
       const nextModuleName = MODULE_ORDER[nextModuleIndex]
       console.log('Advancing to module:', nextModuleName)
       
-      // Update attempt in database
-      await ExamService.updateTestAttempt(examState.attempt.id, {
-        current_module: nextModuleName,
-        current_question_number: 1
-      })
-      console.log('Database updated successfully')
+      // Update attempt in database (skip in preview mode)
+      if (!isPreview && examState.attempt) {
+        await ExamService.updateTestAttempt(examState.attempt.id, {
+          current_module: nextModuleName,
+          current_question_number: 1
+        })
+        console.log('Database updated successfully')
+      } else {
+        console.log('Preview mode: skipping database update')
+      }
 
       setExamState(prev => {
         const newModules = [...prev.modules]
@@ -403,22 +488,27 @@ export function useExamState() {
   }, [examState, saveModuleAnswers, completeExam])
 
   // Handle timer expiration for current module
-  const handleTimeExpired = useCallback(async () => {
+  const handleTimeExpired = useCallback(async (isPreview: boolean = false) => {
     console.log('Hook handleTimeExpired called:', {
       currentModuleIndex: examState.currentModuleIndex,
       totalModules: examState.modules.length,
-      isLastModule: examState.currentModuleIndex >= examState.modules.length - 1
+      isLastModule: examState.currentModuleIndex >= examState.modules.length - 1,
+      isPreview
     })
     
     try {
       // Auto-advance to next module or complete exam
       if (examState.currentModuleIndex < examState.modules.length - 1) {
         console.log('Advancing to next module...')
-        await nextModule()
+        await nextModule(isPreview)
         console.log('Successfully advanced to next module')
       } else {
         console.log('Completing exam...')
-        await completeExam()
+        if (!isPreview) {
+          await completeExam()
+        } else {
+          console.log('Preview mode: exam completed, not saving to database')
+        }
         console.log('Successfully completed exam')
       }
     } catch (error) {
@@ -472,6 +562,64 @@ export function useExamState() {
     const currentModule = examState.modules[examState.currentModuleIndex]
     return currentModule.answers[currentQuestion.id]?.answer
   }, [examState.modules, examState.currentModuleIndex, getCurrentQuestion])
+
+  // Toggle mark for review
+  const toggleMarkForReview = useCallback((questionId?: string) => {
+    const currentQuestion = getCurrentQuestion()
+    const questionToToggle = questionId || currentQuestion?.id
+    
+    if (!questionToToggle) return
+
+    setExamState(prev => {
+      const newModules = [...prev.modules]
+      const currentModule = newModules[prev.currentModuleIndex]
+      
+      if (currentModule) {
+        const newMarkedForReview = new Set(currentModule.markedForReview)
+        
+        if (newMarkedForReview.has(questionToToggle)) {
+          newMarkedForReview.delete(questionToToggle)
+        } else {
+          newMarkedForReview.add(questionToToggle)
+        }
+        
+        newModules[prev.currentModuleIndex] = {
+          ...currentModule,
+          markedForReview: newMarkedForReview
+        }
+      }
+
+      return {
+        ...prev,
+        modules: newModules
+      }
+    })
+  }, [getCurrentQuestion])
+
+  // Check if current question is marked for review
+  const isMarkedForReview = useCallback((questionId?: string) => {
+    const currentQuestion = getCurrentQuestion()
+    const questionToCheck = questionId || currentQuestion?.id
+    
+    if (!questionToCheck) return false
+
+    const currentModule = examState.modules[examState.currentModuleIndex]
+    return currentModule?.markedForReview.has(questionToCheck) || false
+  }, [examState.modules, examState.currentModuleIndex, getCurrentQuestion])
+
+  // Get all marked questions in current module
+  const getMarkedQuestions = useCallback(() => {
+    const currentModule = examState.modules[examState.currentModuleIndex]
+    if (!currentModule) return []
+
+    return currentModule.questions
+      .map((question, index) => ({
+        question,
+        index,
+        isMarked: currentModule.markedForReview.has(question.id)
+      }))
+      .filter(item => item.isMarked)
+  }, [examState.modules, examState.currentModuleIndex])
 
   // Continue with existing attempt
   const continueExistingAttempt = useCallback(async () => {
@@ -540,6 +688,7 @@ export function useExamState() {
           questions,
           currentQuestionIndex,
           answers: moduleAnswers,
+          markedForReview: new Set(),
           timeLimit,
           timeRemaining: timeLimit * 60,
           completed: isCompleted
@@ -619,6 +768,7 @@ export function useExamState() {
           questions,
           currentQuestionIndex: 0,
           answers: {},
+          markedForReview: new Set(),
           timeLimit,
           timeRemaining: timeLimit * 60,
           completed: false
@@ -687,12 +837,17 @@ export function useExamState() {
     nextQuestion,
     previousQuestion,
     goToQuestion,
+    goToModuleAndQuestion,
+    updateQuestionInState,
     nextModule,
     completeExam,
     handleTimeExpired,
     updateTimer,
     getCurrentQuestion,
     getCurrentAnswer,
+    toggleMarkForReview,
+    isMarkedForReview,
+    getMarkedQuestions,
     continueExistingAttempt,
     discardAndStartNew,
     closeConflictModal,

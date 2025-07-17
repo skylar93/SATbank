@@ -107,19 +107,36 @@ export default function AdminDashboard() {
         scoreDistribution
       })
 
-      // Load recent attempts with user details
-      const { data: recentData, error: recentError } = await supabase
+      // Load recent attempts with user details - join manually since no direct FK
+      const { data: recentAttemptsData, error: recentAttemptsError } = await supabase
         .from('test_attempts')
-        .select(`
-          *,
-          user_profiles:user_id (full_name, email)
-        `)
+        .select('*')
         .eq('status', 'completed')
         .order('completed_at', { ascending: false })
         .limit(10)
 
-      if (recentError) throw recentError
-      setRecentAttempts(recentData || [])
+      if (recentAttemptsError) throw recentAttemptsError
+
+      // Get user profiles for the attempts
+      const userIds = recentAttemptsData?.map(attempt => attempt.user_id).filter(Boolean) || []
+      let recentData = recentAttemptsData || []
+
+      if (userIds.length > 0) {
+        const { data: profilesData, error: profilesError } = await supabase
+          .from('user_profiles')
+          .select('id, full_name, email')
+          .in('id', userIds)
+
+        if (profilesError) throw profilesError
+
+        // Manually join the data
+        recentData = recentAttemptsData?.map(attempt => ({
+          ...attempt,
+          user_profiles: profilesData?.find(profile => profile.id === attempt.user_id) || null
+        })) || []
+      }
+
+      setRecentAttempts(recentData)
 
     } catch (err: any) {
       setError(err.message)

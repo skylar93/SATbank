@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
-import { ExamService, type TestAttempt } from '../../../lib/exam-service'
+import { type TestAttempt } from '../../../lib/exam-service'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { ProgressChart, SubjectPerformanceChart, WeeklyActivityChart, CircularProgress } from '../../../components/charts'
 import { ModernScoreProgress, StatsCard } from '../../../components/modern-charts'
 import { Calendar } from '../../../components/calendar'
@@ -42,8 +43,33 @@ export default function StudentDashboard() {
   const loadDashboardStats = async () => {
     try {
       if (user) {
-        const dashboardStats = await ExamService.getDashboardStats(user.id)
-        setStats(dashboardStats)
+        const supabase = createClientComponentClient()
+        
+        // Get all completed attempts for user
+        const { data: completedAttempts, error } = await supabase
+          .from('test_attempts')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('status', 'completed')
+          .order('completed_at', { ascending: false })
+
+        if (error) {
+          console.error('Error fetching test attempts:', error)
+          throw error
+        }
+
+        const attempts = completedAttempts || []
+        const examsTaken = attempts.length
+        const bestScore = attempts.length > 0 
+          ? Math.max(...attempts.map(attempt => attempt.total_score || 0))
+          : null
+        const recentAttempts = attempts.slice(0, 5) // Last 5 attempts
+
+        setStats({
+          examsTaken,
+          bestScore,
+          recentAttempts
+        })
       }
     } catch (error) {
       console.error('Error loading dashboard stats:', error)

@@ -1,29 +1,5 @@
 'use client'
 
-import { Line } from 'react-chartjs-2'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-} from 'chart.js'
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-)
-
 interface ScoreProgressProps {
   data: {
     labels: string[]
@@ -38,88 +14,145 @@ interface ScoreProgressProps {
 }
 
 export function ModernScoreProgress({ data }: ScoreProgressProps) {
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false
-      },
-      tooltip: {
-        mode: 'index' as const,
-        intersect: false,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleColor: '#fff',
-        bodyColor: '#fff',
-        borderColor: '#e5e7eb',
-        borderWidth: 1,
-        cornerRadius: 8,
-        padding: 12,
-        callbacks: {
-          label: function(context: any) {
-            return `${context.dataset.label}: ${context.parsed.y}`
-          }
-        }
-      }
-    },
-    scales: {
-      x: {
-        display: true,
-        grid: {
-          display: false
-        },
-        ticks: {
-          color: '#9ca3af',
-          font: {
-            size: 12
-          }
-        },
-        border: {
-          display: false
-        }
-      },
-      y: {
-        display: true,
-        grid: {
-          color: '#f3f4f6',
-          drawBorder: false
-        },
-        ticks: {
-          color: '#9ca3af',
-          font: {
-            size: 12
-          },
-          callback: function(value: any) {
-            return value
-          }
-        },
-        border: {
-          display: false
-        }
-      }
-    },
-    interaction: {
-      mode: 'nearest' as const,
-      axis: 'x' as const,
-      intersect: false
-    },
-    elements: {
-      line: {
-        tension: 0.4,
-        borderWidth: 3
-      },
-      point: {
-        radius: 0,
-        hoverRadius: 6,
-        hoverBorderWidth: 2,
-        hoverBorderColor: '#fff'
-      }
-    }
+  const { labels, datasets } = data
+  const maxValue = Math.max(...datasets.flatMap(d => d.data))
+  const minValue = Math.min(...datasets.flatMap(d => d.data))
+  const range = maxValue - minValue || 1
+  
+  const svgWidth = 400
+  const svgHeight = 250
+  const padding = 40
+  const chartWidth = svgWidth - padding * 2
+  const chartHeight = svgHeight - padding * 2
+
+  const getPath = (dataPoints: number[]) => {
+    const points = dataPoints.map((value, index) => {
+      const x = padding + (index / (dataPoints.length - 1)) * chartWidth
+      const y = padding + chartHeight - ((value - minValue) / range) * chartHeight
+      return `${x},${y}`
+    }).join(' ')
+    
+    return `M ${points.split(' ').join(' L ')}`
+  }
+
+  const getAreaPath = (dataPoints: number[]) => {
+    const topPath = getPath(dataPoints)
+    const bottomPath = `L ${padding + chartWidth} ${padding + chartHeight} L ${padding} ${padding + chartHeight} Z`
+    return topPath + bottomPath
   }
 
   return (
-    <div className="h-80">
-      <Line data={data} options={options} />
+    <div className="h-80 flex items-center justify-center">
+      <svg width={svgWidth} height={svgHeight} className="overflow-visible">
+        <defs>
+          {datasets.map((dataset, index) => (
+            <linearGradient key={index} id={`gradient-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor={dataset.borderColor} stopOpacity="0.2" />
+              <stop offset="100%" stopColor={dataset.borderColor} stopOpacity="0.05" />
+            </linearGradient>
+          ))}
+        </defs>
+        
+        {/* Grid lines */}
+        {Array.from({ length: 5 }, (_, i) => {
+          const y = padding + (i / 4) * chartHeight
+          return (
+            <line
+              key={i}
+              x1={padding}
+              y1={y}
+              x2={padding + chartWidth}
+              y2={y}
+              stroke="#f3f4f6"
+              strokeWidth="1"
+            />
+          )
+        })}
+        
+        {/* Data lines and areas */}
+        {datasets.map((dataset, index) => (
+          <g key={index}>
+            {/* Area fill */}
+            <path
+              d={getAreaPath(dataset.data)}
+              fill={`url(#gradient-${index})`}
+            />
+            {/* Line */}
+            <path
+              d={getPath(dataset.data)}
+              fill="none"
+              stroke={dataset.borderColor}
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            {/* Points */}
+            {dataset.data.map((value, pointIndex) => {
+              const x = padding + (pointIndex / (dataset.data.length - 1)) * chartWidth
+              const y = padding + chartHeight - ((value - minValue) / range) * chartHeight
+              return (
+                <circle
+                  key={pointIndex}
+                  cx={x}
+                  cy={y}
+                  r="4"
+                  fill="white"
+                  stroke={dataset.borderColor}
+                  strokeWidth="2"
+                />
+              )
+            })}
+          </g>
+        ))}
+        
+        {/* X-axis labels */}
+        {labels.map((label, index) => {
+          const x = padding + (index / (labels.length - 1)) * chartWidth
+          return (
+            <text
+              key={index}
+              x={x}
+              y={svgHeight - 10}
+              textAnchor="middle"
+              fontSize="12"
+              fill="#9ca3af"
+            >
+              {label}
+            </text>
+          )
+        })}
+        
+        {/* Y-axis labels */}
+        {Array.from({ length: 5 }, (_, i) => {
+          const value = minValue + (i / 4) * range
+          const y = padding + chartHeight - (i / 4) * chartHeight
+          return (
+            <text
+              key={i}
+              x={padding - 10}
+              y={y + 4}
+              textAnchor="end"
+              fontSize="12"
+              fill="#9ca3af"
+            >
+              {Math.round(value)}
+            </text>
+          )
+        })}
+      </svg>
+      
+      {/* Legend */}
+      <div className="ml-6 space-y-2">
+        {datasets.map((dataset, index) => (
+          <div key={index} className="flex items-center space-x-2">
+            <div 
+              className="w-3 h-3 rounded-full" 
+              style={{ backgroundColor: dataset.borderColor }}
+            />
+            <span className="text-sm font-medium text-gray-600">{dataset.label}</span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

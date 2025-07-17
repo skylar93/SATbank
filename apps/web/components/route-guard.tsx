@@ -45,11 +45,20 @@ export function RouteGuard({ children }: RouteGuardProps) {
       return
     }
 
-    // Student route protection
+    // Student route protection - but allow admins to preview exams
     if (user && pathname.startsWith('/student') && !isStudent) {
-      console.log('🛡️ RouteGuard: Non-student trying to access student route')
-      window.location.href = '/admin/dashboard'
-      return
+      // Allow admins to access exam routes in preview mode
+      const isExamPreview = pathname.startsWith('/student/exam/') && 
+                           new URL(window.location.href).searchParams.get('preview') === 'true' && 
+                           isAdmin
+      
+      if (!isExamPreview) {
+        console.log('🛡️ RouteGuard: Non-student trying to access student route')
+        window.location.href = '/admin/dashboard'
+        return
+      } else {
+        console.log('🛡️ RouteGuard: Allowing admin exam preview')
+      }
     }
 
   }, [user, loading, isAdmin, isStudent, pathname])
