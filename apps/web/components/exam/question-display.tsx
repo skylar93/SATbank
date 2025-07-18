@@ -281,7 +281,7 @@ export function QuestionDisplay({
       // Handle triple dashes ---
       else if (matchedContent === '---') {
         parts.push(
-          <span key={`dash-${match.index}`} className="mx-1">
+          <span key={`dash-${match.index}`} className="inline">
             —
           </span>
         );
@@ -292,8 +292,12 @@ export function QuestionDisplay({
         parts.push(
           <span 
             key={`blank-${match.index}`} 
-            className="inline-block border-b border-gray-800 mx-1"
-            style={{ width: `${blankLength * 0.6}em`, minWidth: `${blankLength * 0.6}em` }}
+            className="underline underline-offset-2 decoration-1 decoration-gray-700"
+            style={{ 
+              textDecorationSkipInk: 'none',
+              display: 'inline-block',
+              width: `${blankLength * 0.8}em`
+            }}
           >
             &nbsp;
           </span>

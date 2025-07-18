@@ -24,6 +24,7 @@ interface StudentProfile {
 
 interface TestAttemptSummary {
   id: string
+  created_at: string
   completed_at: string
   total_score: number
   module_scores: any
@@ -304,7 +305,7 @@ export default function StudentDetailPage() {
                       Test completed {formatDate(attempt.completed_at)}
                     </div>
                     <div className="text-sm text-gray-500">
-                      Duration: {Math.round((new Date(attempt.completed_at).getTime() - new Date(attempt.created_at).getTime()) / (1000 * 60))} minutes
+                      Duration: {attempt.created_at ? Math.round((new Date(attempt.completed_at).getTime() - new Date(attempt.created_at).getTime()) / (1000 * 60)) : 'N/A'} minutes
                     </div>
                   </div>
                   <div className="text-right">
@@ -433,7 +434,7 @@ export default function StudentDetailPage() {
                         {attempt.module_scores && Object.keys(attempt.module_scores).length > 0 ? (
                           <div className="text-xs">
                             {Object.entries(attempt.module_scores).map(([module, score]) => (
-                              <div key={module}>{module}: {score}</div>
+                              <div key={module}>{module}: {String(score)}</div>
                             ))}
                           </div>
                         ) : (

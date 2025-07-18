@@ -713,12 +713,20 @@ export function useExamState() {
         status: examState.existingAttempt.status
       })
 
+      // If the existing attempt was expired, reactivate it
+      if (examState.existingAttempt.status === 'expired') {
+        console.log('continueExistingAttempt: Reactivating expired attempt')
+        await ExamService.updateTestAttempt(examState.existingAttempt.id, {
+          status: 'in_progress'
+        })
+      }
+
       setExamState({
         exam: examState.exam,
         attempt: examState.existingAttempt,
         modules: moduleStates,
         currentModuleIndex: validCurrentModuleIndex,
-        status: examState.existingAttempt.status as any,
+        status: 'in_progress', // Always set to in_progress when continuing
         startedAt: examState.existingAttempt.started_at ? new Date(examState.existingAttempt.started_at) : null,
         existingAttempt: null,
         showConflictModal: false

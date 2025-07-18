@@ -1,9 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
+import { supabase } from './supabase'
 
 export type ModuleType = 'english1' | 'english2' | 'math1' | 'math2'
 
@@ -168,14 +163,14 @@ export class ExamService {
     return data || []
   }
 
-  // Check for existing in-progress attempt for specific exam
+  // Check for existing in-progress or expired attempt for specific exam
   static async getInProgressAttempt(userId: string, examId: string): Promise<TestAttempt | null> {
     const { data, error } = await supabase
       .from('test_attempts')
       .select('*')
       .eq('user_id', userId)
       .eq('exam_id', examId)
-      .eq('status', 'in_progress')
+      .in('status', ['in_progress', 'expired'])
       .order('created_at', { ascending: false })
       .limit(1)
 

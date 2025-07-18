@@ -106,9 +106,16 @@ function ExamPageContent() {
   const forcingExitRef = useRef(false)
   const timeExpiredRef = useRef(false)
   const isAdvancingModuleRef = useRef(false)
+  const isExitingRef = useRef(false)
 
   // Initialize exam when component mounts
   useEffect(() => {
+    // If we're in the middle of exiting, don't initialize
+    if (isExitingRef.current || forcingExitRef.current) {
+      console.log('🚪 ExamPage useEffect: Exiting in progress, skipping initialization')
+      return
+    }
+    
     console.log('ExamPage useEffect: Checking initialization conditions', {
       authLoading,
       user: !!user,
@@ -381,33 +388,64 @@ function ExamPageContent() {
 
   // Handle back navigation from Navigation component
   const handleExitAttempt = () => {
+    console.log('🚪 handleExitAttempt: Exit attempt initiated, exam status:', examState.status)
     if (examState.status === 'in_progress') {
+      console.log('🚪 handleExitAttempt: Showing exit confirmation modal')
       setShowExitConfirm(true)
     } else {
-      router.push('/student/dashboard')
+      console.log('🚪 handleExitAttempt: Exam not in progress, navigating directly')
+      forcingExitRef.current = true
+      isExitingRef.current = true
+      window.location.replace('/student/dashboard')
     }
   }
 
   const handleConfirmExit = async () => {
-    setShowExitConfirm(false)
-    // Set flag to prevent beforeunload interference
-    forcingExitRef.current = true
-    
-    try {
-      // Update exam state to properly exit
-      if (examState.attempt && examState.status === 'in_progress') {
-        // Update the attempt status to expired in the database
-        await ExamService.updateTestAttempt(examState.attempt.id, {
-          status: 'expired'
-        })
-      }
-    } catch (error) {
-      console.error('Error updating exam status on exit:', error)
-      // Continue with navigation even if database update fails
+    // Prevent multiple executions
+    if (isExitingRef.current) {
+      console.log('🚪 handleConfirmExit: Already exiting, ignoring duplicate call')
+      return
     }
     
-    // Navigate immediately without waiting for state updates
-    router.push('/student/dashboard')
+    console.log('🚪 handleConfirmExit: Starting exit process')
+    isExitingRef.current = true
+    setShowExitConfirm(false)
+    
+    // Set flag to prevent beforeunload interference IMMEDIATELY
+    forcingExitRef.current = true
+    
+    // Save current progress before exiting
+    console.log('🚪 handleConfirmExit: Saving current progress...')
+    
+    try {
+      // Save current answer if there is one
+      if (currentAnswer && currentAnswer.trim()) {
+        console.log('🚪 handleConfirmExit: Saving current answer')
+        setLocalAnswer(currentAnswer, isPreviewMode)
+      }
+      
+      // Save all answers for the current module
+      if (examState.attempt && examState.status === 'in_progress') {
+        console.log('🚪 handleConfirmExit: Saving module answers')
+        await saveModuleAnswers()
+        
+        // Update exam status to expired but keep progress
+        console.log('🚪 handleConfirmExit: Updating exam status to expired')
+        await ExamService.updateTestAttempt(examState.attempt.id, {
+          status: 'expired'
+          // Don't update current_module or current_question_number to preserve progress
+        })
+        
+        console.log('🚪 handleConfirmExit: Progress saved successfully')
+      }
+    } catch (error) {
+      console.error('🚪 handleConfirmExit: Error saving progress:', error)
+      // Continue with exit even if save fails
+    }
+    
+    // Navigate to dashboard
+    console.log('🚪 handleConfirmExit: Navigating to dashboard')
+    window.location.replace('/student/dashboard')
   }
 
   const handleCancelExit = () => {
@@ -437,10 +475,13 @@ function ExamPageContent() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-lg mx-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Existing Exam Attempt Found
+                {examState.existingAttempt.status === 'expired' ? 'Previous Exam Attempt Found' : 'Existing Exam Attempt Found'}
               </h3>
               <p className="text-gray-600 mb-4">
-                You already have an ongoing exam attempt for this test. You can either:
+                {examState.existingAttempt.status === 'expired' 
+                  ? 'You have a previous exam attempt that was not completed. You can continue from where you left off or start fresh:'
+                  : 'You already have an ongoing exam attempt for this test. You can either:'
+                }
               </p>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                 <h4 className="font-medium text-blue-900 mb-2">Current attempt details:</h4>
@@ -458,7 +499,7 @@ function ExamPageContent() {
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
                   disabled={loading}
                 >
-                  {loading ? 'Loading...' : 'Continue Existing Attempt'}
+                  {loading ? 'Loading...' : (examState.existingAttempt.status === 'expired' ? 'Continue from Previous Attempt' : 'Continue Existing Attempt')}
                 </button>
                 <button
                   onClick={discardAndStartNew}
@@ -840,7 +881,12 @@ function ExamPageContent() {
                 Continue Exam
               </button>
               <button
-                onClick={handleConfirmExit}
+                onClick={(e) => {
+                  console.log('🚪 Exit Anyway button clicked')
+                  e.preventDefault()
+                  e.stopPropagation()
+                  handleConfirmExit()
+                }}
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 Exit Anyway

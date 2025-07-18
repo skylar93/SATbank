@@ -1,4 +1,4 @@
-import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@satbank/database-types'
 
 // Check if environment variables are set
@@ -16,8 +16,17 @@ export const createClient = () => {
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error('Missing Supabase environment variables')
   }
-  return createBrowserSupabaseClient<Database>()
+  return createSupabaseClient<Database>(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true
+    }
+  })
 }
+
+// Create a shared client instance for services
+export const supabase = createClient()
 
 // Note: Use createClient() instead of a default export to ensure 
 // proper session synchronization across the application

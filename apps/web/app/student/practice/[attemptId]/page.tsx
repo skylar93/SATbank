@@ -322,9 +322,8 @@ export default function PracticeSession() {
             <div className="flex items-center space-x-4">
               {practiceSettings.timeLimit > 0 && (
                 <ExamTimer
-                  timeLimit={practiceSettings.timeLimit * 60}
+                  initialTimeSeconds={practiceSettings.timeLimit * 60}
                   onTimeExpired={handleTimeExpired}
-                  isActive={true}
                 />
               )}
               <div className="text-sm text-gray-600">
