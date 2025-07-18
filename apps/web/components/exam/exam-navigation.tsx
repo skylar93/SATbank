@@ -27,6 +27,7 @@ interface ExamNavigationProps {
   allModules?: { module: ModuleType; questions: any[]; currentQuestionIndex: number }[]
   currentModuleIndex?: number
   onGoToModule?: (moduleIndex: number, questionIndex: number) => void
+  isCompact?: boolean
 }
 
 export function ExamNavigation({
@@ -47,7 +48,8 @@ export function ExamNavigation({
   isAdminPreview = false,
   allModules = [],
   currentModuleIndex = 0,
-  onGoToModule
+  onGoToModule,
+  isCompact = false
 }: ExamNavigationProps) {
 
   const getModuleName = (module: ModuleType) => {
@@ -92,6 +94,79 @@ export function ExamNavigation({
 
   // Admin Preview: Show all modules and questions
   if (isAdminPreview && allModules.length > 0) {
+    if (isCompact) {
+      // Compact top navigation for preview mode
+      return (
+        <div className="bg-white border-b border-gray-200 px-4 py-2 shadow-sm">
+          <div className="flex items-center justify-between">
+            {/* Left: Module Overview - Horizontal layout */}
+            <div className="flex items-center space-x-4">
+              <span className="text-xs text-orange-600 font-medium">Preview:</span>
+              {allModules.map((module, moduleIndex) => {
+                const isCurrentModule = moduleIndex === currentModuleIndex
+                const moduleShortName = module.module.replace(/^(\w+)(\d)$/, '$1$2').toUpperCase()
+                return (
+                  <div key={moduleIndex} className={`flex items-center space-x-1 px-2 py-1 rounded text-xs ${
+                    isCurrentModule ? 'bg-blue-100 text-blue-800' : 'text-gray-600'
+                  }`}>
+                    <span className="font-medium">{moduleShortName}</span>
+                    <div className="flex flex-wrap gap-0.5 max-w-xs">
+                      {module.questions.map((_, qIndex) => {
+                        const isCurrent = isCurrentModule && (qIndex + 1) === currentQuestion
+                        const globalQuestionIndex = allModules.slice(0, moduleIndex)
+                          .reduce((acc, m) => acc + m.questions.length, 0) + qIndex + 1
+                        const isAnswered = answeredQuestions.has(globalQuestionIndex)
+                        
+                        return (
+                          <button
+                            key={qIndex}
+                            onClick={() => onGoToModule && onGoToModule(moduleIndex, qIndex)}
+                            disabled={disabled}
+                            className={`w-4 h-4 text-xs rounded transition-all ${
+                              isCurrent 
+                                ? 'bg-blue-600 text-white' 
+                                : isAnswered
+                                ? 'bg-green-200 text-green-800 hover:bg-green-300'
+                                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                            } disabled:opacity-50`}
+                            title={`Question ${qIndex + 1}`}
+                          >
+                            {qIndex + 1}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            
+            {/* Right: Navigation Controls */}
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={onPrevious}
+                disabled={disabled}
+                className="px-2 py-1 text-xs text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                ← Prev
+              </button>
+              <span className="text-xs text-gray-600 px-2">
+                {currentQuestion}/{totalQuestions}
+              </span>
+              <button
+                onClick={onNext}
+                disabled={disabled}
+                className="px-2 py-1 text-xs text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+        </div>
+      )
+    }
+    
+    // Full navigation for bottom position
     return (
       <div className="bg-white border-t border-gray-200 px-6 py-4">
         <div className="mb-4">

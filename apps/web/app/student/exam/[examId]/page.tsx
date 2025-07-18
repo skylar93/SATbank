@@ -334,6 +334,37 @@ function ExamPageContent() {
     nextQuestion()
   }
 
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      // Only handle keyboard navigation in preview mode and when not typing in inputs
+      if (!isPreviewMode || examState.status !== 'in_progress') return
+      
+      const target = event.target as HTMLElement
+      const isInputActive = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
+      
+      if (isInputActive) return
+      
+      const currentModule = examState.modules[examState.currentModuleIndex]
+      if (!currentModule) return
+      
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault()
+        if (currentModule.currentQuestionIndex > 0) {
+          handlePrevious()
+        }
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        if (currentModule.currentQuestionIndex < currentModule.questions.length - 1) {
+          handleNext()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [isPreviewMode, examState.status, examState.modules, examState.currentModuleIndex, handleNext, handlePrevious])
+
   // Handle module completion
   const handleSubmitModule = async () => {
     saveCurrentAnswer()
@@ -781,7 +812,7 @@ function ExamPageContent() {
             )}
             {isPreviewMode && (
               <span className="text-sm text-orange-600 font-medium">
-                Preview Mode - No Timer
+                Preview Mode - No Timer • Use ← → keys to navigate
               </span>
             )}
             {process.env.NODE_ENV === 'development' && (
@@ -799,6 +830,31 @@ function ExamPageContent() {
         </div>
       </div>
 
+      {/* Top Navigation for Preview Mode */}
+      {isPreviewMode && (
+        <ExamNavigation
+          currentQuestion={currentModule.currentQuestionIndex + 1}
+          totalQuestions={currentModule.questions.length}
+          currentModule={currentModule.module}
+          hasAnswer={!!currentAnswer}
+          isLastQuestion={isLastQuestion}
+          isLastModule={isLastModule}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          onGoToQuestion={handleGoToQuestion}
+          onSubmitModule={handleSubmitModule}
+          onSubmitExam={handleSubmitExam}
+          answeredQuestions={getAnsweredQuestions()}
+          markedQuestions={getMarkedQuestions()}
+          disabled={examState.status !== 'in_progress' || timeExpiredRef.current}
+          isAdminPreview={isPreviewMode}
+          allModules={examState.modules}
+          currentModuleIndex={examState.currentModuleIndex}
+          onGoToModule={handleGoToModule}
+          isCompact={true}
+        />
+      )}
+
       {/* Main Question Area */}
       <div className="flex-1 overflow-hidden">
         <QuestionDisplay
@@ -815,27 +871,29 @@ function ExamPageContent() {
         />
       </div>
 
-      {/* Navigation */}
-      <ExamNavigation
-        currentQuestion={currentModule.currentQuestionIndex + 1}
-        totalQuestions={currentModule.questions.length}
-        currentModule={currentModule.module}
-        hasAnswer={!!currentAnswer}
-        isLastQuestion={isLastQuestion}
-        isLastModule={isLastModule}
-        onNext={handleNext}
-        onPrevious={handlePrevious}
-        onGoToQuestion={handleGoToQuestion}
-        onSubmitModule={handleSubmitModule}
-        onSubmitExam={handleSubmitExam}
-        answeredQuestions={getAnsweredQuestions()}
-        markedQuestions={getMarkedQuestions()}
-        disabled={examState.status !== 'in_progress' || timeExpiredRef.current}
-        isAdminPreview={isPreviewMode}
-        allModules={examState.modules}
-        currentModuleIndex={examState.currentModuleIndex}
-        onGoToModule={handleGoToModule}
-      />
+      {/* Bottom Navigation (only for non-preview mode) */}
+      {!isPreviewMode && (
+        <ExamNavigation
+          currentQuestion={currentModule.currentQuestionIndex + 1}
+          totalQuestions={currentModule.questions.length}
+          currentModule={currentModule.module}
+          hasAnswer={!!currentAnswer}
+          isLastQuestion={isLastQuestion}
+          isLastModule={isLastModule}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          onGoToQuestion={handleGoToQuestion}
+          onSubmitModule={handleSubmitModule}
+          onSubmitExam={handleSubmitExam}
+          answeredQuestions={getAnsweredQuestions()}
+          markedQuestions={getMarkedQuestions()}
+          disabled={examState.status !== 'in_progress' || timeExpiredRef.current}
+          isAdminPreview={isPreviewMode}
+          allModules={examState.modules}
+          currentModuleIndex={examState.currentModuleIndex}
+          onGoToModule={handleGoToModule}
+        />
+      )}
 
       {/* Time Expired Modal */}
       {showTimeExpiredModal && (
