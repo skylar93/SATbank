@@ -292,11 +292,12 @@ export function QuestionDisplay({
         parts.push(
           <span 
             key={`blank-${match.index}`} 
-            className="underline underline-offset-2 decoration-1 decoration-gray-700"
+            className="underline underline-offset-2 decoration-2 decoration-gray-700"
             style={{ 
               textDecorationSkipInk: 'none',
               display: 'inline-block',
-              width: `${blankLength * 0.8}em`
+              width: `${Math.max(blankLength * 1.2, 3)}em`,
+              minWidth: '3em'
             }}
           >
             &nbsp;

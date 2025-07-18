@@ -353,8 +353,8 @@ export function RichTextEditor({
         parts.push(
           <span 
             key={`blank-${match.index}`} 
-            className="inline-block border-b border-gray-800 mx-1"
-            style={{ width: `${blankLength * 0.6}em`, minWidth: `${blankLength * 0.6}em` }}
+            className="inline-block border-b-2 border-gray-800 mx-1"
+            style={{ width: `${Math.max(blankLength * 1.2, 3)}em`, minWidth: '3em' }}
           >
             &nbsp;
           </span>
