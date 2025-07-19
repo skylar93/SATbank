@@ -172,7 +172,9 @@ export function QuestionDisplay({
     let lastIndex = 0;
     
     // Combined regex for math expressions, formatting, line breaks, dashes, long blanks, and images
-    const combinedRegex = /(\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|!\[(.*?)\]\((.*?)\)|\*\*(.*?)\*\*|\*(.*?)\*|_{5,}|__(.*?)__|_(.*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|\\n|\n)/g;
+    // CRITICAL: _{5,} MUST be first among underscore patterns to get priority
+    const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|!\[(.*?)\]\((.*?)\)|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|\\n|\n)/g;
+    
     let match;
     
     while ((match = combinedRegex.exec(text)) !== null) {
@@ -190,8 +192,27 @@ export function QuestionDisplay({
       
       const matchedContent = match[1];
       
+      // Handle long blanks (5 or more underscores) - MUST BE FIRST
+      if (matchedContent.match(/_{5,}/)) {
+        const blankLength = matchedContent.length;
+        parts.push(
+          <span 
+            key={`blank-${match.index}`} 
+            style={{ 
+              display: 'inline-block',
+              width: `${Math.max(blankLength * 0.8, 3)}em`,
+              minWidth: '3em',
+              borderBottom: '2px solid #374151',
+              height: '1.2em',
+              marginBottom: '2px'
+            }}
+          >
+            &nbsp;
+          </span>
+        );
+      }
       // Handle math expressions
-      if (matchedContent.startsWith('$')) {
+      else if (matchedContent.startsWith('$')) {
         const isBlock = matchedContent.startsWith('$$');
         const cleanMath = matchedContent.replace(/^\$+|\$+$/g, '').trim();
         
@@ -280,24 +301,6 @@ export function QuestionDisplay({
         parts.push(
           <span key={`dash-${match.index}`} className="inline">
             —
-          </span>
-        );
-      }
-      // Handle long blanks (5 or more underscores)
-      else if (matchedContent.match(/_{5,}/)) {
-        const blankLength = matchedContent.length;
-        parts.push(
-          <span 
-            key={`blank-${match.index}`} 
-            className="underline underline-offset-2 decoration-2 decoration-gray-700"
-            style={{ 
-              textDecorationSkipInk: 'none',
-              display: 'inline-block',
-              width: `${Math.max(blankLength * 1.2, 3)}em`,
-              minWidth: '3em'
-            }}
-          >
-            &nbsp;
           </span>
         );
       }
