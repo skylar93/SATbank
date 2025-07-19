@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Question } from '../../lib/exam-service'
 import { InlineMath, BlockMath } from 'react-katex'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '../../lib/supabase'
 import { RichTextEditor } from '../rich-text-editor'
 import { ImageUpload } from '../image-upload'
 
@@ -43,7 +43,7 @@ export function QuestionDisplay({
     explanation: question.explanation || ''
   })
   const [saving, setSaving] = useState(false)
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
 
   // Update local question when prop changes
   useEffect(() => {
@@ -79,11 +79,8 @@ export function QuestionDisplay({
         }
       })
 
-      // Create a fresh supabase client instance to avoid stale state
-      const freshSupabase = createClientComponentClient()
-      
-      // Try with explicit auth session
-      const { data: { session } } = await freshSupabase.auth.getSession()
+      // Check authentication session
+      const { data: { session } } = await supabase.auth.getSession()
       console.log('🔍 Current session:', session ? 'Authenticated' : 'Not authenticated')
 
       if (!session) {
@@ -91,7 +88,7 @@ export function QuestionDisplay({
       }
 
       // Test if we can read the question first (to check RLS policies)
-      const { data: readTest, error: readError } = await freshSupabase
+      const { data: readTest, error: readError } = await supabase
         .from('questions')
         .select('*')
         .eq('id', question.id)
@@ -104,7 +101,7 @@ export function QuestionDisplay({
       }
 
       // Match the admin panel approach exactly
-      const { data, error } = await freshSupabase
+      const { data, error } = await supabase
         .from('questions')
         .update({
           question_text: editForm.question_text,
