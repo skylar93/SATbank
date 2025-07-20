@@ -33,9 +33,10 @@ export function RichTextEditor({
   const [previewMode, setPreviewMode] = useState(false)
   
   // Undo/Redo functionality
-  const [history, setHistory] = useState<string[]>([value])
+  const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(0)
   const [isUndoRedo, setIsUndoRedo] = useState(false)
+  const [lastValue, setLastValue] = useState(value)
 
   // Math symbols and common LaTeX expressions
   const mathSymbols = [
@@ -75,45 +76,63 @@ export function RichTextEditor({
     }
   }, [findText, value])
 
-  // Add to history when value changes (but not during undo/redo)
+  // Initialize history with first value
   useEffect(() => {
-    if (!isUndoRedo && value !== history[historyIndex]) {
-      const newHistory = history.slice(0, historyIndex + 1)
-      newHistory.push(value)
-      // Keep history size reasonable (max 50 entries)
-      if (newHistory.length > 50) {
-        newHistory.shift()
-      } else {
-        setHistoryIndex(historyIndex + 1)
-      }
-      setHistory(newHistory)
-    }
-    setIsUndoRedo(false)
-  }, [value, historyIndex, history, isUndoRedo])
-
-  // Initialize history with initial value
-  useEffect(() => {
-    if (history.length === 1 && history[0] !== value) {
+    if (history.length === 0) {
       setHistory([value])
       setHistoryIndex(0)
+      setLastValue(value)
     }
-  }, [value, history])
+  }, [])
+
+  // Add to history when value changes (but not during undo/redo operations)
+  useEffect(() => {
+    if (isUndoRedo) {
+      // Skip history updates during undo/redo
+      setIsUndoRedo(false)
+      setLastValue(value)
+      return
+    }
+
+    // Only add to history if value actually changed from the last recorded value
+    if (value !== lastValue && history.length > 0) {
+      // Remove any history after current index (if we were in the middle of history)
+      const newHistory = history.slice(0, historyIndex + 1)
+      newHistory.push(value)
+      
+      // Keep history reasonable size
+      if (newHistory.length > 50) {
+        newHistory.shift()
+        setHistoryIndex(newHistory.length - 1)
+      } else {
+        setHistoryIndex(newHistory.length - 1)
+      }
+      
+      setHistory(newHistory)
+      setLastValue(value)
+    }
+  }, [value])
+
 
   const handleUndo = useCallback(() => {
-    if (historyIndex > 0) {
+    if (historyIndex > 0 && history.length > 0) {
       const newIndex = historyIndex - 1
-      setHistoryIndex(newIndex)
+      const undoValue = history[newIndex]
+      
       setIsUndoRedo(true)
-      onChange(history[newIndex])
+      setHistoryIndex(newIndex)
+      onChange(undoValue)
     }
   }, [historyIndex, history, onChange])
 
   const handleRedo = useCallback(() => {
     if (historyIndex < history.length - 1) {
       const newIndex = historyIndex + 1
-      setHistoryIndex(newIndex)
+      const redoValue = history[newIndex]
+      
       setIsUndoRedo(true)
-      onChange(history[newIndex])
+      setHistoryIndex(newIndex)
+      onChange(redoValue)
     }
   }, [historyIndex, history, onChange])
 
@@ -247,7 +266,7 @@ export function RichTextEditor({
     let lastIndex = 0;
     
     // Combined regex for math expressions, formatting, line breaks, dashes, and long blanks
-    const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|\\n|\n)/g;
+    const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
     let match;
     
     while ((match = combinedRegex.exec(text)) !== null) {
@@ -275,9 +294,9 @@ export function RichTextEditor({
               display: 'inline-block',
               width: `${Math.max(blankLength * 0.8, 3)}em`,
               minWidth: '3em',
-              borderBottom: '2px solid #374151',
+              borderBottom: '1px solid #374151',
               height: '1.2em',
-              marginBottom: '2px'
+              marginBottom: '1px'
             }}
           >
             &nbsp;
@@ -358,8 +377,8 @@ export function RichTextEditor({
           </sub>
         );
       }
-      // Handle triple dashes ---
-      else if (matchedContent === '---') {
+      // Handle dashes --- and --
+      else if (matchedContent === '---' || matchedContent === '--') {
         parts.push(
           <span key={`dash-${match.index}`} className="mx-1">
             —

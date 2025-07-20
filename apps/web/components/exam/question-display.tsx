@@ -173,7 +173,7 @@ export function QuestionDisplay({
     
     // Combined regex for math expressions, formatting, line breaks, dashes, long blanks, and images
     // CRITICAL: _{5,} MUST be first among underscore patterns to get priority
-    const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|!\[(.*?)\]\((.*?)\)|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|\\n|\n)/g;
+    const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|!\[(.*?)\]\((.*?)\)|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
     
     let match;
     
@@ -202,9 +202,9 @@ export function QuestionDisplay({
               display: 'inline-block',
               width: `${Math.max(blankLength * 0.8, 3)}em`,
               minWidth: '3em',
-              borderBottom: '2px solid #374151',
+              borderBottom: '1px solid #374151',
               height: '1.2em',
-              marginBottom: '2px'
+              marginBottom: '1px'
             }}
           >
             &nbsp;
@@ -296,8 +296,8 @@ export function QuestionDisplay({
           </sub>
         );
       }
-      // Handle triple dashes ---
-      else if (matchedContent === '---') {
+      // Handle dashes --- and --
+      else if (matchedContent === '---' || matchedContent === '--') {
         parts.push(
           <span key={`dash-${match.index}`} className="inline">
             —
