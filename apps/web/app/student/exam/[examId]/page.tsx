@@ -102,6 +102,12 @@ function ExamPageContent() {
   const [showExitConfirm, setShowExitConfirm] = useState(false)
   const [showTimeExpiredModal, setShowTimeExpiredModal] = useState(false)
   const [hasInitialized, setHasInitialized] = useState(false)
+  
+  // Reset initialization flag when examId changes
+  useEffect(() => {
+    console.log('🔄 ExamId changed, resetting initialization flag:', { examId, hasInitialized })
+    setHasInitialized(false)
+  }, [examId])
   const [showBulkEdit, setShowBulkEdit] = useState(false)
   const forcingExitRef = useRef(false)
   const timeExpiredRef = useRef(false)
@@ -139,6 +145,15 @@ function ExamPageContent() {
     // (This prevents premature redirects for admin users whose profile hasn't loaded)
     if (user && !user.profile && previewParam) {
       console.log('⏳ User found but profile not loaded yet, waiting for admin check...')
+      // Add a timeout to prevent infinite waiting
+      setTimeout(() => {
+        if (user && !user.profile && previewParam) {
+          console.warn('⚠️ Profile loading timeout, proceeding without profile check')
+          // Force initialization if we've been waiting too long
+          setHasInitialized(true)
+          initializeExam(examId, previewParam)
+        }
+      }, 5000) // 5 second timeout
       return
     }
     
@@ -146,6 +161,19 @@ function ExamPageContent() {
     // For regular mode: need any user
     const canInitialize = examId && !hasInitialized && !loading && 
       ((previewParam && isAdmin) || (!previewParam && user))
+    
+    // Debug the canInitialize condition
+    console.log('🔍 canInitialize breakdown:', {
+      examId: !!examId,
+      hasInitialized,
+      loading,
+      previewParam,
+      isAdmin,
+      user: !!user,
+      previewCondition: previewParam && isAdmin,
+      regularCondition: !previewParam && user,
+      finalCanInitialize: canInitialize
+    })
     
     if (canInitialize) {
       console.log('🚀 ExamPage useEffect: Starting exam initialization', { isPreviewMode })

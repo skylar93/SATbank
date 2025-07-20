@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Question } from '../../lib/exam-service'
 import { InlineMath, BlockMath } from 'react-katex'
-import { createClient } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import { RichTextEditor } from '../rich-text-editor'
 import { ImageUpload } from '../image-upload'
 
@@ -43,7 +43,6 @@ export function QuestionDisplay({
     explanation: question.explanation || ''
   })
   const [saving, setSaving] = useState(false)
-  const supabase = createClient()
 
   // Update local question when prop changes
   useEffect(() => {
