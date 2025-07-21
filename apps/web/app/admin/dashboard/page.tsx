@@ -313,16 +313,16 @@ export default function AdminDashboard() {
                 <div className="bg-white overflow-hidden shadow rounded-lg">
                   <div className="p-6">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">
-                      System Reports
+                      Exam Assignments
                     </h3>
                     <p className="text-sm text-gray-500 mb-4">
-                      Generate detailed reports and export performance data.
+                      Assign specific exams to students and manage access permissions.
                     </p>
                     <Link
-                      href="/admin/reports"
+                      href="/admin/assignments"
                       className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition-colors inline-block text-center"
                     >
-                      View Reports
+                      Manage Assignments
                     </Link>
                   </div>
                 </div>

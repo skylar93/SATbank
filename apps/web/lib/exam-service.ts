@@ -83,7 +83,7 @@ export interface CreateUserAnswer {
 }
 
 export class ExamService {
-  // Get all active exams
+  // Get all active exams (students see only assigned ones)
   static async getActiveExams(): Promise<Exam[]> {
     const { data, error } = await supabase
       .from('exams')
