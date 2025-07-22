@@ -23,23 +23,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     console.log('🔄 AuthProvider: Initializing...')
+    let isInitialized = false
     
     // Add timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
-      console.warn('⏰ AuthProvider: Auth initialization timed out, setting loading to false')
-      setLoading(false)
+      if (!isInitialized) {
+        console.warn('⏰ AuthProvider: Auth initialization timed out, setting loading to false')
+        setLoading(false)
+      }
     }, 5000) // 5 second timeout
     
     // Get initial user
     AuthService.getCurrentUser()
       .then((user) => {
         console.log('👤 AuthProvider: Initial user:', user)
+        isInitialized = true
         clearTimeout(timeoutId)
         setUser(user)
         setLoading(false)
       })
       .catch((err) => {
         console.error('❌ AuthProvider: Error getting initial user:', err)
+        isInitialized = true
         clearTimeout(timeoutId)
         setError(err.message)
         setLoading(false)
@@ -48,9 +53,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = AuthService.onAuthStateChange((user) => {
       console.log('🔄 AuthProvider: Auth state changed:', user)
-      clearTimeout(timeoutId) // Clear timeout since we got a response
-      setUser(user)
-      setLoading(false)
+      if (isInitialized) {
+        clearTimeout(timeoutId) // Clear timeout since we got a response
+        setUser(user)
+        setLoading(false)
+      }
     })
 
     return () => {

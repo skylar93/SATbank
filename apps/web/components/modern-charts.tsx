@@ -211,13 +211,46 @@ interface MiniLineChartProps {
 }
 
 function MiniLineChart({ data, color }: MiniLineChartProps) {
-  const max = Math.max(...data)
-  const min = Math.min(...data)
+  // Filter out invalid data and ensure we have valid numbers
+  const validData = data.filter(value => 
+    typeof value === 'number' && 
+    !isNaN(value) && 
+    isFinite(value)
+  )
+
+  // Handle edge cases
+  if (validData.length === 0) {
+    // No valid data - render empty chart
+    return (
+      <svg width="64" height="48" className="overflow-visible">
+        <line x1="0" y1="24" x2="64" y2="24" stroke={color} strokeWidth="1" opacity="0.3" />
+      </svg>
+    )
+  }
+
+  if (validData.length === 1) {
+    // Single data point - render horizontal line
+    return (
+      <svg width="64" height="48" className="overflow-visible">
+        <line x1="0" y1="24" x2="64" y2="24" stroke={color} strokeWidth="2" />
+        <circle cx="32" cy="24" r="2" fill={color} />
+      </svg>
+    )
+  }
+
+  const max = Math.max(...validData)
+  const min = Math.min(...validData)
   const range = max - min || 1
 
-  const points = data.map((value, index) => {
-    const x = (index / (data.length - 1)) * 64
+  const points = validData.map((value, index) => {
+    const x = (index / (validData.length - 1)) * 64
     const y = 48 - ((value - min) / range) * 48
+    
+    // Double-check for NaN values
+    if (isNaN(x) || isNaN(y)) {
+      return '0,24' // fallback to center
+    }
+    
     return `${x},${y}`
   }).join(' ')
 

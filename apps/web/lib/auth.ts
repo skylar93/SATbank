@@ -127,8 +127,17 @@ export class AuthService {
 
   // Listen to auth state changes
   static onAuthStateChange(callback: (user: AuthUser | null) => void) {
+    let lastUserId: string | null = null
+    
     return supabase.auth.onAuthStateChange(async (event, session) => {
+      // Only log and process if the user actually changed
+      const currentUserId = session?.user?.id || null
+      if (currentUserId === lastUserId && event !== 'INITIAL_SESSION') {
+        return // Skip duplicate events for the same user
+      }
+      
       console.log('🔄 AuthService: Auth state change event:', event, session?.user?.email)
+      lastUserId = currentUserId
       
       try {
         if (session?.user) {

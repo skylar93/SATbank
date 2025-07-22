@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../../../contexts/auth-context'
 import { QuestionFilter } from '../../../components/problem-bank/question-filter'
 import { QuestionList } from '../../../components/problem-bank/question-list'
@@ -56,12 +56,18 @@ export default function ProblemBank() {
   const [loading, setLoading] = useState(true)
   const [availableTopics, setAvailableTopics] = useState<string[]>([])
   const [activeTab, setActiveTab] = useState<'browse' | 'practice' | 'incorrect'>('browse')
+  const hasFetchedRef = useRef(false)
 
   useEffect(() => {
-    if (user) {
+    // Fetch questions if we have a user with ID, regardless of loading state
+    if (user && user.id && !hasFetchedRef.current) {
+      console.log('🔄 ProblemBank: Fetching questions for user:', user.email)
+      console.log('🔄 ProblemBank: User object:', user)
+      console.log('🔄 ProblemBank: Loading state:', loading)
+      hasFetchedRef.current = true
       fetchQuestions()
     }
-  }, [user])
+  }, [user?.id]) // Only depend on user ID
 
   useEffect(() => {
     applyFilters()
@@ -70,10 +76,26 @@ export default function ProblemBank() {
   const fetchQuestions = async () => {
     try {
       setLoading(true)
+      console.log('🔄 fetchQuestions: Starting...')
       
       // Check if Supabase client is initialized
       if (!supabase) {
         console.error('Supabase client is not initialized. Please check your environment variables.')
+        setLoading(false)
+        return
+      }
+      
+      // Debug: Check auth state and session
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      console.log('🔄 fetchQuestions: Auth user:', authUser)
+      console.log('🔄 fetchQuestions: Auth error:', authError)
+      console.log('🔄 fetchQuestions: Session exists:', !!session)
+      console.log('🔄 fetchQuestions: Session error:', sessionError)
+      
+      if (!authUser || !session) {
+        console.log('❌ fetchQuestions: No authenticated user or session found')
         setLoading(false)
         return
       }
@@ -87,12 +109,35 @@ export default function ProblemBank() {
 
       if (questionsError) {
         console.error('Error fetching questions:', questionsError)
+        console.error('Error details:', {
+          code: questionsError.code,
+          message: questionsError.message,
+          hint: questionsError.hint,
+          details: questionsError.details
+        })
+        
+        // If it's a permissions error, try to fetch with minimal select
+        if (questionsError.code === '42501' || questionsError.message?.includes('permission')) {
+          console.log('Trying fallback query with minimal permissions...')
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from('questions')
+            .select('id, module_type, question_number, question_type, difficulty_level, question_text, options, correct_answer, explanation, topic_tags')
+            .limit(5)
+            
+          if (fallbackError) {
+            console.error('Fallback query also failed:', fallbackError)
+          } else {
+            console.log('Fallback query succeeded with', fallbackData?.length, 'questions')
+          }
+        }
+        
         throw questionsError
       }
 
       if (!questionsData || questionsData.length === 0) {
         console.log('No questions found in database')
         console.log('Current user:', user)
+        console.log('Auth user:', authUser)
         console.log('Questions data:', questionsData)
         setQuestions([])
         setAvailableTopics([])
@@ -224,7 +269,7 @@ export default function ProblemBank() {
             change="+2.5%"
             changeType="positive"
             miniChart={{
-              data: [120, 135, 150, 160, 175, questions.length],
+              data: [120, 135, 150, 160, 175, Math.max(questions.length, 175)],
               color: '#10b981'
             }}
           />
@@ -235,7 +280,7 @@ export default function ProblemBank() {
             change="+0.8%"
             changeType="positive"
             miniChart={{
-              data: [50, 60, 70, 80, 85, filteredQuestions.length],
+              data: [50, 60, 70, 80, 85, Math.max(filteredQuestions.length, 50)],
               color: '#8b5cf6'
             }}
           />
@@ -246,7 +291,7 @@ export default function ProblemBank() {
             change="-12%"
             changeType="negative"
             miniChart={{
-              data: [25, 20, 18, 15, 12, incorrectQuestions.length],
+              data: [25, 20, 18, 15, 12, Math.max(incorrectQuestions.length, 0)],
               color: '#ef4444'
             }}
           />
@@ -287,6 +332,44 @@ export default function ProblemBank() {
           </nav>
         </div>
 
+        {/* Debug Section - Remove in production */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h4 className="font-semibold text-yellow-800 mb-2">Debug Info</h4>
+            <div className="text-sm text-yellow-700 space-y-1">
+              <p>User: {user ? user.email : 'Not authenticated'}</p>
+              <p>User ID: {user?.id || 'N/A'}</p>
+              <p>Loading: {loading.toString()}</p>
+              <p>Questions loaded: {questions.length}</p>
+              <p>Filtered questions: {filteredQuestions.length}</p>
+              <div className="mt-2 space-x-2">
+                <button 
+                  onClick={async () => {
+                    const { data: { session } } = await supabase.auth.getSession()
+                    const { data: { user: currentUser } } = await supabase.auth.getUser()
+                    console.log('Current session:', session)
+                    console.log('Current user:', currentUser)
+                    alert(`Session exists: ${!!session}, User exists: ${!!currentUser}`)
+                  }}
+                  className="px-3 py-1 bg-yellow-200 text-yellow-800 rounded text-xs hover:bg-yellow-300"
+                >
+                  Check Auth Status
+                </button>
+                <button 
+                  onClick={() => {
+                    console.log('🔄 Force fetching questions...')
+                    hasFetchedRef.current = false
+                    fetchQuestions()
+                  }}
+                  className="px-3 py-1 bg-blue-200 text-blue-800 rounded text-xs hover:bg-blue-300"
+                >
+                  Force Fetch Questions
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Content based on active tab */}
         {activeTab === 'browse' && (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -316,8 +399,13 @@ export default function ProblemBank() {
                         {filteredQuestions.length} of {questions.length} questions
                       </span>
                       <button 
-                        onClick={fetchQuestions}
+                        onClick={() => {
+                          console.log('🔄 Manual refresh clicked')
+                          hasFetchedRef.current = false
+                          fetchQuestions()
+                        }}
                         className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        title="Refresh questions"
                       >
                         <ChartBarIcon className="w-4 h-4 text-gray-600" />
                       </button>
