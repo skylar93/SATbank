@@ -26,9 +26,9 @@ export const renderTextWithFormattingAndMath = (text: string) => {
   const parts = [];
   let lastIndex = 0;
   
-  // Combined regex for math expressions, formatting, line breaks, dashes, long blanks, and images
+  // Combined regex for math expressions, formatting, line breaks, dashes, long blanks, center alignment, and images
   // CRITICAL: _{5,} MUST be first among underscore patterns to get priority
-  const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|!\[(.*?)\]\((.*?)\)|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
+  const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|::(.*?)::|!\[(.*?)\]\((.*?)\)|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
   
   let match;
   
@@ -66,6 +66,14 @@ export const renderTextWithFormattingAndMath = (text: string) => {
         </span>
       );
     }
+    // Handle center alignment ::text::
+    else if (match[2] !== undefined) {
+      parts.push(
+        <div key={`center-${match.index}`} className="text-center my-2">
+          {restoreEscapedDollars(match[2])}
+        </div>
+      );
+    }
     // Handle math expressions (but not if they contain escaped dollars)
     else if (matchedContent.startsWith('$') && !matchedContent.includes(escapedDollarPlaceholder)) {
       const isBlock = matchedContent.startsWith('$$');
@@ -93,61 +101,61 @@ export const renderTextWithFormattingAndMath = (text: string) => {
       }
     }
     // Handle markdown images ![alt](url)
-    else if (match[2] !== undefined && match[3] !== undefined) {
+    else if (match[3] !== undefined && match[4] !== undefined) {
       parts.push(
         <img 
           key={`image-${match.index}`} 
-          src={match[3]} 
-          alt={restoreEscapedDollars(match[2])} 
+          src={match[4]} 
+          alt={restoreEscapedDollars(match[3])} 
           className="max-w-full h-auto my-2 border border-gray-200 rounded"
         />
       );
     }
     // Handle bold formatting **text**
-    else if (match[4] !== undefined) {
+    else if (match[5] !== undefined) {
       parts.push(
         <strong key={`bold-${match.index}`} className="font-bold">
-          {restoreEscapedDollars(match[4])}
+          {restoreEscapedDollars(match[5])}
         </strong>
       );
     }
     // Handle italic formatting *text*
-    else if (match[5] !== undefined) {
+    else if (match[6] !== undefined) {
       parts.push(
         <em key={`italic-${match.index}`} className="italic">
-          {restoreEscapedDollars(match[5])}
+          {restoreEscapedDollars(match[6])}
         </em>
       );
     }
     // Handle underline formatting __text__
-    else if (match[6] !== undefined) {
+    else if (match[7] !== undefined) {
       parts.push(
         <span key={`underline-${match.index}`} className="underline">
-          {restoreEscapedDollars(match[6])}
+          {restoreEscapedDollars(match[7])}
         </span>
       );
     }
     // Handle italic formatting _text_
-    else if (match[7] !== undefined) {
+    else if (match[8] !== undefined) {
       parts.push(
         <em key={`italic2-${match.index}`} className="italic">
-          {restoreEscapedDollars(match[7])}
+          {restoreEscapedDollars(match[8])}
         </em>
       );
     }
     // Handle superscript formatting ^^text^^
-    else if (match[8] !== undefined) {
+    else if (match[9] !== undefined) {
       parts.push(
         <sup key={`superscript-${match.index}`} className="text-sm">
-          {restoreEscapedDollars(match[8])}
+          {restoreEscapedDollars(match[9])}
         </sup>
       );
     }
     // Handle subscript formatting ~~text~~
-    else if (match[9] !== undefined) {
+    else if (match[10] !== undefined) {
       parts.push(
         <sub key={`subscript-${match.index}`} className="text-sm">
-          {restoreEscapedDollars(match[9])}
+          {restoreEscapedDollars(match[10])}
         </sub>
       );
     }

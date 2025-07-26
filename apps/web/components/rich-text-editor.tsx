@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Bold, Italic, Underline, Search, Replace, Superscript, Subscript, Undo, Redo } from 'lucide-react'
+import { Bold, Italic, Underline, Search, Replace, Superscript, Subscript, Undo, Redo, AlignCenter } from 'lucide-react'
 import { InlineMath, BlockMath } from 'react-katex'
 
 interface RichTextEditorProps {
@@ -265,8 +265,8 @@ export function RichTextEditor({
     const parts = [];
     let lastIndex = 0;
     
-    // Combined regex for math expressions, formatting, line breaks, dashes, and long blanks
-    const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
+    // Combined regex for math expressions, formatting, line breaks, dashes, long blanks, and center alignment
+    const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|::(.*?)::|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
     let match;
     
     while ((match = combinedRegex.exec(text)) !== null) {
@@ -303,6 +303,14 @@ export function RichTextEditor({
           </span>
         );
       }
+      // Handle center alignment ::text::
+      else if (match[2] !== undefined) {
+        parts.push(
+          <div key={`center-${match.index}`} className="text-center my-2">
+            {match[2]}
+          </div>
+        );
+      }
       // Handle math expressions
       else if (matchedContent.startsWith('$')) {
         const isBlock = matchedContent.startsWith('$$');
@@ -330,50 +338,50 @@ export function RichTextEditor({
         }
       }
       // Handle bold formatting **text**
-      else if (match[2] !== undefined) {
+      else if (match[3] !== undefined) {
         parts.push(
           <strong key={`bold-${match.index}`} className="font-bold">
-            {match[2]}
+            {match[3]}
           </strong>
         );
       }
       // Handle italic formatting *text*
-      else if (match[3] !== undefined) {
+      else if (match[4] !== undefined) {
         parts.push(
           <em key={`italic-${match.index}`} className="italic">
-            {match[3]}
+            {match[4]}
           </em>
         );
       }
       // Handle underline formatting __text__
-      else if (match[4] !== undefined) {
+      else if (match[5] !== undefined) {
         parts.push(
           <span key={`underline-${match.index}`} className="underline">
-            {match[4]}
+            {match[5]}
           </span>
         );
       }
       // Handle italic formatting _text_
-      else if (match[5] !== undefined) {
+      else if (match[6] !== undefined) {
         parts.push(
           <em key={`italic2-${match.index}`} className="italic">
-            {match[5]}
+            {match[6]}
           </em>
         );
       }
       // Handle superscript formatting ^^text^^
-      else if (match[6] !== undefined) {
+      else if (match[7] !== undefined) {
         parts.push(
           <sup key={`superscript-${match.index}`} className="text-sm">
-            {match[6]}
+            {match[7]}
           </sup>
         );
       }
       // Handle subscript formatting ~~text~~
-      else if (match[7] !== undefined) {
+      else if (match[8] !== undefined) {
         parts.push(
           <sub key={`subscript-${match.index}`} className="text-sm">
-            {match[7]}
+            {match[8]}
           </sub>
         );
       }
@@ -482,6 +490,14 @@ export function RichTextEditor({
             title="Subscript (~~text~~)"
           >
             <Subscript size={compact ? 14 : 16} />
+          </button>
+          <button
+            type="button"
+            onClick={() => insertFormat('::', '::')}
+            className="p-1.5 hover:bg-gray-200 rounded transition-colors"
+            title="Center align (::text::)"
+          >
+            <AlignCenter size={compact ? 14 : 16} />
           </button>
         </div>
 
@@ -660,7 +676,7 @@ export function RichTextEditor({
       {/* Formatting Guide */}
       {!compact && (
         <div className="text-xs text-gray-500 space-y-1">
-          <div><strong>Formatting:</strong> **bold** *italic* __underline__ ^^superscript^^ ~~subscript~~ --- (em dash) _______ (long blank)</div>
+          <div><strong>Formatting:</strong> **bold** *italic* __underline__ ^^superscript^^ ~~subscript~~ ::center:: --- (em dash) _______ (long blank)</div>
           <div><strong>Math:</strong> $x^2$ for inline, $$x^2$$ for block equations</div>
           <div><strong>Line breaks:</strong> Use actual line breaks in the editor or type \n</div>
         </div>
