@@ -346,7 +346,7 @@ export class AnalyticsService {
 
     if (error) throw error
     
-    return data?.map(item => item.questions).filter(Boolean) || []
+    return (data?.map((item: any) => item.questions).filter(Boolean) || []) as Question[]
   }
 
   // Calculate progress comparison with previous attempts

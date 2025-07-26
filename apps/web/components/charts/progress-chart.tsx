@@ -118,8 +118,9 @@ export function ProgressChart({
                   r="3"
                   fill={color}
                   className="drop-shadow-sm hover:r-4 transition-all cursor-pointer"
-                  title={`${point.label}: ${point.value}`}
-                />
+                >
+                  <title>{`${point.label}: ${point.value}`}</title>
+                </circle>
               ))}
               
               {/* Fill area under line */}
@@ -147,8 +148,9 @@ export function ProgressChart({
                   fill={color}
                   fillOpacity="0.8"
                   className="hover:fill-opacity-100 transition-all cursor-pointer"
-                  title={`${point.label}: ${point.value}`}
-                />
+                >
+                  <title>{`${point.label}: ${point.value}`}</title>
+                </rect>
               )
             })
           )}

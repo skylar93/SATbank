@@ -253,7 +253,7 @@ export default function StudentSettings() {
                 <div className="flex items-center justify-between p-3 bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl">
                   <span className="text-sm font-medium text-gray-900">Member Since</span>
                   <span className="text-sm font-semibold text-violet-600">
-                    {new Date(user.created_at || '').getFullYear()}
+                    {new Date(user.profile?.created_at || '').getFullYear()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">

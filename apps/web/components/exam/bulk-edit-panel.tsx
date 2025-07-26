@@ -74,6 +74,9 @@ export function BulkEditPanel({
   const renderTextWithFormattingAndMath = (text: string) => {
     if (!text) return text;
     
+    // Handle escaped dollar signs
+    let processedText = text.replace(/\\\$/g, '$').replace(/ESCAPEDDOLLAR/gi, '$');
+    
     const parts = [];
     let lastIndex = 0;
     
@@ -81,9 +84,9 @@ export function BulkEditPanel({
     const combinedRegex = /(\*\*(.*?)\*\*|\*(.*?)\*|__(.*?)__|_(.*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|\n)/g;
     let match;
     
-    while ((match = combinedRegex.exec(text)) !== null) {
+    while ((match = combinedRegex.exec(processedText)) !== null) {
       if (match.index > lastIndex) {
-        const textBefore = text.substring(lastIndex, match.index);
+        const textBefore = processedText.substring(lastIndex, match.index);
         if (textBefore) {
           parts.push(<span key={`text-${lastIndex}`}>{textBefore}</span>);
         }
@@ -112,14 +115,14 @@ export function BulkEditPanel({
       lastIndex = match.index + match[0].length;
     }
     
-    if (lastIndex < text.length) {
-      const remainingText = text.substring(lastIndex);
+    if (lastIndex < processedText.length) {
+      const remainingText = processedText.substring(lastIndex);
       if (remainingText) {
         parts.push(<span key={`text-${lastIndex}`}>{remainingText}</span>);
       }
     }
     
-    return parts.length === 0 ? text : <>{parts}</>;
+    return parts.length === 0 ? processedText : <>{parts}</>;
   };
 
   if (!isVisible) {

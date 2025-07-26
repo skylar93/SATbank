@@ -7,6 +7,180 @@ import { supabase } from '../../lib/supabase'
 import { RichTextEditor } from '../rich-text-editor'
 import { ImageUpload } from '../image-upload'
 
+// Shared text rendering function
+export const renderTextWithFormattingAndMath = (text: string) => {
+  if (!text) return text;
+  
+  // First, handle escaped dollar signs by replacing \$ with a placeholder
+  const escapedDollarPlaceholder = '___ESCAPED_DOLLAR___';
+  let processedText = text.replace(/\\\$/g, escapedDollarPlaceholder).replace(/ESCAPEDDOLLAR/gi, '$');
+  
+  const parts = [];
+  let lastIndex = 0;
+  
+  // Combined regex for math expressions, formatting, line breaks, dashes, long blanks, and images
+  // CRITICAL: _{5,} MUST be first among underscore patterns to get priority
+  const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|!\[(.*?)\]\((.*?)\)|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
+  
+  let match;
+  
+  while ((match = combinedRegex.exec(processedText)) !== null) {
+    // Add text before current match
+    if (match.index > lastIndex) {
+      const textBefore = processedText.substring(lastIndex, match.index);
+      if (textBefore) {
+        parts.push(
+          <span key={`text-${lastIndex}`}>
+            {textBefore.replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+          </span>
+        );
+      }
+    }
+    
+    const matchedContent = match[1];
+    
+    // Handle long blanks (5 or more underscores) - MUST BE FIRST
+    if (matchedContent.match(/_{5,}/)) {
+      const blankLength = matchedContent.length;
+      parts.push(
+        <span 
+          key={`blank-${match.index}`} 
+          style={{ 
+            display: 'inline-block',
+            width: `${Math.max(blankLength * 0.8, 3)}em`,
+            minWidth: '3em',
+            borderBottom: '1px solid #374151',
+            height: '1.2em',
+            marginBottom: '1px'
+          }}
+        >
+          &nbsp;
+        </span>
+      );
+    }
+    // Handle math expressions (but not if they contain escaped dollars)
+    else if (matchedContent.startsWith('$') && !matchedContent.includes(escapedDollarPlaceholder)) {
+      const isBlock = matchedContent.startsWith('$$');
+      const cleanMath = matchedContent.replace(/^\$+|\$+$/g, '').trim();
+      
+      try {
+        if (isBlock) {
+          parts.push(
+            <div key={`math-${match.index}`} className="my-4">
+              <BlockMath math={cleanMath} />
+            </div>
+          );
+        } else {
+          parts.push(
+            <InlineMath key={`math-${match.index}`} math={cleanMath} />
+          );
+        }
+      } catch (error) {
+        console.error('KaTeX render error:', error);
+        parts.push(
+          <span key={`fallback-${match.index}`} className="text-red-500">
+            {matchedContent}
+          </span>
+        );
+      }
+    }
+    // Handle markdown images ![alt](url)
+    else if (match[2] !== undefined && match[3] !== undefined) {
+      parts.push(
+        <img 
+          key={`image-${match.index}`} 
+          src={match[3]} 
+          alt={match[2].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')} 
+          className="max-w-full h-auto my-2 border border-gray-200 rounded"
+        />
+      );
+    }
+    // Handle bold formatting **text**
+    else if (match[4] !== undefined) {
+      parts.push(
+        <strong key={`bold-${match.index}`} className="font-bold">
+          {match[4].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+        </strong>
+      );
+    }
+    // Handle italic formatting *text*
+    else if (match[5] !== undefined) {
+      parts.push(
+        <em key={`italic-${match.index}`} className="italic">
+          {match[5].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+        </em>
+      );
+    }
+    // Handle underline formatting __text__
+    else if (match[6] !== undefined) {
+      parts.push(
+        <span key={`underline-${match.index}`} className="underline">
+          {match[6].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+        </span>
+      );
+    }
+    // Handle italic formatting _text_
+    else if (match[7] !== undefined) {
+      parts.push(
+        <em key={`italic2-${match.index}`} className="italic">
+          {match[7].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+        </em>
+      );
+    }
+    // Handle superscript formatting ^^text^^
+    else if (match[8] !== undefined) {
+      parts.push(
+        <sup key={`superscript-${match.index}`} className="text-sm">
+          {match[8].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+        </sup>
+      );
+    }
+    // Handle subscript formatting ~~text~~
+    else if (match[9] !== undefined) {
+      parts.push(
+        <sub key={`subscript-${match.index}`} className="text-sm">
+          {match[9].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+        </sub>
+      );
+    }
+    // Handle dashes --- and --
+    else if (matchedContent === '---' || matchedContent === '--') {
+      parts.push(
+        <span key={`dash-${match.index}`} className="inline">
+          —
+        </span>
+      );
+    }
+    // Handle line breaks \n and literal \n
+    else if (matchedContent === '\n' || matchedContent === '\\n') {
+      parts.push(
+        <br key={`br-${match.index}`} />
+      );
+    }
+    
+    lastIndex = match.index + match[0].length;
+  }
+  
+  // Add remaining text
+  if (lastIndex < processedText.length) {
+    const remainingText = processedText.substring(lastIndex);
+    if (remainingText) {
+      parts.push(
+        <span key={`text-${lastIndex}`}>
+          {remainingText.replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+        </span>
+      );
+    }
+  }
+  
+  // If no formatting was found, return the original text with escaped dollars processed
+  if (parts.length === 0) {
+    return processedText.replace(new RegExp(escapedDollarPlaceholder, 'g'), '$');
+  }
+  
+  return <>{parts}</>;
+};
+
 interface QuestionDisplayProps {
   question: Question
   questionNumber: number
@@ -38,6 +212,7 @@ export function QuestionDisplay({
   const [localQuestion, setLocalQuestion] = useState(question)
   const [editForm, setEditForm] = useState({
     question_text: question.question_text,
+    question_type: question.question_type,
     options: question.options || {},
     correct_answer: question.correct_answer,
     explanation: question.explanation || ''
@@ -49,6 +224,7 @@ export function QuestionDisplay({
     setLocalQuestion(question)
     setEditForm({
       question_text: question.question_text,
+      question_type: question.question_type,
       options: question.options || {},
       correct_answer: question.correct_answer,
       explanation: question.explanation || ''
@@ -104,6 +280,7 @@ export function QuestionDisplay({
         .from('questions')
         .update({
           question_text: editForm.question_text,
+          question_type: editForm.question_type,
           options: editForm.options,
           correct_answer: editForm.correct_answer,
           explanation: editForm.explanation,
@@ -129,6 +306,7 @@ export function QuestionDisplay({
       const updatedQuestion = {
         ...localQuestion,
         question_text: editForm.question_text,
+        question_type: editForm.question_type,
         options: editForm.options,
         correct_answer: editForm.correct_answer,
         explanation: editForm.explanation
@@ -157,6 +335,7 @@ export function QuestionDisplay({
   const handleCancelEdit = () => {
     setEditForm({
       question_text: localQuestion.question_text,
+      question_type: localQuestion.question_type,
       options: localQuestion.options || {},
       correct_answer: localQuestion.correct_answer,
       explanation: localQuestion.explanation || ''
@@ -164,174 +343,7 @@ export function QuestionDisplay({
     setIsEditing(false)
   }
 
-  const renderTextWithFormattingAndMath = (text: string) => {
-    if (!text) return text;
-    
-    const parts = [];
-    let lastIndex = 0;
-    
-    // Combined regex for math expressions, formatting, line breaks, dashes, long blanks, and images
-    // CRITICAL: _{5,} MUST be first among underscore patterns to get priority
-    const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|!\[(.*?)\]\((.*?)\)|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
-    
-    let match;
-    
-    while ((match = combinedRegex.exec(text)) !== null) {
-      // Add text before current match
-      if (match.index > lastIndex) {
-        const textBefore = text.substring(lastIndex, match.index);
-        if (textBefore) {
-          parts.push(
-            <span key={`text-${lastIndex}`}>
-              {textBefore}
-            </span>
-          );
-        }
-      }
-      
-      const matchedContent = match[1];
-      
-      // Handle long blanks (5 or more underscores) - MUST BE FIRST
-      if (matchedContent.match(/_{5,}/)) {
-        const blankLength = matchedContent.length;
-        parts.push(
-          <span 
-            key={`blank-${match.index}`} 
-            style={{ 
-              display: 'inline-block',
-              width: `${Math.max(blankLength * 0.8, 3)}em`,
-              minWidth: '3em',
-              borderBottom: '1px solid #374151',
-              height: '1.2em',
-              marginBottom: '1px'
-            }}
-          >
-            &nbsp;
-          </span>
-        );
-      }
-      // Handle math expressions
-      else if (matchedContent.startsWith('$')) {
-        const isBlock = matchedContent.startsWith('$$');
-        const cleanMath = matchedContent.replace(/^\$+|\$+$/g, '').trim();
-        
-        try {
-          if (isBlock) {
-            parts.push(
-              <div key={`math-${match.index}`} className="my-4">
-                <BlockMath math={cleanMath} />
-              </div>
-            );
-          } else {
-            parts.push(
-              <InlineMath key={`math-${match.index}`} math={cleanMath} />
-            );
-          }
-        } catch (error) {
-          console.error('KaTeX render error:', error);
-          parts.push(
-            <span key={`fallback-${match.index}`} className="text-red-500">
-              {matchedContent}
-            </span>
-          );
-        }
-      }
-      // Handle markdown images ![alt](url)
-      else if (match[2] !== undefined && match[3] !== undefined) {
-        parts.push(
-          <img 
-            key={`image-${match.index}`} 
-            src={match[3]} 
-            alt={match[2]} 
-            className="max-w-full h-auto my-2 border border-gray-200 rounded"
-          />
-        );
-      }
-      // Handle bold formatting **text**
-      else if (match[4] !== undefined) {
-        parts.push(
-          <strong key={`bold-${match.index}`} className="font-bold">
-            {match[4]}
-          </strong>
-        );
-      }
-      // Handle italic formatting *text*
-      else if (match[5] !== undefined) {
-        parts.push(
-          <em key={`italic-${match.index}`} className="italic">
-            {match[5]}
-          </em>
-        );
-      }
-      // Handle underline formatting __text__
-      else if (match[6] !== undefined) {
-        parts.push(
-          <span key={`underline-${match.index}`} className="underline">
-            {match[6]}
-          </span>
-        );
-      }
-      // Handle italic formatting _text_
-      else if (match[7] !== undefined) {
-        parts.push(
-          <em key={`italic2-${match.index}`} className="italic">
-            {match[7]}
-          </em>
-        );
-      }
-      // Handle superscript formatting ^^text^^
-      else if (match[8] !== undefined) {
-        parts.push(
-          <sup key={`superscript-${match.index}`} className="text-sm">
-            {match[8]}
-          </sup>
-        );
-      }
-      // Handle subscript formatting ~~text~~
-      else if (match[9] !== undefined) {
-        parts.push(
-          <sub key={`subscript-${match.index}`} className="text-sm">
-            {match[9]}
-          </sub>
-        );
-      }
-      // Handle dashes --- and --
-      else if (matchedContent === '---' || matchedContent === '--') {
-        parts.push(
-          <span key={`dash-${match.index}`} className="inline">
-            —
-          </span>
-        );
-      }
-      // Handle line breaks \n and literal \n
-      else if (matchedContent === '\n' || matchedContent === '\\n') {
-        parts.push(
-          <br key={`br-${match.index}`} />
-        );
-      }
-      
-      lastIndex = match.index + match[0].length;
-    }
-    
-    // Add remaining text
-    if (lastIndex < text.length) {
-      const remainingText = text.substring(lastIndex);
-      if (remainingText) {
-        parts.push(
-          <span key={`text-${lastIndex}`}>
-            {remainingText}
-          </span>
-        );
-      }
-    }
-    
-    // If no formatting was found, return the original text
-    if (parts.length === 0) {
-      return text;
-    }
-    
-    return <>{parts}</>;
-  };
+
 
   const renderTable = (tableData: any, isCompact = false) => {
     if (!tableData || !tableData.headers || !tableData.rows) return null;
@@ -368,9 +380,17 @@ export function QuestionDisplay({
     // Try to parse as JSON to check if it's table data or has image URL
     try {
       const parsed = JSON.parse(value);
+      
+      // Check for direct table data in the parsed JSON
       if (parsed.table_data && parsed.table_data.headers && parsed.table_data.rows) {
         return renderTable(parsed.table_data, true);
       }
+      
+      // Check if the parsed value itself is table data
+      if (parsed.headers && parsed.rows) {
+        return renderTable(parsed, true);
+      }
+      
       // Check if it has both text and imageUrl
       if (parsed.text || parsed.imageUrl) {
         return (
@@ -716,6 +736,41 @@ export function QuestionDisplay({
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Question Type
+                </label>
+                <select
+                  value={localQuestion.question_type}
+                  onChange={(e) => {
+                    const newType = e.target.value as 'multiple_choice' | 'grid_in';
+                    setLocalQuestion({...localQuestion, question_type: newType});
+                    setEditForm({...editForm, question_type: newType});
+                    
+                    // Reset options if switching to grid_in
+                    if (newType === 'grid_in') {
+                      setEditForm({...editForm, options: {}, question_type: newType});
+                    } else if (newType === 'multiple_choice' && !editForm.options) {
+                      // Set default options if switching to multiple choice
+                      setEditForm({
+                        ...editForm, 
+                        options: {
+                          'A': '{"text": "Option A"}',
+                          'B': '{"text": "Option B"}',
+                          'C': '{"text": "Option C"}',
+                          'D': '{"text": "Option D"}'
+                        },
+                        question_type: newType
+                      });
+                    }
+                  }}
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                >
+                  <option value="multiple_choice">Multiple Choice</option>
+                  <option value="grid_in">Grid In (Open Answer)</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Correct Answer
                 </label>
                 <input
@@ -723,7 +778,7 @@ export function QuestionDisplay({
                   value={editForm.correct_answer}
                   onChange={(e) => setEditForm({...editForm, correct_answer: e.target.value})}
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="Correct answer (e.g., A, B, C, D or numeric value)"
+                  placeholder={localQuestion.question_type === 'multiple_choice' ? "Correct answer (e.g., A, B, C, D)" : "Correct numeric/text answer"}
                 />
               </div>
               
@@ -790,3 +845,4 @@ export function QuestionDisplay({
     </div>
   )
 }
+

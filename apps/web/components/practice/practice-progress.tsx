@@ -157,18 +157,23 @@ export function PracticeProgress({ timeframe = 'month', showDetailedStats = true
     })
 
     // Convert to arrays and sort
-    const topicArray = Array.from(topicStats.entries()).map(([topic, stats]) => ({
-      topic,
-      totalQuestions: stats.total,
-      correctAnswers: stats.correct,
-      accuracy: (stats.correct / stats.total) * 100,
-      recentAccuracy: stats.recent > 0 ? (stats.recentCorrect / stats.recent) * 100 : 0,
-      trend: stats.recent > 0 
-        ? stats.recentAccuracy > (stats.correct / stats.total) * 100 ? 'improving' as const
-          : stats.recentAccuracy < (stats.correct / stats.total) * 100 ? 'declining' as const
+    const topicArray = Array.from(topicStats.entries()).map(([topic, stats]) => {
+      const overallAccuracy = (stats.correct / stats.total) * 100;
+      const recentAccuracy = stats.recent > 0 ? (stats.recentCorrect / stats.recent) * 100 : 0;
+      
+      return {
+        topic,
+        totalQuestions: stats.total,
+        correctAnswers: stats.correct,
+        accuracy: overallAccuracy,
+        recentAccuracy,
+        trend: stats.recent > 0 
+          ? (recentAccuracy > overallAccuracy ? 'improving' as const
+            : recentAccuracy < overallAccuracy ? 'declining' as const
+            : 'stable' as const)
           : 'stable' as const
-        : 'stable' as const
-    })).filter(t => t.totalQuestions >= 3) // Only include topics with at least 3 questions
+      };
+    }).filter(t => t.totalQuestions >= 3) // Only include topics with at least 3 questions
 
     const strongestTopics = topicArray
       .sort((a, b) => b.accuracy - a.accuracy)
@@ -320,9 +325,10 @@ export function PracticeProgress({ timeframe = 'month', showDetailedStats = true
           <h3 className="text-lg font-medium text-gray-900 mb-4">Accuracy Trend</h3>
           <ProgressChart
             data={stats.accuracyTrend.map(d => ({
-              date: d.date,
-              score: d.accuracy
+              label: d.date,
+              value: d.accuracy
             }))}
+            title="Accuracy Trend"
             height={200}
           />
         </div>

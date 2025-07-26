@@ -18,6 +18,26 @@ interface PracticePreferences {
   saveProgress: boolean
 }
 
+interface SettingOption {
+  value: string
+  label: string
+}
+
+interface SettingConfig {
+  key: keyof PracticePreferences
+  label: string
+  type: 'number' | 'select' | 'checkbox'
+  description: string
+  options?: SettingOption[]
+  min?: number
+  max?: number
+}
+
+interface SettingsGroup {
+  title: string
+  settings: SettingConfig[]
+}
+
 interface PracticeSettingsProps {
   onSettingsChange?: (settings: PracticePreferences) => void
   embedded?: boolean
@@ -110,7 +130,7 @@ export function PracticeSettings({ onSettingsChange, embedded = false }: Practic
     })
   }
 
-  const settingsGroups = [
+  const settingsGroups: SettingsGroup[] = [
     {
       title: 'Default Quiz Settings',
       settings: [

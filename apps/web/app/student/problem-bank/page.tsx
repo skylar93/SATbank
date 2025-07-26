@@ -332,43 +332,6 @@ export default function ProblemBank() {
           </nav>
         </div>
 
-        {/* Debug Section - Remove in production */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <h4 className="font-semibold text-yellow-800 mb-2">Debug Info</h4>
-            <div className="text-sm text-yellow-700 space-y-1">
-              <p>User: {user ? user.email : 'Not authenticated'}</p>
-              <p>User ID: {user?.id || 'N/A'}</p>
-              <p>Loading: {loading.toString()}</p>
-              <p>Questions loaded: {questions.length}</p>
-              <p>Filtered questions: {filteredQuestions.length}</p>
-              <div className="mt-2 space-x-2">
-                <button 
-                  onClick={async () => {
-                    const { data: { session } } = await supabase.auth.getSession()
-                    const { data: { user: currentUser } } = await supabase.auth.getUser()
-                    console.log('Current session:', session)
-                    console.log('Current user:', currentUser)
-                    alert(`Session exists: ${!!session}, User exists: ${!!currentUser}`)
-                  }}
-                  className="px-3 py-1 bg-yellow-200 text-yellow-800 rounded text-xs hover:bg-yellow-300"
-                >
-                  Check Auth Status
-                </button>
-                <button 
-                  onClick={() => {
-                    console.log('🔄 Force fetching questions...')
-                    hasFetchedRef.current = false
-                    fetchQuestions()
-                  }}
-                  className="px-3 py-1 bg-blue-200 text-blue-800 rounded text-xs hover:bg-blue-300"
-                >
-                  Force Fetch Questions
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Content based on active tab */}
         {activeTab === 'browse' && (

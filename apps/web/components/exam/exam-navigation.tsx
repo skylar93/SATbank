@@ -278,9 +278,6 @@ export function ExamNavigation({
           <div className="text-sm text-gray-600">
             <span className="font-medium">{getModuleName(currentModule)}</span>
           </div>
-          <div className="text-xs text-gray-500">
-            Click any question number to navigate within this module
-          </div>
         </div>
         
         <div className="flex flex-wrap gap-2">
@@ -309,7 +306,7 @@ export function ExamNavigation({
                 {questionNum}
                 {isMarked && (
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center">
-                    <span className="text-xs text-white">🏷️</span>
+                    <span className="text-xs text-white font-bold">!</span>
                   </div>
                 )}
               </button>
@@ -432,12 +429,6 @@ export function ExamNavigation({
         </div>
       </div>
 
-      {/* Updated SAT Notice */}
-      {!isAdminPreview && (
-        <div className="mt-3 text-xs text-gray-500 italic">
-          ⚠️ SAT Format: You can navigate between questions within this module, but cannot return to previous modules once completed.
-        </div>
-      )}
     </div>
   )
 }

@@ -10,15 +10,24 @@ import { createClient } from '../../../../lib/supabase'
 
 interface Question {
   id: string
-  module_type: string
+  exam_id: string
+  module_type: 'english1' | 'english2' | 'math1' | 'math2'
   question_number: number
-  question_type: string
-  difficulty_level: string
+  question_type: 'multiple_choice' | 'grid_in' | 'essay'
+  difficulty_level: 'easy' | 'medium' | 'hard'
   question_text: string
-  options: any
+  question_image_url: string | null
+  options: Record<string, string> | null
   correct_answer: string
-  explanation: string
-  topic_tags: string[]
+  explanation: string | null
+  points: number
+  topic_tags: string[] | null
+  table_data?: {
+    headers: string[]
+    rows: string[][]
+  } | null
+  created_at: string
+  updated_at: string
 }
 
 interface PracticeSettings {
@@ -428,11 +437,7 @@ export default function PracticeSession() {
                     questionNumber={currentQuestionIndex + 1}
                     totalQuestions={questions.length}
                     userAnswer={currentAnswer?.user_answer}
-                    onAnswer={handleAnswer}
-                    showNavigation={true}
-                    onPrevious={currentQuestionIndex > 0 ? goToPreviousQuestion : undefined}
-                    onNext={undefined} // Handled by answer submission
-                    isPracticeMode={true}
+                    onAnswerChange={handleAnswer}
                   />
                 )}
               </div>

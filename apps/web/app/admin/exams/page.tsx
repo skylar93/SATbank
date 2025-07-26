@@ -75,7 +75,7 @@ export default function ManageExamsPage() {
     }
   }
 
-  const fetchQuestions = async () => {
+  const fetchQuestions = async (forceRefresh = false) => {
     try {
       let query = supabase
         .from('questions')
@@ -87,6 +87,11 @@ export default function ManageExamsPage() {
         query = query.eq('exam_id', selectedExam)
       }
 
+      // Add cache busting parameter for force refresh
+      if (forceRefresh) {
+        query = query.limit(10000) // Force a different query to bypass cache
+      }
+
       const { data, error } = await query
 
       if (error) {
@@ -94,9 +99,16 @@ export default function ManageExamsPage() {
         return
       }
 
+      console.log('🔄 Fetched questions:', {
+        total: data?.length || 0,
+        selectedExam,
+        filters: { selectedModule, searchTerm }
+      })
+      
       setQuestions(data || [])
     } catch (error) {
       console.error('Error:', error)
+      alert('Failed to fetch questions. Please refresh the page.')
     } finally {
       setLoading(false)
     }
@@ -111,7 +123,7 @@ export default function ManageExamsPage() {
     if (!editingQuestion || !editForm) return
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('questions')
         .update({
           question_text: editForm.question_text,
@@ -121,17 +133,24 @@ export default function ManageExamsPage() {
           table_data: editForm.table_data
         })
         .eq('id', editingQuestion)
+        .select()
 
       if (error) {
         console.error('Error updating question:', error)
+        alert(`Failed to update question: ${error.message}`)
         return
       }
 
-      await fetchQuestions()
+      console.log('✅ Question updated successfully:', data)
+      
+      // Force refresh to ensure we get the latest data
+      await fetchQuestions(true)
       setEditingQuestion(null)
       setEditForm({})
+      alert('Question updated successfully!')
     } catch (error) {
       console.error('Error:', error)
+      alert('Failed to update question. Please try again.')
     }
   }
 
@@ -290,7 +309,7 @@ export default function ManageExamsPage() {
       )
 
       await Promise.all(updates)
-      await fetchQuestions()
+      await fetchQuestions(true) // Force refresh
       setSelectedQuestions(new Set())
       alert(`Updated ${selectedQuestions.size} questions`)
     } catch (error) {

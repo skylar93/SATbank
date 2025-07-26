@@ -843,7 +843,7 @@ function ExamPageContent() {
                 Preview Mode - No Timer • Use ← → keys to navigate
               </span>
             )}
-            {process.env.NODE_ENV === 'development' && (
+            {process.env.NODE_ENV === 'development' && isPreviewMode && (
               <button
                 onClick={() => {
                   console.log('Test button clicked - simulating timer expiry')

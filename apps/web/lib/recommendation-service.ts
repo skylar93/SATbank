@@ -145,10 +145,11 @@ export class RecommendationService {
 
     allAnswers.forEach(answer => {
       const difficulty = answer.questions?.difficulty_level
-      if (difficulty && difficultyStats[difficulty]) {
-        difficultyStats[difficulty].attempted++
+      if (difficulty && difficulty in difficultyStats) {
+        const diffKey = difficulty as keyof typeof difficultyStats;
+        difficultyStats[diffKey].attempted++
         if (answer.is_correct) {
-          difficultyStats[difficulty].correct++
+          difficultyStats[diffKey].correct++
         }
       }
     })

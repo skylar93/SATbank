@@ -34,6 +34,10 @@ export interface Question {
   explanation: string | null
   points: number
   topic_tags: string[] | null
+  table_data?: {
+    headers: string[]
+    rows: string[][]
+  } | null
   created_at: string
   updated_at: string
 }

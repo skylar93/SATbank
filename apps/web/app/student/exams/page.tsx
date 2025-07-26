@@ -143,7 +143,7 @@ export default function StudentExamsPage() {
                 changeType="positive"
                 miniChart={{
                   data: [2, 3, 4, 5, 6, exams.length],
-                  color: '#10b981'
+                  color: '#6366f1'
                 }}
               />
               
@@ -164,8 +164,8 @@ export default function StudentExamsPage() {
                 change="+12%"
                 changeType="positive"
                 miniChart={{
-                  data: [130, 135, 140, 145, 150, Math.round(exams.reduce((sum, exam) => sum + exam.total_questions, 0) / exams.length)],
-                  color: '#f59e0b'
+                  data: [130, 135, 140, 145, 150, Math.round(exams.reduce((sum, exam) => sum + getTotalTime(exam.time_limits), 0) / exams.length)],
+                  color: '#ec4899'
                 }}
               />
             </div>
@@ -238,29 +238,29 @@ export default function StudentExamsPage() {
 
                       {/* Module Time Breakdown */}
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                        <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-xl text-center hover:from-blue-100 hover:to-blue-200 transition-colors">
-                          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 p-4 rounded-xl text-center hover:from-indigo-100 hover:to-indigo-200 transition-colors">
+                          <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center mx-auto mb-2">
                             <DocumentTextIcon className="w-4 h-4 text-white" />
                           </div>
                           <div className="text-lg font-semibold text-gray-900">English 1</div>
                           <div className="text-sm text-gray-600">{exam.time_limits.english1} min</div>
                         </div>
-                        <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-xl text-center hover:from-green-100 hover:to-green-200 transition-colors">
-                          <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <div className="bg-gradient-to-r from-violet-50 to-violet-100 p-4 rounded-xl text-center hover:from-violet-100 hover:to-violet-200 transition-colors">
+                          <div className="w-8 h-8 bg-violet-500 rounded-lg flex items-center justify-center mx-auto mb-2">
                             <DocumentTextIcon className="w-4 h-4 text-white" />
                           </div>
                           <div className="text-lg font-semibold text-gray-900">English 2</div>
                           <div className="text-sm text-gray-600">{exam.time_limits.english2} min</div>
                         </div>
-                        <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-xl text-center hover:from-orange-100 hover:to-orange-200 transition-colors">
-                          <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-xl text-center hover:from-purple-100 hover:to-purple-200 transition-colors">
+                          <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-2">
                             <BoltIcon className="w-4 h-4 text-white" />
                           </div>
                           <div className="text-lg font-semibold text-gray-900">Math 1</div>
                           <div className="text-sm text-gray-600">{exam.time_limits.math1} min</div>
                         </div>
-                        <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-xl text-center hover:from-purple-100 hover:to-purple-200 transition-colors">
-                          <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <div className="bg-gradient-to-r from-pink-50 to-pink-100 p-4 rounded-xl text-center hover:from-pink-100 hover:to-pink-200 transition-colors">
+                          <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center mx-auto mb-2">
                             <BoltIcon className="w-4 h-4 text-white" />
                           </div>
                           <div className="text-lg font-semibold text-gray-900">Math 2</div>
@@ -287,7 +287,7 @@ export default function StudentExamsPage() {
                         
                         <Link
                           href={`/student/exam/${exam.id}`}
-                          className="inline-flex items-center bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+                          className="inline-flex items-center bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
                         >
                           <PlayIcon className="w-5 h-5 mr-2" />
                           Start Exam
@@ -300,40 +300,40 @@ export default function StudentExamsPage() {
             </div>
 
             {/* Important Reminders */}
-            <div className="mt-8 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6">
+            <div className="mt-8 bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-2xl p-6">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-violet-500 rounded-xl flex items-center justify-center">
                   <ExclamationTriangleIcon className="w-5 h-5 text-white" />
                 </div>
-                <h4 className="text-lg font-semibold text-amber-800">Important Reminders</h4>
+                <h4 className="text-lg font-semibold text-violet-800">Important Reminders</h4>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <CheckCircleIcon className="w-5 h-5 text-amber-600" />
-                    <span className="text-amber-700 text-sm">Ensure stable internet connection</span>
+                    <CheckCircleIcon className="w-5 h-5 text-violet-600" />
+                    <span className="text-violet-700 text-sm">Ensure stable internet connection</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <CheckCircleIcon className="w-5 h-5 text-amber-600" />
-                    <span className="text-amber-700 text-sm">Set aside uninterrupted time</span>
+                    <CheckCircleIcon className="w-5 h-5 text-violet-600" />
+                    <span className="text-violet-700 text-sm">Set aside uninterrupted time</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <CheckCircleIcon className="w-5 h-5 text-amber-600" />
-                    <span className="text-amber-700 text-sm">Have scratch paper ready</span>
+                    <CheckCircleIcon className="w-5 h-5 text-violet-600" />
+                    <span className="text-violet-700 text-sm">Have scratch paper ready</span>
                   </div>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <CheckCircleIcon className="w-5 h-5 text-amber-600" />
-                    <span className="text-amber-700 text-sm">Cannot pause or go back</span>
+                    <CheckCircleIcon className="w-5 h-5 text-violet-600" />
+                    <span className="text-violet-700 text-sm">Cannot pause or go back</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <CheckCircleIcon className="w-5 h-5 text-amber-600" />
-                    <span className="text-amber-700 text-sm">Auto-submit when time expires</span>
+                    <CheckCircleIcon className="w-5 h-5 text-violet-600" />
+                    <span className="text-violet-700 text-sm">Auto-submit when time expires</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <CheckCircleIcon className="w-5 h-5 text-amber-600" />
-                    <span className="text-amber-700 text-sm">Use approved calculator</span>
+                    <CheckCircleIcon className="w-5 h-5 text-violet-600" />
+                    <span className="text-violet-700 text-sm">Use approved calculator</span>
                   </div>
                 </div>
               </div>

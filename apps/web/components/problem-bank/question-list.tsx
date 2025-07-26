@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../contexts/auth-context'
 import { createClient } from '../../lib/supabase'
+import { renderTextWithFormattingAndMath } from '../exam/question-display'
 
 interface Question {
   id: string
@@ -32,6 +33,72 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
   const supabase = createClient()
   const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null)
   const [creatingPractice, setCreatingPractice] = useState<string | null>(null)
+
+  const renderTable = (tableData: any, isAnswerChoice = false) => {
+    const { headers, rows } = tableData;
+    return (
+      <div className={`overflow-x-auto ${isAnswerChoice ? 'text-sm' : ''}`}>
+        <table className="min-w-full border-collapse border border-gray-300">
+          <thead>
+            <tr className="bg-gray-50">
+              {headers.map((header: string, index: number) => (
+                <th key={index} className="border border-gray-300 px-2 py-1 text-left font-medium">
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row: string[], rowIndex: number) => (
+              <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                {row.map((cell: string, cellIndex: number) => (
+                  <td key={cellIndex} className="border border-gray-300 px-2 py-1">
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  const renderOptionContent = (value: any) => {
+    // If value is an object (table data), handle it specially
+    if (typeof value === 'object' && value !== null) {
+      // Check if it's direct table data format: {headers: [...], rows: [...]}
+      if (value.headers && value.rows) {
+        return renderTable(value, true);
+      }
+      
+      // Check if it's nested table data format: {table_data: {headers: [...], rows: [...]}}
+      if (value.table_data && value.table_data.headers && value.table_data.rows) {
+        return renderTable(value.table_data, true);
+      }
+      
+      // If it's an object but not table data, convert to string
+      return JSON.stringify(value);
+    }
+    
+    // Try to parse as JSON to check if it's table data
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        if (parsed.table_data && parsed.table_data.headers && parsed.table_data.rows) {
+          return renderTable(parsed.table_data, true);
+        }
+        if (parsed.headers && parsed.rows) {
+          return renderTable(parsed, true);
+        }
+      } catch (e) {
+        // Not JSON, continue with regular text rendering
+      }
+    }
+    
+    // Regular text rendering
+    return renderTextWithFormattingAndMath(value as string);
+  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -293,7 +360,7 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
                                   : 'bg-gray-50'
                               }`}
                             >
-                              <span className="font-medium">{key}.</span> {value as string}
+                              <span className="font-medium">{key}.</span> {renderOptionContent(value)}
                               {key === question.correct_answer && (
                                 <span className="ml-2 text-green-600 font-medium">(Correct)</span>
                               )}
