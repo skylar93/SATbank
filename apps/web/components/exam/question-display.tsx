@@ -70,7 +70,7 @@ export const renderTextWithFormattingAndMath = (text: string) => {
     else if (match[2] !== undefined) {
       parts.push(
         <div key={`center-${match.index}`} className="text-center my-2">
-          {restoreEscapedDollars(match[2])}
+          {renderTextWithFormattingAndMath(restoreEscapedDollars(match[2]))}
         </div>
       );
     }

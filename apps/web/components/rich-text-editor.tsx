@@ -307,7 +307,7 @@ export function RichTextEditor({
       else if (match[2] !== undefined) {
         parts.push(
           <div key={`center-${match.index}`} className="text-center my-2">
-            {match[2]}
+            {renderPreview(match[2])}
           </div>
         );
       }
