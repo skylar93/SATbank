@@ -87,10 +87,20 @@ export class AuthService {
 
       if (profileError) {
         console.error('❌ AuthService: Error getting profile:', profileError)
+        console.error('❌ AuthService: Profile error details:', {
+          message: profileError.message,
+          code: profileError.code,
+          details: profileError.details,
+          hint: profileError.hint
+        })
         // Don't throw here, just return user without profile
       }
 
-      console.log('👤 AuthService: Profile:', profile)
+      console.log('👤 AuthService: Profile query result:', { 
+        profile, 
+        hasProfile: !!profile,
+        profileRole: profile?.role 
+      })
 
       return {
         id: user.id,

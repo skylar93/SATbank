@@ -121,7 +121,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isAdmin = user?.profile?.role === 'admin'
   const isStudent = user?.profile?.role === 'student'
 
-  console.log('🏷️ AuthProvider: Current state:', { user: user?.email, role: user?.profile?.role, loading, error })
+  console.log('🏷️ AuthProvider: Current state:', { 
+    user: user?.email, 
+    userId: user?.id,
+    profile: user?.profile,
+    role: user?.profile?.role, 
+    isAdmin,
+    isStudent,
+    loading, 
+    error 
+  })
 
   const value = {
     user,

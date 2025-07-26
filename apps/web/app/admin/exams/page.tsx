@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../../contexts/auth-context'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { supabase } from '../../../lib/supabase'
 import Link from 'next/link'
 import { RichTextEditor } from '../../../components/rich-text-editor'
+import { DebugAuth } from '../../../components/debug-auth'
 
 interface Question {
   id: string
@@ -30,7 +31,7 @@ interface Exam {
 }
 
 export default function ManageExamsPage() {
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin, loading: authLoading } = useAuth()
   const [questions, setQuestions] = useState<Question[]>([])
   const [exams, setExams] = useState<Exam[]>([])
   const [selectedModule, setSelectedModule] = useState<string>('all')
@@ -47,14 +48,30 @@ export default function ManageExamsPage() {
   const [bulkTextField, setBulkTextField] = useState<'question_text' | 'explanation' | 'correct_answer'>('question_text')
   const [bulkTextValue, setBulkTextValue] = useState('')
 
-  const supabase = createClientComponentClient()
+  // Using shared supabase instance for consistent session management
 
   useEffect(() => {
-    if (isAdmin) {
+    console.log('🔍 Effect triggered:', { 
+      user: !!user, 
+      userEmail: user?.email,
+      userProfile: user?.profile,
+      userRole: user?.profile?.role,
+      isAdmin,
+      authLoading 
+    })
+    if (user && isAdmin) {
+      console.log('👤 User is admin, fetching data...')
       fetchExams()
       fetchQuestions()
+    } else {
+      console.log('❌ User not admin or not loaded yet', {
+        hasUser: !!user,
+        userRole: user?.profile?.role,
+        isAdmin,
+        authLoading
+      })
     }
-  }, [isAdmin])
+  }, [user, isAdmin])
 
   const fetchExams = async () => {
     try {
@@ -75,40 +92,103 @@ export default function ManageExamsPage() {
     }
   }
 
-  const fetchQuestions = async (forceRefresh = false) => {
+  const fetchQuestions = async (forceRefresh = false, retryCount = 0) => {
     try {
+      setLoading(true)
+      
+      // Check authentication first with retry logic
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      console.log('🔍 Auth session check:', { 
+        hasSession: !!session, 
+        userId: session?.user?.id,
+        userEmail: session?.user?.email,
+        accessToken: session?.access_token ? 'present' : 'missing',
+        refreshToken: session?.refresh_token ? 'present' : 'missing',
+        expiresAt: session?.expires_at,
+        error: sessionError,
+        currentTime: new Date().toISOString()
+      })
+      
+      if (sessionError) {
+        console.error('❌ Session error:', sessionError)
+        if (retryCount < 2) {
+          console.log('🔄 Retrying authentication...')
+          setTimeout(() => fetchQuestions(forceRefresh, retryCount + 1), 1000)
+          return
+        }
+      }
+      
+      if (!session?.user) {
+        console.error('No authentication session found')
+        // Instead of immediate alert, try to refresh the session first
+        if (retryCount === 0) {
+          console.log('🔄 Attempting to refresh session...')
+          const { data: refreshed } = await supabase.auth.refreshSession()
+          if (refreshed.session) {
+            console.log('✅ Session refreshed, retrying...')
+            setTimeout(() => fetchQuestions(forceRefresh, retryCount + 1), 500)
+            return
+          }
+        }
+        console.error('🚨 Authentication required. Please log in again.')
+        // Don't show alert, just log and continue
+        setLoading(false)
+        return
+      }
+
+      // Enhanced query with better error handling
       let query = supabase
         .from('questions')
-        .select('*, exam_id')
+        .select('*')
         .order('module_type', { ascending: true })
         .order('question_number', { ascending: true })
 
+      console.log('🔍 Query parameters:', { selectedExam, isAll: selectedExam === 'all' })
+
       if (selectedExam !== 'all') {
         query = query.eq('exam_id', selectedExam)
-      }
-
-      // Add cache busting parameter for force refresh
-      if (forceRefresh) {
-        query = query.limit(10000) // Force a different query to bypass cache
+        console.log('🔍 Adding exam_id filter for:', selectedExam)
+      } else {
+        console.log('🔍 Fetching ALL questions (no exam_id filter)')
       }
 
       const { data, error } = await query
 
       if (error) {
-        console.error('Error fetching questions:', error)
+        console.error('❌ Error fetching questions:', error)
+        console.error('Error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        })
+        
+        // Check if it's an authentication/RLS error
+        if (error.code === 'PGRST116' || error.message.includes('RLS') || error.message.includes('permission')) {
+          console.log('🔒 Detected RLS/permission error, this may require database policy fix')
+          console.error(`🔒 Database permission error: ${error.message}\n\nThis appears to be a Row Level Security policy issue. Please run the FINAL_QUESTIONS_RLS_FIX.sql script in your Supabase dashboard.`)
+        } else {
+          console.error(`❌ Error fetching questions: ${error.message}`)
+        }
         return
       }
 
-      console.log('🔄 Fetched questions:', {
+      console.log('✅ Fetched questions:', {
         total: data?.length || 0,
         selectedExam,
-        filters: { selectedModule, searchTerm }
+        filters: { selectedModule, searchTerm },
+        sampleQuestions: data?.slice(0, 3).map(q => ({ id: q.id, exam_id: q.exam_id, question_number: q.question_number }))
       })
       
       setQuestions(data || [])
     } catch (error) {
-      console.error('Error:', error)
-      alert('Failed to fetch questions. Please refresh the page.')
+      console.error('❌ Unexpected error:', error)
+      if (retryCount < 2) {
+        console.log('🔄 Retrying due to unexpected error...')
+        setTimeout(() => fetchQuestions(forceRefresh, retryCount + 1), 2000)
+      } else {
+        console.error('❌ Failed to fetch questions after multiple attempts. Please check your connection and try refreshing the page.')
+      }
     } finally {
       setLoading(false)
     }
@@ -428,6 +508,8 @@ export default function ManageExamsPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Manage Exam Questions</h1>
         
+        <DebugAuth />
+        
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1">
@@ -476,6 +558,33 @@ export default function ManageExamsPage() {
               <option value="math1">Math 1</option>
               <option value="math2">Math 2</option>
             </select>
+          </div>
+        </div>
+
+        {/* Debug Section */}
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-yellow-800">Debug Tools:</span>
+            <button
+              onClick={() => {
+                alert(`To fix question loading issues:
+
+1. Go to Supabase Dashboard → SQL Editor
+2. Run the script: FINAL_QUESTIONS_RLS_FIX.sql 
+3. Refresh this page
+
+The script fixes Row Level Security policies that prevent questions from loading.`)
+              }}
+              className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+            >
+              🔧 Fix RLS Issue
+            </button>
+            <button
+              onClick={() => fetchQuestions(true)}
+              className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+            >
+              🔄 Force Refresh
+            </button>
           </div>
         </div>
 

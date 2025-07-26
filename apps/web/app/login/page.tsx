@@ -4,12 +4,14 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../contexts/auth-context'
+import { supabase } from '../../lib/supabase'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [sessionTest, setSessionTest] = useState('')
   
   const { signIn, user, loading: authLoading, error: authError, isAdmin, isStudent } = useAuth()
   const router = useRouter()
@@ -24,6 +26,17 @@ export default function LoginPage() {
     try {
       await signIn(email, password)
       console.log('✅ Login: Sign in successful')
+      
+      // Test session immediately after login
+      setTimeout(async () => {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (session) {
+          setSessionTest(`✅ Session found: ${session.user.email}`)
+        } else {
+          setSessionTest(`❌ No session found after login: ${error?.message || 'Unknown error'}`)
+        }
+      }, 1000)
+      
       // Redirect will be handled by auth context or manually
     } catch (err: any) {
       console.error('❌ Login: Error:', err)
@@ -38,11 +51,11 @@ export default function LoginPage() {
     if (user && !authLoading) {
       console.log('🔄 Login: User authenticated, redirecting...', user.email, user.profile?.role)
       if (isAdmin) {
-        console.log('🔄 Login: Forcing navigation to admin dashboard')
-        window.location.href = '/admin/dashboard'
+        console.log('🔄 Login: Navigating to admin dashboard')
+        router.push('/admin/dashboard')
       } else if (isStudent) {
-        console.log('🔄 Login: Forcing navigation to student dashboard')
-        window.location.href = '/student/dashboard'
+        console.log('🔄 Login: Navigating to student dashboard')
+        router.push('/student/dashboard')
       }
     }
   }, [user, authLoading, isAdmin, isStudent])
@@ -110,6 +123,7 @@ export default function LoginPage() {
             <div>Role: {user?.profile?.role || 'None'}</div>
             <div>Is Admin: {isAdmin.toString()}</div>
             <div>Is Student: {isStudent.toString()}</div>
+            {sessionTest && <div className="mt-2 font-semibold">{sessionTest}</div>}
           </div>
 
           <div>
