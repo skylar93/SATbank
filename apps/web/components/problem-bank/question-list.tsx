@@ -77,20 +77,78 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
         return renderTable(value.table_data, true);
       }
       
-      // If it's an object but not table data, convert to string
-      return JSON.stringify(value);
+      // If it's an object but not table data, try to display it meaningfully
+      if (Array.isArray(value)) {
+        return value.join(', ');
+      }
+      
+      // For other objects, try to extract meaningful content
+      if (value.content || value.text || value.value) {
+        return renderTextWithFormattingAndMath(value.content || value.text || value.value);
+      }
+      
+      // If it has imageUrl and text properties (common option format)
+      if (value.imageUrl || value.text) {
+        return (
+          <div className="space-y-1">
+            {value.text && <div>{renderTextWithFormattingAndMath(value.text)}</div>}
+            {value.imageUrl && (
+              <img
+                src={value.imageUrl}
+                alt="Option image"
+                className="max-w-full h-auto max-h-16 border border-gray-200 rounded"
+              />
+            )}
+          </div>
+        );
+      }
+      
+      // As a last resort, show object keys or a descriptive message
+      const keys = Object.keys(value);
+      if (keys.length > 0) {
+        return `[Complex content: ${keys.join(', ')}]`;
+      }
+      
+      return '[Empty object]';
     }
     
     // Try to parse as JSON to check if it's table data
     if (typeof value === 'string') {
       try {
         const parsed = JSON.parse(value);
+        
+        // Check for table data formats
         if (parsed.table_data && parsed.table_data.headers && parsed.table_data.rows) {
           return renderTable(parsed.table_data, true);
         }
         if (parsed.headers && parsed.rows) {
           return renderTable(parsed, true);
         }
+        
+        // Check for option format with text/imageUrl
+        if (parsed.text || parsed.imageUrl) {
+          return (
+            <div className="space-y-1">
+              {parsed.text && <div>{renderTextWithFormattingAndMath(parsed.text)}</div>}
+              {parsed.imageUrl && (
+                <img
+                  src={parsed.imageUrl}
+                  alt="Option image"
+                  className="max-w-full h-auto max-h-16 border border-gray-200 rounded"
+                />
+              )}
+            </div>
+          );
+        }
+        
+        // If parsed but not recognized format, fall back to string rendering
+        if (typeof parsed === 'string') {
+          return renderTextWithFormattingAndMath(parsed);
+        }
+        
+        // For other parsed objects, show a meaningful representation
+        return `[Parsed object: ${Object.keys(parsed).join(', ')}]`;
+        
       } catch (e) {
         // Not JSON, continue with regular text rendering
       }

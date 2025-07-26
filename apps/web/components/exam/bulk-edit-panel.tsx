@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Question } from '../../lib/exam-service'
 import { RichTextEditor } from '../rich-text-editor'
 import { ImageUpload } from '../image-upload'
+import { renderTextWithFormattingAndMath } from './question-display'
 
 interface BulkEditPanelProps {
   questions: Question[]
@@ -71,59 +72,6 @@ export function BulkEditPanel({
     }
   }
 
-  const renderTextWithFormattingAndMath = (text: string) => {
-    if (!text) return text;
-    
-    // Handle escaped dollar signs
-    let processedText = text.replace(/\\\$/g, '$').replace(/ESCAPEDDOLLAR/gi, '$');
-    
-    const parts = [];
-    let lastIndex = 0;
-    
-    // Basic formatting regex
-    const combinedRegex = /(\*\*(.*?)\*\*|\*(.*?)\*|__(.*?)__|_(.*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|\n)/g;
-    let match;
-    
-    while ((match = combinedRegex.exec(processedText)) !== null) {
-      if (match.index > lastIndex) {
-        const textBefore = processedText.substring(lastIndex, match.index);
-        if (textBefore) {
-          parts.push(<span key={`text-${lastIndex}`}>{textBefore}</span>);
-        }
-      }
-      
-      const matchedContent = match[1];
-      
-      if (match[2] !== undefined) {
-        parts.push(<strong key={`bold-${match.index}`}>{match[2]}</strong>);
-      } else if (match[3] !== undefined) {
-        parts.push(<em key={`italic-${match.index}`}>{match[3]}</em>);
-      } else if (match[4] !== undefined) {
-        parts.push(<span key={`underline-${match.index}`} className="underline">{match[4]}</span>);
-      } else if (match[5] !== undefined) {
-        parts.push(<em key={`italic2-${match.index}`}>{match[5]}</em>);
-      } else if (match[6] !== undefined) {
-        parts.push(<sup key={`sup-${match.index}`}>{match[6]}</sup>);
-      } else if (match[7] !== undefined) {
-        parts.push(<sub key={`sub-${match.index}`}>{match[7]}</sub>);
-      } else if (matchedContent === '---') {
-        parts.push(<span key={`dash-${match.index}`} className="mx-1">—</span>);
-      } else if (matchedContent === '\n') {
-        parts.push(<br key={`br-${match.index}`} />);
-      }
-      
-      lastIndex = match.index + match[0].length;
-    }
-    
-    if (lastIndex < processedText.length) {
-      const remainingText = processedText.substring(lastIndex);
-      if (remainingText) {
-        parts.push(<span key={`text-${lastIndex}`}>{remainingText}</span>);
-      }
-    }
-    
-    return parts.length === 0 ? processedText : <>{parts}</>;
-  };
 
   if (!isVisible) {
     return (

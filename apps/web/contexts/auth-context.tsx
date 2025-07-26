@@ -24,6 +24,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     console.log('🔄 AuthProvider: Initializing...')
     let isInitialized = false
+    let retryCount = 0
+    const maxRetries = 3
     
     // Add timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
@@ -31,24 +33,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.warn('⏰ AuthProvider: Auth initialization timed out, setting loading to false')
         setLoading(false)
       }
-    }, 5000) // 5 second timeout
+    }, 10000) // 10 second timeout for better UX
     
-    // Get initial user
-    AuthService.getCurrentUser()
-      .then((user) => {
-        console.log('👤 AuthProvider: Initial user:', user)
+    const initializeAuth = async () => {
+      try {
+        console.log(`🔄 AuthProvider: Getting initial user (attempt ${retryCount + 1}/${maxRetries})...`)
+        const user = await AuthService.getCurrentUser()
+        console.log('👤 AuthProvider: Initial user:', user?.email || 'none')
         isInitialized = true
         clearTimeout(timeoutId)
         setUser(user)
+        setError(null) // Clear any previous errors
         setLoading(false)
-      })
-      .catch((err) => {
+      } catch (err: any) {
         console.error('❌ AuthProvider: Error getting initial user:', err)
-        isInitialized = true
-        clearTimeout(timeoutId)
-        setError(err.message)
-        setLoading(false)
-      })
+        retryCount++
+        
+        if (retryCount < maxRetries && !isInitialized) {
+          console.log(`🔄 AuthProvider: Retrying in 2 seconds... (${retryCount}/${maxRetries})`)
+          setTimeout(initializeAuth, 2000)
+        } else {
+          isInitialized = true
+          clearTimeout(timeoutId)
+          setError(err.message)
+          setLoading(false)
+        }
+      }
+    }
+    
+    initializeAuth()
 
     // Listen for auth changes
     const { data: { subscription } } = AuthService.onAuthStateChange((user) => {
@@ -75,7 +88,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await AuthService.signIn(email, password)
       console.log('✅ AuthProvider: Sign in successful')
-      // Don't manually set user here, let the auth state change handle it
+      // Wait a moment for auth state to update, then manually fetch user if needed
+      setTimeout(async () => {
+        try {
+          const currentUser = await AuthService.getCurrentUser()
+          if (currentUser) {
+            setUser(currentUser)
+            setLoading(false)
+          }
+        } catch (err) {
+          console.warn('⚠️ AuthProvider: Could not fetch user after sign in, will rely on auth state change')
+        }
+      }, 1000)
     } catch (err: any) {
       console.error('❌ AuthProvider: Sign in error:', err)
       setError(err.message)

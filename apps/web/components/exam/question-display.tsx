@@ -11,9 +11,17 @@ import { ImageUpload } from '../image-upload'
 export const renderTextWithFormattingAndMath = (text: string) => {
   if (!text) return text;
   
-  // First, handle escaped dollar signs by replacing \$ with a placeholder
-  const escapedDollarPlaceholder = '___ESCAPED_DOLLAR___';
-  let processedText = text.replace(/\\\$/g, escapedDollarPlaceholder).replace(/ESCAPEDDOLLAR/gi, '$');
+  // First, handle escaped dollar signs by replacing \$ with a unique placeholder
+  const escapedDollarPlaceholder = '§§§DOLLAR§§§';
+  let processedText = text.replace(/\\\$/g, escapedDollarPlaceholder);
+  
+  // Function to restore escaped dollars in final output
+  const restoreEscapedDollars = (content: any): any => {
+    if (typeof content === 'string') {
+      return content.replace(new RegExp(escapedDollarPlaceholder.replace(/\§/g, '\\§'), 'g'), '$');
+    }
+    return content;
+  };
   
   const parts = [];
   let lastIndex = 0;
@@ -31,7 +39,7 @@ export const renderTextWithFormattingAndMath = (text: string) => {
       if (textBefore) {
         parts.push(
           <span key={`text-${lastIndex}`}>
-            {textBefore.replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+            {restoreEscapedDollars(textBefore)}
           </span>
         );
       }
@@ -90,7 +98,7 @@ export const renderTextWithFormattingAndMath = (text: string) => {
         <img 
           key={`image-${match.index}`} 
           src={match[3]} 
-          alt={match[2].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')} 
+          alt={restoreEscapedDollars(match[2])} 
           className="max-w-full h-auto my-2 border border-gray-200 rounded"
         />
       );
@@ -99,7 +107,7 @@ export const renderTextWithFormattingAndMath = (text: string) => {
     else if (match[4] !== undefined) {
       parts.push(
         <strong key={`bold-${match.index}`} className="font-bold">
-          {match[4].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+          {restoreEscapedDollars(match[4])}
         </strong>
       );
     }
@@ -107,7 +115,7 @@ export const renderTextWithFormattingAndMath = (text: string) => {
     else if (match[5] !== undefined) {
       parts.push(
         <em key={`italic-${match.index}`} className="italic">
-          {match[5].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+          {restoreEscapedDollars(match[5])}
         </em>
       );
     }
@@ -115,7 +123,7 @@ export const renderTextWithFormattingAndMath = (text: string) => {
     else if (match[6] !== undefined) {
       parts.push(
         <span key={`underline-${match.index}`} className="underline">
-          {match[6].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+          {restoreEscapedDollars(match[6])}
         </span>
       );
     }
@@ -123,7 +131,7 @@ export const renderTextWithFormattingAndMath = (text: string) => {
     else if (match[7] !== undefined) {
       parts.push(
         <em key={`italic2-${match.index}`} className="italic">
-          {match[7].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+          {restoreEscapedDollars(match[7])}
         </em>
       );
     }
@@ -131,7 +139,7 @@ export const renderTextWithFormattingAndMath = (text: string) => {
     else if (match[8] !== undefined) {
       parts.push(
         <sup key={`superscript-${match.index}`} className="text-sm">
-          {match[8].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+          {restoreEscapedDollars(match[8])}
         </sup>
       );
     }
@@ -139,7 +147,7 @@ export const renderTextWithFormattingAndMath = (text: string) => {
     else if (match[9] !== undefined) {
       parts.push(
         <sub key={`subscript-${match.index}`} className="text-sm">
-          {match[9].replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+          {restoreEscapedDollars(match[9])}
         </sub>
       );
     }
@@ -167,7 +175,7 @@ export const renderTextWithFormattingAndMath = (text: string) => {
     if (remainingText) {
       parts.push(
         <span key={`text-${lastIndex}`}>
-          {remainingText.replace(new RegExp(escapedDollarPlaceholder, 'g'), '$')}
+          {restoreEscapedDollars(remainingText)}
         </span>
       );
     }
@@ -175,7 +183,7 @@ export const renderTextWithFormattingAndMath = (text: string) => {
   
   // If no formatting was found, return the original text with escaped dollars processed
   if (parts.length === 0) {
-    return processedText.replace(new RegExp(escapedDollarPlaceholder, 'g'), '$');
+    return restoreEscapedDollars(processedText);
   }
   
   return <>{parts}</>;
@@ -377,9 +385,19 @@ export function QuestionDisplay({
   };
   
   const renderAnswerChoiceContent = (value: string) => {
+    // Debug logging to help identify the issue
+    console.log('🔍 renderAnswerChoiceContent called with:', { value, type: typeof value });
+    
+    // Handle null, undefined, or non-string values
+    if (!value || typeof value !== 'string') {
+      console.log('⚠️ Value is not a valid string:', value);
+      return <span className="text-gray-500 italic">No content</span>;
+    }
+
     // Try to parse as JSON to check if it's table data or has image URL
     try {
       const parsed = JSON.parse(value);
+      console.log('✅ JSON parsing successful:', parsed);
       
       // Check for direct table data in the parsed JSON
       if (parsed.table_data && parsed.table_data.headers && parsed.table_data.rows) {
@@ -408,7 +426,37 @@ export function QuestionDisplay({
           </div>
         );
       }
+
+      // If it's a valid JSON object but doesn't match expected structures,
+      // try to convert it back to a readable format
+      if (typeof parsed === 'object') {
+        // If it looks like table data structure, try to render it
+        if (Array.isArray(parsed)) {
+          return (
+            <div className="text-sm">
+              {parsed.map((item, index) => (
+                <div key={index}>{String(item)}</div>
+              ))}
+            </div>
+          );
+        }
+        
+        // For other objects, display as formatted text
+        return (
+          <div className="text-sm text-red-600 bg-red-50 p-2 rounded border">
+            <div className="font-medium">Object content detected:</div>
+            <pre className="text-xs mt-1 whitespace-pre-wrap">
+              {JSON.stringify(parsed, null, 2)}
+            </pre>
+          </div>
+        );
+      }
+      
+      // If parsed is a string or primitive, use it directly
+      return renderTextWithFormattingAndMath(String(parsed));
+      
     } catch (e) {
+      console.log('❌ JSON parsing failed:', e, 'Original value:', value);
       // Not JSON, continue with regular text rendering
     }
     
@@ -572,7 +620,57 @@ export function QuestionDisplay({
                     <span className="text-red-600 text-sm font-medium">✗ Incorrect</span>
                   )}
                 </div>
-                <div className="text-gray-900 leading-relaxed">{renderAnswerChoiceContent(String(value))}</div>
+                <div className="text-gray-900 leading-relaxed">
+                  {(() => {
+                    console.log('🎯 Rendering option value:', { key, value, type: typeof value });
+                    
+                    // Handle cases where value is already an object (not a string)
+                    if (typeof value === 'object' && value !== null) {
+                      console.log('🔍 Value is an object, attempting to render table data');
+                      
+                      // Check if it has table structure
+                      if (value.headers && value.rows) {
+                        return renderTable(value, true);
+                      }
+                      
+                      // Check if it has nested table_data
+                      if (value.table_data && value.table_data.headers && value.table_data.rows) {
+                        return renderTable(value.table_data, true);
+                      }
+                      
+                      // Check for text/image content
+                      if (value.text || value.imageUrl) {
+                        return (
+                          <div className="space-y-2">
+                            {value.text && (
+                              <div>{renderTextWithFormattingAndMath(value.text)}</div>
+                            )}
+                            {value.imageUrl && (
+                              <img
+                                src={value.imageUrl}
+                                alt="Answer choice image"
+                                className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
+                              />
+                            )}
+                          </div>
+                        );
+                      }
+                      
+                      // Fallback for unrecognized object structure
+                      return (
+                        <div className="text-sm text-red-600 bg-red-50 p-2 rounded border">
+                          <div className="font-medium">Debug: Object detected in option {key}</div>
+                          <pre className="text-xs mt-1 whitespace-pre-wrap">
+                            {JSON.stringify(value, null, 2)}
+                          </pre>
+                        </div>
+                      );
+                    }
+                    
+                    // Handle string values normally
+                    return renderAnswerChoiceContent(String(value));
+                  })()}
+                </div>
               </div>
             </label>
           ))}

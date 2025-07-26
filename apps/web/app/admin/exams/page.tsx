@@ -166,9 +166,17 @@ export default function ManageExamsPage() {
         // Check if it's an authentication/RLS error
         if (error.code === 'PGRST116' || error.message.includes('RLS') || error.message.includes('permission')) {
           console.log('🔒 Detected RLS/permission error, this may require database policy fix')
-          console.error(`🔒 Database permission error: ${error.message}\n\nThis appears to be a Row Level Security policy issue. Please run the FINAL_QUESTIONS_RLS_FIX.sql script in your Supabase dashboard.`)
+          const errorMsg = `🔒 Database permission error: ${error.message}\n\nThis appears to be a Row Level Security policy issue. Please run the FINAL_QUESTIONS_RLS_FIX.sql script in your Supabase dashboard.`
+          console.error(errorMsg)
+          alert(errorMsg)
+        } else if (error.code === 'PGRST301' || error.message.includes('JWT')) {
+          console.log('🔑 JWT/Authentication error detected')
+          const errorMsg = `🔑 Authentication error: ${error.message}\n\nPlease try logging out and logging back in.`
+          console.error(errorMsg)
+          alert(errorMsg)
         } else {
           console.error(`❌ Error fetching questions: ${error.message}`)
+          alert(`Error fetching questions: ${error.message}`)
         }
         return
       }

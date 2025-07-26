@@ -27,6 +27,22 @@ export interface AuthUser {
 }
 
 export class AuthService {
+  // Test database connectivity
+  static async testConnection(): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('count', { count: 'exact', head: true })
+      
+      if (error) {
+        return { success: false, error: error.message }
+      }
+      
+      return { success: true }
+    } catch (error: any) {
+      return { success: false, error: error.message }
+    }
+  }
   // Sign up new user
   static async signUp(email: string, password: string, fullName: string) {
     const { data, error } = await supabase.auth.signUp({
@@ -93,6 +109,13 @@ export class AuthService {
           details: profileError.details,
           hint: profileError.hint
         })
+        
+        // Check if it's a missing profile (which is normal for new users)
+        if (profileError.code === 'PGRST116') {
+          console.log('📝 AuthService: User profile not found, this is normal for new users')
+        } else {
+          console.warn('⚠️ AuthService: Profile fetch failed, continuing without profile')
+        }
         // Don't throw here, just return user without profile
       }
 
