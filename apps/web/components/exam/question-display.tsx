@@ -26,11 +26,11 @@ export const renderTextWithFormattingAndMath = (text: string) => {
   const parts = [];
   let lastIndex = 0;
   
-  // Combined regex for math expressions, formatting, line breaks, dashes, long blanks, center alignment, and images
+  // Combined regex for tables, positioned images, math expressions, formatting, line breaks, dashes, long blanks, center alignment, and images
   // CRITICAL: _{5,} MUST be first among underscore patterns to get priority
-  const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|::(.*?)::|!\[(.*?)\]\((.*?)\)|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
+  const combinedRegex = /({{table}}[\s\S]*?{{\/table}}|{{img-(left|center|right)}}!\[(.*?)\]\((.*?)\){{\/img-(left|center|right)}}|_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|::(.*?)::|!\[(.*?)\]\((.*?)\)|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
   
-  let match;
+  let match: RegExpExecArray | null;
   
   while ((match = combinedRegex.exec(processedText)) !== null) {
     // Add text before current match
@@ -47,8 +47,68 @@ export const renderTextWithFormattingAndMath = (text: string) => {
     
     const matchedContent = match[1];
     
+    // Handle tables
+    if (matchedContent.startsWith('{{table}}')) {
+      const tableContent = matchedContent.replace(/{{table}}|{{\/table}}/g, '').trim();
+      const lines = tableContent.split('\n').filter(line => line.trim());
+      
+      if (lines.length >= 3) {
+        const headers = lines[0].split('|').map(h => h.trim());
+        const rows = lines.slice(2).map(line => line.split('|').map(cell => cell.trim()));
+        
+        parts.push(
+          <div key={`table-${match.index}`} className="my-4 overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-300 bg-white">
+              <thead>
+                <tr className="bg-gray-50">
+                  {headers.map((header, i) => (
+                    <th key={i} className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900">
+                      {renderTextWithFormattingAndMath(restoreEscapedDollars(header))}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row, i) => (
+                  <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    {row.map((cell, j) => (
+                      <td key={j} className="border border-gray-300 px-4 py-2 text-gray-900">
+                        {renderTextWithFormattingAndMath(restoreEscapedDollars(cell))}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
+    }
+    // Handle positioned images
+    else if (match[2] && match[3] && match[4]) {
+      const position = match[2];
+      const alt = match[3];
+      const url = match[4];
+      
+      const alignmentClass = position === 'left' ? 'text-left' : 
+                            position === 'right' ? 'text-right' : 'text-center';
+      
+      parts.push(
+        <div key={`positioned-image-${match.index}`} className={`my-4 ${alignmentClass}`}>
+          <img 
+            src={url} 
+            alt={restoreEscapedDollars(alt)}
+            className="max-w-full h-auto border border-gray-200 rounded inline-block"
+            onError={(e) => {
+              console.error('Image failed to load:', url);
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        </div>
+      );
+    }
     // Handle long blanks (5 or more underscores) - MUST BE FIRST
-    if (matchedContent.match(/_{5,}/)) {
+    else if (matchedContent.match(/_{5,}/)) {
       const blankLength = matchedContent.length;
       parts.push(
         <span 
@@ -67,10 +127,10 @@ export const renderTextWithFormattingAndMath = (text: string) => {
       );
     }
     // Handle center alignment ::text::
-    else if (match[2] !== undefined) {
+    else if (match[6] !== undefined) {
       parts.push(
         <div key={`center-${match.index}`} className="text-center my-2">
-          {renderTextWithFormattingAndMath(restoreEscapedDollars(match[2]))}
+          {renderTextWithFormattingAndMath(restoreEscapedDollars(match[6]))}
         </div>
       );
     }
@@ -101,61 +161,67 @@ export const renderTextWithFormattingAndMath = (text: string) => {
       }
     }
     // Handle markdown images ![alt](url)
-    else if (match[3] !== undefined && match[4] !== undefined) {
+    else if (match[7] !== undefined && match[8] !== undefined) {
+      const imageUrl = match[8];
+      const imageAlt = match[7];
       parts.push(
         <img 
           key={`image-${match.index}`} 
-          src={match[4]} 
-          alt={restoreEscapedDollars(match[3])} 
+          src={imageUrl} 
+          alt={restoreEscapedDollars(imageAlt)} 
           className="max-w-full h-auto my-2 border border-gray-200 rounded"
+          onError={(e) => {
+            console.error('Image failed to load:', imageUrl);
+            e.currentTarget.style.display = 'none';
+          }}
         />
       );
     }
     // Handle bold formatting **text**
-    else if (match[5] !== undefined) {
+    else if (match[9] !== undefined) {
       parts.push(
         <strong key={`bold-${match.index}`} className="font-bold">
-          {restoreEscapedDollars(match[5])}
+          {restoreEscapedDollars(match[9])}
         </strong>
       );
     }
     // Handle italic formatting *text*
-    else if (match[6] !== undefined) {
+    else if (match[10] !== undefined) {
       parts.push(
         <em key={`italic-${match.index}`} className="italic">
-          {restoreEscapedDollars(match[6])}
+          {restoreEscapedDollars(match[10])}
         </em>
       );
     }
     // Handle underline formatting __text__
-    else if (match[7] !== undefined) {
+    else if (match[11] !== undefined) {
       parts.push(
         <span key={`underline-${match.index}`} className="underline">
-          {restoreEscapedDollars(match[7])}
+          {restoreEscapedDollars(match[11])}
         </span>
       );
     }
     // Handle italic formatting _text_
-    else if (match[8] !== undefined) {
+    else if (match[12] !== undefined) {
       parts.push(
         <em key={`italic2-${match.index}`} className="italic">
-          {restoreEscapedDollars(match[8])}
+          {restoreEscapedDollars(match[12])}
         </em>
       );
     }
     // Handle superscript formatting ^^text^^
-    else if (match[9] !== undefined) {
+    else if (match[13] !== undefined) {
       parts.push(
         <sup key={`superscript-${match.index}`} className="text-sm">
-          {restoreEscapedDollars(match[9])}
+          {restoreEscapedDollars(match[13])}
         </sup>
       );
     }
     // Handle subscript formatting ~~text~~
-    else if (match[10] !== undefined) {
+    else if (match[14] !== undefined) {
       parts.push(
         <sub key={`subscript-${match.index}`} className="text-sm">
-          {restoreEscapedDollars(match[10])}
+          {restoreEscapedDollars(match[14])}
         </sub>
       );
     }
@@ -231,7 +297,8 @@ export function QuestionDisplay({
     question_type: question.question_type,
     options: question.options || {},
     correct_answer: question.correct_answer,
-    explanation: question.explanation || ''
+    explanation: question.explanation || '',
+    table_data: question.table_data || null
   })
   const [saving, setSaving] = useState(false)
 
@@ -243,7 +310,8 @@ export function QuestionDisplay({
       question_type: question.question_type,
       options: question.options || {},
       correct_answer: question.correct_answer,
-      explanation: question.explanation || ''
+      explanation: question.explanation || '',
+      table_data: question.table_data || null
     })
   }, [question.id, question.question_text, question.options, question.correct_answer, question.explanation])
 
@@ -300,7 +368,7 @@ export function QuestionDisplay({
           options: editForm.options,
           correct_answer: editForm.correct_answer,
           explanation: editForm.explanation,
-          table_data: localQuestion.table_data // Keep existing table_data
+          table_data: editForm.table_data
         })
         .eq('id', question.id)
 
@@ -325,7 +393,8 @@ export function QuestionDisplay({
         question_type: editForm.question_type,
         options: editForm.options,
         correct_answer: editForm.correct_answer,
-        explanation: editForm.explanation
+        explanation: editForm.explanation,
+        table_data: editForm.table_data
       }
       
       setLocalQuestion(updatedQuestion)
@@ -354,7 +423,8 @@ export function QuestionDisplay({
       question_type: localQuestion.question_type,
       options: localQuestion.options || {},
       correct_answer: localQuestion.correct_answer,
-      explanation: localQuestion.explanation || ''
+      explanation: localQuestion.explanation || '',
+      table_data: localQuestion.table_data || null
     })
     setIsEditing(false)
   }
@@ -393,19 +463,15 @@ export function QuestionDisplay({
   };
   
   const renderAnswerChoiceContent = (value: string) => {
-    // Debug logging to help identify the issue
-    console.log('🔍 renderAnswerChoiceContent called with:', { value, type: typeof value });
-    
     // Handle null, undefined, or non-string values
     if (!value || typeof value !== 'string') {
-      console.log('⚠️ Value is not a valid string:', value);
       return <span className="text-gray-500 italic">No content</span>;
     }
 
-    // Try to parse as JSON to check if it's table data or has image URL
-    try {
-      const parsed = JSON.parse(value);
-      console.log('✅ JSON parsing successful:', parsed);
+    // Only try to parse as JSON if it looks like JSON (starts with { or [)
+    if (value.trim().startsWith('{') || value.trim().startsWith('[')) {
+      try {
+        const parsed = JSON.parse(value);
       
       // Check for direct table data in the parsed JSON
       if (parsed.table_data && parsed.table_data.headers && parsed.table_data.rows) {
@@ -429,6 +495,10 @@ export function QuestionDisplay({
                 src={parsed.imageUrl}
                 alt="Answer choice image"
                 className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
+                onError={(e) => {
+                  console.error('Answer choice image failed to load:', parsed.imageUrl);
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             )}
           </div>
@@ -460,12 +530,12 @@ export function QuestionDisplay({
         );
       }
       
-      // If parsed is a string or primitive, use it directly
-      return renderTextWithFormattingAndMath(String(parsed));
-      
-    } catch (e) {
-      console.log('❌ JSON parsing failed:', e, 'Original value:', value);
-      // Not JSON, continue with regular text rendering
+        // If parsed is a string or primitive, use it directly
+        return renderTextWithFormattingAndMath(String(parsed));
+        
+      } catch (e) {
+        // Not JSON, continue with regular text rendering
+      }
     }
     
     // Check if it's a simple image URL
@@ -475,6 +545,10 @@ export function QuestionDisplay({
           src={value}
           alt="Answer choice image"
           className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
+          onError={(e) => {
+            console.error('Simple image URL failed to load:', value);
+            e.currentTarget.style.display = 'none';
+          }}
         />
       );
     }
@@ -573,6 +647,7 @@ export function QuestionDisplay({
                         alt={`Option ${key} preview`}
                         className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
                         onError={(e) => {
+                          console.error('Option preview image failed to load:', optionData.imageUrl);
                           e.currentTarget.style.display = 'none';
                         }}
                       />
@@ -630,34 +705,38 @@ export function QuestionDisplay({
                 </div>
                 <div className="text-gray-900 leading-relaxed">
                   {(() => {
-                    console.log('🎯 Rendering option value:', { key, value, type: typeof value });
                     
                     // Handle cases where value is already an object (not a string)
                     if (typeof value === 'object' && value !== null) {
-                      console.log('🔍 Value is an object, attempting to render table data');
+                      
+                      const objValue = value as any; // Type assertion to fix TypeScript error
                       
                       // Check if it has table structure
-                      if (value.headers && value.rows) {
-                        return renderTable(value, true);
+                      if (objValue.headers && objValue.rows) {
+                        return renderTable(objValue, true);
                       }
                       
                       // Check if it has nested table_data
-                      if (value.table_data && value.table_data.headers && value.table_data.rows) {
-                        return renderTable(value.table_data, true);
+                      if (objValue.table_data && objValue.table_data.headers && objValue.table_data.rows) {
+                        return renderTable(objValue.table_data, true);
                       }
                       
                       // Check for text/image content
-                      if (value.text || value.imageUrl) {
+                      if (objValue.text || objValue.imageUrl) {
                         return (
                           <div className="space-y-2">
-                            {value.text && (
-                              <div>{renderTextWithFormattingAndMath(value.text)}</div>
+                            {objValue.text && (
+                              <div>{renderTextWithFormattingAndMath(objValue.text)}</div>
                             )}
-                            {value.imageUrl && (
+                            {objValue.imageUrl && (
                               <img
-                                src={value.imageUrl}
+                                src={objValue.imageUrl}
                                 alt="Answer choice image"
                                 className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
+                                onError={(e) => {
+                                  console.error('Answer option object image failed to load:', objValue.imageUrl);
+                                  e.currentTarget.style.display = 'none';
+                                }}
                               />
                             )}
                           </div>
@@ -726,7 +805,7 @@ export function QuestionDisplay({
       <div className="flex-1 lg:w-1/2 p-6 lg:pr-3 border-b lg:border-b-0 lg:border-r border-gray-200">
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 truncate" title={`Question ${questionNumber} of ${totalQuestions}`}>
               Question {questionNumber} of {totalQuestions}
             </h2>
             <div className="flex items-center space-x-2">
@@ -820,6 +899,7 @@ export function QuestionDisplay({
                   placeholder="Enter question text..."
                   rows={6}
                   showPreview={true}
+                  tableData={localQuestion.table_data}
                 />
               </div>
               
@@ -900,6 +980,108 @@ export function QuestionDisplay({
                   showPreview={true}
                 />
               </div>
+              
+              {editForm.table_data && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Table Data
+                  </label>
+                  <div className="space-y-4 p-4 border border-gray-300 rounded-md bg-gray-50">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Headers (comma separated)
+                      </label>
+                      <input
+                        type="text"
+                        value={editForm.table_data?.headers?.join(', ') || ''}
+                        onChange={(e) => {
+                          const headers = e.target.value.split(',').map(h => h.trim()).filter(h => h);
+                          setEditForm({
+                            ...editForm,
+                            table_data: {
+                              ...editForm.table_data,
+                              headers,
+                              rows: editForm.table_data?.rows || []
+                            }
+                          });
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="Header 1, Header 2, Header 3..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Table Rows
+                      </label>
+                      <div className="space-y-2">
+                        {editForm.table_data?.rows?.map((row, rowIndex) => (
+                          <div key={rowIndex} className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={row.join(', ')}
+                              onChange={(e) => {
+                                const newRowData = e.target.value.split(',').map(cell => cell.trim());
+                                const newRows = [...(editForm.table_data?.rows || [])];
+                                newRows[rowIndex] = newRowData;
+                                setEditForm({
+                                  ...editForm,
+                                  table_data: {
+                                    ...editForm.table_data,
+                                    headers: editForm.table_data?.headers || [],
+                                    rows: newRows
+                                  }
+                                });
+                              }}
+                              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                              placeholder={`Row ${rowIndex + 1} data (comma separated)...`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newRows = editForm.table_data?.rows?.filter((_, i) => i !== rowIndex) || [];
+                                setEditForm({
+                                  ...editForm,
+                                  table_data: {
+                                    ...editForm.table_data,
+                                    headers: editForm.table_data?.headers || [],
+                                    rows: newRows
+                                  }
+                                });
+                              }}
+                              className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )) || []}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newRows = [...(editForm.table_data?.rows || []), ['']];
+                            setEditForm({
+                              ...editForm,
+                              table_data: {
+                                ...editForm.table_data,
+                                headers: editForm.table_data?.headers || [],
+                                rows: newRows
+                              }
+                            });
+                          }}
+                          className="px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600"
+                        >
+                          + Add Row
+                        </button>
+                      </div>
+                    </div>
+                    <div className="pt-2 border-t border-gray-300">
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Preview
+                      </label>
+                      {editForm.table_data && renderTable(editForm.table_data, true)}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-gray-900 leading-relaxed">
@@ -913,6 +1095,10 @@ export function QuestionDisplay({
                 src={localQuestion.question_image_url}
                 alt="Question diagram or image"
                 className="max-w-full h-auto border border-gray-200 rounded"
+                onError={(e) => {
+                  console.error('Question image failed to load:', localQuestion.question_image_url);
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             </div>
           )}

@@ -59,6 +59,7 @@ export function ImageUpload({
         .from('question-assets')
         .getPublicUrl(filePath)
 
+      console.log('✅ Image uploaded successfully:', { filePath, publicUrl })
       onImageUploaded(publicUrl)
     } catch (error) {
       console.error('Upload error:', error)

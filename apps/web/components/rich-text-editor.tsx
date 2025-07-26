@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Bold, Italic, Underline, Search, Replace, Superscript, Subscript, Undo, Redo, AlignCenter } from 'lucide-react'
+import { Bold, Italic, Underline, Search, Replace, Superscript, Subscript, Undo, Redo, AlignCenter, Table, Image, AlignLeft, AlignRight } from 'lucide-react'
 import { InlineMath, BlockMath } from 'react-katex'
 
 interface RichTextEditorProps {
@@ -12,6 +12,7 @@ interface RichTextEditorProps {
   className?: string
   showPreview?: boolean
   compact?: boolean // For smaller interface like answer choices
+  tableData?: any // For displaying Supabase table data
 }
 
 export function RichTextEditor({
@@ -21,7 +22,8 @@ export function RichTextEditor({
   rows = 6,
   className = "",
   showPreview = false,
-  compact = false
+  compact = false,
+  tableData
 }: RichTextEditorProps) {
   const [selectedText, setSelectedText] = useState('')
   const [showFindReplace, setShowFindReplace] = useState(false)
@@ -31,6 +33,13 @@ export function RichTextEditor({
   const [totalMatches, setTotalMatches] = useState(0)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [previewMode, setPreviewMode] = useState(false)
+  const [showTableEditor, setShowTableEditor] = useState(false)
+  const [showImageDialog, setShowImageDialog] = useState(false)
+  const [tableRows, setTableRows] = useState(2)
+  const [tableCols, setTableCols] = useState(2)
+  const [imageUrl, setImageUrl] = useState('')
+  const [imageAlt, setImageAlt] = useState('')
+  const [imagePosition, setImagePosition] = useState<'left' | 'center' | 'right'>('center')
   
   // Undo/Redo functionality
   const [history, setHistory] = useState<string[]>([])
@@ -208,6 +217,61 @@ export function RichTextEditor({
     insertMath(latexFraction)
   }
 
+  const insertTable = (rows: number, cols: number) => {
+    if (!textareaRef.current) return
+
+    const start = textareaRef.current.selectionStart
+    const end = textareaRef.current.selectionEnd
+    
+    // Create table in markdown-like syntax that can be parsed
+    const headers = Array(cols).fill('Header').map((h, i) => `${h} ${i + 1}`).join(' | ')
+    const separator = Array(cols).fill('---').join(' | ')
+    const tableRows = Array(rows).fill(null).map((_, rowIndex) => 
+      Array(cols).fill('Cell').map((c, colIndex) => `${c} ${rowIndex + 1}-${colIndex + 1}`).join(' | ')
+    ).join('\n')
+    
+    const tableText = `\n{{table}}\n${headers}\n${separator}\n${tableRows}\n{{/table}}\n`
+    
+    const newText = value.substring(0, start) + tableText + value.substring(end)
+    onChange(newText)
+
+    setTimeout(() => {
+      if (textareaRef.current) {
+        const newPosition = start + tableText.length
+        textareaRef.current.setSelectionRange(newPosition, newPosition)
+        textareaRef.current.focus()
+      }
+    }, 0)
+
+    setShowTableEditor(false)
+  }
+
+  const insertImage = (url: string, alt: string, position: 'left' | 'center' | 'right') => {
+    if (!textareaRef.current) return
+
+    const start = textareaRef.current.selectionStart
+    const end = textareaRef.current.selectionEnd
+    
+    // Create positioned image syntax
+    const imageText = `\n{{img-${position}}}![${alt}](${url}){{/img-${position}}}\n`
+    
+    const newText = value.substring(0, start) + imageText + value.substring(end)
+    onChange(newText)
+
+    setTimeout(() => {
+      if (textareaRef.current) {
+        const newPosition = start + imageText.length
+        textareaRef.current.setSelectionRange(newPosition, newPosition)
+        textareaRef.current.focus()
+      }
+    }, 0)
+
+    setShowImageDialog(false)
+    setImageUrl('')
+    setImageAlt('')
+    setImagePosition('center')
+  }
+
   const handleFind = (direction: 'next' | 'prev') => {
     if (!findText || !textareaRef.current) return
 
@@ -259,15 +323,45 @@ export function RichTextEditor({
     setShowFindReplace(false)
   }
 
-  const renderPreview = (text: string) => {
+  const renderPreview = (text: string, tableData?: any) => {
     if (!text) return text;
     
     const parts = [];
     let lastIndex = 0;
     
-    // Combined regex for math expressions, formatting, line breaks, dashes, long blanks, and center alignment
-    const combinedRegex = /(_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|::(.*?)::|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
-    let match;
+    // If we have table_data, render it first
+    if (tableData && tableData.headers && tableData.rows) {
+      parts.push(
+        <div key="table-data" className="my-4 overflow-x-auto">
+          <table className="w-full border-collapse border border-gray-300 bg-white">
+            <thead>
+              <tr className="bg-gray-50">
+                {tableData.headers.map((header: string, i: number) => (
+                  <th key={i} className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900">
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {tableData.rows.map((row: string[], i: number) => (
+                <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  {row.map((cell: string, j: number) => (
+                    <td key={j} className="border border-gray-300 px-4 py-2 text-gray-900">
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+    
+    // Combined regex for tables, positioned images, regular images, math expressions, formatting, line breaks, dashes, long blanks, and center alignment
+    const combinedRegex = /({{table}}[\s\S]*?{{\/table}}|{{img-(left|center|right)}}!\[(.*?)\]\((.*?)\){{\/img-(left|center|right)}}|!\[(.*?)\]\((.*?)\)|_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|::(.*?)::|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
+    let match: RegExpExecArray | null;
     
     while ((match = combinedRegex.exec(text)) !== null) {
       // Add text before current match
@@ -284,8 +378,86 @@ export function RichTextEditor({
       
       const matchedContent = match[1];
       
+      // Handle tables
+      if (matchedContent.startsWith('{{table}}')) {
+        const tableContent = matchedContent.replace(/{{table}}|{{\/table}}/g, '').trim();
+        const lines = tableContent.split('\n').filter(line => line.trim());
+        
+        if (lines.length >= 3) {
+          const headers = lines[0].split('|').map(h => h.trim());
+          const rows = lines.slice(2).map(line => line.split('|').map(cell => cell.trim()));
+          
+          parts.push(
+            <div key={`table-${match.index}`} className="my-4 overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-300 bg-white">
+                <thead>
+                  <tr className="bg-gray-50">
+                    {headers.map((header, i) => (
+                      <th key={i} className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900">
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row, i) => (
+                    <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                      {row.map((cell, j) => (
+                        <td key={j} className="border border-gray-300 px-4 py-2 text-gray-900">
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        }
+      }
+      // Handle positioned images
+      else if (match[2] && match[3] && match[4]) {
+        const position = match[2];
+        const alt = match[3];
+        const url = match[4];
+        
+        const alignmentClass = position === 'left' ? 'text-left' : 
+                              position === 'right' ? 'text-right' : 'text-center';
+        
+        parts.push(
+          <div key={`positioned-image-${match.index}`} className={`my-4 ${alignmentClass}`}>
+            <img 
+              src={url} 
+              alt={alt}
+              className="max-w-full h-auto border border-gray-200 rounded inline-block"
+              onError={(e) => {
+                console.error('Image failed to load:', url);
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </div>
+        );
+      }
+      // Handle regular markdown images ![alt](url)
+      else if (match[6] !== undefined && match[7] !== undefined) {
+        const imageUrl = match[7];
+        const imageAlt = match[6];
+        parts.push(
+          <div key={`image-${match.index}`} className="my-4 text-center">
+            <img 
+              src={imageUrl} 
+              alt={imageAlt}
+              className="max-w-full h-auto border border-gray-200 rounded inline-block"
+              onError={(e) => {
+                console.error('Image failed to load:', imageUrl);
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </div>
+        );
+      }
       // Handle long blanks (5 or more underscores) - MUST BE FIRST
-      if (matchedContent.match(/_{5,}/)) {
+      else if (matchedContent.match(/_{5,}/)) {
         const blankLength = matchedContent.length;
         parts.push(
           <span 
@@ -304,10 +476,10 @@ export function RichTextEditor({
         );
       }
       // Handle center alignment ::text::
-      else if (match[2] !== undefined) {
+      else if (match[8] !== undefined) {
         parts.push(
           <div key={`center-${match.index}`} className="text-center my-2">
-            {renderPreview(match[2])}
+            {renderPreview(match[8])}
           </div>
         );
       }
@@ -338,50 +510,50 @@ export function RichTextEditor({
         }
       }
       // Handle bold formatting **text**
-      else if (match[3] !== undefined) {
+      else if (match[9] !== undefined) {
         parts.push(
           <strong key={`bold-${match.index}`} className="font-bold">
-            {match[3]}
+            {match[9]}
           </strong>
         );
       }
       // Handle italic formatting *text*
-      else if (match[4] !== undefined) {
+      else if (match[10] !== undefined) {
         parts.push(
           <em key={`italic-${match.index}`} className="italic">
-            {match[4]}
+            {match[10]}
           </em>
         );
       }
       // Handle underline formatting __text__
-      else if (match[5] !== undefined) {
+      else if (match[11] !== undefined) {
         parts.push(
           <span key={`underline-${match.index}`} className="underline">
-            {match[5]}
+            {match[11]}
           </span>
         );
       }
       // Handle italic formatting _text_
-      else if (match[6] !== undefined) {
+      else if (match[12] !== undefined) {
         parts.push(
           <em key={`italic2-${match.index}`} className="italic">
-            {match[6]}
+            {match[12]}
           </em>
         );
       }
       // Handle superscript formatting ^^text^^
-      else if (match[7] !== undefined) {
+      else if (match[13] !== undefined) {
         parts.push(
           <sup key={`superscript-${match.index}`} className="text-sm">
-            {match[7]}
+            {match[13]}
           </sup>
         );
       }
       // Handle subscript formatting ~~text~~
-      else if (match[8] !== undefined) {
+      else if (match[14] !== undefined) {
         parts.push(
           <sub key={`subscript-${match.index}`} className="text-sm">
-            {match[8]}
+            {match[14]}
           </sub>
         );
       }
@@ -563,6 +735,28 @@ export function RichTextEditor({
           </div>
         )}
 
+        {/* Table and Image Tools */}
+        {!compact && (
+          <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
+            <button
+              type="button"
+              onClick={() => setShowTableEditor(!showTableEditor)}
+              className="p-1.5 hover:bg-gray-200 rounded transition-colors"
+              title="Insert Table"
+            >
+              <Table size={16} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowImageDialog(!showImageDialog)}
+              className="p-1.5 hover:bg-gray-200 rounded transition-colors"
+              title="Insert Image"
+            >
+              <Image size={16} />
+            </button>
+          </div>
+        )}
+
         {/* Tools */}
         <div className="flex items-center gap-1">
           {!compact && (
@@ -654,23 +848,183 @@ export function RichTextEditor({
         </div>
       )}
 
+      {/* Table Editor Panel */}
+      {showTableEditor && (
+        <div className="p-3 bg-blue-50 border border-blue-200 rounded">
+          <div className="flex flex-wrap gap-3 items-center">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium">Rows:</label>
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={tableRows}
+                onChange={(e) => setTableRows(parseInt(e.target.value) || 2)}
+                className="px-2 py-1 border border-gray-300 rounded text-sm w-16"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium">Columns:</label>
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={tableCols}
+                onChange={(e) => setTableCols(parseInt(e.target.value) || 2)}
+                className="px-2 py-1 border border-gray-300 rounded text-sm w-16"
+              />
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => insertTable(tableRows, tableCols)}
+                className="px-3 py-1 text-sm bg-blue-500 text-white hover:bg-blue-600 rounded"
+              >
+                Insert Table
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowTableEditor(false)}
+                className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Dialog Panel */}
+      {showImageDialog && (
+        <div className="p-3 bg-green-50 border border-green-200 rounded">
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-3 items-center">
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium">Image URL:</label>
+                <input
+                  type="text"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="px-2 py-1 border border-gray-300 rounded text-sm flex-1 min-w-[200px]"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium">Alt text:</label>
+                <input
+                  type="text"
+                  value={imageAlt}
+                  onChange={(e) => setImageAlt(e.target.value)}
+                  className="px-2 py-1 border border-gray-300 rounded text-sm"
+                  placeholder="Image description"
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="text-sm font-medium">Position:</label>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setImagePosition('left')}
+                  className={`p-1.5 rounded transition-colors ${
+                    imagePosition === 'left' ? 'bg-blue-200 text-blue-800' : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                  title="Align Left"
+                >
+                  <AlignLeft size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImagePosition('center')}
+                  className={`p-1.5 rounded transition-colors ${
+                    imagePosition === 'center' ? 'bg-blue-200 text-blue-800' : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                  title="Align Center"
+                >
+                  <AlignCenter size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImagePosition('right')}
+                  className={`p-1.5 rounded transition-colors ${
+                    imagePosition === 'right' ? 'bg-blue-200 text-blue-800' : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                  title="Align Right"
+                >
+                  <AlignRight size={14} />
+                </button>
+              </div>
+              <div className="flex items-center gap-1 ml-auto">
+                <button
+                  type="button"
+                  onClick={() => insertImage(imageUrl, imageAlt, imagePosition)}
+                  disabled={!imageUrl.trim()}
+                  className="px-3 py-1 text-sm bg-green-500 text-white hover:bg-green-600 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Insert Image
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowImageDialog(false)}
+                  className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Editor/Preview Area */}
       {previewMode && showPreview ? (
         <div className="p-3 border border-gray-300 rounded-b-md bg-white min-h-[150px]">
           <div className="text-gray-900 leading-relaxed">
-            {renderPreview(value)}
+            {renderPreview(value, tableData)}
           </div>
         </div>
       ) : (
-        <textarea
-          ref={textareaRef}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onSelect={handleTextSelection}
-          placeholder={placeholder}
-          rows={rows}
-          className={`w-full p-3 border border-gray-300 rounded-b-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${className}`}
-        />
+        <div>
+          <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onSelect={handleTextSelection}
+            placeholder={placeholder}
+            rows={rows}
+            className={`w-full p-3 border border-gray-300 rounded-b-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${className}`}
+          />
+          {/* Show table data below textarea in edit mode */}
+          {tableData && tableData.headers && tableData.rows && (
+            <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded">
+              <div className="text-sm font-medium text-gray-700 mb-2">Table Data from Database:</div>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 bg-white">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      {tableData.headers.map((header: string, i: number) => (
+                        <th key={i} className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900">
+                          {header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tableData.rows.map((row: string[], i: number) => (
+                      <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        {row.map((cell: string, j: number) => (
+                          <td key={j} className="border border-gray-300 px-4 py-2 text-gray-900">
+                            {cell}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Formatting Guide */}
@@ -678,6 +1032,8 @@ export function RichTextEditor({
         <div className="text-xs text-gray-500 space-y-1">
           <div><strong>Formatting:</strong> **bold** *italic* __underline__ ^^superscript^^ ~~subscript~~ ::center:: --- (em dash) _______ (long blank)</div>
           <div><strong>Math:</strong> $x^2$ for inline, $$x^2$$ for block equations</div>
+          <div><strong>Tables:</strong> Use Table button to insert editable tables</div>
+          <div><strong>Images:</strong> Use Image button to insert positioned images (left/center/right)</div>
           <div><strong>Line breaks:</strong> Use actual line breaks in the editor or type \n</div>
         </div>
       )}
