@@ -30,8 +30,8 @@ const studentNavigationItems: SidebarItem[] = [
   { name: 'Dashboard', href: '/student/dashboard', icon: ChartBarIcon },
   { name: 'Take Exam', href: '/student/exams', icon: DocumentTextIcon },
   { name: 'Results', href: '/student/results', icon: ClipboardDocumentListIcon },
-  { name: 'Study Plan', href: '/student/recommendations', icon: CalendarDaysIcon },
-  { name: 'Problem Bank', href: '/student/problem-bank', icon: BookOpenIcon },
+  // { name: 'Study Plan', href: '/student/recommendations', icon: CalendarDaysIcon },
+  // { name: 'Problem Bank', href: '/student/problem-bank', icon: BookOpenIcon },
   { name: 'Settings', href: '/student/settings', icon: CogIcon },
 ]
 

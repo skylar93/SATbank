@@ -243,14 +243,6 @@ export default function ProblemBank() {
             <p className="text-gray-600">Practice with targeted questions and track your progress</p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="relative">
-              <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search questions..."
-                className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-              />
-            </div>
             <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">
                 {user.profile?.full_name?.charAt(0) || 'U'}

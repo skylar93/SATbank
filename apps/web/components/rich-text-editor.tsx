@@ -1027,16 +1027,6 @@ export function RichTextEditor({
         </div>
       )}
 
-      {/* Formatting Guide */}
-      {!compact && (
-        <div className="text-xs text-gray-500 space-y-1">
-          <div><strong>Formatting:</strong> **bold** *italic* __underline__ ^^superscript^^ ~~subscript~~ ::center:: --- (em dash) _______ (long blank)</div>
-          <div><strong>Math:</strong> $x^2$ for inline, $$x^2$$ for block equations</div>
-          <div><strong>Tables:</strong> Use Table button to insert editable tables</div>
-          <div><strong>Images:</strong> Use Image button to insert positioned images (left/center/right)</div>
-          <div><strong>Line breaks:</strong> Use actual line breaks in the editor or type \n</div>
-        </div>
-      )}
     </div>
   )
 }

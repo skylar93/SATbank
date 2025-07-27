@@ -136,13 +136,6 @@ export default function StudentDashboard() {
             <p className="text-gray-600">Hello {user.profile?.full_name?.split(' ')[0]}, welcome back</p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search everything..."
-                className="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-              />
-            </div>
             <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">
                 {user.profile?.full_name?.charAt(0) || 'U'}
@@ -160,36 +153,27 @@ export default function StudentDashboard() {
             {/* Top Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <StatsCard
-                title="Your Score This Month"
+                title="Best Score"
                 value={loading ? '...' : stats.bestScore || 'No scores yet'}
-                change="+2.5%"
-                changeType="positive"
-                miniChart={{
-                  data: [1200, 1250, 1300, 1280, 1350, 1400],
-                  color: '#10b981'
-                }}
+                change={null}
+                changeType="neutral"
+                miniChart={null}
               />
               
               <StatsCard
                 title="Total Exams"
                 value={stats.examsTaken}
-                change="+0.8%"
-                changeType="positive"
-                miniChart={{
-                  data: [8, 12, 15, 18, 22, 25],
-                  color: '#8b5cf6'
-                }}
+                change={null}
+                changeType="neutral"
+                miniChart={null}
               />
               
               <StatsCard
-                title="Study Streak"
-                value="7 days"
-                change="+12%"
-                changeType="positive"
-                miniChart={{
-                  data: [3, 5, 4, 6, 7, 7],
-                  color: '#f59e0b'
-                }}
+                title="Recent Activity"
+                value={stats.recentAttempts.length > 0 ? `${stats.recentAttempts.length} recent` : 'No activity'}
+                change={null}
+                changeType="neutral"
+                miniChart={null}
               />
             </div>
 
@@ -227,62 +211,6 @@ export default function StudentDashboard() {
               <WeeklyActivityChart data={weeklyData} />
             </div>
 
-            {/* Featured Projects equivalent - Quick Actions */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
-                <button className="text-sm text-violet-600 hover:text-violet-700 font-medium">See all</button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Link href="/student/exams" className="p-4 border border-gray-200 rounded-xl hover:border-violet-300 transition-colors group">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <AcademicCapIcon className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Take Mock Exam</h4>
-                      <p className="text-xs text-gray-500">Full SAT Practice</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-violet-600 font-medium">Start</span>
-                    <span className="text-sm font-bold text-gray-900">Ready</span>
-                  </div>
-                </Link>
-
-                <Link href="/student/problem-bank" className="p-4 border border-gray-200 rounded-xl hover:border-violet-300 transition-colors group">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <BookOpenIcon className="w-5 h-5 text-green-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Problem Bank</h4>
-                      <p className="text-xs text-gray-500">Practice Questions</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-green-600 font-medium">Practice</span>
-                    <span className="text-sm font-bold text-gray-900">Available</span>
-                  </div>
-                </Link>
-
-                <Link href="/student/results" className="p-4 border border-gray-200 rounded-xl hover:border-violet-300 transition-colors group">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <ChartBarIcon className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">View Results</h4>
-                      <p className="text-xs text-gray-500">Score Analysis</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-purple-600 font-medium">Review</span>
-                    <span className="text-sm font-bold text-gray-900">{stats.examsTaken}</span>
-                  </div>
-                </Link>
-              </div>
-            </div>
           </div>
 
           {/* Right Column - 3 cols */}
@@ -298,25 +226,32 @@ export default function StudentDashboard() {
               </div>
               
               <div className="flex justify-center mb-6">
-                <CircularProgress percentage={75} size={140} />
+                <CircularProgress 
+                  percentage={stats.bestScore ? Math.round((stats.bestScore / 1600) * 100) : 0} 
+                  size={140} 
+                />
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 rounded-full bg-violet-500"></div>
-                  <span className="text-sm text-gray-700">Math</span>
-                  <span className="ml-auto text-sm font-semibold">720</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                  <span className="text-sm text-gray-700">Reading & Writing</span>
-                  <span className="ml-auto text-sm font-semibold">680</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 rounded-full bg-pink-500"></div>
-                  <span className="text-sm text-gray-700">Overall</span>
-                  <span className="ml-auto text-sm font-semibold">1400</span>
-                </div>
+                {stats.bestScore ? (
+                  <>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 rounded-full bg-violet-500"></div>
+                      <span className="text-sm text-gray-700">Best Score</span>
+                      <span className="ml-auto text-sm font-semibold">{stats.bestScore}</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                      <span className="text-sm text-gray-700">Exams Taken</span>
+                      <span className="ml-auto text-sm font-semibold">{stats.examsTaken}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-gray-500 text-sm">No exam data yet</p>
+                    <p className="text-xs text-gray-400 mt-1">Take your first exam to see performance here</p>
+                  </div>
+                )}
               </div>
             </div>
 

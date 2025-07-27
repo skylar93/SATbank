@@ -8,8 +8,8 @@ import { ExamService, type Question } from '../../../../lib/exam-service'
 import { ExamTimer } from '../../../../components/exam/exam-timer'
 import { QuestionDisplay } from '../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../components/exam/exam-navigation'
-import { Navigation } from '../../../../components/navigation'
 import { BulkEditPanel } from '../../../../components/exam/bulk-edit-panel'
+import { AcademicCapIcon, BookOpenIcon, ClockIcon } from '@heroicons/react/24/outline'
 
 function ExamPageContent() {
   const params = useParams()
@@ -529,7 +529,6 @@ function ExamPageContent() {
   if (examState.showConflictModal && examState.existingAttempt && examState.exam) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
         <div className="flex items-center justify-center min-h-screen">
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-lg mx-4">
@@ -586,7 +585,6 @@ function ExamPageContent() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -602,7 +600,6 @@ function ExamPageContent() {
     console.log('🚨 EXAM ERROR DETECTED:', error)
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="text-red-600 text-xl mb-4">Error loading exam</div>
@@ -631,7 +628,6 @@ function ExamPageContent() {
   if (!examState.exam) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <p className="text-gray-600">Exam not found</p>
@@ -651,16 +647,18 @@ function ExamPageContent() {
   if (showStartScreen) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
         <div className="max-w-4xl mx-auto py-8 px-4">
-          <div className="bg-white rounded-lg shadow-lg p-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
             {isPreviewMode && (
-              <div className="mb-4 p-3 bg-orange-100 border border-orange-300 rounded-lg">
+              <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-2xl">
                 <div className="flex items-center justify-between">
-                  <span className="text-orange-800 font-medium">🔍 Admin Preview Mode</span>
+                  <span className="text-orange-800 font-medium flex items-center">
+                    <span className="mr-2">🔍</span>
+                    Admin Preview Mode
+                  </span>
                   <button
                     onClick={() => router.push('/admin/exams')}
-                    className="text-orange-600 hover:text-orange-800 text-sm underline"
+                    className="text-orange-600 hover:text-orange-800 text-sm font-medium underline"
                   >
                     ← Back to Admin Panel
                   </button>
@@ -668,53 +666,101 @@ function ExamPageContent() {
               </div>
             )}
             
-            <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">
-              {examState.exam.title}
-            </h1>
-            
-            <div className="mb-8">
-              <p className="text-lg text-gray-700 mb-4">
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <AcademicCapIcon className="w-10 h-10 text-white" />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                {examState.exam.title}
+              </h1>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 {examState.exam.description}
               </p>
-              
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <h3 className="font-semibold text-blue-900 mb-2">Exam Instructions:</h3>
-                <ul className="list-disc list-inside space-y-1 text-blue-800">
-                  <li>This exam consists of 4 modules: English 1, English 2, Math 1, Math 2</li>
-                  <li>Each module has a strict time limit</li>
-                  <li>You cannot return to previous questions or modules</li>
-                  <li>Answer all questions to the best of your ability</li>
-                  <li>The exam will auto-submit when time expires</li>
+            </div>
+            
+            <div className="mb-8">
+              <div className="bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-2xl p-6 mb-8">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-violet-500 rounded-xl flex items-center justify-center">
+                    <BookOpenIcon className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-violet-800">Exam Instructions</h3>
+                </div>
+                <ul className="space-y-3 text-violet-700">
+                  <li className="flex items-start space-x-3">
+                    <span className="w-2 h-2 bg-violet-400 rounded-full mt-2 flex-shrink-0"></span>
+                    <span>This exam consists of 4 modules: English 1, English 2, Math 1, Math 2</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="w-2 h-2 bg-violet-400 rounded-full mt-2 flex-shrink-0"></span>
+                    <span>Each module has a strict time limit</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="w-2 h-2 bg-violet-400 rounded-full mt-2 flex-shrink-0"></span>
+                    <span>You cannot return to previous questions or modules</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="w-2 h-2 bg-violet-400 rounded-full mt-2 flex-shrink-0"></span>
+                    <span>Answer all questions to the best of your ability</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="w-2 h-2 bg-violet-400 rounded-full mt-2 flex-shrink-0"></span>
+                    <span>The exam will auto-submit when time expires</span>
+                  </li>
                 </ul>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                {examState.modules.map((module, index) => (
-                  <div key={module.module} className="bg-gray-50 p-4 rounded-lg text-center">
-                    <h4 className="font-semibold text-gray-900 mb-1">
-                      {module.module.replace(/(\d)/, ' $1').toUpperCase()}
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      {module.questions.length} questions
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {module.timeLimit} minutes
-                    </p>
-                  </div>
-                ))}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                {examState.modules.map((module, index) => {
+                  const colors = [
+                    'from-indigo-50 to-indigo-100 border-indigo-200',
+                    'from-violet-50 to-violet-100 border-violet-200', 
+                    'from-purple-50 to-purple-100 border-purple-200',
+                    'from-pink-50 to-pink-100 border-pink-200'
+                  ]
+                  const iconColors = ['bg-indigo-500', 'bg-violet-500', 'bg-purple-500', 'bg-pink-500']
+                  const hoverColors = [
+                    'hover:from-indigo-100 hover:to-indigo-200',
+                    'hover:from-violet-100 hover:to-violet-200',
+                    'hover:from-purple-100 hover:to-purple-200', 
+                    'hover:from-pink-100 hover:to-pink-200'
+                  ]
+                  
+                  return (
+                    <div key={module.module} className={`bg-gradient-to-r ${colors[index]} border ${hoverColors[index]} p-6 rounded-2xl text-center transition-all duration-200 hover:shadow-lg`}>
+                      <div className={`w-12 h-12 ${iconColors[index]} rounded-xl flex items-center justify-center mx-auto mb-4`}>
+                        {module.module.includes('english') ? (
+                          <BookOpenIcon className="w-6 h-6 text-white" />
+                        ) : (
+                          <AcademicCapIcon className="w-6 h-6 text-white" />
+                        )}
+                      </div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                        {module.module.replace(/(\d)/, ' $1').toUpperCase()}
+                      </h4>
+                      <p className="text-sm text-gray-600 mb-1">
+                        {module.questions.length} questions
+                      </p>
+                      <p className="text-sm text-gray-600 flex items-center justify-center">
+                        <ClockIcon className="w-4 h-4 mr-1" />
+                        {module.timeLimit} minutes
+                      </p>
+                    </div>
+                  )
+                })}
               </div>
             </div>
 
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-6">
               <button
                 onClick={handleStartExam}
-                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg text-lg font-semibold transition-colors"
+                className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white px-12 py-4 rounded-2xl text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 {isPreviewMode ? 'Preview Exam' : 'Start Exam'}
               </button>
               
               {isPreviewMode && (
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-500 bg-gray-50 px-4 py-2 rounded-xl inline-block">
                   Preview mode: Navigate through questions without saving answers
                 </p>
               )}
@@ -752,7 +798,6 @@ function ExamPageContent() {
   if (!currentModule || !currentQuestion) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>

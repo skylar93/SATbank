@@ -6,6 +6,7 @@ import { InlineMath, BlockMath } from 'react-katex'
 import { supabase } from '../../lib/supabase'
 import { RichTextEditor } from '../rich-text-editor'
 import { ImageUpload } from '../image-upload'
+import { HelpCircle } from 'lucide-react'
 
 // Shared text rendering function
 export const renderTextWithFormattingAndMath = (text: string) => {
@@ -57,12 +58,12 @@ export const renderTextWithFormattingAndMath = (text: string) => {
         const rows = lines.slice(2).map(line => line.split('|').map(cell => cell.trim()));
         
         parts.push(
-          <div key={`table-${match.index}`} className="my-4 overflow-x-auto">
+          <div key={`table-${match.index}`} className="my-4 overflow-x-auto max-w-full">
             <table className="w-full border-collapse border border-gray-300 bg-white">
               <thead>
                 <tr className="bg-gray-50">
                   {headers.map((header, i) => (
-                    <th key={i} className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900">
+                    <th key={i} className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900 break-words">
                       {renderTextWithFormattingAndMath(restoreEscapedDollars(header))}
                     </th>
                   ))}
@@ -72,7 +73,7 @@ export const renderTextWithFormattingAndMath = (text: string) => {
                 {rows.map((row, i) => (
                   <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                     {row.map((cell, j) => (
-                      <td key={j} className="border border-gray-300 px-4 py-2 text-gray-900">
+                      <td key={j} className="border border-gray-300 px-4 py-2 text-gray-900 break-words">
                         {renderTextWithFormattingAndMath(restoreEscapedDollars(cell))}
                       </td>
                     ))}
@@ -301,6 +302,7 @@ export function QuestionDisplay({
     table_data: question.table_data || null
   })
   const [saving, setSaving] = useState(false)
+  const [showFormattingHelp, setShowFormattingHelp] = useState(false)
 
   // Update local question when prop changes
   useEffect(() => {
@@ -435,12 +437,12 @@ export function QuestionDisplay({
     if (!tableData || !tableData.headers || !tableData.rows) return null;
     
     return (
-      <div className={isCompact ? "mt-2 mb-2" : "mt-4 mb-4"}>
+      <div className={`${isCompact ? "mt-2 mb-2" : "mt-4 mb-4"} overflow-x-auto max-w-full`}>
         <table className={`w-full border-collapse border border-gray-300 bg-white ${isCompact ? 'text-sm' : ''}`}>
           <thead>
             <tr className="bg-gray-50">
               {tableData.headers.map((header: string, i: number) => (
-                <th key={i} className={`border border-gray-300 ${isCompact ? 'px-2 py-1' : 'px-4 py-2'} text-left font-semibold text-gray-900`}>
+                <th key={i} className={`border border-gray-300 ${isCompact ? 'px-2 py-1' : 'px-4 py-2'} text-left font-semibold text-gray-900 break-words`}>
                   {header}
                 </th>
               ))}
@@ -450,7 +452,7 @@ export function QuestionDisplay({
             {tableData.rows.map((row: string[], i: number) => (
               <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                 {row.map((cell: string, j: number) => (
-                  <td key={j} className={`border border-gray-300 ${isCompact ? 'px-2 py-1' : 'px-4 py-2'} text-gray-900`}>
+                  <td key={j} className={`border border-gray-300 ${isCompact ? 'px-2 py-1' : 'px-4 py-2'} text-gray-900 break-words`}>
                     {cell}
                   </td>
                 ))}
@@ -602,57 +604,6 @@ export function QuestionDisplay({
                       compact={true}
                     />
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Image URL (Optional)
-                    </label>
-                    <input
-                      type="url"
-                      value={optionData.imageUrl || ''}
-                      onChange={(e) => {
-                        const updatedOption = { ...optionData, imageUrl: e.target.value };
-                        setEditForm({
-                          ...editForm,
-                          options: {...editForm.options, [key]: JSON.stringify(updatedOption)}
-                        });
-                      }}
-                      placeholder="https://example.com/image.jpg"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    />
-                    <div className="mt-2">
-                      <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Or upload an image:
-                      </label>
-                      <ImageUpload
-                        onImageUploaded={(imageUrl) => {
-                          const updatedOption = { ...optionData, imageUrl };
-                          setEditForm({
-                            ...editForm,
-                            options: {...editForm.options, [key]: JSON.stringify(updatedOption)}
-                          });
-                        }}
-                        maxSize={2}
-                      />
-                    </div>
-                  </div>
-                  
-                  {optionData.imageUrl && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Preview
-                      </label>
-                      <img
-                        src={optionData.imageUrl}
-                        alt={`Option ${key} preview`}
-                        className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
-                        onError={(e) => {
-                          console.error('Option preview image failed to load:', optionData.imageUrl);
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -802,7 +753,7 @@ export function QuestionDisplay({
   return (
     <div className="h-full flex flex-col lg:flex-row bg-white">
       {/* Question Content Area */}
-      <div className="flex-1 lg:w-1/2 p-6 lg:pr-3 border-b lg:border-b-0 lg:border-r border-gray-200">
+      <div className="flex-1 lg:w-1/2 p-6 lg:pr-3 border-b lg:border-b-0 lg:border-r border-gray-200 overflow-hidden">
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-semibold text-gray-900 truncate" title={`Question ${questionNumber} of ${totalQuestions}`}>
@@ -886,13 +837,37 @@ export function QuestionDisplay({
           )}
         </div>
 
-        <div className="prose prose-gray max-w-none">
+        <div className="prose prose-gray max-w-none overflow-hidden">
           {isEditing ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Question Text
-                </label>
+                <div className="flex items-center gap-2 mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Question Text
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowFormattingHelp(!showFormattingHelp)}
+                    className="flex-shrink-0 p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                    title="Formatting Help"
+                  >
+                    <HelpCircle size={16} />
+                  </button>
+                </div>
+                
+                {showFormattingHelp && (
+                  <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs text-gray-700">
+                    <div className="font-semibold mb-2">Formatting Guide:</div>
+                    <div className="space-y-1">
+                      <div><strong>Text:</strong> **bold** *italic* __underline__ ^^superscript^^ ~~subscript~~ ::center::</div>
+                      <div><strong>Special:</strong> --- (em dash) _______ (long blank) \n (line break)</div>
+                      <div><strong>Math:</strong> $x^2$ (inline) $$x^2$$ (block equations)</div>
+                      <div><strong>Tables:</strong> Use Table button to insert editable tables</div>
+                      <div><strong>Images:</strong> Use Image button for positioned images (left/center/right)</div>
+                    </div>
+                  </div>
+                )}
+                
                 <RichTextEditor
                   value={editForm.question_text}
                   onChange={(value) => setEditForm({...editForm, question_text: value})}
@@ -900,84 +875,6 @@ export function QuestionDisplay({
                   rows={6}
                   showPreview={true}
                   tableData={localQuestion.table_data}
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Question Image Upload
-                </label>
-                <ImageUpload
-                  onImageUploaded={(imageUrl) => {
-                    // Add the image URL to the question text
-                    const newText = editForm.question_text + `\n\n![Question Image](${imageUrl})`;
-                    setEditForm({...editForm, question_text: newText});
-                  }}
-                  className="mb-2"
-                />
-                <p className="text-xs text-gray-500">
-                  Upload an image that will be inserted into the question text. You can also manually add image URLs in markdown format: ![alt text](image-url)
-                </p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Question Type
-                </label>
-                <select
-                  value={localQuestion.question_type}
-                  onChange={(e) => {
-                    const newType = e.target.value as 'multiple_choice' | 'grid_in';
-                    setLocalQuestion({...localQuestion, question_type: newType});
-                    setEditForm({...editForm, question_type: newType});
-                    
-                    // Reset options if switching to grid_in
-                    if (newType === 'grid_in') {
-                      setEditForm({...editForm, options: {}, question_type: newType});
-                    } else if (newType === 'multiple_choice' && !editForm.options) {
-                      // Set default options if switching to multiple choice
-                      setEditForm({
-                        ...editForm, 
-                        options: {
-                          'A': '{"text": "Option A"}',
-                          'B': '{"text": "Option B"}',
-                          'C': '{"text": "Option C"}',
-                          'D': '{"text": "Option D"}'
-                        },
-                        question_type: newType
-                      });
-                    }
-                  }}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                >
-                  <option value="multiple_choice">Multiple Choice</option>
-                  <option value="grid_in">Grid In (Open Answer)</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Correct Answer
-                </label>
-                <input
-                  type="text"
-                  value={editForm.correct_answer}
-                  onChange={(e) => setEditForm({...editForm, correct_answer: e.target.value})}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder={localQuestion.question_type === 'multiple_choice' ? "Correct answer (e.g., A, B, C, D)" : "Correct numeric/text answer"}
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Explanation (Optional)
-                </label>
-                <RichTextEditor
-                  value={editForm.explanation}
-                  onChange={(value) => setEditForm({...editForm, explanation: value})}
-                  placeholder="Explain the correct answer..."
-                  rows={3}
-                  showPreview={true}
                 />
               </div>
               
@@ -1082,6 +979,86 @@ export function QuestionDisplay({
                   </div>
                 </div>
               )}
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Question Image Upload
+                </label>
+                <ImageUpload
+                  onImageUploaded={(imageUrl) => {
+                    // Add the image URL to the question text
+                    const newText = editForm.question_text + `\n\n![Question Image](${imageUrl})`;
+                    setEditForm({...editForm, question_text: newText});
+                  }}
+                  className="mb-2"
+                />
+                <p className="text-xs text-gray-500">
+                  Upload an image that will be inserted into the question text. You can also manually add image URLs in markdown format: ![alt text](image-url)
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Question Type
+                  </label>
+                  <select
+                    value={localQuestion.question_type}
+                    onChange={(e) => {
+                      const newType = e.target.value as 'multiple_choice' | 'grid_in';
+                      setLocalQuestion({...localQuestion, question_type: newType});
+                      setEditForm({...editForm, question_type: newType});
+                      
+                      // Reset options if switching to grid_in
+                      if (newType === 'grid_in') {
+                        setEditForm({...editForm, options: {}, question_type: newType});
+                      } else if (newType === 'multiple_choice' && !editForm.options) {
+                        // Set default options if switching to multiple choice
+                        setEditForm({
+                          ...editForm, 
+                          options: {
+                            'A': '{"text": "Option A"}',
+                            'B': '{"text": "Option B"}',
+                            'C': '{"text": "Option C"}',
+                            'D': '{"text": "Option D"}'
+                          },
+                          question_type: newType
+                        });
+                      }
+                    }}
+                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  >
+                    <option value="multiple_choice">Multiple Choice</option>
+                    <option value="grid_in">Grid In (Open Answer)</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Correct Answer
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.correct_answer}
+                    onChange={(e) => setEditForm({...editForm, correct_answer: e.target.value})}
+                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder={localQuestion.question_type === 'multiple_choice' ? "Correct answer (e.g., A, B, C, D)" : "Correct numeric/text answer"}
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Explanation (Optional)
+                </label>
+                <RichTextEditor
+                  value={editForm.explanation}
+                  onChange={(value) => setEditForm({...editForm, explanation: value})}
+                  placeholder="Explain the correct answer..."
+                  rows={3}
+                  showPreview={true}
+                />
+              </div>
             </div>
           ) : (
             <div className="text-gray-900 leading-relaxed">

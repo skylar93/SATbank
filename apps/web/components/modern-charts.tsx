@@ -53,21 +53,6 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
           ))}
         </defs>
         
-        {/* Grid lines */}
-        {Array.from({ length: 5 }, (_, i) => {
-          const y = padding + (i / 4) * chartHeight
-          return (
-            <line
-              key={i}
-              x1={padding}
-              y1={y}
-              x2={padding + chartWidth}
-              y2={y}
-              stroke="#f3f4f6"
-              strokeWidth="1"
-            />
-          )
-        })}
         
         {/* Data lines and areas */}
         {datasets.map((dataset, index) => (

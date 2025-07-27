@@ -88,20 +88,10 @@ export default function StudentExamsPage() {
             <h1 className="text-2xl font-bold text-gray-900">Take Exam</h1>
             <p className="text-gray-600">Choose an exam to begin your SAT practice session</p>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search exams..."
-                className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-              />
-            </div>
-            <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold">
-                {user?.profile?.full_name?.charAt(0) || 'U'}
-              </span>
-            </div>
+          <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
+            <span className="text-white font-semibold">
+              {user?.profile?.full_name?.charAt(0) || 'U'}
+            </span>
           </div>
         </div>
       </div>
@@ -134,41 +124,6 @@ export default function StudentExamsPage() {
           </div>
         ) : (
           <>
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <StatsCard
-                title="Available Exams"
-                value={exams.length}
-                change="+2.5%"
-                changeType="positive"
-                miniChart={{
-                  data: [2, 3, 4, 5, 6, exams.length],
-                  color: '#6366f1'
-                }}
-              />
-              
-              <StatsCard
-                title="Average Duration"
-                value={`${Math.round(exams.reduce((sum, exam) => sum + getTotalTime(exam.time_limits), 0) / exams.length)} min`}
-                change="+0.8%"
-                changeType="positive"
-                miniChart={{
-                  data: [180, 190, 185, 195, 200, Math.round(exams.reduce((sum, exam) => sum + getTotalTime(exam.time_limits), 0) / exams.length)],
-                  color: '#8b5cf6'
-                }}
-              />
-              
-              <StatsCard
-                title="Total Questions"
-                value={`${Math.round(exams.reduce((sum, exam) => sum + exam.total_questions, 0) / exams.length)} avg`}
-                change="+12%"
-                changeType="positive"
-                miniChart={{
-                  data: [130, 135, 140, 145, 150, Math.round(exams.reduce((sum, exam) => sum + getTotalTime(exam.time_limits), 0) / exams.length)],
-                  color: '#ec4899'
-                }}
-              />
-            </div>
 
             {/* Featured Exam Card */}
             {exams.length > 0 && (

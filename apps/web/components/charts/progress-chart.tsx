@@ -90,13 +90,6 @@ export function ProgressChart({
           preserveAspectRatio="none"
           className="overflow-visible"
         >
-          {/* Grid lines */}
-          <defs>
-            <pattern id="grid" width="20" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 20 0 L 0 0 0 40" fill="none" stroke="#f3f4f6" strokeWidth="0.5"/>
-            </pattern>
-          </defs>
-          <rect width="100" height={height} fill="url(#grid)" />
           
           {type === 'line' ? (
             <>

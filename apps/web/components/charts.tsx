@@ -41,18 +41,6 @@ export function ProgressChart({ data }: ProgressChartProps) {
             </linearGradient>
           </defs>
           
-          {/* Grid lines */}
-          {[50, 100, 150].map((y) => (
-            <line
-              key={y}
-              x1="50"
-              y1={y}
-              x2="350"
-              y2={y}
-              stroke="#e5e7eb"
-              strokeWidth="1"
-            />
-          ))}
           
           {/* Score line and area */}
           {data.scores.length > 1 && (

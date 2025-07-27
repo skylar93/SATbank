@@ -73,18 +73,18 @@ export function Navigation() {
                   >
                     Results
                   </Link>
-                  <Link
+                  {/* <Link
                     href="/student/recommendations"
                     className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Study Plan
-                  </Link>
-                  <Link
+                  </Link> */}
+                  {/* <Link
                     href="/student/problem-bank"
                     className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Problem Bank
-                  </Link>
+                  </Link> */}
                   <Link
                     href="/student/settings"
                     className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"

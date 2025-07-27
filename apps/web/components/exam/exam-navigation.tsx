@@ -287,6 +287,11 @@ export function ExamNavigation({
             const isCurrent = questionNum === currentQuestion
             const isMarked = markedQuestions.some(mq => mq.index === index)
             
+            // Debug logging for mark for review
+            if (process.env.NODE_ENV === 'development' && isMarked) {
+              console.log('🏷️ Marked question found:', { questionNum, index, markedQuestions })
+            }
+            
             return (
               <button
                 key={questionNum}
@@ -407,13 +412,6 @@ export function ExamNavigation({
 
         {/* Right side - Module/Exam completion */}
         <div className="flex items-center space-x-4">
-          {/* Warning for unanswered questions */}
-          {!hasAnswer && (
-            <div className="text-sm text-orange-600 font-medium">
-              Continue without answering?
-            </div>
-          )}
-
           <button
             onClick={handleClick}
             disabled={disabled}
