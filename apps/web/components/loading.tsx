@@ -1,3 +1,5 @@
+import React from 'react'
+
 interface LoadingProps {
   message?: string
   size?: 'sm' | 'md' | 'lg'
