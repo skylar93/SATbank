@@ -1,5 +1,4 @@
 import { supabase } from './supabase'
-import type { Database } from '@satbank/database-types'
 
 export interface UserProfile {
   id: string

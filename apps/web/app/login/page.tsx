@@ -32,16 +32,21 @@ export default function LoginPage() {
         const { data: { session }, error } = await supabase.auth.getSession()
         if (session) {
           setSessionTest(`✅ Session found: ${session.user.email}`)
+          // Backup redirect if useEffect doesn't work
+          setTimeout(() => {
+            console.log('🔄 Login: Backup redirect triggered')
+            window.location.href = '/student/dashboard'
+          }, 2000)
         } else {
           setSessionTest(`❌ No session found after login: ${error?.message || 'Unknown error'}`)
         }
       }, 1000)
       
-      // Redirect will be handled by auth context or manually
+      // Don't set loading to false here, let AuthContext handle it
+      // This prevents the form from becoming interactive again before redirect
     } catch (err: any) {
       console.error('❌ Login: Error:', err)
       setError(err.message || 'Login failed')
-    } finally {
       setLoading(false)
     }
   }
@@ -50,15 +55,15 @@ export default function LoginPage() {
   React.useEffect(() => {
     if (user && !authLoading) {
       console.log('🔄 Login: User authenticated, redirecting...', user.email, user.profile?.role)
-      if (isAdmin) {
-        console.log('🔄 Login: Navigating to admin dashboard')
-        router.push('/admin/dashboard')
-      } else if (isStudent) {
-        console.log('🔄 Login: Navigating to student dashboard')
-        router.push('/student/dashboard')
-      }
+      
+      // Force redirect regardless of role detection issues
+      const redirectPath = user.profile?.role === 'admin' ? '/admin/dashboard' : '/student/dashboard'
+      console.log('🔄 Login: Forcing redirect to:', redirectPath)
+      
+      // Use window.location for more reliable redirect
+      window.location.href = redirectPath
     }
-  }, [user, authLoading, isAdmin, isStudent])
+  }, [user, authLoading, router])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -129,10 +134,10 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || authLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading || authLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
 

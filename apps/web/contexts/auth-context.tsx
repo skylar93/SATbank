@@ -65,12 +65,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for auth changes
     const { data: { subscription } } = AuthService.onAuthStateChange((user) => {
-      console.log('🔄 AuthProvider: Auth state changed:', user)
-      if (isInitialized) {
-        clearTimeout(timeoutId) // Clear timeout since we got a response
-        setUser(user)
-        setLoading(false)
-      }
+      console.log('🔄 AuthProvider: Auth state changed:', user?.email || 'signed out')
+      // Always handle auth state changes, regardless of initialization status
+      isInitialized = true
+      clearTimeout(timeoutId) // Clear timeout since we got a response
+      setUser(user)
+      setLoading(false)
+      setError(null) // Clear any errors when auth state changes
     })
 
     return () => {
@@ -88,18 +89,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await AuthService.signIn(email, password)
       console.log('✅ AuthProvider: Sign in successful')
-      // Wait a moment for auth state to update, then manually fetch user if needed
-      setTimeout(async () => {
-        try {
-          const currentUser = await AuthService.getCurrentUser()
-          if (currentUser) {
-            setUser(currentUser)
-            setLoading(false)
-          }
-        } catch (err) {
-          console.warn('⚠️ AuthProvider: Could not fetch user after sign in, will rely on auth state change')
-        }
-      }, 1000)
+      
+      // Immediately try to get user data
+      const currentUser = await AuthService.getCurrentUser()
+      if (currentUser) {
+        console.log('👤 AuthProvider: User data retrieved after sign in:', currentUser.email)
+        setUser(currentUser)
+        setLoading(false)
+      } else {
+        console.warn('⚠️ AuthProvider: No user data after sign in, waiting for auth state change')
+        // Don't set loading to false here, let auth state change handle it
+      }
     } catch (err: any) {
       console.error('❌ AuthProvider: Sign in error:', err)
       setError(err.message)

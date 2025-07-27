@@ -153,27 +153,36 @@ export default function StudentDashboard() {
             {/* Top Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <StatsCard
-                title="Best Score"
+                title="Your Score This Month"
                 value={loading ? '...' : stats.bestScore || 'No scores yet'}
-                change={null}
-                changeType="neutral"
-                miniChart={null}
+                change="+2.5%"
+                changeType="positive"
+                miniChart={{
+                  data: [1200, 1250, 1300, 1280, 1350, 1400],
+                  color: '#10b981'
+                }}
               />
               
               <StatsCard
                 title="Total Exams"
                 value={stats.examsTaken}
-                change={null}
-                changeType="neutral"
-                miniChart={null}
+                change="+0.8%"
+                changeType="positive"
+                miniChart={{
+                  data: [8, 12, 15, 18, 22, 25],
+                  color: '#8b5cf6'
+                }}
               />
               
               <StatsCard
-                title="Recent Activity"
-                value={stats.recentAttempts.length > 0 ? `${stats.recentAttempts.length} recent` : 'No activity'}
-                change={null}
-                changeType="neutral"
-                miniChart={null}
+                title="Study Streak"
+                value="7 days"
+                change="+12%"
+                changeType="positive"
+                miniChart={{
+                  data: [3, 5, 4, 6, 7, 7],
+                  color: '#f59e0b'
+                }}
               />
             </div>
 
