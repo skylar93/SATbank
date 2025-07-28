@@ -85,3 +85,5 @@ apps/web/
 - Implement timer system
 - Create question display interface
 - Add exam result tracking
+
+Help!
