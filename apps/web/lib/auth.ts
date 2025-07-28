@@ -80,7 +80,9 @@ export class AuthService {
     console.log('🔍 AuthService: Getting current user...')
     
     try {
+      console.log('🔍 AuthService: Calling supabase.auth.getUser()...')
       const { data: { user }, error: userError } = await supabase.auth.getUser()
+      console.log('🔍 AuthService: getUser() response received:', { user: user?.email, error: userError })
       
       if (userError) {
         console.error('❌ AuthService: Error getting user:', userError)
