@@ -94,11 +94,14 @@ export class AuthService {
 
       console.log('👤 AuthService: User found:', user.email, user.id)
 
+      console.log('🔍 AuthService: Querying user_profiles for user ID:', user.id)
       const { data: profile, error: profileError } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('id', user.id)
         .single()
+      
+      console.log('🔍 AuthService: Profile query response:', { profile, profileError })
 
       if (profileError) {
         console.error('❌ AuthService: Error getting profile:', profileError)

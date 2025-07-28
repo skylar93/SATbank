@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.warn('⏰ AuthProvider: Auth initialization timed out, setting loading to false')
         setLoading(false)
       }
-    }, 10000) // 10 second timeout for better UX
+    }, 15000) // 15 second timeout for better UX
     
     const initializeAuth = async () => {
       try {
