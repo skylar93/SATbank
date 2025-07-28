@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { authStateManager } from './auth-state-manager'
 
 export interface UserProfile {
   id: string
@@ -73,6 +74,8 @@ export class AuthService {
   static async signOut() {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
+    // Clear auth state manager cache
+    authStateManager.clearState()
   }
 
   // Helper method to get profile with retry
@@ -107,98 +110,9 @@ export class AuthService {
     return { data: null, error: new Error('Max retries reached') }
   }
 
-  // Get current user with profile
+  // Get current user with profile (delegated to AuthStateManager)
   static async getCurrentUser(): Promise<AuthUser | null> {
-    console.log('🔍 AuthService: Getting current user...')
-    
-    try {
-      // First try to get session (faster and more reliable)
-      console.log('🔍 AuthService: Checking session first...')
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-      
-      if (sessionError) {
-        console.error('❌ AuthService: Session error:', sessionError)
-      }
-      
-      if (session?.user) {
-        console.log('🔍 AuthService: Using session user:', session.user.email)
-        const user = session.user
-        
-        // Get profile with retry logic
-        console.log('🔍 AuthService: Querying user_profiles for user ID:', user.id)
-        const { data: profile, error: profileError } = await this.getProfileWithRetry(user.id)
-        
-        console.log('🔍 AuthService: Profile query response:', { profile, profileError })
-
-        if (profileError) {
-          console.error('❌ AuthService: Error getting profile:', profileError)
-          if (profileError.code !== 'PGRST116') {
-            console.warn('⚠️ AuthService: Profile fetch failed, continuing without profile')
-          }
-        }
-
-        console.log('👤 AuthService: Profile query result:', { 
-          profile, 
-          hasProfile: !!profile,
-          profileRole: profile?.role 
-        })
-
-        return {
-          id: user.id,
-          email: user.email!,
-          profile,
-        }
-      }
-      
-      // Fallback to getUser() with longer timeout
-      console.log('🔍 AuthService: No session found, calling supabase.auth.getUser()...')
-      const getUserPromise = supabase.auth.getUser()
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('getUser() timeout after 20 seconds')), 20000)
-      )
-      
-      const { data: { user }, error: userError } = await Promise.race([getUserPromise, timeoutPromise]) as any
-      console.log('🔍 AuthService: getUser() response received:', { user: user?.email, error: userError })
-      
-      if (userError) {
-        console.error('❌ AuthService: Error getting user:', userError)
-        throw userError
-      }
-      
-      if (!user) {
-        console.log('👤 AuthService: No user found')
-        return null
-      }
-
-      console.log('👤 AuthService: User found:', user.email, user.id)
-
-      console.log('🔍 AuthService: Querying user_profiles for user ID:', user.id)
-      const { data: profile, error: profileError } = await this.getProfileWithRetry(user.id)
-      
-      console.log('🔍 AuthService: Profile query response:', { profile, profileError })
-
-      if (profileError) {
-        console.error('❌ AuthService: Error getting profile:', profileError)
-        if (profileError.code !== 'PGRST116') {
-          console.warn('⚠️ AuthService: Profile fetch failed, continuing without profile')
-        }
-      }
-
-      console.log('👤 AuthService: Profile query result:', { 
-        profile, 
-        hasProfile: !!profile,
-        profileRole: profile?.role 
-      })
-
-      return {
-        id: user.id,
-        email: user.email!,
-        profile,
-      }
-    } catch (error) {
-      console.error('❌ AuthService: Unexpected error in getCurrentUser:', error)
-      throw error
-    }
+    return authStateManager.getCurrentUser()
   }
 
   // Update user profile
@@ -223,34 +137,25 @@ export class AuthService {
     return data || false
   }
 
-  // Listen to auth state changes
+  // Listen to auth state changes (delegated to AuthStateManager)
   static onAuthStateChange(callback: (user: AuthUser | null) => void) {
-    let lastUserId: string | null = null
+    // Subscribe to AuthStateManager
+    const unsubscribe = authStateManager.subscribe(callback)
     
-    return supabase.auth.onAuthStateChange(async (event, session) => {
-      // Only log and process if the user actually changed
-      const currentUserId = session?.user?.id || null
-      if (currentUserId === lastUserId && event !== 'INITIAL_SESSION') {
-        return // Skip duplicate events for the same user
-      }
-      
-      console.log('🔄 AuthService: Auth state change event:', event, session?.user?.email)
-      lastUserId = currentUserId
-      
-      try {
-        if (session?.user) {
-          console.log('🔄 AuthService: Session found, getting user profile...')
-          const authUser = await this.getCurrentUser()
-          console.log('🔄 AuthService: Calling callback with user:', authUser?.email)
-          callback(authUser)
-        } else {
-          console.log('🔄 AuthService: No session, calling callback with null')
-          callback(null)
-        }
-      } catch (error) {
-        console.error('❌ AuthService: Error in auth state change:', error)
-        callback(null)
-      }
+    // Also listen to Supabase auth changes and forward to AuthStateManager
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      authStateManager.handleAuthStateChange(event, session)
     })
+    
+    return {
+      data: {
+        subscription: {
+          unsubscribe: () => {
+            unsubscribe()
+            subscription.unsubscribe()
+          }
+        }
+      }
+    }
   }
 }

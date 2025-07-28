@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { AuthService, type AuthUser } from '../lib/auth'
+import { authStateManager } from '../lib/auth-state-manager'
 
 interface AuthContextType {
   user: AuthUser | null
@@ -24,59 +25,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     console.log('🔄 AuthProvider: Initializing...')
     let isInitialized = false
-    let retryCount = 0
-    const maxRetries = 3
     
-    // Add timeout to prevent infinite loading
-    const timeoutId = setTimeout(() => {
-      if (!isInitialized) {
-        console.warn('⏰ AuthProvider: Auth initialization timed out, setting loading to false')
-        setLoading(false)
-      }
-    }, 15000) // 15 second timeout for better UX
-    
+    // Simpler initialization with AuthStateManager
     const initializeAuth = async () => {
       try {
-        console.log(`🔄 AuthProvider: Getting initial user (attempt ${retryCount + 1}/${maxRetries})...`)
-        const user = await AuthService.getCurrentUser()
+        console.log('🔄 AuthProvider: Getting initial user...')
+        const user = await authStateManager.getCurrentUser()
         console.log('👤 AuthProvider: Initial user:', user?.email || 'none')
         isInitialized = true
-        clearTimeout(timeoutId)
         setUser(user)
-        setError(null) // Clear any previous errors
+        setError(null)
         setLoading(false)
       } catch (err: any) {
         console.error('❌ AuthProvider: Error getting initial user:', err)
-        retryCount++
-        
-        if (retryCount < maxRetries && !isInitialized) {
-          console.log(`🔄 AuthProvider: Retrying in 2 seconds... (${retryCount}/${maxRetries})`)
-          setTimeout(initializeAuth, 2000)
-        } else {
-          isInitialized = true
-          clearTimeout(timeoutId)
-          setError(err.message)
-          setLoading(false)
-        }
+        isInitialized = true
+        setError(err.message)
+        setLoading(false)
       }
     }
     
     initializeAuth()
 
-    // Listen for auth changes
-    const { data: { subscription } } = AuthService.onAuthStateChange((user) => {
-      console.log('🔄 AuthProvider: Auth state changed:', user?.email || 'signed out')
-      // Always handle auth state changes, regardless of initialization status
+    // Subscribe to auth state changes from AuthStateManager
+    const unsubscribeFromStateManager = authStateManager.subscribe(async (stateChangedUser) => {
+      console.log('🔄 AuthProvider: Auth state changed:', stateChangedUser?.email || 'signed out')
+      
+      if (stateChangedUser === null) {
+        // State manager notified of change, fetch fresh user data
+        try {
+          const currentUser = await authStateManager.getCurrentUser()
+          setUser(currentUser)
+        } catch (err: any) {
+          console.error('❌ AuthProvider: Error fetching user after state change:', err)
+          setUser(null)
+          setError(err.message)
+        }
+      } else {
+        setUser(stateChangedUser)
+      }
+      
       isInitialized = true
-      clearTimeout(timeoutId) // Clear timeout since we got a response
-      setUser(user)
       setLoading(false)
-      setError(null) // Clear any errors when auth state changes
+      setError(null)
+    })
+
+    // Also listen to Supabase auth changes and forward to AuthStateManager
+    const { data: { subscription } } = AuthService.onAuthStateChange(() => {
+      // AuthService.onAuthStateChange now delegates to AuthStateManager
+      // This subscription is mainly for cleanup
     })
 
     return () => {
       console.log('🧹 AuthProvider: Cleanup')
-      clearTimeout(timeoutId)
+      unsubscribeFromStateManager()
       subscription.unsubscribe()
     }
   }, [])
