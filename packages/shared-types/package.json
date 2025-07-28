@@ -11,6 +11,9 @@
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
+  "dependencies": {
+    "@satbank/database-types": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "^5.3.3"
   }
