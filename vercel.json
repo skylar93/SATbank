@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm --filter @satbank/web build",
+  "buildCommand": "cd apps/web && pnpm build",
   "installCommand": "pnpm install",
   "outputDirectory": "apps/web/.next"
 }
