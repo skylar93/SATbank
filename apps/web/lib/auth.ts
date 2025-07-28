@@ -75,17 +75,86 @@ export class AuthService {
     if (error) throw error
   }
 
+  // Helper method to get profile with retry
+  private static async getProfileWithRetry(userId: string, retries = 2): Promise<{ data: UserProfile | null; error: any }> {
+    for (let i = 0; i <= retries; i++) {
+      try {
+        const { data: profile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', userId)
+          .single()
+        
+        if (!profileError || profileError.code === 'PGRST116') {
+          return { data: profile, error: profileError }
+        }
+        
+        if (i < retries) {
+          console.log(`🔄 AuthService: Profile fetch failed, retrying... (${i + 1}/${retries})`);
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        } else {
+          return { data: null, error: profileError }
+        }
+      } catch (error) {
+        if (i < retries) {
+          console.log(`🔄 AuthService: Profile fetch error, retrying... (${i + 1}/${retries})`);
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        } else {
+          return { data: null, error }
+        }
+      }
+    }
+    return { data: null, error: new Error('Max retries reached') }
+  }
+
   // Get current user with profile
   static async getCurrentUser(): Promise<AuthUser | null> {
     console.log('🔍 AuthService: Getting current user...')
     
     try {
-      console.log('🔍 AuthService: Calling supabase.auth.getUser()...')
+      // First try to get session (faster and more reliable)
+      console.log('🔍 AuthService: Checking session first...')
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       
-      // Add timeout to prevent hanging
+      if (sessionError) {
+        console.error('❌ AuthService: Session error:', sessionError)
+      }
+      
+      if (session?.user) {
+        console.log('🔍 AuthService: Using session user:', session.user.email)
+        const user = session.user
+        
+        // Get profile with retry logic
+        console.log('🔍 AuthService: Querying user_profiles for user ID:', user.id)
+        const { data: profile, error: profileError } = await this.getProfileWithRetry(user.id)
+        
+        console.log('🔍 AuthService: Profile query response:', { profile, profileError })
+
+        if (profileError) {
+          console.error('❌ AuthService: Error getting profile:', profileError)
+          if (profileError.code !== 'PGRST116') {
+            console.warn('⚠️ AuthService: Profile fetch failed, continuing without profile')
+          }
+        }
+
+        console.log('👤 AuthService: Profile query result:', { 
+          profile, 
+          hasProfile: !!profile,
+          profileRole: profile?.role 
+        })
+
+        return {
+          id: user.id,
+          email: user.email!,
+          profile,
+        }
+      }
+      
+      // Fallback to getUser() with longer timeout
+      console.log('🔍 AuthService: No session found, calling supabase.auth.getUser()...')
       const getUserPromise = supabase.auth.getUser()
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('getUser() timeout after 10 seconds')), 10000)
+        setTimeout(() => reject(new Error('getUser() timeout after 20 seconds')), 20000)
       )
       
       const { data: { user }, error: userError } = await Promise.race([getUserPromise, timeoutPromise]) as any
@@ -104,30 +173,15 @@ export class AuthService {
       console.log('👤 AuthService: User found:', user.email, user.id)
 
       console.log('🔍 AuthService: Querying user_profiles for user ID:', user.id)
-      const { data: profile, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
+      const { data: profile, error: profileError } = await this.getProfileWithRetry(user.id)
       
       console.log('🔍 AuthService: Profile query response:', { profile, profileError })
 
       if (profileError) {
         console.error('❌ AuthService: Error getting profile:', profileError)
-        console.error('❌ AuthService: Profile error details:', {
-          message: profileError.message,
-          code: profileError.code,
-          details: profileError.details,
-          hint: profileError.hint
-        })
-        
-        // Check if it's a missing profile (which is normal for new users)
-        if (profileError.code === 'PGRST116') {
-          console.log('📝 AuthService: User profile not found, this is normal for new users')
-        } else {
+        if (profileError.code !== 'PGRST116') {
           console.warn('⚠️ AuthService: Profile fetch failed, continuing without profile')
         }
-        // Don't throw here, just return user without profile
       }
 
       console.log('👤 AuthService: Profile query result:', { 
