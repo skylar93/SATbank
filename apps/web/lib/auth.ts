@@ -81,7 +81,14 @@ export class AuthService {
     
     try {
       console.log('🔍 AuthService: Calling supabase.auth.getUser()...')
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      
+      // Add timeout to prevent hanging
+      const getUserPromise = supabase.auth.getUser()
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('getUser() timeout after 10 seconds')), 10000)
+      )
+      
+      const { data: { user }, error: userError } = await Promise.race([getUserPromise, timeoutPromise]) as any
       console.log('🔍 AuthService: getUser() response received:', { user: user?.email, error: userError })
       
       if (userError) {
