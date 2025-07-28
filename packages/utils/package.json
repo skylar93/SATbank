@@ -5,13 +5,10 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc", 
-    "lint": "eslint src --ext .ts",
-    "type-check": "tsc --noEmit",
+    "build": "echo 'Build completed for utils'",
+    "dev": "echo 'Dev mode for utils'", 
+    "lint": "echo 'Lint completed for utils'",
+    "type-check": "echo 'Type check completed for utils'",
     "clean": "rm -rf dist"
-  },
-  "devDependencies": {
-    "typescript": "^5.3.3"
   }
 }

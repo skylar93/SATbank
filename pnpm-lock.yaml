@@ -135,11 +135,7 @@ importers:
         specifier: ^5.3.3
         version: 5.8.3
 
-  packages/database-types:
-    devDependencies:
-      typescript:
-        specifier: ^5.3.3
-        version: 5.8.3
+  packages/database-types: {}
 
   packages/shared-types:
     dependencies:
@@ -175,15 +171,8 @@ importers:
       '@types/react-dom':
         specifier: ^18.2.19
         version: 18.3.7(@types/react@18.3.23)
-      typescript:
-        specifier: ^5.3.3
-        version: 5.8.3
 
-  packages/utils:
-    devDependencies:
-      typescript:
-        specifier: ^5.3.3
-        version: 5.8.3
+  packages/utils: {}
 
 packages:
 
