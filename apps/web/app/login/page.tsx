@@ -21,11 +21,9 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    console.log('🔐 Login: Attempting to sign in:', email)
 
     try {
       await signIn(email, password)
-      console.log('✅ Login: Sign in successful')
       
       // Test session immediately after login
       setTimeout(async () => {
@@ -34,7 +32,6 @@ export default function LoginPage() {
           setSessionTest(`✅ Session found: ${session.user.email}`)
           // Backup redirect if useEffect doesn't work
           setTimeout(() => {
-            console.log('🔄 Login: Backup redirect triggered')
             window.location.href = '/student/dashboard'
           }, 2000)
         } else {
@@ -45,7 +42,6 @@ export default function LoginPage() {
       // Don't set loading to false here, let AuthContext handle it
       // This prevents the form from becoming interactive again before redirect
     } catch (err: any) {
-      console.error('❌ Login: Error:', err)
       setError(err.message || 'Login failed')
       setLoading(false)
     }
@@ -54,11 +50,9 @@ export default function LoginPage() {
   // Manual redirect after successful auth
   React.useEffect(() => {
     if (user && !authLoading) {
-      console.log('🔄 Login: User authenticated, redirecting...', user.email, user.profile?.role)
       
       // Force redirect regardless of role detection issues
       const redirectPath = user.profile?.role === 'admin' ? '/admin/dashboard' : '/student/dashboard'
-      console.log('🔄 Login: Forcing redirect to:', redirectPath)
       
       // Use window.location for more reliable redirect
       window.location.href = redirectPath
@@ -121,15 +115,6 @@ export default function LoginPage() {
             <div className="text-red-600 text-sm text-center">Auth Error: {authError}</div>
           )}
 
-          {/* Debug Info */}
-          <div className="text-xs text-gray-500 bg-gray-100 p-2 rounded">
-            <div>Auth Loading: {authLoading.toString()}</div>
-            <div>User: {user?.email || 'None'}</div>
-            <div>Role: {user?.profile?.role || 'None'}</div>
-            <div>Is Admin: {isAdmin.toString()}</div>
-            <div>Is Student: {isStudent.toString()}</div>
-            {sessionTest && <div className="mt-2 font-semibold">{sessionTest}</div>}
-          </div>
 
           <div>
             <button

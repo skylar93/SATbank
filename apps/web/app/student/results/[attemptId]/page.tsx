@@ -8,6 +8,7 @@ import { Navigation } from '../../../../components/navigation'
 import { AnalyticsService, type ComprehensiveResults } from '../../../../lib/analytics-service'
 import { ExportService } from '../../../../lib/export-service'
 import { ModuleType } from '../../../../lib/exam-service'
+import { supabase } from '../../../../lib/supabase'
 
 export default function DetailedResultsPage() {
   const params = useParams()
@@ -18,14 +19,36 @@ export default function DetailedResultsPage() {
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'overview' | 'questions' | 'analytics'>('overview')
   const [exporting, setExporting] = useState(false)
+  const [showCorrectAnswers, setShowCorrectAnswers] = useState(false)
 
   const attemptId = params.attemptId as string
 
   useEffect(() => {
     if (user && attemptId) {
       loadResults()
+      checkAnswerVisibility()
     }
   }, [user, attemptId])
+
+  const checkAnswerVisibility = async () => {
+    if (!user) return
+    
+    try {
+      const { data: profileData, error } = await supabase
+        .from('user_profiles')
+        .select('show_correct_answers')
+        .eq('id', user.id)
+        .single()
+
+      if (error) throw error
+      
+      setShowCorrectAnswers(profileData?.show_correct_answers || false)
+    } catch (err: any) {
+      console.error('Error checking answer visibility:', err)
+      // Default to false if there's an error
+      setShowCorrectAnswers(false)
+    }
+  }
 
   const loadResults = async () => {
     try {
@@ -320,7 +343,21 @@ export default function DetailedResultsPage() {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
             <div className="p-6 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">Question-by-Question Analysis</h3>
-              <p className="text-gray-600 mt-1">Review each question with your answers and explanations</p>
+              <p className="text-gray-600 mt-1">
+                {showCorrectAnswers 
+                  ? "Review each question with your answers and explanations" 
+                  : "Review each question with your answers (correct answers not available)"}
+              </p>
+              {!showCorrectAnswers && (
+                <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-center">
+                    <div className="text-yellow-600 mr-2">ℹ️</div>
+                    <div className="text-sm text-yellow-800">
+                      Correct answers and explanations are not available for review. Contact your administrator for access.
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="divide-y divide-gray-200">
@@ -351,19 +388,21 @@ export default function DetailedResultsPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className={`grid ${showCorrectAnswers ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'} gap-4 text-sm`}>
                     <div>
                       <div className="text-gray-600">Your Answer:</div>
                       <div className={`font-medium ${question.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
                         {question.userAnswer || 'No answer'}
                       </div>
                     </div>
-                    <div>
-                      <div className="text-gray-600">Correct Answer:</div>
-                      <div className="font-medium text-green-600">
-                        {question.correctAnswer}
+                    {showCorrectAnswers && (
+                      <div>
+                        <div className="text-gray-600">Correct Answer:</div>
+                        <div className="font-medium text-green-600">
+                          {question.correctAnswer}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   {question.topicTags && question.topicTags.length > 0 && (
@@ -379,7 +418,7 @@ export default function DetailedResultsPage() {
                     </div>
                   )}
 
-                  {question.explanation && (
+                  {showCorrectAnswers && question.explanation && (
                     <div className="mt-3 p-3 bg-gray-50 rounded">
                       <div className="text-sm text-gray-600 mb-1">Explanation:</div>
                       <div className="text-sm text-gray-800">{question.explanation}</div>

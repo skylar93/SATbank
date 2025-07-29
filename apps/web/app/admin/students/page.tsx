@@ -13,6 +13,7 @@ interface StudentData {
   email: string
   grade_level: number | null
   target_score: number | null
+  show_correct_answers: boolean
   created_at: string
   attempts: {
     total: number
@@ -44,6 +45,7 @@ export default function AdminStudentsPage() {
     sortOrder: 'asc'
   })
   const [exporting, setExporting] = useState(false)
+  const [updatingAnswerVisibility, setUpdatingAnswerVisibility] = useState<string | null>(null)
 
   useEffect(() => {
     if (user) {
@@ -60,7 +62,7 @@ export default function AdminStudentsPage() {
       // Get all students
       const { data: studentsData, error: studentsError } = await supabase
         .from('user_profiles')
-        .select('*')
+        .select('id, full_name, email, grade_level, target_score, show_correct_answers, created_at')
         .eq('role', 'student')
         .order('full_name')
 
@@ -200,6 +202,33 @@ export default function AdminStudentsPage() {
       setError(`Export failed: ${err.message}`)
     } finally {
       setExporting(false)
+    }
+  }
+
+  const handleToggleAnswerVisibility = async (studentId: string, newValue: boolean) => {
+    setUpdatingAnswerVisibility(studentId)
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ show_correct_answers: newValue })
+        .eq('id', studentId)
+
+      if (error) throw error
+
+      // Update local state
+      setStudents(prev => 
+        prev.map(student => 
+          student.id === studentId 
+            ? { ...student, show_correct_answers: newValue }
+            : student
+        )
+      )
+    } catch (err: any) {
+      setError(`Failed to update answer visibility: ${err.message}`)
+      // Reload data to reset the UI
+      loadStudentData()
+    } finally {
+      setUpdatingAnswerVisibility(null)
     }
   }
 
@@ -415,6 +444,9 @@ export default function AdminStudentsPage() {
                           Last Activity
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Answer Visibility
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
@@ -471,6 +503,20 @@ export default function AdminStudentsPage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {formatDate(student.attempts.latest_date)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <label className="inline-flex items-center">
+                              <input
+                                type="checkbox"
+                                checked={student.show_correct_answers}
+                                onChange={(e) => handleToggleAnswerVisibility(student.id, e.target.checked)}
+                                disabled={updatingAnswerVisibility === student.id}
+                                className="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out disabled:opacity-50"
+                              />
+                              <span className="ml-2 text-sm text-gray-700">
+                                {student.show_correct_answers ? 'Enabled' : 'Disabled'}
+                              </span>
+                            </label>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                             <Link

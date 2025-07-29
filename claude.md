@@ -66,6 +66,23 @@
 2. **Medium**: Question display, answer storage, results screen
 3. **Low**: Problem bank, admin dashboard, optimization
 
+## Development & Deployment Workflow
+**IMPORTANT**: Always follow the development workflow documented in `Workflow.md`
+
+### Required Commands Before Any Code Changes
+```bash
+pnpm dev          # Test locally first
+pnpm type-check   # Check for TypeScript errors
+pnpm lint         # Check code style
+pnpm build        # Verify build success
+```
+
+### Deployment Process
+1. **Never push directly to main** - Create feature branches
+2. **Use PR workflow** - Get preview deployments via Vercel
+3. **Test thoroughly** - Check preview deployment before merging
+4. **Reference**: See `Workflow.md` for complete deployment guide
+
 ## Database Schema Essentials
 ```sql
 -- Main tables
