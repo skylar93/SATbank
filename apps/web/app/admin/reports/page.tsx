@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
-import { Navigation } from '../../../components/navigation'
 import { ExportService } from '../../../lib/export-service'
 import { supabase } from '../../../lib/supabase'
 
@@ -315,114 +314,115 @@ export default function AdminReportsPage() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  System Reports & Analytics
-                </h1>
-                <p className="mt-2 text-gray-600">
-                  Comprehensive performance analytics and reporting
-                </p>
-              </div>
-              <div className="flex space-x-3">
-                <select
-                  value={dateRange}
-                  onChange={(e) => setDateRange(e.target.value as any)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="week">Last Week</option>
-                  <option value="month">Last Month</option>
-                  <option value="quarter">Last Quarter</option>
-                  <option value="year">Last Year</option>
-                </select>
-                <button
-                  onClick={() => exportReport('summary')}
-                  disabled={exporting || !analytics}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                >
-                  Export Summary
-                </button>
-                <button
-                  onClick={() => exportReport('detailed')}
-                  disabled={exporting || !analytics}
-                  className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                >
-                  Export Detailed
-                </button>
-                <Link
-                  href="/admin/dashboard"
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
-                >
-                  ← Dashboard
-                </Link>
-              </div>
+    <div className="h-full bg-gray-50">
+      {/* Top Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">System Reports & Analytics</h1>
+            <p className="text-gray-600">Comprehensive performance analytics and reporting</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex space-x-3">
+              <select
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value as any)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="week">Last Week</option>
+                <option value="month">Last Month</option>
+                <option value="quarter">Last Quarter</option>
+                <option value="year">Last Year</option>
+              </select>
+              <button
+                onClick={() => exportReport('summary')}
+                disabled={exporting || !analytics}
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                Export Summary
+              </button>
+              <button
+                onClick={() => exportReport('detailed')}
+                disabled={exporting || !analytics}
+                className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                Export Detailed
+              </button>
+              <Link
+                href="/admin/dashboard"
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                ← Dashboard
+              </Link>
+            </div>
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {user.profile?.full_name?.charAt(0) || 'A'}
+              </span>
             </div>
           </div>
+        </div>
+      </div>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <p className="text-red-800">Error loading analytics: {error}</p>
-            </div>
-          )}
+      <div className="p-6">
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <p className="text-red-800">Error loading analytics: {error}</p>
+          </div>
+        )}
 
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading analytics...</p>
-            </div>
-          ) : analytics && (
-            <>
-              {/* Key Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                  <div className="flex items-center">
-                    <div className="text-3xl font-bold text-blue-600">{analytics.totalStudents}</div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">Total Students</div>
-                      <div className="text-xs text-gray-500">Registered users</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                  <div className="flex items-center">
-                    <div className="text-3xl font-bold text-green-600">{analytics.completedAttempts}</div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">Completed Tests</div>
-                      <div className="text-xs text-gray-500">of {analytics.totalAttempts} attempts</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                  <div className="flex items-center">
-                    <div className="text-3xl font-bold text-purple-600">{analytics.averageScore}</div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">Average Score</div>
-                      <div className="text-xs text-gray-500">Out of 1600</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                  <div className="flex items-center">
-                    <div className="text-3xl font-bold text-orange-600">
-                      {analytics.timeAnalysis.averageTestDuration}min
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">Avg Duration</div>
-                      <div className="text-xs text-gray-500">Test completion time</div>
-                    </div>
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading analytics...</p>
+          </div>
+        ) : analytics && (
+          <>
+            {/* Key Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-2xl shadow-sm">
+                <div className="flex items-center">
+                  <div className="text-3xl font-bold text-emerald-500">{analytics.totalStudents}</div>
+                  <div className="ml-4">
+                    <div className="text-sm font-medium text-gray-900">Total Students</div>
+                    <div className="text-xs text-gray-500">Registered users</div>
                   </div>
                 </div>
               </div>
+              <div className="bg-white p-6 rounded-2xl shadow-sm">
+                <div className="flex items-center">
+                  <div className="text-3xl font-bold text-violet-500">{analytics.completedAttempts}</div>
+                  <div className="ml-4">
+                    <div className="text-sm font-medium text-gray-900">Completed Tests</div>
+                    <div className="text-xs text-gray-500">of {analytics.totalAttempts} attempts</div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white p-6 rounded-2xl shadow-sm">
+                <div className="flex items-center">
+                  <div className="text-3xl font-bold text-blue-500">{analytics.averageScore}</div>
+                  <div className="ml-4">
+                    <div className="text-sm font-medium text-gray-900">Average Score</div>
+                    <div className="text-xs text-gray-500">Out of 1600</div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white p-6 rounded-2xl shadow-sm">
+                <div className="flex items-center">
+                  <div className="text-3xl font-bold text-amber-500">
+                    {analytics.timeAnalysis.averageTestDuration}min
+                  </div>
+                  <div className="ml-4">
+                    <div className="text-sm font-medium text-gray-900">Avg Duration</div>
+                    <div className="text-xs text-gray-500">Test completion time</div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-              {/* Tab Navigation */}
-              <div className="border-b border-gray-200 mb-6">
+            {/* Tab Navigation */}
+            <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+              <div className="border-b border-gray-200 pb-4">
                 <nav className="-mb-px flex space-x-8">
                   {[
                     { id: 'overview', label: 'Overview' },
@@ -444,196 +444,196 @@ export default function AdminReportsPage() {
                   ))}
                 </nav>
               </div>
+            </div>
 
-              {/* Tab Content */}
-              {activeReport === 'overview' && (
-                <div className="space-y-6">
-                  {/* Score Distribution */}
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Score Distribution</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div className="text-center p-4 bg-green-50 rounded-lg">
-                        <div className="text-2xl font-bold text-green-600">{analytics.scoreDistribution.excellent}</div>
-                        <div className="text-sm text-gray-600">Excellent (1200+)</div>
-                      </div>
-                      <div className="text-center p-4 bg-blue-50 rounded-lg">
-                        <div className="text-2xl font-bold text-blue-600">{analytics.scoreDistribution.good}</div>
-                        <div className="text-sm text-gray-600">Good (1000-1199)</div>
-                      </div>
-                      <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                        <div className="text-2xl font-bold text-yellow-600">{analytics.scoreDistribution.fair}</div>
-                        <div className="text-sm text-gray-600">Fair (800-999)</div>
-                      </div>
-                      <div className="text-center p-4 bg-red-50 rounded-lg">
-                        <div className="text-2xl font-bold text-red-600">{analytics.scoreDistribution.poor}</div>
-                        <div className="text-sm text-gray-600">Needs Improvement (&lt;800)</div>
-                      </div>
+            {/* Tab Content */}
+            {activeReport === 'overview' && (
+              <div className="space-y-6">
+                {/* Score Distribution */}
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Score Distribution</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="text-center p-4 bg-emerald-50 rounded-lg">
+                      <div className="text-2xl font-bold text-emerald-500">{analytics.scoreDistribution.excellent}</div>
+                      <div className="text-sm text-gray-600">Excellent (1200+)</div>
                     </div>
-                  </div>
-
-                  {/* Module Performance */}
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Module Performance</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      {Object.entries(analytics.modulePerformance).map(([module, data]) => (
-                        <div key={module} className="p-4 bg-gray-50 rounded-lg">
-                          <div className="text-lg font-bold text-gray-900">
-                            {data.avg}
-                          </div>
-                          <div className="text-sm text-gray-600 capitalize mb-1">
-                            {module.replace(/(\d)/g, ' $1')}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {data.attempts} attempts
-                          </div>
-                        </div>
-                      ))}
+                    <div className="text-center p-4 bg-blue-50 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-500">{analytics.scoreDistribution.good}</div>
+                      <div className="text-sm text-gray-600">Good (1000-1199)</div>
+                    </div>
+                    <div className="text-center p-4 bg-amber-50 rounded-lg">
+                      <div className="text-2xl font-bold text-amber-500">{analytics.scoreDistribution.fair}</div>
+                      <div className="text-sm text-gray-600">Fair (800-999)</div>
+                    </div>
+                    <div className="text-center p-4 bg-slate-50 rounded-lg">
+                      <div className="text-2xl font-bold text-slate-500">{analytics.scoreDistribution.poor}</div>
+                      <div className="text-sm text-gray-600">Needs Improvement (&lt;800)</div>
                     </div>
                   </div>
                 </div>
-              )}
 
-              {activeReport === 'performance' && (
-                <div className="space-y-6">
-                  {/* Difficulty Analysis */}
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance by Difficulty</h3>
-                    <div className="space-y-4">
-                      {Object.entries(analytics.difficultyAnalysis).map(([difficulty, stats]) => (
-                        <div key={difficulty} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                          <div>
-                            <div className="font-medium text-gray-900 capitalize">{difficulty}</div>
-                            <div className="text-sm text-gray-600">
-                              {stats.correct} / {stats.attempted} correct
+                {/* Module Performance */}
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Module Performance</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {Object.entries(analytics.modulePerformance).map(([module, data]) => (
+                      <div key={module} className="p-4 bg-gray-50 rounded-lg">
+                        <div className="text-lg font-bold text-gray-900">
+                          {data.avg}
+                        </div>
+                        <div className="text-sm text-gray-600 capitalize mb-1">
+                          {module.replace(/(\d)/g, ' $1')}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {data.attempts} attempts
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeReport === 'performance' && (
+              <div className="space-y-6">
+                {/* Difficulty Analysis */}
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance by Difficulty</h3>
+                  <div className="space-y-4">
+                    {Object.entries(analytics.difficultyAnalysis).map(([difficulty, stats]) => (
+                      <div key={difficulty} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                          <div className="font-medium text-gray-900 capitalize">{difficulty}</div>
+                          <div className="text-sm text-gray-600">
+                            {stats.correct} / {stats.attempted} correct
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-gray-900">
+                            {formatPercentage(stats.percentage)}
+                          </div>
+                          <div className="w-32 bg-gray-200 rounded-full h-2 mt-1">
+                            <div 
+                              className={`h-2 rounded-full ${
+                                stats.percentage >= 80 ? 'bg-emerald-500' :
+                                stats.percentage >= 60 ? 'bg-amber-500' : 'bg-slate-400'
+                              }`}
+                              style={{ width: `${stats.percentage}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Time Analysis */}
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Time Analysis</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="text-center p-4 bg-blue-50 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-500">
+                        {analytics.timeAnalysis.averageTestDuration}min
+                      </div>
+                      <div className="text-sm text-gray-600">Average Duration</div>
+                    </div>
+                    <div className="text-center p-4 bg-emerald-50 rounded-lg">
+                      <div className="text-2xl font-bold text-emerald-500">
+                        {analytics.timeAnalysis.fastestCompletion}min
+                      </div>
+                      <div className="text-sm text-gray-600">Fastest Completion</div>
+                    </div>
+                    <div className="text-center p-4 bg-amber-50 rounded-lg">
+                      <div className="text-2xl font-bold text-amber-500">
+                        {analytics.timeAnalysis.slowestCompletion}min
+                      </div>
+                      <div className="text-sm text-gray-600">Slowest Completion</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeReport === 'trends' && (
+              <div className="space-y-6">
+                {/* Daily Trends */}
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Activity (Last 7 Days)</h3>
+                  <div className="space-y-3">
+                    {analytics.trends.daily.map((day, index) => (
+                      <div key={day.date} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                        <div>
+                          <div className="font-medium text-gray-900">
+                            {new Date(day.date).toLocaleDateString('en-US', { 
+                              weekday: 'long', 
+                              month: 'short', 
+                              day: 'numeric' 
+                            })}
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <div className="text-right">
+                            <div className="text-sm font-medium text-gray-900">
+                              {day.completions} tests
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              Avg: {day.avgScore || 'N/A'}
                             </div>
                           </div>
+                          <div className="w-20 bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-blue-500 h-2 rounded-full"
+                              style={{ 
+                                width: `${(day.completions / Math.max(...analytics.trends.daily.map(d => d.completions), 1)) * 100}%` 
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeReport === 'topics' && (
+              <div className="space-y-6">
+                {/* Topic Performance */}
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 10 Topic Performance</h3>
+                  <div className="space-y-3">
+                    {analytics.topicPerformance.map((topic, index) => (
+                      <div key={topic.topic} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">{topic.topic}</div>
+                          <div className="text-sm text-gray-600">
+                            {topic.correct} / {topic.attempted} correct
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-4">
                           <div className="text-right">
                             <div className="text-lg font-bold text-gray-900">
-                              {formatPercentage(stats.percentage)}
-                            </div>
-                            <div className="w-32 bg-gray-200 rounded-full h-2 mt-1">
-                              <div 
-                                className={`h-2 rounded-full ${
-                                  stats.percentage >= 80 ? 'bg-green-500' :
-                                  stats.percentage >= 60 ? 'bg-yellow-500' : 'bg-red-500'
-                                }`}
-                                style={{ width: `${stats.percentage}%` }}
-                              ></div>
+                              {formatPercentage(topic.percentage)}
                             </div>
                           </div>
+                          <div className="w-24 bg-gray-200 rounded-full h-2">
+                            <div 
+                              className={`h-2 rounded-full ${
+                                topic.percentage >= 80 ? 'bg-emerald-500' :
+                                topic.percentage >= 60 ? 'bg-amber-500' : 'bg-slate-400'
+                              }`}
+                              style={{ width: `${topic.percentage}%` }}
+                            ></div>
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Time Analysis */}
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Time Analysis</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="text-center p-4 bg-blue-50 rounded-lg">
-                        <div className="text-2xl font-bold text-blue-600">
-                          {analytics.timeAnalysis.averageTestDuration}min
-                        </div>
-                        <div className="text-sm text-gray-600">Average Duration</div>
                       </div>
-                      <div className="text-center p-4 bg-green-50 rounded-lg">
-                        <div className="text-2xl font-bold text-green-600">
-                          {analytics.timeAnalysis.fastestCompletion}min
-                        </div>
-                        <div className="text-sm text-gray-600">Fastest Completion</div>
-                      </div>
-                      <div className="text-center p-4 bg-orange-50 rounded-lg">
-                        <div className="text-2xl font-bold text-orange-600">
-                          {analytics.timeAnalysis.slowestCompletion}min
-                        </div>
-                        <div className="text-sm text-gray-600">Slowest Completion</div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
-              )}
-
-              {activeReport === 'trends' && (
-                <div className="space-y-6">
-                  {/* Daily Trends */}
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Activity (Last 7 Days)</h3>
-                    <div className="space-y-3">
-                      {analytics.trends.daily.map((day, index) => (
-                        <div key={day.date} className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                          <div>
-                            <div className="font-medium text-gray-900">
-                              {new Date(day.date).toLocaleDateString('en-US', { 
-                                weekday: 'long', 
-                                month: 'short', 
-                                day: 'numeric' 
-                              })}
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-4">
-                            <div className="text-right">
-                              <div className="text-sm font-medium text-gray-900">
-                                {day.completions} tests
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                Avg: {day.avgScore || 'N/A'}
-                              </div>
-                            </div>
-                            <div className="w-20 bg-gray-200 rounded-full h-2">
-                              <div 
-                                className="bg-blue-600 h-2 rounded-full"
-                                style={{ 
-                                  width: `${(day.completions / Math.max(...analytics.trends.daily.map(d => d.completions), 1)) * 100}%` 
-                                }}
-                              ></div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeReport === 'topics' && (
-                <div className="space-y-6">
-                  {/* Topic Performance */}
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 10 Topic Performance</h3>
-                    <div className="space-y-3">
-                      {analytics.topicPerformance.map((topic, index) => (
-                        <div key={topic.topic} className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-900">{topic.topic}</div>
-                            <div className="text-sm text-gray-600">
-                              {topic.correct} / {topic.attempted} correct
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-4">
-                            <div className="text-right">
-                              <div className="text-lg font-bold text-gray-900">
-                                {formatPercentage(topic.percentage)}
-                              </div>
-                            </div>
-                            <div className="w-24 bg-gray-200 rounded-full h-2">
-                              <div 
-                                className={`h-2 rounded-full ${
-                                  topic.percentage >= 80 ? 'bg-green-500' :
-                                  topic.percentage >= 60 ? 'bg-yellow-500' : 'bg-red-500'
-                                }`}
-                                style={{ width: `${topic.percentage}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   )

@@ -8,7 +8,6 @@ import { ExamService, type Question } from '../../../../lib/exam-service'
 import { ExamTimer } from '../../../../components/exam/exam-timer'
 import { QuestionDisplay } from '../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../components/exam/exam-navigation'
-import { BulkEditPanel } from '../../../../components/exam/bulk-edit-panel'
 import { AcademicCapIcon, BookOpenIcon, ClockIcon } from '@heroicons/react/24/outline'
 
 function ExamPageContent() {
@@ -108,7 +107,6 @@ function ExamPageContent() {
     console.log('🔄 ExamId changed, resetting initialization flag:', { examId, hasInitialized })
     setHasInitialized(false)
   }, [examId])
-  const [showBulkEdit, setShowBulkEdit] = useState(false)
   const forcingExitRef = useRef(false)
   const timeExpiredRef = useRef(false)
   const isAdvancingModuleRef = useRef(false)
@@ -258,32 +256,6 @@ function ExamPageContent() {
     console.log('✅ Question updated in database and state:', updatedQuestion.id)
   }
 
-  // Handle bulk questions update
-  const handleBulkQuestionsUpdate = async (updatedQuestions: Question[]) => {
-    try {
-      // Update each question in the database
-      const updatePromises = updatedQuestions.map(question => 
-        ExamService.updateQuestion(question.id, {
-          question_text: question.question_text,
-          explanation: question.explanation,
-          difficulty_level: question.difficulty_level,
-          question_type: question.question_type
-        })
-      )
-      
-      await Promise.all(updatePromises)
-      
-      // Update the questions in state
-      updatedQuestions.forEach(updatedQuestion => {
-        updateQuestionInState(updatedQuestion)
-      })
-      
-      console.log('✅ Bulk questions updated successfully')
-    } catch (error) {
-      console.error('❌ Bulk update failed:', error)
-      throw error
-    }
-  }
 
   // Handle timer expiration with popup notification
   const handleTimeExpired = useCallback(async () => {
@@ -1027,16 +999,6 @@ function ExamPageContent() {
         </div>
       )}
 
-      {/* Bulk Edit Panel - Only in Preview Mode */}
-      {isPreviewMode && (
-        <BulkEditPanel
-          questions={currentModule.questions}
-          moduleType={currentModule.module}
-          onQuestionsUpdate={handleBulkQuestionsUpdate}
-          isVisible={showBulkEdit}
-          onToggle={() => setShowBulkEdit(!showBulkEdit)}
-        />
-      )}
 
     </div>
   )

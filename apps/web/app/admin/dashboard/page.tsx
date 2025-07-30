@@ -3,10 +3,20 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
-import { Navigation } from '../../../components/navigation'
 import { AnalyticsService } from '../../../lib/analytics-service'
 import { ProgressChart } from '../../../components/charts/progress-chart'
+import { StatsCard } from '../../../components/modern-charts'
 import { supabase } from '../../../lib/supabase'
+import { 
+  ChartBarIcon, 
+  TrophyIcon, 
+  FireIcon,
+  BookOpenIcon,
+  ClockIcon,
+  CalendarIcon,
+  ArrowTrendingUpIcon,
+  AcademicCapIcon
+} from '@heroicons/react/24/outline'
 
 interface AdminStats {
   totalStudents: number
@@ -160,19 +170,25 @@ export default function AdminDashboard() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Admin Dashboard
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Monitor student performance and system analytics
-            </p>
+    <div className="h-full bg-gray-50">
+      {/* Top Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+            <p className="text-gray-600">Monitor student performance and system analytics</p>
           </div>
+          <div className="flex items-center space-x-4">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {user.profile?.full_name?.charAt(0) || 'A'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-6">
 
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
@@ -180,245 +196,212 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading dashboard...</p>
-            </div>
-          ) : (
-            <>
-              {/* Key Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                  <div className="p-5">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-sm font-bold">👥</span>
-                        </div>
-                      </div>
-                      <div className="ml-5 w-0 flex-1">
-                        <dl>
-                          <dt className="text-sm font-medium text-gray-500 truncate">
-                            Total Students
-                          </dt>
-                          <dd className="text-lg font-medium text-gray-900">{stats.totalStudents}</dd>
-                        </dl>
-                      </div>
-                    </div>
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading dashboard...</p>
+          </div>
+        ) : (
+          <>
+            {/* Main Grid Layout */}
+            <div className="grid grid-cols-12 gap-6">
+              {/* Left Column - 9 cols */}
+              <div className="col-span-12 lg:col-span-9 space-y-6">
+                {/* Top Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <StatsCard
+                    title="Total Students"
+                    value={stats.totalStudents}
+                    change="+12%"
+                    changeType="positive"
+                    miniChart={{
+                      data: [15, 18, 22, 19, 25, stats.totalStudents],
+                      color: '#10b981'
+                    }}
+                  />
+                  
+                  <StatsCard
+                    title="Completed Tests"
+                    value={stats.totalAttempts}
+                    change="+8.5%"
+                    changeType="positive"
+                    miniChart={{
+                      data: [45, 52, 48, 63, 71, stats.totalAttempts],
+                      color: '#8b5cf6'
+                    }}
+                  />
+                  
+                  <StatsCard
+                    title="Average Score"
+                    value={stats.averageScore}
+                    change="+2.1%"
+                    changeType="positive"
+                    miniChart={{
+                      data: [1050, 1120, 1080, 1150, 1180, stats.averageScore],
+                      color: '#f59e0b'
+                    }}
+                  />
+                </div>
+
+                {/* Analytics Charts */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="bg-white rounded-2xl shadow-sm p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-6">Test Completions (Last 7 Days)</h3>
+                    <ProgressChart
+                      data={stats.weeklyTrend}
+                      title=""
+                      type="line"
+                      color="#10B981"
+                      height={250}
+                    />
+                  </div>
+                  
+                  <div className="bg-white rounded-2xl shadow-sm p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-6">Score Distribution</h3>
+                    <ProgressChart
+                      data={stats.scoreDistribution}
+                      title=""
+                      type="bar"
+                      color="#3B82F6"
+                      height={250}
+                    />
                   </div>
                 </div>
 
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                  <div className="p-5">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-sm font-bold">📝</span>
-                        </div>
-                      </div>
-                      <div className="ml-5 w-0 flex-1">
-                        <dl>
-                          <dt className="text-sm font-medium text-gray-500 truncate">
-                            Completed Tests
-                          </dt>
-                          <dd className="text-lg font-medium text-gray-900">{stats.totalAttempts}</dd>
-                        </dl>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                  <div className="p-5">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-sm font-bold">📊</span>
-                        </div>
-                      </div>
-                      <div className="ml-5 w-0 flex-1">
-                        <dl>
-                          <dt className="text-sm font-medium text-gray-500 truncate">
-                            Average Score
-                          </dt>
-                          <dd className="text-lg font-medium text-gray-900">{stats.averageScore}</dd>
-                        </dl>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                  <div className="p-5">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-sm font-bold">🎯</span>
-                        </div>
-                      </div>
-                      <div className="ml-5 w-0 flex-1">
-                        <dl>
-                          <dt className="text-sm font-medium text-gray-500 truncate">
-                            Completed Today
-                          </dt>
-                          <dd className="text-lg font-medium text-gray-900">{stats.completedToday}</dd>
-                        </dl>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                  <div className="p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">
-                      Student Analytics
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-4">
-                      View comprehensive student performance data and progress tracking.
-                    </p>
+                {/* Quick Actions */}
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Link
                       href="/admin/students"
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors inline-block text-center"
+                      className="flex items-center p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors"
                     >
-                      View All Students
+                      <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4">
+                        <AcademicCapIcon className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">View Students</h4>
+                        <p className="text-sm text-gray-600">Manage all students</p>
+                      </div>
                     </Link>
-                  </div>
-                </div>
 
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                  <div className="p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">
-                      Exam Management
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-4">
-                      Create new exams, manage questions, and configure test settings.
-                    </p>
                     <Link
                       href="/admin/exams"
-                      className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition-colors inline-block text-center"
+                      className="flex items-center p-4 bg-green-50 hover:bg-green-100 rounded-xl transition-colors"
                     >
-                      Manage Exams
+                      <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mr-4">
+                        <BookOpenIcon className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Exams</h4>
+                        <p className="text-sm text-gray-600">Manage exams</p>
+                      </div>
                     </Link>
-                  </div>
-                </div>
 
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                  <div className="p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">
-                      Exam Assignments
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-4">
-                      Assign specific exams to students and manage access permissions.
-                    </p>
                     <Link
-                      href="/admin/assignments"
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition-colors inline-block text-center"
+                      href="/admin/reports"
+                      className="flex items-center p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition-colors"
                     >
-                      Manage Assignments
+                      <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mr-4">
+                        <ChartBarIcon className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Reports</h4>
+                        <p className="text-sm text-gray-600">View analytics</p>
+                      </div>
                     </Link>
                   </div>
                 </div>
               </div>
 
-              {/* Analytics Charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <ProgressChart
-                  data={stats.weeklyTrend}
-                  title="Test Completions (Last 7 Days)"
-                  type="line"
-                  color="#10B981"
-                  height={250}
-                />
-                <ProgressChart
-                  data={stats.scoreDistribution}
-                  title="Score Distribution"
-                  type="bar"
-                  color="#3B82F6"
-                  height={250}
-                />
-              </div>
+              {/* Right Column - 3 cols */}
+              <div className="col-span-12 lg:col-span-3 space-y-6">
+                {/* System Overview */}
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900">System Overview</h3>
+                    <button className="text-sm text-gray-500 hover:text-gray-700">Refresh</button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Today's Tests</span>
+                      <span className="font-semibold text-gray-900">{stats.completedToday}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Active Students</span>
+                      <span className="font-semibold text-gray-900">{stats.totalStudents}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Avg Score</span>
+                      <span className="font-semibold text-gray-900">{stats.averageScore}</span>
+                    </div>
+                  </div>
+                </div>
 
-              {/* Recent Test Attempts */}
-              <div className="bg-white shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium text-gray-900">
-                      Recent Test Completions
-                    </h3>
+                {/* Recent Test Attempts */}
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900">Recent Completions</h3>
                     <Link
                       href="/admin/students"
-                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                     >
-                      View All →
+                      View all
                     </Link>
                   </div>
                   
-                  {recentAttempts.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">No completed tests yet</p>
-                  ) : (
-                    <div className="overflow-hidden">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Student
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Score
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Completed
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Actions
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {recentAttempts.map((attempt) => (
-                            <tr key={attempt.id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div>
-                                  <div className="text-sm font-medium text-gray-900">
-                                    {attempt.user_profiles?.full_name || 'Unknown'}
-                                  </div>
-                                  <div className="text-sm text-gray-500">
-                                    {attempt.user_profiles?.email || ''}
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className={`text-sm font-medium ${getScoreColor(attempt.total_score)}`}>
-                                  {attempt.total_score}
-                                </div>
-                                <div className="text-xs text-gray-500">/ 1600</div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {formatDate(attempt.completed_at)}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <Link
-                                  href={`/student/results/${attempt.id}`}
-                                  className="text-blue-600 hover:text-blue-700"
-                                >
-                                  View Details
-                                </Link>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                  <div className="space-y-4">
+                    {recentAttempts.slice(0, 5).map((attempt) => (
+                      <div key={attempt.id} className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-blue-600 font-semibold text-sm">
+                            {attempt.user_profiles?.full_name?.charAt(0) || 'U'}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">
+                            {attempt.user_profiles?.full_name || 'Unknown'}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Score: {attempt.total_score}/1600
+                          </p>
+                        </div>
+                        <span className="text-xs text-gray-400">
+                          {formatDate(attempt.completed_at)}
+                        </span>
+                      </div>
+                    ))}
+                    
+                    {recentAttempts.length === 0 && (
+                      <div className="text-center py-8">
+                        <p className="text-gray-500 text-sm">No recent completions</p>
+                        <p className="text-xs text-gray-400 mt-1">Test results will appear here</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Admin Actions CTA */}
+                <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <TrophyIcon className="w-8 h-8 text-white" />
                     </div>
-                  )}
+                    <h3 className="text-lg font-semibold mb-2">System Running</h3>
+                    <p className="text-indigo-100 text-sm mb-4">Monitor student progress and manage the platform efficiently.</p>
+                    <Link
+                      href="/admin/reports"
+                      className="bg-white text-indigo-600 font-semibold py-2 px-6 rounded-lg hover:bg-indigo-50 transition-colors inline-block"
+                    >
+                      View Reports
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
