@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { ExamService, type Question, type Exam, type TestAttempt, type ModuleType } from '../lib/exam-service'
 import { useAuth } from '../contexts/auth-context'
+import { checkAnswer } from '../lib/answer-checker'
 
 interface ExamAnswer {
   questionId: string
@@ -234,7 +235,7 @@ export function useExamState() {
       for (const [questionId, examAnswer] of Object.entries(currentModule.answers)) {
         const question = currentModule.questions.find(q => q.id === questionId)
         if (question && examAnswer.answer) {
-          const isCorrect = examAnswer.answer.toLowerCase() === question.correct_answer.toLowerCase()
+          const isCorrect = checkAnswer(examAnswer.answer, question.correct_answer)
           
           await ExamService.submitAnswer({
             attempt_id: examState.attempt.id,

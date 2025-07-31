@@ -172,13 +172,13 @@ export default function AdminDashboard() {
   return (
     <div className="h-full bg-gray-50">
       {/* Top Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600">Monitor student performance and system analytics</p>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+            <p className="text-sm md:text-base text-gray-600 hidden sm:block">Monitor student performance and system analytics</p>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 flex-shrink-0">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">
                 {user.profile?.full_name?.charAt(0) || 'A'}
@@ -188,8 +188,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="p-6">
-
+      <div className="p-4 md:p-6">
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
               <p className="text-red-800">Error loading dashboard: {error}</p>
@@ -204,11 +203,11 @@ export default function AdminDashboard() {
         ) : (
           <>
             {/* Main Grid Layout */}
-            <div className="grid grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6">
               {/* Left Column - 9 cols */}
-              <div className="col-span-12 lg:col-span-9 space-y-6">
+              <div className="col-span-1 xl:col-span-9 space-y-4 md:space-y-6">
                 {/* Top Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                   <StatsCard
                     title="Total Students"
                     value={stats.totalStudents}
@@ -244,9 +243,9 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Analytics Charts */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="bg-white rounded-2xl shadow-sm p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-6">Test Completions (Last 7 Days)</h3>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                  <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">Test Completions (Last 7 Days)</h3>
                     <ProgressChart
                       data={stats.weeklyTrend}
                       title=""
@@ -256,8 +255,8 @@ export default function AdminDashboard() {
                     />
                   </div>
                   
-                  <div className="bg-white rounded-2xl shadow-sm p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-6">Score Distribution</h3>
+                  <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">Score Distribution</h3>
                     <ProgressChart
                       data={stats.scoreDistribution}
                       title=""
@@ -269,9 +268,9 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
+                  <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">Quick Actions</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <Link
                       href="/admin/students"
                       className="flex items-center p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors"
@@ -315,11 +314,11 @@ export default function AdminDashboard() {
               </div>
 
               {/* Right Column - 3 cols */}
-              <div className="col-span-12 lg:col-span-3 space-y-6">
+              <div className="col-span-1 xl:col-span-3 space-y-4 md:space-y-6">
                 {/* System Overview */}
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900">System Overview</h3>
+                <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
+                  <div className="flex items-center justify-between mb-4 md:mb-6">
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900">System Overview</h3>
                     <button className="text-sm text-gray-500 hover:text-gray-700">Refresh</button>
                   </div>
                   
@@ -340,9 +339,9 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Recent Test Attempts */}
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900">Recent Completions</h3>
+                <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
+                  <div className="flex items-center justify-between mb-4 md:mb-6">
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900">Recent Completions</h3>
                     <Link
                       href="/admin/students"
                       className="text-sm text-blue-600 hover:text-blue-700 font-medium"
@@ -383,7 +382,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Admin Actions CTA */}
-                <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
+                <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-sm p-4 md:p-6 text-white">
                   <div className="text-center">
                     <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                       <TrophyIcon className="w-8 h-8 text-white" />

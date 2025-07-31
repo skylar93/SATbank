@@ -37,7 +37,7 @@ export interface QuestionAnalysis {
   questionNumber: number
   moduleType: ModuleType
   userAnswer: string | null
-  correctAnswer: string
+  correctAnswer: string | string[]
   isCorrect: boolean
   timeSpent: number
   difficulty: 'easy' | 'medium' | 'hard'

@@ -20,37 +20,37 @@ export function Navigation() {
     <nav className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center">
+          <div className="flex items-center min-w-0 flex-1">
             <Link href={isAdmin ? '/admin/dashboard' : '/student/dashboard'} className="flex-shrink-0">
-              <h1 className="text-xl font-bold text-blue-600">SAT Practice</h1>
+              <h1 className="text-lg md:text-xl font-bold text-blue-600">SAT Practice</h1>
             </Link>
             
-            <div className="ml-10 flex items-baseline space-x-4">
+            <div className="ml-4 md:ml-10 flex items-baseline space-x-2 md:space-x-4 overflow-x-auto">
               {isAdmin ? (
                 <>
                   <Link
                     href="/admin/dashboard"
-                    className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-gray-500 hover:text-gray-700 px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium whitespace-nowrap"
                   >
                     Dashboard
                   </Link>
                   <Link
                     href="/admin/students"
-                    className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-gray-500 hover:text-gray-700 px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium whitespace-nowrap"
                   >
                     Students
                   </Link>
                   <Link
                     href="/admin/reports"
-                    className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-gray-500 hover:text-gray-700 px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium whitespace-nowrap"
                   >
                     Reports
                   </Link>
                   <Link
                     href="/admin/exams"
-                    className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-gray-500 hover:text-gray-700 px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium whitespace-nowrap"
                   >
-                    Manage Exams
+                    Exams
                   </Link>
                 </>
               ) : (
@@ -96,8 +96,8 @@ export function Navigation() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-500">
+          <div className="flex items-center space-x-2 md:space-x-4 flex-shrink-0">
+            <div className="text-xs md:text-sm text-gray-500 hidden sm:block">
               <span className="font-medium">{user.profile?.full_name}</span>
               {isAdmin && (
                 <span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
@@ -107,7 +107,7 @@ export function Navigation() {
             </div>
             <button
               onClick={handleSignOut}
-              className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors"
             >
               Sign Out
             </button>

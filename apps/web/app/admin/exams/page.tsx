@@ -16,7 +16,7 @@ interface Question {
   question_image_url?: string
   table_data?: any
   options?: any
-  correct_answer: string
+  correct_answer: string | string[]
   explanation?: string
   topic_tags?: string[]
   exam_id?: string
@@ -710,16 +710,74 @@ export default function ManageExamsPage() {
             <div className="mb-4">
               <h3 className="font-medium text-gray-900 mb-2">Correct Answer:</h3>
               {editingQuestion === question.id ? (
-                <input
-                  type="text"
-                  value={editForm.correct_answer || ''}
-                  onChange={(e) => setEditForm({...editForm, correct_answer: e.target.value})}
-                  className="w-24 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-violet-500"
-                />
+                <div className="space-y-2">
+                  {question.question_type === 'multiple_choice' && question.options ? (
+                    // Multiple choice: show checkboxes for each option
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600">Select all correct answers:</p>
+                      {Object.keys(question.options).map(optionKey => {
+                        const currentAnswers = Array.isArray(editForm.correct_answer) 
+                          ? editForm.correct_answer 
+                          : (editForm.correct_answer ? [editForm.correct_answer] : [])
+                        
+                        return (
+                          <label key={optionKey} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              checked={currentAnswers.includes(optionKey)}
+                              onChange={(e) => {
+                                const newAnswers = e.target.checked
+                                  ? [...currentAnswers, optionKey]
+                                  : currentAnswers.filter(a => a !== optionKey)
+                                setEditForm({
+                                  ...editForm, 
+                                  correct_answer: newAnswers.length === 1 ? newAnswers[0] : newAnswers
+                                })
+                              }}
+                              className="rounded border-gray-300 text-violet-600 focus:ring-violet-500"
+                            />
+                            <span className="text-sm">{optionKey}</span>
+                          </label>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    // Text input for grid-in or other types
+                    <input
+                      type="text"
+                      value={Array.isArray(editForm.correct_answer) 
+                        ? editForm.correct_answer.join(', ') 
+                        : (editForm.correct_answer || '')
+                      }
+                      onChange={(e) => {
+                        const value = e.target.value
+                        const answers = value.includes(',') 
+                          ? value.split(',').map(a => a.trim()).filter(a => a)
+                          : [value.trim()].filter(a => a)
+                        setEditForm({
+                          ...editForm, 
+                          correct_answer: answers.length === 1 ? answers[0] : answers
+                        })
+                      }}
+                      placeholder="Enter answer(s), separate multiple with commas"
+                      className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    />
+                  )}
+                </div>
               ) : (
-                <span className="px-2 py-1 bg-green-100 text-green-800 rounded font-medium">
-                  {question.correct_answer}
-                </span>
+                <div className="flex flex-wrap gap-1">
+                  {Array.isArray(question.correct_answer) ? (
+                    question.correct_answer.map((answer, index) => (
+                      <span key={index} className="px-2 py-1 bg-green-100 text-green-800 rounded font-medium">
+                        {answer}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="px-2 py-1 bg-green-100 text-green-800 rounded font-medium">
+                      {question.correct_answer}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
 

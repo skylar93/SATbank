@@ -397,9 +397,12 @@ export default function DetailedResultsPage() {
                     </div>
                     {showCorrectAnswers && (
                       <div>
-                        <div className="text-gray-600">Correct Answer:</div>
+                        <div className="text-gray-600">Correct Answer{Array.isArray(question.correctAnswer) && question.correctAnswer.length > 1 ? 's' : ''}:</div>
                         <div className="font-medium text-green-600">
-                          {question.correctAnswer}
+                          {Array.isArray(question.correctAnswer) 
+                            ? question.correctAnswer.join(', ')
+                            : question.correctAnswer
+                          }
                         </div>
                       </div>
                     )}
