@@ -16,7 +16,9 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  AcademicCapIcon,
+  WrenchScrewdriverIcon
 } from '@heroicons/react/24/outline'
 
 interface SidebarItem {
@@ -40,6 +42,7 @@ const adminNavigationItems: SidebarItem[] = [
   { name: 'Students', href: '/admin/students', icon: UserCircleIcon },
   { name: 'Reports', href: '/admin/reports', icon: ClipboardDocumentListIcon },
   { name: 'Manage Exams', href: '/admin/exams', icon: DocumentTextIcon },
+  { name: 'Assignments', href: '/admin/assignments', icon: AcademicCapIcon },
 ]
 
 export function Sidebar() {

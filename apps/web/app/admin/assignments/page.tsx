@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../../contexts/auth-context'
-import { Navigation } from '../../../components/navigation'
 import { supabase } from '../../../lib/supabase'
 import { 
   PlusIcon, 
@@ -58,15 +57,23 @@ export default function AdminAssignmentsPage() {
 
   const loadData = async () => {
     try {
+      // First test raw access without RLS constraints for debugging
+      console.log('Testing raw database access...')
+      
+      const testExams = await supabase
+        .from('exams')
+        .select('*', { count: 'exact' })
+      
+      const testProfiles = await supabase  
+        .from('user_profiles')
+        .select('*', { count: 'exact' })
+        
+      console.log('Raw exams query result:', testExams)
+      console.log('Raw profiles query result:', testProfiles)
+
       const [assignmentsData, examsData, studentsData] = await Promise.all([
-        supabase
-          .from('exam_assignments')
-          .select(`
-            *,
-            exams(id, title, description, is_active),
-            user_profiles(id, full_name, email, grade_level)
-          `)
-          .order('assigned_at', { ascending: false }),
+        // For now, get empty assignments since table doesn't exist
+        Promise.resolve({ data: [], error: null }),
         supabase
           .from('exams')
           .select('*')
@@ -83,6 +90,14 @@ export default function AdminAssignmentsPage() {
       if (examsData.error) throw examsData.error
       if (studentsData.error) throw studentsData.error
 
+      console.log('=== DEBUGGING ASSIGNMENT DATA ===')
+      console.log('Loaded exams:', examsData.data)
+      console.log('Loaded students:', studentsData.data)
+      console.log('Assignments error:', assignmentsData.error)
+      console.log('Exams error:', examsData.error) 
+      console.log('Students error:', studentsData.error)
+      console.log('Exams count:', examsData.data?.length || 0)
+      console.log('Students count:', studentsData.data?.length || 0)
       setAssignments(assignmentsData.data || [])
       setExams(examsData.data || [])
       setStudents(studentsData.data || [])
@@ -97,6 +112,23 @@ export default function AdminAssignmentsPage() {
     if (!selectedExam || selectedStudents.length === 0) return
 
     try {
+      // Temporarily disabled until exam_assignments table is created
+      alert('Assignment creation temporarily disabled. The exam_assignments table needs to be created in the database first.')
+      console.log('Would create assignments:', {
+        exam_id: selectedExam,
+        student_ids: selectedStudents,
+        assigned_by: user?.id,
+        due_date: dueDate || null
+      })
+      
+      // For now, just reset the form
+      setShowAssignModal(false)
+      setSelectedExam('')
+      setSelectedStudents([])
+      setDueDate('')
+      return
+      
+      /*
       const assignments = selectedStudents.map(studentId => ({
         exam_id: selectedExam,
         student_id: studentId,
@@ -110,6 +142,7 @@ export default function AdminAssignmentsPage() {
         .insert(assignments)
 
       if (error) throw error
+      */
 
       setShowAssignModal(false)
       setSelectedExam('')
@@ -146,16 +179,15 @@ export default function AdminAssignmentsPage() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Exam Assignments</h1>
-              <p className="mt-2 text-gray-600">Assign specific exams to students</p>
-            </div>
+    <div className="h-full bg-gray-50">
+      {/* Top Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Exam Assignments</h1>
+            <p className="text-gray-600">Assign specific exams to students</p>
+          </div>
+          <div className="flex items-center space-x-4">
             <button
               onClick={() => setShowAssignModal(true)}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium flex items-center"
@@ -163,29 +195,38 @@ export default function AdminAssignmentsPage() {
               <PlusIcon className="w-5 h-5 mr-2" />
               New Assignment
             </button>
-          </div>
-
-          {/* Search */}
-          <div className="mb-6">
-            <div className="relative">
-              <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search assignments..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {user.profile?.full_name?.charAt(0) || 'A'}
+              </span>
             </div>
           </div>
+        </div>
+      </div>
 
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading assignments...</p>
-            </div>
-          ) : (
-            <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="p-6">
+
+        {/* Search */}
+        <div className="mb-6">
+          <div className="relative">
+            <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search assignments..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading assignments...</p>
+          </div>
+        ) : (
+          <div className="bg-white shadow rounded-lg overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -268,17 +309,15 @@ export default function AdminAssignmentsPage() {
                 </tbody>
               </table>
               
-              {filteredAssignments.length === 0 && (
-                <div className="text-center py-12">
-                  <AcademicCapIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No assignments found</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+            {filteredAssignments.length === 0 && (
+              <div className="text-center py-12">
+                <AcademicCapIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500">No assignments found</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-
       {/* Assignment Modal */}
       {showAssignModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -305,12 +344,21 @@ export default function AdminAssignmentsPage() {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Choose an exam...</option>
-                  {exams.map((exam) => (
-                    <option key={exam.id} value={exam.id}>
-                      {exam.title}
-                    </option>
-                  ))}
+                  {exams.length === 0 ? (
+                    <option value="" disabled>No exams available</option>
+                  ) : (
+                    exams.map((exam) => (
+                      <option key={exam.id} value={exam.id}>
+                        {exam.title}
+                      </option>
+                    ))
+                  )}
                 </select>
+                {exams.length === 0 && (
+                  <p className="text-sm text-red-600 mt-1">
+                    No active exams found. Please create an exam first.
+                  </p>
+                )}
               </div>
 
               {/* Select Students */}
@@ -319,30 +367,38 @@ export default function AdminAssignmentsPage() {
                   Select Students
                 </label>
                 <div className="border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
-                  {students.map((student) => (
-                    <label key={student.id} className="flex items-center p-3 hover:bg-gray-50 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={selectedStudents.includes(student.id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedStudents([...selectedStudents, student.id])
-                          } else {
-                            setSelectedStudents(selectedStudents.filter(id => id !== student.id))
-                          }
-                        }}
-                        className="mr-3 text-blue-600 focus:ring-blue-500"
-                      />
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {student.full_name}
+                  {students.length === 0 ? (
+                    <div className="p-4 text-center text-gray-500">
+                      <UserIcon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                      <p className="text-sm">No students found</p>
+                      <p className="text-xs text-gray-400 mt-1">Students need to register first</p>
+                    </div>
+                  ) : (
+                    students.map((student) => (
+                      <label key={student.id} className="flex items-center p-3 hover:bg-gray-50 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedStudents.includes(student.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedStudents([...selectedStudents, student.id])
+                            } else {
+                              setSelectedStudents(selectedStudents.filter(id => id !== student.id))
+                            }
+                          }}
+                          className="mr-3 text-blue-600 focus:ring-blue-500"
+                        />
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {student.full_name}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {student.email} • Grade {student.grade_level}
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-500">
-                          {student.email} • Grade {student.grade_level}
-                        </div>
-                      </div>
-                    </label>
-                  ))}
+                      </label>
+                    ))
+                  )}
                 </div>
               </div>
 
