@@ -184,3 +184,5 @@ This directory contains shared code and configurations used by different apps in
     *   **`supabase/migrations/`**: This is the most critical folder. Each file here is a SQL script that defines a change to your database schema. You would create a new migration to add a table, add a column, or set up Row-Level Security policies. This allows you to version control your database just like code.
     *   **`supabase/functions/`**: If you need more complex backend logic (e.g., processing a test submission to calculate a score), you can write serverless **Edge Functions** here. The code (`index.ts`) for these functions lives in this directory.
     *   **`supabase/config.toml`**: The main configuration file for your Supabase project.
+
+    ** NEEDS UPDATE
