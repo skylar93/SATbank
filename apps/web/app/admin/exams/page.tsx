@@ -317,30 +317,13 @@ export default function ManageExamsPage() {
   }
 
   return (
-    <div className="h-full bg-gray-50">
-      {/* Top Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Manage Exam Questions</h1>
-            <p className="text-gray-600">Create, edit, and organize exam questions</p>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold">
-                {user?.profile?.full_name?.charAt(0) || 'A'}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className="h-full bg-gradient-to-br from-purple-50 via-white to-pink-50">
       <div className="p-6">
         {/* Filters */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-6">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-purple-600 mb-2">
               Search Questions
             </label>
             <input
@@ -348,18 +331,18 @@ export default function ManageExamsPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by question text or ID..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full px-3 py-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-purple-600 mb-2">
               Exam
             </label>
             <select
               value={selectedExam}
               onChange={(e) => setSelectedExam(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="px-3 py-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value="all">All Exams</option>
               {exams.map((exam) => (
@@ -371,13 +354,13 @@ export default function ManageExamsPage() {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-purple-600 mb-2">
               Module
             </label>
             <select
               value={selectedModule}
               onChange={(e) => setSelectedModule(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="px-3 py-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value="all">All Modules</option>
               <option value="english1">English 1</option>
@@ -389,13 +372,13 @@ export default function ManageExamsPage() {
         </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-purple-600/70">
               Showing {filteredQuestions.length} questions
               {selectedExam !== 'all' && (
-                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                <span className="ml-2 px-2 py-1 bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 rounded text-xs">
                   {exams.find(exam => exam.id === selectedExam)?.title}
                 </span>
               )}
@@ -407,7 +390,7 @@ export default function ManageExamsPage() {
                   onClick={() => setViewMode('table')}
                   className={`px-2 py-1 text-xs rounded transition-colors ${
                     viewMode === 'table'
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
                 >
@@ -417,7 +400,7 @@ export default function ManageExamsPage() {
                   onClick={() => setViewMode('cards')}
                   className={`px-2 py-1 text-xs rounded transition-colors ${
                     viewMode === 'cards'
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
                 >
@@ -432,7 +415,7 @@ export default function ManageExamsPage() {
             {selectedExam !== 'all' && (
               <Link
                 href={`/student/exam/${selectedExam}?preview=true`}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-md hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 shadow-lg"
               >
                 Preview Exam
               </Link>
@@ -443,46 +426,46 @@ export default function ManageExamsPage() {
       </div>
 
       {/* Questions List */}
-      <div className="bg-white rounded-2xl shadow-sm">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100">
       {viewMode === 'table' ? (
         <div className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Question</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Module</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Difficulty</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Answer</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">Question</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">Module</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">Type</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">Difficulty</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">Answer</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-purple-100">
                 {filteredQuestions.map((question) => (
                   <tr 
                     key={question.id}
-                    className="hover:bg-gray-50"
+                    className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200"
                   >
                     <td className="px-4 py-4">
                       <div className="flex items-center">
-                        <span className="text-sm font-medium text-gray-900 mr-2">
+                        <span className="text-sm font-medium text-purple-900 mr-2">
                           Q{question.question_number}
                         </span>
                         <div className="max-w-md">
-                          <div className="text-sm text-gray-900 truncate">
+                          <div className="text-sm text-purple-900 truncate">
                             {renderTextWithFormattingAndMath(question.question_text.substring(0, 100) + (question.question_text.length > 100 ? '...' : ''))}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                      <span className="px-2 py-1 text-xs font-medium bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 rounded">
                         {question.module_type.replace(/(\d)/, ' $1').toUpperCase()}
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="text-sm text-gray-900">
+                      <span className="text-sm text-purple-900">
                         {question.question_type.replace('_', ' ')}
                       </span>
                     </td>
@@ -496,14 +479,14 @@ export default function ManageExamsPage() {
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">
+                      <span className="px-2 py-1 text-xs font-medium bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 rounded">
                         {question.correct_answer}
                       </span>
                     </td>
                     <td className="px-4 py-4">
                       <button
                         onClick={() => handleEditClick(question)}
-                        className="text-sm text-violet-600 hover:text-violet-800 font-medium"
+                        className="text-sm text-purple-600 hover:text-purple-800 font-medium"
                       >
                         Edit
                       </button>
@@ -519,11 +502,11 @@ export default function ManageExamsPage() {
           {filteredQuestions.map((question) => (
           <div 
             key={question.id} 
-            className="border rounded-xl p-6 border-gray-200"
+            className="border rounded-xl p-6 border-purple-200 bg-white/50 backdrop-blur-sm"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center space-x-4">
-                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium">
+                <span className="px-2 py-1 bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 rounded text-sm font-medium">
                   {question.module_type.replace(/(\d)/, ' $1').toUpperCase()} - Q{question.question_number}
                 </span>
                 <span className={`px-2 py-1 rounded text-sm font-medium ${
@@ -533,7 +516,7 @@ export default function ManageExamsPage() {
                 }`}>
                   {question.difficulty_level}
                 </span>
-                <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded text-sm">
+                <span className="px-2 py-1 bg-gray-100 text-purple-800 rounded text-sm">
                   {question.question_type.replace('_', ' ')}
                 </span>
               </div>
@@ -543,7 +526,7 @@ export default function ManageExamsPage() {
                   <>
                     <button
                       onClick={handleSaveEdit}
-                      className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
+                      className="px-3 py-1 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded text-sm hover:from-emerald-700 hover:to-green-700 transition-all duration-200 shadow-sm"
                     >
                       Save
                     </button>
@@ -823,8 +806,8 @@ export default function ManageExamsPage() {
       </div>
 
       {filteredQuestions.length === 0 && (
-        <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
-          <p className="text-gray-500">No questions found matching your criteria.</p>
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-12 text-center">
+          <p className="text-purple-600/70">No questions found matching your criteria.</p>
         </div>
       )}
       </div>

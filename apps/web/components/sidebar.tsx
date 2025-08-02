@@ -41,10 +41,10 @@ const studentNavigationItems: SidebarItem[] = [
 const adminNavigationItems: SidebarItem[] = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: ChartBarIcon },
   { name: 'Students', href: '/admin/students', icon: UserCircleIcon },
+  { name: 'Assignments', href: '/admin/assignments', icon: AcademicCapIcon },
   { name: 'Reports', href: '/admin/reports', icon: ClipboardDocumentListIcon },
   { name: 'Exam Management', href: '/admin/exams/list', icon: Cog6ToothIcon },
   { name: 'Manage Questions', href: '/admin/exams', icon: DocumentTextIcon },
-  { name: 'Assignments', href: '/admin/assignments', icon: AcademicCapIcon },
 ]
 
 export function Sidebar() {
