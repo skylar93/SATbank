@@ -18,7 +18,8 @@ import {
   Bars3Icon,
   XMarkIcon,
   AcademicCapIcon,
-  WrenchScrewdriverIcon
+  WrenchScrewdriverIcon,
+  Cog6ToothIcon
 } from '@heroicons/react/24/outline'
 
 interface SidebarItem {
@@ -41,7 +42,8 @@ const adminNavigationItems: SidebarItem[] = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: ChartBarIcon },
   { name: 'Students', href: '/admin/students', icon: UserCircleIcon },
   { name: 'Reports', href: '/admin/reports', icon: ClipboardDocumentListIcon },
-  { name: 'Manage Exams', href: '/admin/exams', icon: DocumentTextIcon },
+  { name: 'Exam Management', href: '/admin/exams/list', icon: Cog6ToothIcon },
+  { name: 'Manage Questions', href: '/admin/exams', icon: DocumentTextIcon },
   { name: 'Assignments', href: '/admin/assignments', icon: AcademicCapIcon },
 ]
 
@@ -145,7 +147,10 @@ function SidebarContent({ navigationItems, pathname, user, isAdmin, handleSignOu
       {/* Navigation */}
       <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
         {navigationItems.map((item) => {
-          const isActive = pathname === item.href
+          // Check if current path matches exactly or starts with the base path
+          const isActive = pathname === item.href || 
+            (item.href === '/admin/exams/list' && pathname.startsWith('/admin/exams/') && pathname !== '/admin/exams') ||
+            (item.href === '/admin/exams' && pathname === '/admin/exams')
           const IconComponent = item.icon
           
           return (

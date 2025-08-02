@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { ExamService, type Question, type Exam, type TestAttempt, type ModuleType } from '../lib/exam-service'
 import { useAuth } from '../contexts/auth-context'
 import { checkAnswer } from '../lib/answer-checker'
+import { supabase } from '../lib/supabase'
 
 interface ExamAnswer {
   questionId: string
@@ -23,6 +24,12 @@ interface ModuleState {
   completed: boolean
 }
 
+interface FinalScores {
+  overall: number
+  english: number
+  math: number
+}
+
 interface ExamState {
   exam: Exam | null
   attempt: TestAttempt | null
@@ -32,6 +39,7 @@ interface ExamState {
   startedAt: Date | null
   existingAttempt: TestAttempt | null
   showConflictModal: boolean
+  finalScores?: FinalScores // Server-calculated scaled scores
 }
 
 const MODULE_ORDER: ModuleType[] = ['english1', 'english2', 'math1', 'math2']
@@ -393,11 +401,23 @@ export function useExamState() {
       // Save remaining answers for the final module
       await saveModuleAnswers()
       
-      await ExamService.completeTestAttempt(examState.attempt.id)
+      // Use the new Edge Function to calculate and store final scores
+      const { data: finalScores, error } = await supabase.functions.invoke('submit-exam', {
+        body: { attempt_id: examState.attempt.id }
+      })
+
+      if (error) {
+        throw new Error(`Failed to submit exam: ${error.message}`)
+      }
+
+      if (!finalScores) {
+        throw new Error('No scores returned from submission')
+      }
 
       setExamState(prev => ({
         ...prev,
-        status: 'completed'
+        status: 'completed',
+        finalScores // Store the server-calculated scores in state
       }))
     } catch (err: any) {
       setError(err.message)

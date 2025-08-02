@@ -58,6 +58,11 @@ export interface TestAttempt {
   is_practice_mode: boolean
   created_at: string
   updated_at: string
+  final_scores?: {
+    overall: number
+    english: number
+    math: number
+  } | null
 }
 
 export interface UserAnswer {

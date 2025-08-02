@@ -138,11 +138,17 @@ export default function StudentResultsPage() {
   }
 
   const completedAttempts = attempts.filter(a => a.status === 'completed')
+  
+  // Helper function to get the display score (prefer final_scores.overall, fallback to total_score)
+  const getDisplayScore = (attempt: TestAttempt): number => {
+    return attempt.final_scores?.overall || attempt.total_score || 0
+  }
+  
   const averageScore = completedAttempts.length > 0 
-    ? Math.round(completedAttempts.reduce((sum, a) => sum + (a.total_score || 0), 0) / completedAttempts.length)
+    ? Math.round(completedAttempts.reduce((sum, a) => sum + getDisplayScore(a), 0) / completedAttempts.length)
     : 0
   const bestScore = completedAttempts.length > 0 
-    ? Math.max(...completedAttempts.map(a => a.total_score || 0))
+    ? Math.max(...completedAttempts.map(a => getDisplayScore(a)))
     : 0
   
   // Mock progress data - replace with real data
@@ -151,7 +157,7 @@ export default function StudentResultsPage() {
     datasets: [
       {
         label: 'Total Score',
-        data: completedAttempts.slice(-5).map(a => a.total_score || 0),
+        data: completedAttempts.slice(-5).map(a => getDisplayScore(a)),
         borderColor: '#8b5cf6',
         backgroundColor: 'rgba(139, 92, 246, 0.1)',
         fill: true
@@ -230,7 +236,7 @@ export default function StudentResultsPage() {
                 change="+8.4%"
                 changeType="positive"
                 miniChart={{
-                  data: completedAttempts.slice(-6).map(a => a.total_score || 0),
+                  data: completedAttempts.slice(-6).map(a => getDisplayScore(a)),
                   color: '#8b5cf6'
                 }}
               />
@@ -314,7 +320,7 @@ export default function StudentResultsPage() {
                             {attempt.status === 'completed' && (
                               <div className="text-right">
                                 <div className="text-2xl font-bold text-violet-600">
-                                  {attempt.total_score}
+                                  {getDisplayScore(attempt)}
                                 </div>
                                 <div className="text-sm text-gray-500">Total Score</div>
                               </div>
@@ -323,20 +329,46 @@ export default function StudentResultsPage() {
                         </div>
 
                         {/* Module Scores */}
-                        {attempt.module_scores && (
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                            {Object.entries(attempt.module_scores).map(([module, score]) => (
-                              <div key={module} className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-xl text-center">
-                                <div className="text-sm font-medium text-gray-900 mb-1">
-                                  {module.replace(/(\d)/, ' $1').toUpperCase()}
+                        {(() => {
+                          const finalScores = attempt.final_scores
+                          const moduleScores = attempt.module_scores
+                          
+                          // If we have new final_scores, show English/Math breakdown
+                          if (finalScores && finalScores.english && finalScores.math) {
+                            return (
+                              <div className="grid grid-cols-2 gap-4 mb-4">
+                                <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-xl text-center">
+                                  <div className="text-sm font-medium text-gray-900 mb-1">ENGLISH</div>
+                                  <div className="text-lg font-bold text-blue-600">{finalScores.english}</div>
                                 </div>
-                                <div className="text-xl font-bold text-gray-700">
-                                  {score || 0}
+                                <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-xl text-center">
+                                  <div className="text-sm font-medium text-gray-900 mb-1">MATH</div>
+                                  <div className="text-lg font-bold text-green-600">{finalScores.math}</div>
                                 </div>
                               </div>
-                            ))}
-                          </div>
-                        )}
+                            )
+                          }
+                          
+                          // Fallback to old module_scores format
+                          if (moduleScores) {
+                            return (
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                {Object.entries(moduleScores).map(([module, score]) => (
+                                  <div key={module} className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-xl text-center">
+                                    <div className="text-sm font-medium text-gray-900 mb-1">
+                                      {module.replace(/(\d)/, ' $1').toUpperCase()}
+                                    </div>
+                                    <div className="text-xl font-bold text-gray-700">
+                                      {score || 0}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )
+                          }
+                          
+                          return null
+                        })()}
 
                         {/* Action Row */}
                         <div className="flex items-center justify-between pt-4 border-t border-gray-200">
