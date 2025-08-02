@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
 import { type TestAttempt } from '../../../lib/exam-service'
+import { AnalyticsService } from '../../../lib/analytics-service'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { ProgressChart, SubjectPerformanceChart, WeeklyActivityChart, CircularProgress } from '../../../components/charts'
 import { ModernScoreProgress, StatsCard } from '../../../components/modern-charts'
@@ -22,7 +23,13 @@ import {
 interface DashboardStats {
   examsTaken: number
   bestScore: number | null
+  averageScore: number | null
   recentAttempts: TestAttempt[]
+}
+
+interface ScoreHistory {
+  date: string
+  score: number
 }
 
 export default function StudentDashboard() {
@@ -30,8 +37,10 @@ export default function StudentDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
     examsTaken: 0,
     bestScore: null,
+    averageScore: null,
     recentAttempts: []
   })
+  const [scoreHistory, setScoreHistory] = useState<ScoreHistory[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -43,39 +52,40 @@ export default function StudentDashboard() {
   const loadDashboardStats = async () => {
     try {
       if (user) {
-        const supabase = createClientComponentClient()
-        
-        // Get all completed attempts for user
-        const { data: completedAttempts, error } = await supabase
-          .from('test_attempts')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('status', 'completed')
-          .order('completed_at', { ascending: false })
-
-        if (error) {
-          console.error('Error fetching test attempts:', error)
-          throw error
-        }
-
-        const attempts = completedAttempts || []
-        const examsTaken = attempts.length
-        const bestScore = attempts.length > 0 
-          ? Math.max(...attempts.map(attempt => attempt.total_score || 0))
-          : null
-        const recentAttempts = attempts.slice(0, 5) // Last 5 attempts
+        // Fetch all data in parallel using new AnalyticsService
+        const [overallStats, scoreHistoryData, recentAttempts] = await Promise.all([
+          AnalyticsService.getDashboardOverallStats(user.id),
+          AnalyticsService.getDashboardScoreHistory(user.id),
+          fetchRecentAttempts(user.id)
+        ])
 
         setStats({
-          examsTaken,
-          bestScore,
+          examsTaken: overallStats.examsTaken,
+          bestScore: overallStats.bestScore,
+          averageScore: overallStats.averageScore,
           recentAttempts
         })
+        setScoreHistory(scoreHistoryData)
       }
     } catch (error) {
       console.error('Error loading dashboard stats:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const fetchRecentAttempts = async (userId: string): Promise<TestAttempt[]> => {
+    const supabase = createClientComponentClient()
+    const { data, error } = await supabase
+      .from('test_attempts')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'completed')
+      .order('completed_at', { ascending: false })
+      .limit(5)
+
+    if (error) throw error
+    return data || []
   }
 
   const formatDate = (dateString: string) => {
@@ -87,22 +97,30 @@ export default function StudentDashboard() {
     })
   }
 
-  // Mock data for charts - replace with real data
-  const progressData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+  // Real data for score progress chart with fallback for empty data
+  const hasScoreData = scoreHistory.length > 0
+  const progressData = hasScoreData ? {
+    labels: scoreHistory.map(item => {
+      const date = new Date(item.date)
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    }),
     datasets: [
       {
-        label: 'Math Score',
-        data: [720, 740, 760, 730, 780, 790],
+        label: 'Overall Score',
+        data: scoreHistory.map(item => item.score),
         borderColor: '#10b981',
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
         fill: true
-      },
+      }
+    ]
+  } : {
+    labels: ['Take your first exam'],
+    datasets: [
       {
-        label: 'Reading & Writing',
-        data: [650, 670, 690, 680, 720, 710],
-        borderColor: '#f59e0b',
-        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        label: 'Overall Score',
+        data: [0],
+        borderColor: '#e5e7eb',
+        backgroundColor: 'rgba(229, 231, 235, 0.1)',
         fill: true
       }
     ]
@@ -158,7 +176,7 @@ export default function StudentDashboard() {
                 change="+2.5%"
                 changeType="positive"
                 miniChart={{
-                  data: [1200, 1250, 1300, 1280, 1350, 1400],
+                  data: scoreHistory.length > 0 ? scoreHistory.slice(-6).map(item => item.score) : [0, 0, 0, 0, 0, 0],
                   color: '#10b981'
                 }}
               />
@@ -169,18 +187,18 @@ export default function StudentDashboard() {
                 change="+0.8%"
                 changeType="positive"
                 miniChart={{
-                  data: [8, 12, 15, 18, 22, 25],
+                  data: Array.from({length: 6}, (_, i) => Math.max(0, stats.examsTaken - 5 + i)),
                   color: '#8b5cf6'
                 }}
               />
               
               <StatsCard
-                title="Study Streak"
-                value="7 days"
+                title="Average Score"
+                value={loading ? '...' : stats.averageScore || 'No scores yet'}
                 change="+12%"
                 changeType="positive"
                 miniChart={{
-                  data: [3, 5, 4, 6, 7, 7],
+                  data: scoreHistory.length > 0 ? scoreHistory.slice(-6).map(item => item.score) : [0, 0, 0, 0, 0, 0],
                   color: '#f59e0b'
                 }}
               />
@@ -195,7 +213,23 @@ export default function StudentDashboard() {
                   <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Last Week</button>
                 </div>
               </div>
-              <ModernScoreProgress data={progressData} />
+              {hasScoreData ? (
+                <ModernScoreProgress data={progressData} />
+              ) : (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <ChartBarIcon className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <h4 className="text-lg font-medium text-gray-900 mb-2">No Score History Yet</h4>
+                  <p className="text-gray-500 text-sm mb-4">Take your first practice exam to see your progress over time.</p>
+                  <Link 
+                    href="/student/exams" 
+                    className="bg-violet-600 text-white px-4 py-2 rounded-lg hover:bg-violet-700 transition-colors"
+                  >
+                    Take Practice Exam
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Subject Performance */}
@@ -254,6 +288,11 @@ export default function StudentDashboard() {
                       <span className="text-sm text-gray-700">Exams Taken</span>
                       <span className="ml-auto text-sm font-semibold">{stats.examsTaken}</span>
                     </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      <span className="text-sm text-gray-700">Average Score</span>
+                      <span className="ml-auto text-sm font-semibold">{stats.averageScore || 'N/A'}</span>
+                    </div>
                   </>
                 ) : (
                   <div className="text-center py-4">
@@ -276,7 +315,7 @@ export default function StudentDashboard() {
                   <div key={attempt.id} className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
                       <span className="text-violet-600 font-semibold text-sm">
-                        {attempt.total_score}
+                        {(attempt as any).final_scores?.overall || attempt.total_score || 'N/A'}
                       </span>
                     </div>
                     <div className="flex-1">

@@ -395,4 +395,64 @@ export class AnalyticsService {
       recentAttempts: attempts?.slice(0, 10) || []
     }
   }
+
+  // Dashboard functions using the new final_scores schema
+  static async getDashboardOverallStats(userId: string): Promise<{
+    examsTaken: number;
+    bestScore: number | null;
+    averageScore: number | null;
+  }> {
+    const { data, error } = await supabase
+      .from('test_attempts')
+      .select('final_scores')
+      .eq('user_id', userId)
+      .eq('status', 'completed')
+.not('final_scores', 'is', null)
+
+    if (error) {
+      console.error('Error fetching overall stats:', error)
+      return { examsTaken: 0, bestScore: null, averageScore: null }
+    }
+
+    if (!data || data.length === 0) {
+      return { examsTaken: 0, bestScore: null, averageScore: null }
+    }
+
+    const scores = data
+      .map(attempt => (attempt.final_scores as any)?.overall)
+      .filter((score): score is number => typeof score === 'number')
+
+    const examsTaken = scores.length
+    const bestScore = scores.length > 0 ? Math.max(...scores) : null
+    const averageScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null
+
+    return { examsTaken, bestScore, averageScore }
+  }
+
+  static async getDashboardScoreHistory(userId: string): Promise<Array<{
+    date: string;
+    score: number;
+  }>> {
+    const { data, error } = await supabase
+      .from('test_attempts')
+      .select('completed_at, final_scores')
+      .eq('user_id', userId)
+      .eq('status', 'completed')
+.not('final_scores', 'is', null)
+      .order('completed_at', { ascending: true })
+
+    if (error) {
+      console.error('Error fetching score history:', error)
+      return []
+    }
+
+    if (!data) return []
+
+    return data
+      .filter(attempt => attempt.final_scores && (attempt.final_scores as any)?.overall)
+      .map(attempt => ({
+        date: new Date(attempt.completed_at).toISOString().split('T')[0],
+        score: (attempt.final_scores as any).overall
+      }))
+  }
 }
