@@ -52,12 +52,23 @@ export default function StudentDashboard() {
   const loadDashboardStats = async () => {
     try {
       if (user) {
+        console.log('🔍 Loading dashboard stats for user:', user.id)
+        
         // Fetch all data in parallel using new AnalyticsService
         const [overallStats, scoreHistoryData, recentAttempts] = await Promise.all([
           AnalyticsService.getDashboardOverallStats(user.id),
           AnalyticsService.getDashboardScoreHistory(user.id),
           fetchRecentAttempts(user.id)
         ])
+
+        console.log('📊 Overall stats:', overallStats)
+        console.log('📈 Score history:', scoreHistoryData)
+        console.log('📝 Recent attempts:', recentAttempts)
+        
+        // Debug score history data
+        scoreHistoryData.forEach((item, index) => {
+          console.log(`Score ${index}:`, item.score, typeof item.score)
+        })
 
         setStats({
           examsTaken: overallStats.examsTaken,

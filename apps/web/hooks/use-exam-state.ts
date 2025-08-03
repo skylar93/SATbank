@@ -395,18 +395,36 @@ export function useExamState() {
 
   // Complete exam
   const completeExam = useCallback(async () => {
+    // ================== CCTV 설치 ==================
+    console.log("!!!!!!!!!! completeExam function has been called !!!!!!!!!!")
+    alert("!!!!!!!!!! completeExam function has been called !!!!!!!!!!")
+    // =============================================
+    
     if (!examState.attempt) return
+
+    console.log(`🚀 Submitting exam for attempt ID: ${examState.attempt.id}`)
 
     try {
       // Save remaining answers for the final module
       await saveModuleAnswers()
       
-      // Use the new Edge Function to calculate and store final scores
+      // Get the current user session to include proper authentication
+      console.log('🔐 Getting user session for authentication')
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError || !session) {
+        throw new Error('Authentication error: Could not get user session')
+      }
+      
+      console.log('✅ User session obtained, submitting to Edge Function')
+      
+      // Use the new Edge Function to calculate and store final scores with proper headers
       const { data: finalScores, error } = await supabase.functions.invoke('submit-exam', {
-        body: { attempt_id: examState.attempt.id }
+        body: JSON.stringify({ attempt_id: examState.attempt.id })
       })
 
       if (error) {
+        console.error('❌ Edge Function error:', error)
         throw new Error(`Failed to submit exam: ${error.message}`)
       }
 
@@ -414,12 +432,14 @@ export function useExamState() {
         throw new Error('No scores returned from submission')
       }
 
+      console.log('✅ Final scores received:', finalScores)
       setExamState(prev => ({
         ...prev,
         status: 'completed',
         finalScores // Store the server-calculated scores in state
       }))
     } catch (err: any) {
+      console.error('💥 Complete exam error:', err)
       setError(err.message)
       throw err
     }

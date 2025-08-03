@@ -378,6 +378,11 @@ function ExamPageContent() {
 
   // Handle exam completion
   const handleSubmitExam = async () => {
+    // ================== CCTV 설치 ==================
+    console.log("!!!!!!!!!! handleSubmitExam function has been called !!!!!!!!!!")
+    alert("!!!!!!!!!! handleSubmitExam function has been called !!!!!!!!!!")
+    // =============================================
+    
     saveCurrentAnswer()
     try {
       await completeExam()

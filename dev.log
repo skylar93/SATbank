@@ -1,0 +1,32 @@
+
+> satbank-monorepo@0.1.0 dev /Users/skylar/Desktop/claudecodeui/SATbank
+> pnpm -r dev "--port" "3001"
+
+Scope: 6 of 7 workspace projects
+[36mapps/web[39m [96mdev[39m$ next dev -p 3000 "--port" "3001"
+[35mpackages/utils[39m [96mdev[39m$ echo 'Dev mode for utils' "--port" "3001"
+[34mpackages/ui[39m [96mdev[39m$ echo 'Dev mode for ui' "--port" "3001"
+[33mpackages/database-types[39m [96mdev[39m$ echo 'Dev mode for database-types' "--port" "3001"
+[34mpackages/ui[39m [96mdev[39m: Dev mode for ui --port 3001
+[33mpackages/database-types[39m [96mdev[39m: Dev mode for database-types --port 3001
+[33mpackages/database-types[39m [96mdev[39m: Done
+[34mpackages/ui[39m [96mdev[39m: Done
+[35mpackages/utils[39m [96mdev[39m: Dev mode for utils --port 3001
+[35mpackages/utils[39m [96mdev[39m: Done
+[36mapps/web[39m [96mdev[39m:   [1m[38;2;173;127;168m▲ Next.js 14.2.31[39m[22m
+[36mapps/web[39m [96mdev[39m:   - Local:        http://localhost:3001
+[36mapps/web[39m [96mdev[39m:   - Environments: .env.local
+[36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Starting...
+[36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Ready in 1732ms
+[36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Compiled /middleware in 98ms (72 modules)
+[36mapps/web[39m [96mdev[39m: 🔄 Middleware: Processing request to: /
+[36mapps/web[39m [96mdev[39m: 🔄 Middleware: Allowing request to proceed to: /
+[36mapps/web[39m [96mdev[39m:  [37m[1m○[22m[39m Compiling / ...
+[36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Compiled / in 2.6s (1564 modules)
+[36mapps/web[39m [96mdev[39m:  HEAD / [32m200[39m in 2802ms
+[36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Compiled in 329ms (805 modules)
+[36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Compiled in 2.3s (805 modules)
+[36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Compiled in 1243ms (805 modules)
+[36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Compiled in 3.4s (805 modules)
+[36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Compiled in 2.2s (805 modules)
+[36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Compiled in 1288ms (805 modules)

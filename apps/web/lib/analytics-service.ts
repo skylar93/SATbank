@@ -402,6 +402,8 @@ export class AnalyticsService {
     bestScore: number | null;
     averageScore: number | null;
   }> {
+    console.log('🔍 Fetching dashboard stats for user:', userId)
+    
     const { data, error } = await supabase
       .from('test_attempts')
       .select('final_scores')
@@ -409,23 +411,35 @@ export class AnalyticsService {
       .eq('status', 'completed')
 .not('final_scores', 'is', null)
 
+    console.log('📊 Raw data from database:', data)
+
     if (error) {
       console.error('Error fetching overall stats:', error)
       return { examsTaken: 0, bestScore: null, averageScore: null }
     }
 
     if (!data || data.length === 0) {
+      console.log('⚠️ No completed attempts found')
       return { examsTaken: 0, bestScore: null, averageScore: null }
     }
 
     const scores = data
-      .map(attempt => (attempt.final_scores as any)?.overall)
-      .filter((score): score is number => typeof score === 'number')
+      .map(attempt => {
+        console.log('📈 Processing attempt final_scores:', attempt.final_scores)
+        return (attempt.final_scores as any)?.overall
+      })
+      .filter((score): score is number => {
+        console.log('✅ Score after filter:', score, typeof score)
+        return typeof score === 'number'
+      })
+
+    console.log('🎯 Final processed scores:', scores)
 
     const examsTaken = scores.length
     const bestScore = scores.length > 0 ? Math.max(...scores) : null
     const averageScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null
 
+    console.log('📊 Final stats:', { examsTaken, bestScore, averageScore })
     return { examsTaken, bestScore, averageScore }
   }
 
