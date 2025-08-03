@@ -79,7 +79,7 @@ export default function PracticeSession() {
       // Get practice data from localStorage
       const practiceDataStr = localStorage.getItem(`practice_${attemptId}`)
       if (!practiceDataStr) {
-        alert('Practice session not found. Redirecting to problem bank.')
+        console.error('Practice session not found. Redirecting to problem bank.')
         router.push('/student/problem-bank')
         return
       }
@@ -122,7 +122,7 @@ export default function PracticeSession() {
 
     } catch (error) {
       console.error('Error initializing practice session:', error)
-      alert('Failed to start practice session. Please try again.')
+      console.error('Failed to start practice session. Please try again.')
       router.push('/student/problem-bank')
     } finally {
       setLoading(false)

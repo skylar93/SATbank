@@ -89,6 +89,7 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
   let englishRawScore = 0
   let mathRawScore = 0
 
+  console.log('📝 Processing answers:', answers?.length, 'total answers')
   answers?.forEach((answer: any) => {
     if (answer.is_correct && answer.questions) {
       const moduleType = answer.questions.module_type
@@ -101,6 +102,8 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
       }
     }
   })
+
+  console.log('🔢 Raw scores calculated - English:', englishRawScore, 'Math:', mathRawScore)
 
   // Step 5: Fetch scoring curves
   const { data: englishCurve, error: englishCurveError } = await supabase
@@ -120,11 +123,18 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
   if (mathCurveError) throw new Error(`Failed to get Math scoring curve: ${mathCurveError.message}`)
 
   // Step 6: Map raw scores to scaled scores
+  console.log('📊 English curve data:', englishCurve.curve_data)
+  console.log('📊 Math curve data:', mathCurve.curve_data)
+  
   const englishScaledScore = mapRawToScaled(englishRawScore, englishCurve.curve_data)
   const mathScaledScore = mapRawToScaled(mathRawScore, mathCurve.curve_data)
+  
+  console.log('⚖️ Scaled scores - English:', englishScaledScore, 'Math:', mathScaledScore)
 
   // Step 7: Calculate overall score
   const overallScore = englishScaledScore + mathScaledScore
+  
+  console.log('🎯 Final overall score:', overallScore)
 
   return {
     overall: overallScore,

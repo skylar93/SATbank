@@ -395,10 +395,7 @@ export function useExamState() {
 
   // Complete exam
   const completeExam = useCallback(async () => {
-    // ================== CCTV 설치 ==================
-    console.log("!!!!!!!!!! completeExam function has been called !!!!!!!!!!")
-    alert("!!!!!!!!!! completeExam function has been called !!!!!!!!!!")
-    // =============================================
+    console.log('🏁 Starting exam completion process...')
     
     if (!examState.attempt) return
 

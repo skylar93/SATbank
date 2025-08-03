@@ -408,11 +408,11 @@ export function QuestionDisplay({
       
       setIsEditing(false)
       success = true
-      alert('Question saved successfully!')
+      console.log('✅ Question saved successfully!')
       
     } catch (error) {
       console.error('❌ Unexpected error saving question:', error)
-      alert(`Failed to save question: ${error instanceof Error ? error.message : String(error)}`)
+      console.error(`❌ Failed to save question: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
       setSaving(false)
       console.log('🔄 Save process completed, success:', success)

@@ -15,8 +15,31 @@ interface ScoreProgressProps {
 
 export function ModernScoreProgress({ data }: ScoreProgressProps) {
   const { labels, datasets } = data
-  const maxValue = Math.max(...datasets.flatMap(d => d.data))
-  const minValue = Math.min(...datasets.flatMap(d => d.data))
+  
+  // Handle empty or invalid data
+  if (!datasets || datasets.length === 0 || datasets.every(d => !d.data || d.data.length === 0)) {
+    return (
+      <div className="h-80 flex items-center justify-center">
+        <div className="text-center text-gray-500">
+          <p>No data available</p>
+        </div>
+      </div>
+    )
+  }
+  
+  const allDataPoints = datasets.flatMap(d => d.data).filter(v => typeof v === 'number' && !isNaN(v))
+  if (allDataPoints.length === 0) {
+    return (
+      <div className="h-80 flex items-center justify-center">
+        <div className="text-center text-gray-500">
+          <p>Invalid data</p>
+        </div>
+      </div>
+    )
+  }
+  
+  const maxValue = Math.max(...allDataPoints)
+  const minValue = Math.min(...allDataPoints)
   const range = maxValue - minValue || 1
   
   const svgWidth = 400
@@ -27,7 +50,7 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
 
   const getPath = (dataPoints: number[]) => {
     const points = dataPoints.map((value, index) => {
-      const x = padding + (index / (dataPoints.length - 1)) * chartWidth
+      const x = dataPoints.length === 1 ? svgWidth / 2 : padding + (index / (dataPoints.length - 1)) * chartWidth
       const y = padding + chartHeight - ((value - minValue) / range) * chartHeight
       return `${x},${y}`
     }).join(' ')
@@ -37,6 +60,12 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
 
   const getAreaPath = (dataPoints: number[]) => {
     const topPath = getPath(dataPoints)
+    if (dataPoints.length === 1) {
+      // For single data point, create a simple circle area
+      const x = svgWidth / 2
+      const y = padding + chartHeight - ((dataPoints[0] - minValue) / range) * chartHeight
+      return `M ${x-10} ${y} A 10 10 0 1 1 ${x+10} ${y} A 10 10 0 1 1 ${x-10} ${y} Z`
+    }
     const bottomPath = `L ${padding + chartWidth} ${padding + chartHeight} L ${padding} ${padding + chartHeight} Z`
     return topPath + bottomPath
   }
@@ -73,7 +102,7 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
             />
             {/* Points */}
             {dataset.data.map((value, pointIndex) => {
-              const x = padding + (pointIndex / (dataset.data.length - 1)) * chartWidth
+              const x = dataset.data.length === 1 ? svgWidth / 2 : padding + (pointIndex / (dataset.data.length - 1)) * chartWidth
               const y = padding + chartHeight - ((value - minValue) / range) * chartHeight
               return (
                 <circle
@@ -92,7 +121,7 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
         
         {/* X-axis labels */}
         {labels.map((label, index) => {
-          const x = padding + (index / (labels.length - 1)) * chartWidth
+          const x = labels.length === 1 ? svgWidth / 2 : padding + (index / (labels.length - 1)) * chartWidth
           return (
             <text
               key={index}

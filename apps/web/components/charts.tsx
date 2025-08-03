@@ -8,6 +8,11 @@ interface ProgressChartProps {
 }
 
 export function ProgressChart({ data }: ProgressChartProps) {
+  // Handle empty data
+  if (!data.scores || data.scores.length === 0) {
+    return <div className="p-6 text-center text-gray-500">No score data available</div>
+  }
+
   const maxScore = Math.max(...data.scores)
   const minScore = Math.min(...data.scores)
   const latestScore = data.scores[data.scores.length - 1]
@@ -46,15 +51,17 @@ export function ProgressChart({ data }: ProgressChartProps) {
           {data.scores.length > 1 && (
             <>
               <path
-                d={`M 50 ${175 - ((data.scores[0] - 1000) / 600) * 125} ${data.scores.map((score, index) => 
-                  `L ${50 + (index / (data.scores.length - 1)) * 300} ${175 - ((score - 1000) / 600) * 125}`
-                ).join(' ')} L ${50 + ((data.scores.length - 1) / (data.scores.length - 1)) * 300} 175 L 50 175 Z`}
+                d={`M 50 ${175 - ((data.scores[0] - 1000) / 600) * 125} ${data.scores.map((score, index) => {
+                  const xPos = data.scores.length === 1 ? 200 : 50 + (index / (data.scores.length - 1)) * 300
+                  return `L ${xPos} ${175 - ((score - 1000) / 600) * 125}`
+                }).join(' ')} L ${data.scores.length === 1 ? 200 : 50 + ((data.scores.length - 1) / (data.scores.length - 1)) * 300} 175 L 50 175 Z`}
                 fill="url(#scoreGradient)"
               />
               <path
-                d={`M 50 ${175 - ((data.scores[0] - 1000) / 600) * 125} ${data.scores.map((score, index) => 
-                  `L ${50 + (index / (data.scores.length - 1)) * 300} ${175 - ((score - 1000) / 600) * 125}`
-                ).join(' ')}`}
+                d={`M 50 ${175 - ((data.scores[0] - 1000) / 600) * 125} ${data.scores.map((score, index) => {
+                  const xPos = data.scores.length === 1 ? 200 : 50 + (index / (data.scores.length - 1)) * 300
+                  return `L ${xPos} ${175 - ((score - 1000) / 600) * 125}`
+                }).join(' ')}`}
                 fill="none"
                 stroke="rgb(139, 92, 246)"
                 strokeWidth="2"
@@ -65,17 +72,20 @@ export function ProgressChart({ data }: ProgressChartProps) {
           )}
           
           {/* Score points */}
-          {data.scores.map((score, index) => (
-            <circle
-              key={index}
-              cx={50 + (index / (data.scores.length - 1)) * 300}
-              cy={175 - ((score - 1000) / 600) * 125}
-              r="4"
-              fill="white"
-              stroke="rgb(139, 92, 246)"
-              strokeWidth="2"
-            />
-          ))}
+          {data.scores.map((score, index) => {
+            const xPos = data.scores.length === 1 ? 200 : 50 + (index / (data.scores.length - 1)) * 300
+            return (
+              <circle
+                key={index}
+                cx={xPos}
+                cy={175 - ((score - 1000) / 600) * 125}
+                r="4"
+                fill="white"
+                stroke="rgb(139, 92, 246)"
+                strokeWidth="2"
+              />
+            )
+          })}
           
           {/* Y-axis labels */}
           {[1000, 1200, 1400, 1600].map((score) => (
@@ -92,18 +102,21 @@ export function ProgressChart({ data }: ProgressChartProps) {
           ))}
           
           {/* X-axis labels */}
-          {data.labels.map((label, index) => (
-            <text
-              key={index}
-              x={50 + (index / (data.scores.length - 1)) * 300}
-              y="195"
-              textAnchor="middle"
-              fontSize="12"
-              fill="rgb(107, 114, 128)"
-            >
-              {label}
-            </text>
-          ))}
+          {data.labels.map((label, index) => {
+            const xPos = data.scores.length === 1 ? 200 : 50 + (index / (data.scores.length - 1)) * 300
+            return (
+              <text
+                key={index}
+                x={xPos}
+                y="195"
+                textAnchor="middle"
+                fontSize="12"
+                fill="rgb(107, 114, 128)"
+              >
+                {label}
+              </text>
+            )
+          })}
         </svg>
       </div>
 

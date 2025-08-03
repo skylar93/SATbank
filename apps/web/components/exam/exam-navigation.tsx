@@ -63,11 +63,7 @@ export function ExamNavigation({
   }
 
   const handleClick = () => {
-    // ================== CCTV 설치 ==================
-    console.log("!!!!!!!!!! ExamNavigation handleClick called !!!!!!!!!!")
-    alert("!!!!!!!!!! ExamNavigation handleClick called !!!!!!!!!!")
-    console.log("Conditions:", { isLastQuestion, isLastModule })
-    // =============================================
+    console.log('🔄 Navigation click:', { isLastQuestion, isLastModule })
     
     if (isLastQuestion && isLastModule) {
       console.log("Calling onSubmitExam")
