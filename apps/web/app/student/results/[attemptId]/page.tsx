@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../contexts/auth-context'
-import { Navigation } from '../../../../components/navigation'
 import { AnalyticsService, type ComprehensiveResults } from '../../../../lib/analytics-service'
 import { ExportService } from '../../../../lib/export-service'
 import { ModuleType } from '../../../../lib/exam-service'
@@ -124,7 +123,6 @@ export default function DetailedResultsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
         <div className="max-w-6xl mx-auto py-8 px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -138,7 +136,6 @@ export default function DetailedResultsPage() {
   if (error || !results) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
         <div className="max-w-6xl mx-auto py-8 px-4">
           <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
             <h3 className="text-lg font-medium text-red-900 mb-2">Error Loading Results</h3>
@@ -162,9 +159,9 @@ export default function DetailedResultsPage() {
       <Navigation />
       
       <div className="max-w-6xl mx-auto py-8 px-4">
-        {/* Header */}
+        {/* Header Section */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 Detailed Results
@@ -181,8 +178,11 @@ export default function DetailedResultsPage() {
             </Link>
           </div>
           
-          <div className="text-sm text-gray-500">
-            Completed: {attempt.completed_at ? formatDate(attempt.completed_at) : 'In Progress'}
+          {/* Separator line with spacing */}
+          <div className="border-b border-gray-200 pb-6 mb-8">
+            <div className="text-sm text-gray-500">
+              Completed: {attempt.completed_at ? formatDate(attempt.completed_at) : 'In Progress'}
+            </div>
           </div>
         </div>
 

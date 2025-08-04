@@ -98,7 +98,11 @@ export class AnalyticsService {
       throw new Error('Test attempt not found')
     }
 
-    const detailedScore = this.calculateDetailedScore(answers, questions)
+    // Use actual final_scores if available, otherwise fall back to calculation
+    const detailedScore = attempt.final_scores 
+      ? this.buildDetailedScoreFromFinalScores(attempt.final_scores, answers, questions)
+      : this.calculateDetailedScore(answers, questions)
+    
     const questionAnalysis = this.buildQuestionAnalysis(answers, questions)
     const performanceAnalytics = this.calculatePerformanceAnalytics(answers, questions)
     const progressComparison = await this.calculateProgressComparison(attempt.user_id, attemptId)
@@ -112,7 +116,68 @@ export class AnalyticsService {
     }
   }
 
-  // Enhanced score calculation with SAT-like scoring
+  // Build DetailedScore from actual final_scores data
+  static buildDetailedScoreFromFinalScores(finalScores: any, answers: any[], questions: Question[]): DetailedScore {
+    const moduleStats = {
+      english1: { correct: 0, total: 0 },
+      english2: { correct: 0, total: 0 },
+      math1: { correct: 0, total: 0 },
+      math2: { correct: 0, total: 0 }
+    }
+
+    // Count correct answers by module for percentages
+    answers.forEach(answer => {
+      const question = questions.find(q => q.id === answer.question_id)
+      if (question) {
+        moduleStats[question.module_type].total++
+        if (answer.is_correct) {
+          moduleStats[question.module_type].correct++
+        }
+      }
+    })
+
+    // Calculate raw scores
+    const rawScores = {
+      english1: moduleStats.english1.correct,
+      english2: moduleStats.english2.correct,
+      math1: moduleStats.math1.correct,
+      math2: moduleStats.math2.correct
+    }
+
+    // Calculate percentages
+    const percentages = {
+      english1: moduleStats.english1.total > 0 ? (moduleStats.english1.correct / moduleStats.english1.total) * 100 : 0,
+      english2: moduleStats.english2.total > 0 ? (moduleStats.english2.correct / moduleStats.english2.total) * 100 : 0,
+      math1: moduleStats.math1.total > 0 ? (moduleStats.math1.correct / moduleStats.math1.total) * 100 : 0,
+      math2: moduleStats.math2.total > 0 ? (moduleStats.math2.correct / moduleStats.math2.total) * 100 : 0,
+      overall: 0
+    }
+
+    const totalCorrect = Object.values(rawScores).reduce((sum, score) => sum + score, 0)
+    const totalQuestions = Object.values(moduleStats).reduce((sum, stat) => sum + stat.total, 0)
+    percentages.overall = totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : 0
+
+    // Calculate percentiles (simplified)
+    const percentiles = {
+      english1: this.calculatePercentile(percentages.english1),
+      english2: this.calculatePercentile(percentages.english2),
+      math1: this.calculatePercentile(percentages.math1),
+      math2: this.calculatePercentile(percentages.math2),
+      overall: this.calculatePercentile(percentages.overall)
+    }
+
+    return {
+      totalScore: finalScores.overall,
+      evidenceBasedReading: finalScores.english,
+      mathScore: finalScores.math,
+      writingLanguage: finalScores.english, // Same as evidenceBasedReading for now
+      rawScores,
+      percentages,
+      percentiles
+    }
+  }
+
+  // Enhanced score calculation with SAT-like scoring (fallback)
   static calculateDetailedScore(answers: any[], questions: Question[]): DetailedScore {
     const moduleStats = {
       english1: { correct: 0, total: 0 },
