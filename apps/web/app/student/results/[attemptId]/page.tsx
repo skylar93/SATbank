@@ -156,8 +156,6 @@ export default function DetailedResultsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
       <div className="max-w-6xl mx-auto py-8 px-4">
         {/* Header Section */}
         <div className="mb-8">

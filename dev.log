@@ -52,3 +52,16 @@ Scope: 6 of 7 workspace projects
 [36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Compiled in 854ms (805 modules)
 [36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Compiled in 741ms (805 modules)
 [36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Compiled in 784ms (805 modules)
+[36mapps/web[39m [96mdev[39m:  [32m[1m✓[22m[39m Compiled in 676ms (805 modules)
+[36mapps/web[39m [96mdev[39m: [?25h
+[36mapps/web[39m [96mdev[39m: Done
+[32mpackages/config[39m [96mdev[39m$ tsc "--port" "3001"
+[31mpackages/shared-types[39m [96mdev[39m$ tsc "--port" "3001"
+[32mpackages/config[39m [96mdev[39m: error TS5023: Unknown compiler option '--port'.
+[31mpackages/shared-types[39m [96mdev[39m: error TS5023: Unknown compiler option '--port'.
+[32mpackages/config[39m [96mdev[39m: Failed
+/Users/skylar/Desktop/claudecodeui/SATbank/packages/config:
+[41m[30m ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL [39m[49m [31m@satbank/config@0.1.0 dev: `tsc "--port" "3001"`[39m
+[31mExit status 1[39m
+[31mpackages/shared-types[39m [96mdev[39m: Failed
+[41m[30m ELIFECYCLE [39m[49m [31mCommand failed with exit code 1.[39m
