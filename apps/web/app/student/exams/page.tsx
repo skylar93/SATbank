@@ -33,8 +33,11 @@ export default function StudentExamsPage() {
 
   const loadExams = async () => {
     try {
-      const activeExams = await ExamService.getActiveExams()
-      setExams(activeExams)
+      if (!user?.id) return
+      
+      // Get only assigned exams for this student
+      const assignedExams = await ExamService.getAssignedExams(user.id)
+      setExams(assignedExams)
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -57,8 +60,8 @@ export default function StudentExamsPage() {
         <div className="bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Take Exam</h1>
-              <p className="text-gray-600">Loading available exams...</p>
+              <h1 className="text-2xl font-bold text-gray-900">Assigned Exams</h1>
+              <p className="text-gray-600">Loading your assigned exams...</p>
             </div>
             <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">
@@ -72,7 +75,7 @@ export default function StudentExamsPage() {
             <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
               <AcademicCapIcon className="w-8 h-8 text-white" />
             </div>
-            <p className="text-gray-600">Loading exams...</p>
+            <p className="text-gray-600">Loading assigned exams...</p>
           </div>
         </div>
       </div>
@@ -85,8 +88,8 @@ export default function StudentExamsPage() {
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Take Exam</h1>
-            <p className="text-gray-600">Choose an exam to begin your SAT practice session</p>
+            <h1 className="text-2xl font-bold text-gray-900">Assigned Exams</h1>
+            <p className="text-gray-600">Take the exams that have been assigned to you</p>
           </div>
           <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
             <span className="text-white font-semibold">
@@ -111,9 +114,9 @@ export default function StudentExamsPage() {
             <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <AcademicCapIcon className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Exams Available</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Assigned Exams</h3>
             <p className="text-gray-600 mb-6">
-              There are currently no active practice exams. Please check back later or contact your administrator.
+              You don't have any assigned exams at the moment. Please wait for your administrator to assign exams to you.
             </p>
             <Link
               href="/student/dashboard"
@@ -153,7 +156,7 @@ export default function StudentExamsPage() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
               <div className="p-6 border-b border-gray-100">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Available Practice Tests</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">Your Assigned Exams</h3>
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-500">{exams.length} exams available</span>
                   </div>

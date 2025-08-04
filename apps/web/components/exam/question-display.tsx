@@ -303,6 +303,7 @@ export function QuestionDisplay({
   })
   const [saving, setSaving] = useState(false)
   const [showFormattingHelp, setShowFormattingHelp] = useState(false)
+  const [showAnswerCheck, setShowAnswerCheck] = useState(false)
 
   // Update local question when prop changes
   useEffect(() => {
@@ -315,6 +316,8 @@ export function QuestionDisplay({
       explanation: question.explanation || '',
       table_data: question.table_data || null
     })
+    // Reset answer check when question changes
+    setShowAnswerCheck(false)
   }, [question.id, question.question_text, question.options, question.correct_answer, question.explanation])
 
   const handleSaveEdit = async () => {
@@ -1096,10 +1099,44 @@ export function QuestionDisplay({
 
         {/* Answer Status */}
         {userAnswer && !showExplanation && (
-          <div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Selected:</strong> {userAnswer}
-            </p>
+          <div className="mt-6 space-y-3">
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Selected:</strong> {userAnswer}
+              </p>
+            </div>
+            
+            {/* Admin Preview: Check Answer Button */}
+            {isAdminPreview && (
+              <div className="space-y-3">
+                <button
+                  onClick={() => setShowAnswerCheck(!showAnswerCheck)}
+                  className="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition-colors"
+                >
+                  {showAnswerCheck ? 'Hide Answer' : 'Check Answer'}
+                </button>
+                
+                {showAnswerCheck && (
+                  <div className={`p-3 border rounded-lg ${
+                    userAnswer === localQuestion.correct_answer
+                      ? 'bg-green-50 border-green-200'
+                      : 'bg-red-50 border-red-200'
+                  }`}>
+                    {userAnswer === localQuestion.correct_answer ? (
+                      <p className="text-sm text-green-800 font-medium">
+                        ✅ 정답입니다!
+                      </p>
+                    ) : (
+                      <p className="text-sm text-red-800">
+                        <span className="font-medium">❌ 오답입니다.</span>
+                        <br />
+                        <strong>정답:</strong> {localQuestion.correct_answer}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

@@ -92,7 +92,7 @@ export interface CreateUserAnswer {
 }
 
 export class ExamService {
-  // Get all active exams (students see only assigned ones)
+  // Get all active exams (admin view)
   static async getActiveExams(): Promise<Exam[]> {
     const { data, error } = await supabase
       .from('exams')
@@ -102,6 +102,22 @@ export class ExamService {
 
     if (error) throw error
     return data || []
+  }
+
+  // Get assigned exams for a specific student
+  static async getAssignedExams(userId: string): Promise<Exam[]> {
+    const { data, error } = await supabase
+      .from('exam_assignments')
+      .select(`
+        exams (*)
+      `)
+      .eq('student_id', userId)
+      .eq('is_active', true)
+      .eq('exams.is_active', true)
+      .order('assigned_at', { ascending: false })
+
+    if (error) throw error
+    return (data?.map((assignment: any) => assignment.exams as Exam).filter((exam: Exam | null) => exam !== null) as Exam[]) || []
   }
 
   // Get exam by ID
@@ -114,6 +130,23 @@ export class ExamService {
 
     if (error) throw error
     return data
+  }
+
+  // Check if a student has access to an exam (is assigned to it)
+  static async hasExamAccess(userId: string, examId: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('exam_assignments')
+      .select('id')
+      .eq('student_id', userId)
+      .eq('exam_id', examId)
+      .eq('is_active', true)
+      .single()
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" error
+      throw error
+    }
+    
+    return !!data
   }
 
   // Get questions for exam module

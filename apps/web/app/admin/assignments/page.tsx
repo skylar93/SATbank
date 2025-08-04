@@ -48,6 +48,11 @@ export default function AdminAssignmentsPage() {
   const [selectedStudents, setSelectedStudents] = useState<string[]>([])
   const [dueDate, setDueDate] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  
+  // Edit assignment states
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingAssignment, setEditingAssignment] = useState<ExamAssignment | null>(null)
+  const [editDueDate, setEditDueDate] = useState('')
 
   useEffect(() => {
     if (user) {
@@ -71,9 +76,8 @@ export default function AdminAssignmentsPage() {
       console.log('Raw exams query result:', testExams)
       console.log('Raw profiles query result:', testProfiles)
 
-      const [assignmentsData, examsData, studentsData] = await Promise.all([
-        // For now, get empty assignments since table doesn't exist
-        Promise.resolve({ data: [], error: null }),
+      // Load exams and students first
+      const [examsData, studentsData] = await Promise.all([
         supabase
           .from('exams')
           .select('*')
@@ -86,9 +90,33 @@ export default function AdminAssignmentsPage() {
           .order('full_name')
       ])
 
-      if (assignmentsData.error) throw assignmentsData.error
       if (examsData.error) throw examsData.error
       if (studentsData.error) throw studentsData.error
+
+      // Load assignments with simple query first
+      const { data: rawAssignments, error: assignmentError } = await supabase
+        .from('exam_assignments')
+        .select('*')
+        .eq('is_active', true)
+        .order('assigned_at', { ascending: false })
+
+      let assignmentsData: { data: ExamAssignment[], error: any } = { data: [], error: assignmentError }
+      
+      if (!assignmentError && rawAssignments) {
+        // Map assignments with exam and student data
+        const enrichedAssignments = rawAssignments.map(assignment => {
+          const exam = examsData.data?.find(e => e.id === assignment.exam_id)
+          const student = studentsData.data?.find(s => s.id === assignment.student_id)
+          
+          return {
+            ...assignment,
+            exams: exam,
+            user_profiles: student
+          }
+        })
+        
+        assignmentsData = { data: enrichedAssignments as ExamAssignment[], error: null }
+      }
 
       console.log('=== DEBUGGING ASSIGNMENT DATA ===')
       console.log('Loaded exams:', examsData.data)
@@ -112,37 +140,53 @@ export default function AdminAssignmentsPage() {
     if (!selectedExam || selectedStudents.length === 0) return
 
     try {
-      // Temporarily disabled until exam_assignments table is created
-      alert('Assignment creation temporarily disabled. The exam_assignments table needs to be created in the database first.')
-      console.log('Would create assignments:', {
-        exam_id: selectedExam,
-        student_ids: selectedStudents,
-        assigned_by: user?.id,
-        due_date: dueDate || null
-      })
-      
-      // For now, just reset the form
-      setShowAssignModal(false)
-      setSelectedExam('')
-      setSelectedStudents([])
-      setDueDate('')
-      return
-      
-      /*
-      const assignments = selectedStudents.map(studentId => ({
-        exam_id: selectedExam,
-        student_id: studentId,
-        assigned_by: user?.id,
-        due_date: dueDate || null,
-        is_active: true
-      }))
-
-      const { error } = await supabase
+      // Check for existing assignments first
+      const { data: existingAssignments } = await supabase
         .from('exam_assignments')
-        .insert(assignments)
+        .select('student_id')
+        .eq('exam_id', selectedExam)
+        .in('student_id', selectedStudents)
 
-      if (error) throw error
-      */
+      const existingStudentIds = existingAssignments?.map(a => a.student_id) || []
+      const newStudentIds = selectedStudents.filter(id => !existingStudentIds.includes(id))
+      
+      if (existingStudentIds.length > 0) {
+        // Update existing assignments
+        const { error: updateError } = await supabase
+          .from('exam_assignments')
+          .update({
+            assigned_by: user?.id,
+            due_date: dueDate || null,
+            is_active: true,
+            assigned_at: new Date().toISOString()
+          })
+          .eq('exam_id', selectedExam)
+          .in('student_id', existingStudentIds)
+
+        if (updateError) throw updateError
+      }
+
+      if (newStudentIds.length > 0) {
+        // Create new assignments
+        const newAssignments = newStudentIds.map(studentId => ({
+          exam_id: selectedExam,
+          student_id: studentId,
+          assigned_by: user?.id,
+          due_date: dueDate || null,
+          is_active: true
+        }))
+
+        const { error: insertError } = await supabase
+          .from('exam_assignments')
+          .insert(newAssignments)
+
+        if (insertError) throw insertError
+      }
+
+      const totalUpdated = existingStudentIds.length
+      const totalCreated = newStudentIds.length
+      
+      alert(`Assignment completed! Updated: ${totalUpdated}, Created: ${totalCreated}`)
 
       setShowAssignModal(false)
       setSelectedExam('')
@@ -151,6 +195,7 @@ export default function AdminAssignmentsPage() {
       loadData()
     } catch (error) {
       console.error('Error creating assignment:', error)
+      alert('Error creating assignment: ' + (error as Error).message)
     }
   }
 
@@ -167,6 +212,38 @@ export default function AdminAssignmentsPage() {
       loadData()
     } catch (error) {
       console.error('Error deleting assignment:', error)
+    }
+  }
+
+  const handleEditAssignment = (assignment: ExamAssignment) => {
+    setEditingAssignment(assignment)
+    setEditDueDate(assignment.due_date ? new Date(assignment.due_date).toISOString().split('T')[0] : '')
+    setShowEditModal(true)
+  }
+
+  const handleUpdateAssignment = async () => {
+    if (!editingAssignment) return
+
+    try {
+      const { error } = await supabase
+        .from('exam_assignments')
+        .update({
+          due_date: editDueDate || null,
+          assigned_by: user?.id,
+          assigned_at: new Date().toISOString()
+        })
+        .eq('id', editingAssignment.id)
+
+      if (error) throw error
+
+      setShowEditModal(false)
+      setEditingAssignment(null)
+      setEditDueDate('')
+      loadData()
+      alert('Assignment updated successfully!')
+    } catch (error) {
+      console.error('Error updating assignment:', error)
+      alert('Error updating assignment: ' + (error as Error).message)
     }
   }
 
@@ -297,12 +374,20 @@ export default function AdminAssignmentsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => handleDeleteAssignment(assignment.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          Delete
-                        </button>
+                        <div className="flex space-x-3">
+                          <button
+                            onClick={() => handleEditAssignment(assignment)}
+                            className="text-blue-600 hover:text-blue-700"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteAssignment(assignment.id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -429,6 +514,80 @@ export default function AdminAssignmentsPage() {
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Create Assignment
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Assignment Modal */}
+      {showEditModal && editingAssignment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Edit Assignment</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XMarkIcon className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Student Info */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Student
+                </label>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <div className="text-sm font-medium text-gray-900">
+                    {editingAssignment.user_profiles?.full_name}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {editingAssignment.user_profiles?.email}
+                  </div>
+                </div>
+              </div>
+
+              {/* Exam Info */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Exam
+                </label>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <div className="text-sm font-medium text-gray-900">
+                    {editingAssignment.exams?.title}
+                  </div>
+                </div>
+              </div>
+
+              {/* Due Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Due Date
+                </label>
+                <input
+                  type="date"
+                  value={editDueDate}
+                  onChange={(e) => setEditDueDate(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateAssignment}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Update Assignment
               </button>
             </div>
           </div>

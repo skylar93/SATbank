@@ -81,6 +81,17 @@ export function useExamState() {
       }
       console.log('initializeExam: Exam found:', exam.title)
 
+      // Check if student has access to this exam (skip for preview mode)
+      if (!isPreview && user) {
+        console.log('initializeExam: Checking exam access...')
+        const hasAccess = await ExamService.hasExamAccess(user.id, examId)
+        if (!hasAccess) {
+          console.error('initializeExam: Access denied - exam not assigned to student')
+          throw new Error('You do not have access to this exam. Please contact your administrator.')
+        }
+        console.log('initializeExam: Access granted')
+      }
+
       let attempt = null
 
       if (!isPreview) {

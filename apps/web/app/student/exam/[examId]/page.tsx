@@ -485,18 +485,35 @@ function ExamPageContent() {
     setShowExitConfirm(false)
   }
 
-  // Get answered questions for current module
+  // Get answered questions for current module (or all modules in admin preview)
   const getAnsweredQuestions = () => {
-    const currentModule = examState.modules[examState.currentModuleIndex]
-    if (!currentModule) return new Set<number>()
-    
-    const answeredSet = new Set<number>()
-    currentModule.questions.forEach((question, index) => {
-      if (currentModule.answers[question.id]) {
-        answeredSet.add(index + 1) // Convert to 1-based indexing
-      }
-    })
-    return answeredSet
+    if (isPreviewMode) {
+      // For admin preview: return global question indexes with answers
+      const answeredSet = new Set<number>()
+      let globalIndex = 1
+      
+      examState.modules.forEach((module) => {
+        module.questions.forEach((question) => {
+          if (module.answers[question.id]) {
+            answeredSet.add(globalIndex)
+          }
+          globalIndex++
+        })
+      })
+      return answeredSet
+    } else {
+      // For student mode: only current module questions
+      const currentModule = examState.modules[examState.currentModuleIndex]
+      if (!currentModule) return new Set<number>()
+      
+      const answeredSet = new Set<number>()
+      currentModule.questions.forEach((question, index) => {
+        if (currentModule.answers[question.id]) {
+          answeredSet.add(index + 1) // Convert to 1-based indexing
+        }
+      })
+      return answeredSet
+    }
   }
 
   // Show conflict modal FIRST if there's an existing attempt
@@ -894,7 +911,7 @@ function ExamPageContent() {
           answeredQuestions={getAnsweredQuestions()}
           markedQuestions={getMarkedQuestions()}
           disabled={examState.status !== 'in_progress' || timeExpiredRef.current}
-          isAdminPreview={isPreviewMode}
+          isAdminPreview={isPreviewMode && isAdmin}
           allModules={examState.modules}
           currentModuleIndex={examState.currentModuleIndex}
           onGoToModule={handleGoToModule}
@@ -911,7 +928,7 @@ function ExamPageContent() {
           userAnswer={currentAnswer}
           onAnswerChange={handleAnswerChange}
           disabled={examState.status !== 'in_progress' || timeExpiredRef.current}
-          isAdminPreview={isPreviewMode}
+          isAdminPreview={isPreviewMode && isAdmin}
           onQuestionUpdate={handleQuestionUpdate}
           isMarkedForReview={isMarkedForReview()}
           onToggleMarkForReview={toggleMarkForReview}
@@ -935,7 +952,7 @@ function ExamPageContent() {
           answeredQuestions={getAnsweredQuestions()}
           markedQuestions={getMarkedQuestions()}
           disabled={examState.status !== 'in_progress' || timeExpiredRef.current}
-          isAdminPreview={isPreviewMode}
+          isAdminPreview={isPreviewMode && isAdmin}
           allModules={examState.modules}
           currentModuleIndex={examState.currentModuleIndex}
           onGoToModule={handleGoToModule}
