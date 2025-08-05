@@ -26,6 +26,9 @@ interface DashboardStats {
   averageScore: number | null
   recentAttempts: TestAttempt[]
   canShowResults: boolean
+  previousMonthBestScore: number | null
+  previousMonthExamsTaken: number
+  previousMonthAverageScore: number | null
 }
 
 interface ScoreHistory {
@@ -40,7 +43,10 @@ export default function StudentDashboard() {
     bestScore: null,
     averageScore: null,
     recentAttempts: [],
-    canShowResults: true
+    canShowResults: true,
+    previousMonthBestScore: null,
+    previousMonthExamsTaken: 0,
+    previousMonthAverageScore: null
   })
   const [scoreHistory, setScoreHistory] = useState<ScoreHistory[]>([])
   const [loading, setLoading] = useState(true)
@@ -57,10 +63,11 @@ export default function StudentDashboard() {
         console.log('🔍 Loading dashboard stats for user:', user.id)
         
         // Fetch all data in parallel using new AnalyticsService
-        const [overallStats, scoreHistoryData, recentAttempts] = await Promise.all([
+        const [overallStats, scoreHistoryData, recentAttempts, previousMonthStats] = await Promise.all([
           AnalyticsService.getDashboardOverallStats(user.id),
           AnalyticsService.getDashboardScoreHistory(user.id),
-          fetchRecentAttempts(user.id)
+          fetchRecentAttempts(user.id),
+          fetchPreviousMonthStats(user.id)
         ])
 
         console.log('📊 Overall stats:', overallStats)
@@ -92,7 +99,10 @@ export default function StudentDashboard() {
           bestScore: canShowResults ? overallStats.bestScore : null,
           averageScore: canShowResults ? overallStats.averageScore : null,
           recentAttempts,
-          canShowResults
+          canShowResults,
+          previousMonthBestScore: canShowResults ? previousMonthStats.bestScore : null,
+          previousMonthExamsTaken: previousMonthStats.examsTaken,
+          previousMonthAverageScore: canShowResults ? previousMonthStats.averageScore : null
         })
         setScoreHistory(canShowResults ? scoreHistoryData : [])
       }
@@ -117,6 +127,43 @@ export default function StudentDashboard() {
     return data || []
   }
 
+  const fetchPreviousMonthStats = async (userId: string) => {
+    const supabase = createClientComponentClient()
+    const now = new Date()
+    const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const startOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    const endOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59)
+
+    const { data, error } = await supabase
+      .from('test_attempts')
+      .select('total_score, final_scores')
+      .eq('user_id', userId)
+      .eq('status', 'completed')
+      .gte('completed_at', startOfPreviousMonth.toISOString())
+      .lte('completed_at', endOfPreviousMonth.toISOString())
+
+    if (error) {
+      console.error('Error fetching previous month stats:', error)
+      return { examsTaken: 0, bestScore: null, averageScore: null }
+    }
+
+    const attempts = data || []
+    const examsTaken = attempts.length
+    
+    if (examsTaken === 0) {
+      return { examsTaken: 0, bestScore: null, averageScore: null }
+    }
+
+    const scores = attempts.map(attempt => {
+      return (attempt as any).final_scores?.overall || attempt.total_score || 0
+    }).filter(score => score > 0)
+
+    const bestScore = scores.length > 0 ? Math.max(...scores) : null
+    const averageScore = scores.length > 0 ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length) : null
+
+    return { examsTaken, bestScore, averageScore }
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -124,6 +171,15 @@ export default function StudentDashboard() {
       hour: '2-digit',
       minute: '2-digit'
     })
+  }
+
+  const calculatePercentageChange = (current: number | null, previous: number | null): { change: string, isZero: boolean } => {
+    if (!current || !previous || previous === 0) {
+      return { change: "0%", isZero: true }
+    }
+    const change = ((current - previous) / previous) * 100
+    const prefix = change >= 0 ? "+" : ""
+    return { change: `${prefix}${change.toFixed(1)}%`, isZero: false }
   }
 
   // Real data for score progress chart with fallback for empty data
@@ -205,8 +261,15 @@ export default function StudentDashboard() {
               <StatsCard
                 title="Your Score This Month"
                 value={loading ? '...' : !stats.canShowResults ? 'Results Hidden' : (stats.bestScore || 'No scores yet')}
-                change="+2.5%"
-                changeType="positive"
+                change={(() => {
+                  const result = calculatePercentageChange(stats.bestScore, stats.previousMonthBestScore)
+                  return result.change
+                })()}
+                changeType={(() => {
+                  const result = calculatePercentageChange(stats.bestScore, stats.previousMonthBestScore)
+                  if (result.isZero) return "neutral"
+                  return stats.bestScore && stats.previousMonthBestScore && stats.bestScore >= stats.previousMonthBestScore ? "positive" : "negative"
+                })()}
                 miniChart={{
                   data: stats.canShowResults && scoreHistory.length > 0 ? scoreHistory.slice(-6).map(item => item.score) : [0, 0, 0, 0, 0, 0],
                   color: '#10b981'
@@ -216,8 +279,15 @@ export default function StudentDashboard() {
               <StatsCard
                 title="Total Exams"
                 value={stats.examsTaken}
-                change="+0.8%"
-                changeType="positive"
+                change={(() => {
+                  const result = calculatePercentageChange(stats.examsTaken, stats.previousMonthExamsTaken)
+                  return result.change
+                })()}
+                changeType={(() => {
+                  const result = calculatePercentageChange(stats.examsTaken, stats.previousMonthExamsTaken)
+                  if (result.isZero) return "neutral"
+                  return stats.examsTaken >= stats.previousMonthExamsTaken ? "positive" : "negative"
+                })()}
                 miniChart={{
                   data: Array.from({length: 6}, (_, i) => Math.max(0, stats.examsTaken - 5 + i)),
                   color: '#8b5cf6'
@@ -227,8 +297,15 @@ export default function StudentDashboard() {
               <StatsCard
                 title="Average Score"
                 value={loading ? '...' : !stats.canShowResults ? 'Results Hidden' : (stats.averageScore || 'No scores yet')}
-                change="+12%"
-                changeType="positive"
+                change={(() => {
+                  const result = calculatePercentageChange(stats.averageScore, stats.previousMonthAverageScore)
+                  return result.change
+                })()}
+                changeType={(() => {
+                  const result = calculatePercentageChange(stats.averageScore, stats.previousMonthAverageScore)
+                  if (result.isZero) return "neutral"
+                  return stats.averageScore && stats.previousMonthAverageScore && stats.averageScore >= stats.previousMonthAverageScore ? "positive" : "negative"
+                })()}
                 miniChart={{
                   data: stats.canShowResults && scoreHistory.length > 0 ? scoreHistory.slice(-6).map(item => item.score) : [0, 0, 0, 0, 0, 0],
                   color: '#f59e0b'
