@@ -471,10 +471,16 @@ export class AnalyticsService {
     
     const { data, error } = await supabase
       .from('test_attempts')
-      .select('final_scores')
+      .select(`
+        final_scores,
+        exam_id,
+        exam_assignments!inner(show_results)
+      `)
       .eq('user_id', userId)
       .eq('status', 'completed')
-.not('final_scores', 'is', null)
+      .eq('exam_assignments.student_id', userId)
+      .eq('exam_assignments.is_active', true)
+      .not('final_scores', 'is', null)
 
     console.log('📊 Raw data from database:', data)
 
@@ -488,7 +494,14 @@ export class AnalyticsService {
       return { examsTaken: 0, bestScore: null, averageScore: null }
     }
 
-    const scores = data
+    // Filter out attempts where results are hidden
+    const visibleAttempts = data.filter(attempt => {
+      const showResults = (attempt as any).exam_assignments?.show_results ?? true
+      console.log('🔍 Checking attempt - show_results:', showResults)
+      return showResults
+    })
+
+    const scores = visibleAttempts
       .map(attempt => {
         console.log('📈 Processing attempt final_scores:', attempt.final_scores)
         return (attempt.final_scores as any)?.overall
@@ -514,10 +527,17 @@ export class AnalyticsService {
   }>> {
     const { data, error } = await supabase
       .from('test_attempts')
-      .select('completed_at, final_scores')
+      .select(`
+        completed_at,
+        final_scores,
+        exam_id,
+        exam_assignments!inner(show_results)
+      `)
       .eq('user_id', userId)
       .eq('status', 'completed')
-.not('final_scores', 'is', null)
+      .eq('exam_assignments.student_id', userId)
+      .eq('exam_assignments.is_active', true)
+      .not('final_scores', 'is', null)
       .order('completed_at', { ascending: true })
 
     if (error) {
@@ -528,7 +548,10 @@ export class AnalyticsService {
     if (!data) return []
 
     return data
-      .filter(attempt => attempt.final_scores && (attempt.final_scores as any)?.overall)
+      .filter(attempt => {
+        const showResults = (attempt as any).exam_assignments?.show_results ?? true
+        return showResults && attempt.final_scores && (attempt.final_scores as any)?.overall
+      })
       .map(attempt => ({
         date: new Date(attempt.completed_at).toISOString().split('T')[0],
         score: (attempt.final_scores as any).overall
