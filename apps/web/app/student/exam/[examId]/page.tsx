@@ -19,20 +19,20 @@ function ExamPageContent() {
   const previewParam = searchParams.get('preview') === 'true'
   const isPreviewMode = previewParam && isAdmin
   
-  // Debug logging for preview mode issues
-  console.log('🔍 ExamPage Debug:', {
-    examId,
-    previewParam,
-    isAdmin,
-    user: user?.email,
-    userProfile: user?.profile,
-    userRole: user?.profile?.role,
-    authLoading,
-    isPreviewMode,
-    hasUser: !!user,
-    hasProfile: !!user?.profile,
-    timestamp: new Date().toISOString()
-  })
+  // Debug logging for preview mode issues (disabled)
+  // console.log('🔍 ExamPage Debug:', {
+  //   examId,
+  //   previewParam,
+  //   isAdmin,
+  //   user: user?.email,
+  //   userProfile: user?.profile,
+  //   userRole: user?.profile?.role,
+  //   authLoading,
+  //   isPreviewMode,
+  //   hasUser: !!user,
+  //   hasProfile: !!user?.profile,
+  //   timestamp: new Date().toISOString()
+  // })
   
   // Debug preview mode
   if (previewParam && !authLoading) {
@@ -931,7 +931,7 @@ function ExamPageContent() {
           isAdminPreview={isPreviewMode && isAdmin}
           onQuestionUpdate={handleQuestionUpdate}
           isMarkedForReview={isMarkedForReview()}
-          onToggleMarkForReview={toggleMarkForReview}
+          onToggleMarkForReview={() => toggleMarkForReview()}
         />
       </div>
 

@@ -292,10 +292,6 @@ export function ExamNavigation({
             const isCurrent = questionNum === currentQuestion
             const isMarked = markedQuestions.some(mq => mq.index === index)
             
-            // Debug logging for mark for review
-            if (process.env.NODE_ENV === 'development' && isMarked) {
-              console.log('🏷️ Marked question found:', { questionNum, index, markedQuestions })
-            }
             
             return (
               <button
