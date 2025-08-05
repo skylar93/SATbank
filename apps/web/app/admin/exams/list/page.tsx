@@ -92,7 +92,27 @@ export default function ExamsListPage() {
   }
 
   return (
-    <div className="h-full bg-gradient-to-br from-purple-50 via-white to-pink-50">
+    <div className="h-full bg-gray-50">
+      {/* Top Header Section */}
+      <div className="bg-white px-6 py-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Exam List</h1>
+            <p className="text-gray-600">View and manage all available exams</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {user?.profile?.full_name?.charAt(0) || 'A'}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Separator line */}
+        <div className="border-b border-gray-200"></div>
+      </div>
+
       <div className="p-6">
         {/* Exams Table */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 overflow-hidden">

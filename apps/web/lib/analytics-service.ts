@@ -494,7 +494,10 @@ export class AnalyticsService {
       return { examsTaken: 0, bestScore: null, averageScore: null }
     }
 
-    // Filter out attempts where results are hidden
+    // Total exams include both visible and hidden results
+    const examsTaken = data.length
+
+    // Filter out attempts where results are hidden for score calculations
     const visibleAttempts = data.filter(attempt => {
       const showResults = (attempt as any).exam_assignments?.show_results ?? true
       console.log('🔍 Checking attempt - show_results:', showResults)
@@ -513,7 +516,6 @@ export class AnalyticsService {
 
     console.log('🎯 Final processed scores:', scores)
 
-    const examsTaken = scores.length
     const bestScore = scores.length > 0 ? Math.max(...scores) : null
     const averageScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null
 

@@ -175,9 +175,9 @@ export default function StudentDashboard() {
 
   return (
     <div className="h-full bg-gray-50">
-      {/* Top Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
+      {/* Top Header Section */}
+      <div className="bg-white px-6 py-6">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
             <p className="text-gray-600">Hello {user.profile?.full_name?.split(' ')[0]}, welcome back</p>
@@ -190,6 +190,9 @@ export default function StudentDashboard() {
             </div>
           </div>
         </div>
+        
+        {/* Separator line */}
+        <div className="border-b border-gray-200"></div>
       </div>
 
       <div className="p-6">

@@ -57,8 +57,8 @@ export default function StudentExamsPage() {
   if (loading) {
     return (
       <div className="h-full bg-gray-50">
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="bg-white px-6 py-6">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Assigned Exams</h1>
               <p className="text-gray-600">Loading your assigned exams...</p>
@@ -69,6 +69,7 @@ export default function StudentExamsPage() {
               </span>
             </div>
           </div>
+          <div className="border-b border-gray-200"></div>
         </div>
         <div className="p-6">
           <div className="text-center py-12">
@@ -84,9 +85,9 @@ export default function StudentExamsPage() {
 
   return (
     <div className="h-full bg-gray-50">
-      {/* Top Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
+      {/* Top Header Section */}
+      <div className="bg-white px-6 py-6">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Assigned Exams</h1>
             <p className="text-gray-600">Take the exams that have been assigned to you</p>
@@ -97,6 +98,9 @@ export default function StudentExamsPage() {
             </span>
           </div>
         </div>
+        
+        {/* Separator line */}
+        <div className="border-b border-gray-200"></div>
       </div>
 
       <div className="p-6">
