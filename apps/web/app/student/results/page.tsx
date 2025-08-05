@@ -25,6 +25,7 @@ export default function StudentResultsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deletingAttempts, setDeletingAttempts] = useState<Set<string>>(new Set())
+  const [resultVisibility, setResultVisibility] = useState<Map<string, boolean>>(new Map())
 
   useEffect(() => {
     if (user) {
@@ -77,12 +78,38 @@ export default function StudentResultsPage() {
         )
         
         setAttempts(sortedAttempts)
+        
+        // Check result visibility for each exam
+        await checkResultVisibility(sortedAttempts)
       }
     } catch (err: any) {
       setError(err.message)
     } finally {
       setLoading(false)
     }
+  }
+
+  const checkResultVisibility = async (attempts: TestAttempt[]) => {
+    if (!user) return
+    
+    const visibilityMap = new Map<string, boolean>()
+    
+    // Check visibility for each unique exam
+    const uniqueExamIds = [...new Set(attempts.filter(a => a.exam_id).map(a => a.exam_id!))]
+    
+    await Promise.all(
+      uniqueExamIds.map(async (examId) => {
+        try {
+          const canShow = await ExamService.canShowResults(user.id, examId)
+          visibilityMap.set(examId, canShow)
+        } catch (error) {
+          // Default to true for practice mode or if there's an error
+          visibilityMap.set(examId, true)
+        }
+      })
+    )
+    
+    setResultVisibility(visibilityMap)
   }
 
   const formatDate = (dateString: string) => {
@@ -144,11 +171,20 @@ export default function StudentResultsPage() {
     return attempt.final_scores?.overall || attempt.total_score || 0
   }
   
-  const averageScore = completedAttempts.length > 0 
-    ? Math.round(completedAttempts.reduce((sum, a) => sum + getDisplayScore(a), 0) / completedAttempts.length)
+  // Helper function to check if results can be shown for an attempt
+  const canShowAttemptResults = (attempt: TestAttempt): boolean => {
+    if (!attempt.exam_id) return true // Practice mode, always show
+    return resultVisibility.get(attempt.exam_id) ?? true
+  }
+  
+  // Filter completed attempts that can show results for stats calculation
+  const visibleCompletedAttempts = completedAttempts.filter(canShowAttemptResults)
+  
+  const averageScore = visibleCompletedAttempts.length > 0 
+    ? Math.round(visibleCompletedAttempts.reduce((sum, a) => sum + getDisplayScore(a), 0) / visibleCompletedAttempts.length)
     : 0
-  const bestScore = completedAttempts.length > 0 
-    ? Math.max(...completedAttempts.map(a => getDisplayScore(a)))
+  const bestScore = visibleCompletedAttempts.length > 0 
+    ? Math.max(...visibleCompletedAttempts.map(a => getDisplayScore(a)))
     : 0
   
   // Mock progress data - replace with real data
@@ -157,7 +193,7 @@ export default function StudentResultsPage() {
     datasets: [
       {
         label: 'Total Score',
-        data: completedAttempts.slice(-5).map(a => getDisplayScore(a)),
+        data: visibleCompletedAttempts.slice(-5).map(a => getDisplayScore(a)),
         borderColor: '#8b5cf6',
         backgroundColor: 'rgba(139, 92, 246, 0.1)',
         fill: true
@@ -236,29 +272,29 @@ export default function StudentResultsPage() {
               
               <StatsCard
                 title="Best Score"
-                value={bestScore || 'No scores yet'}
+                value={bestScore ? bestScore : (visibleCompletedAttempts.length < completedAttempts.length ? 'Results Hidden' : 'No scores yet')}
                 change="+8.4%"
                 changeType="positive"
                 miniChart={{
-                  data: completedAttempts.slice(-6).map(a => getDisplayScore(a)),
+                  data: visibleCompletedAttempts.slice(-6).map(a => getDisplayScore(a)),
                   color: '#8b5cf6'
                 }}
               />
               
               <StatsCard
                 title="Average Score"
-                value={averageScore || 'No average yet'}
+                value={averageScore ? averageScore : (visibleCompletedAttempts.length < completedAttempts.length ? 'Results Hidden' : 'No average yet')}
                 change="+5.2%"
                 changeType="positive"
                 miniChart={{
-                  data: [1200, 1250, 1300, 1350, 1380, averageScore],
+                  data: visibleCompletedAttempts.length > 0 ? [1200, 1250, 1300, 1350, 1380, averageScore] : [0, 0, 0, 0, 0, 0],
                   color: '#f59e0b'
                 }}
               />
             </div>
 
             {/* Score Progress Chart */}
-            {completedAttempts.length > 0 && (
+            {visibleCompletedAttempts.length > 0 && (
               <div className="bg-white rounded-2xl shadow-sm p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold text-gray-900">Score Progress Over Time</h3>
@@ -268,6 +304,17 @@ export default function StudentResultsPage() {
                   </div>
                 </div>
                 <ModernScoreProgress data={progressData} />
+              </div>
+            )}
+            
+            {/* Message when results are hidden */}
+            {completedAttempts.length > 0 && visibleCompletedAttempts.length === 0 && (
+              <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-orange-500 text-2xl">🔒</span>
+                </div>
+                <h3 className="text-lg font-semibold text-orange-900 mb-2">Results Currently Hidden</h3>
+                <p className="text-orange-700">Your instructor has chosen to hide exam results for now. Results will be available when they are released.</p>
               </div>
             )}
 
@@ -324,9 +371,11 @@ export default function StudentResultsPage() {
                             {attempt.status === 'completed' && (
                               <div className="text-right">
                                 <div className="text-2xl font-bold text-violet-600">
-                                  {getDisplayScore(attempt)}
+                                  {canShowAttemptResults(attempt) ? getDisplayScore(attempt) : '***'}
                                 </div>
-                                <div className="text-sm text-gray-500">Total Score</div>
+                                <div className="text-sm text-gray-500">
+                                  {canShowAttemptResults(attempt) ? 'Total Score' : 'Hidden'}
+                                </div>
                               </div>
                             )}
                           </div>
@@ -334,6 +383,7 @@ export default function StudentResultsPage() {
 
                         {/* Module Scores */}
                         {(() => {
+                          const canShowResults = canShowAttemptResults(attempt)
                           const finalScores = attempt.final_scores
                           const moduleScores = attempt.module_scores
                           
@@ -343,11 +393,15 @@ export default function StudentResultsPage() {
                               <div className="grid grid-cols-2 gap-4 mb-4">
                                 <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-xl text-center">
                                   <div className="text-sm font-medium text-gray-900 mb-1">ENGLISH</div>
-                                  <div className="text-lg font-bold text-blue-600">{finalScores.english}</div>
+                                  <div className="text-lg font-bold text-blue-600">
+                                    {canShowResults ? finalScores.english : '***'}
+                                  </div>
                                 </div>
                                 <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-xl text-center">
                                   <div className="text-sm font-medium text-gray-900 mb-1">MATH</div>
-                                  <div className="text-lg font-bold text-green-600">{finalScores.math}</div>
+                                  <div className="text-lg font-bold text-green-600">
+                                    {canShowResults ? finalScores.math : '***'}
+                                  </div>
                                 </div>
                               </div>
                             )
@@ -363,7 +417,7 @@ export default function StudentResultsPage() {
                                       {module.replace(/(\d)/, ' $1').toUpperCase()}
                                     </div>
                                     <div className="text-xl font-bold text-gray-700">
-                                      {score || 0}
+                                      {canShowResults ? (score || 0) : '***'}
                                     </div>
                                   </div>
                                 ))}
@@ -393,13 +447,20 @@ export default function StudentResultsPage() {
                           
                           <div className="flex items-center space-x-3">
                             {attempt.status === 'completed' && (
-                              <Link
-                                href={`/student/results/${attempt.id}`}
-                                className="inline-flex items-center px-4 py-2 bg-violet-100 hover:bg-violet-200 text-violet-700 rounded-lg font-medium transition-colors"
-                              >
-                                <EyeIcon className="w-4 h-4 mr-2" />
-                                View Details
-                              </Link>
+                              canShowAttemptResults(attempt) ? (
+                                <Link
+                                  href={`/student/results/${attempt.id}`}
+                                  className="inline-flex items-center px-4 py-2 bg-violet-100 hover:bg-violet-200 text-violet-700 rounded-lg font-medium transition-colors"
+                                >
+                                  <EyeIcon className="w-4 h-4 mr-2" />
+                                  View Details
+                                </Link>
+                              ) : (
+                                <div className="inline-flex items-center px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-medium">
+                                  <span className="text-orange-500 mr-2">🔒</span>
+                                  Results Hidden
+                                </div>
+                              )
                             )}
                             
                             {attempt.status === 'in_progress' && attempt.exam_id && (
@@ -461,11 +522,15 @@ export default function StudentResultsPage() {
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
                   <span className="text-sm font-medium text-gray-900">Best Score</span>
-                  <span className="text-lg font-bold text-green-600">{bestScore || '-'}</span>
+                  <span className="text-lg font-bold text-green-600">
+                    {bestScore ? bestScore : (visibleCompletedAttempts.length < completedAttempts.length ? 'Hidden' : '-')}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl">
                   <span className="text-sm font-medium text-gray-900">Average Score</span>
-                  <span className="text-lg font-bold text-orange-600">{averageScore || '-'}</span>
+                  <span className="text-lg font-bold text-orange-600">
+                    {averageScore ? averageScore : (visibleCompletedAttempts.length < completedAttempts.length ? 'Hidden' : '-')}
+                  </span>
                 </div>
               </div>
             </div>

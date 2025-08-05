@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useAuth } from '../../../../contexts/auth-context'
 import { AnalyticsService, type ComprehensiveResults } from '../../../../lib/analytics-service'
 import { ExportService } from '../../../../lib/export-service'
-import { ModuleType } from '../../../../lib/exam-service'
+import { ModuleType, ExamService } from '../../../../lib/exam-service'
 import { supabase } from '../../../../lib/supabase'
 
 export default function DetailedResultsPage() {
@@ -19,6 +19,7 @@ export default function DetailedResultsPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'questions' | 'analytics'>('overview')
   const [exporting, setExporting] = useState(false)
   const [showCorrectAnswers, setShowCorrectAnswers] = useState(false)
+  const [canShowResults, setCanShowResults] = useState(true)
 
   const attemptId = params.attemptId as string
 
@@ -26,6 +27,7 @@ export default function DetailedResultsPage() {
     if (user && attemptId) {
       loadResults()
       checkAnswerVisibility()
+      checkResultVisibility()
     }
   }, [user, attemptId])
 
@@ -46,6 +48,31 @@ export default function DetailedResultsPage() {
       console.error('Error checking answer visibility:', err)
       // Default to false if there's an error
       setShowCorrectAnswers(false)
+    }
+  }
+
+  const checkResultVisibility = async () => {
+    if (!user || !attemptId) return
+    
+    try {
+      // Get the test attempt to find the exam ID
+      const { data: attemptData, error: attemptError } = await supabase
+        .from('test_attempts')
+        .select('exam_id')
+        .eq('id', attemptId)
+        .eq('user_id', user.id)
+        .single()
+
+      if (attemptError) throw attemptError
+      
+      if (attemptData?.exam_id) {
+        const canShow = await ExamService.canShowResults(user.id, attemptData.exam_id)
+        setCanShowResults(canShow)
+      }
+    } catch (err: any) {
+      console.error('Error checking result visibility:', err)
+      // Default to true if there's an error (for practice mode, etc.)
+      setCanShowResults(true)
     }
   }
 
@@ -127,6 +154,28 @@ export default function DetailedResultsPage() {
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading detailed results...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!canShowResults) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-6xl mx-auto py-8 px-4">
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-8 text-center">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-orange-500 text-2xl">🔒</span>
+            </div>
+            <h3 className="text-lg font-medium text-orange-900 mb-2">Results Currently Hidden</h3>
+            <p className="text-orange-700 mb-4">Your instructor has chosen to hide exam results for now. Results will be available when they are released.</p>
+            <Link
+              href="/student/results"
+              className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Back to Results
+            </Link>
           </div>
         </div>
       </div>

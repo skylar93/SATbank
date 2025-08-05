@@ -149,6 +149,23 @@ export class ExamService {
     return !!data
   }
 
+  // Check if results should be shown for a specific assignment
+  static async canShowResults(userId: string, examId: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('exam_assignments')
+      .select('show_results')
+      .eq('student_id', userId)
+      .eq('exam_id', examId)
+      .eq('is_active', true)
+      .single()
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" error
+      throw error
+    }
+    
+    return data?.show_results ?? true // Default to true if not found
+  }
+
   // Get questions for exam module
   static async getQuestions(examId: string, moduleType: ModuleType): Promise<Question[]> {
     const { data, error } = await supabase

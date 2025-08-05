@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
-import { type TestAttempt } from '../../../lib/exam-service'
+import { type TestAttempt, ExamService } from '../../../lib/exam-service'
 import { AnalyticsService } from '../../../lib/analytics-service'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { ProgressChart, SubjectPerformanceChart, WeeklyActivityChart, CircularProgress } from '../../../components/charts'
@@ -25,6 +25,7 @@ interface DashboardStats {
   bestScore: number | null
   averageScore: number | null
   recentAttempts: TestAttempt[]
+  canShowResults: boolean
 }
 
 interface ScoreHistory {
@@ -38,7 +39,8 @@ export default function StudentDashboard() {
     examsTaken: 0,
     bestScore: null,
     averageScore: null,
-    recentAttempts: []
+    recentAttempts: [],
+    canShowResults: true
   })
   const [scoreHistory, setScoreHistory] = useState<ScoreHistory[]>([])
   const [loading, setLoading] = useState(true)
@@ -65,6 +67,21 @@ export default function StudentDashboard() {
         console.log('📈 Score history:', scoreHistoryData)
         console.log('📝 Recent attempts:', recentAttempts)
         
+        // Check if user can see results for completed exams
+        let canShowResults = true
+        if (recentAttempts.length > 0) {
+          // Check the most recent exam's result visibility setting
+          const mostRecentExam = recentAttempts[0]
+          if (mostRecentExam.exam_id) {
+            try {
+              canShowResults = await ExamService.canShowResults(user.id, mostRecentExam.exam_id)
+            } catch (error) {
+              console.log('Could not check result visibility, defaulting to true:', error)
+              canShowResults = true
+            }
+          }
+        }
+        
         // Debug score history data
         scoreHistoryData.forEach((item, index) => {
           console.log(`Score ${index}:`, item.score, typeof item.score)
@@ -72,11 +89,12 @@ export default function StudentDashboard() {
 
         setStats({
           examsTaken: overallStats.examsTaken,
-          bestScore: overallStats.bestScore,
-          averageScore: overallStats.averageScore,
-          recentAttempts
+          bestScore: canShowResults ? overallStats.bestScore : null,
+          averageScore: canShowResults ? overallStats.averageScore : null,
+          recentAttempts,
+          canShowResults
         })
-        setScoreHistory(scoreHistoryData)
+        setScoreHistory(canShowResults ? scoreHistoryData : [])
       }
     } catch (error) {
       console.error('Error loading dashboard stats:', error)
@@ -183,11 +201,11 @@ export default function StudentDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <StatsCard
                 title="Your Score This Month"
-                value={loading ? '...' : stats.bestScore || 'No scores yet'}
+                value={loading ? '...' : !stats.canShowResults ? 'Results Hidden' : (stats.bestScore || 'No scores yet')}
                 change="+2.5%"
                 changeType="positive"
                 miniChart={{
-                  data: scoreHistory.length > 0 ? scoreHistory.slice(-6).map(item => item.score) : [0, 0, 0, 0, 0, 0],
+                  data: stats.canShowResults && scoreHistory.length > 0 ? scoreHistory.slice(-6).map(item => item.score) : [0, 0, 0, 0, 0, 0],
                   color: '#10b981'
                 }}
               />
@@ -205,11 +223,11 @@ export default function StudentDashboard() {
               
               <StatsCard
                 title="Average Score"
-                value={loading ? '...' : stats.averageScore || 'No scores yet'}
+                value={loading ? '...' : !stats.canShowResults ? 'Results Hidden' : (stats.averageScore || 'No scores yet')}
                 change="+12%"
                 changeType="positive"
                 miniChart={{
-                  data: scoreHistory.length > 0 ? scoreHistory.slice(-6).map(item => item.score) : [0, 0, 0, 0, 0, 0],
+                  data: stats.canShowResults && scoreHistory.length > 0 ? scoreHistory.slice(-6).map(item => item.score) : [0, 0, 0, 0, 0, 0],
                   color: '#f59e0b'
                 }}
               />
@@ -224,7 +242,15 @@ export default function StudentDashboard() {
                   <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Last Week</button>
                 </div>
               </div>
-              {hasScoreData ? (
+              {!stats.canShowResults ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                    <ChartBarIcon className="w-8 h-8 text-orange-400" />
+                  </div>
+                  <h4 className="text-lg font-medium text-gray-900 mb-2">Results Currently Hidden</h4>
+                  <p className="text-gray-500 text-sm mb-4">Your instructor has chosen to hide exam results for now.</p>
+                </div>
+              ) : hasScoreData ? (
                 <ModernScoreProgress data={progressData} />
               ) : (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -281,13 +307,18 @@ export default function StudentDashboard() {
               
               <div className="flex justify-center mb-6">
                 <CircularProgress 
-                  percentage={stats.bestScore ? Math.round((stats.bestScore / 1600) * 100) : 0} 
+                  percentage={stats.canShowResults && stats.bestScore ? Math.round((stats.bestScore / 1600) * 100) : 0} 
                   size={140} 
                 />
               </div>
 
               <div className="space-y-3">
-                {stats.bestScore ? (
+                {!stats.canShowResults ? (
+                  <div className="text-center py-4">
+                    <p className="text-gray-500 text-sm">Results Hidden</p>
+                    <p className="text-xs text-gray-400 mt-1">Your instructor will release results when ready</p>
+                  </div>
+                ) : stats.bestScore ? (
                   <>
                     <div className="flex items-center space-x-3">
                       <div className="w-3 h-3 rounded-full bg-violet-500"></div>
@@ -326,7 +357,10 @@ export default function StudentDashboard() {
                   <div key={attempt.id} className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
                       <span className="text-violet-600 font-semibold text-sm">
-                        {(attempt as any).final_scores?.overall || attempt.total_score || 'N/A'}
+                        {stats.canShowResults 
+                          ? ((attempt as any).final_scores?.overall || attempt.total_score || 'N/A')
+                          : '***'
+                        }
                       </span>
                     </div>
                     <div className="flex-1">

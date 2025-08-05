@@ -33,6 +33,7 @@ interface ExamAssignment {
   assigned_at: string
   due_date: string | null
   is_active: boolean
+  show_results: boolean
   exams: Exam
   user_profiles: Student
 }
@@ -47,12 +48,14 @@ export default function AdminAssignmentsPage() {
   const [selectedExam, setSelectedExam] = useState('')
   const [selectedStudents, setSelectedStudents] = useState<string[]>([])
   const [dueDate, setDueDate] = useState('')
+  const [showResults, setShowResults] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   
   // Edit assignment states
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingAssignment, setEditingAssignment] = useState<ExamAssignment | null>(null)
   const [editDueDate, setEditDueDate] = useState('')
+  const [editShowResults, setEditShowResults] = useState(true)
 
   useEffect(() => {
     if (user) {
@@ -157,6 +160,7 @@ export default function AdminAssignmentsPage() {
           .update({
             assigned_by: user?.id,
             due_date: dueDate || null,
+            show_results: showResults,
             is_active: true,
             assigned_at: new Date().toISOString()
           })
@@ -173,6 +177,7 @@ export default function AdminAssignmentsPage() {
           student_id: studentId,
           assigned_by: user?.id,
           due_date: dueDate || null,
+          show_results: showResults,
           is_active: true
         }))
 
@@ -192,6 +197,7 @@ export default function AdminAssignmentsPage() {
       setSelectedExam('')
       setSelectedStudents([])
       setDueDate('')
+      setShowResults(true)
       loadData()
     } catch (error) {
       console.error('Error creating assignment:', error)
@@ -218,6 +224,7 @@ export default function AdminAssignmentsPage() {
   const handleEditAssignment = (assignment: ExamAssignment) => {
     setEditingAssignment(assignment)
     setEditDueDate(assignment.due_date ? new Date(assignment.due_date).toISOString().split('T')[0] : '')
+    setEditShowResults(assignment.show_results)
     setShowEditModal(true)
   }
 
@@ -229,6 +236,7 @@ export default function AdminAssignmentsPage() {
         .from('exam_assignments')
         .update({
           due_date: editDueDate || null,
+          show_results: editShowResults,
           assigned_by: user?.id,
           assigned_at: new Date().toISOString()
         })
@@ -239,6 +247,7 @@ export default function AdminAssignmentsPage() {
       setShowEditModal(false)
       setEditingAssignment(null)
       setEditDueDate('')
+      setEditShowResults(true)
       loadData()
       alert('Assignment updated successfully!')
     } catch (error) {
@@ -320,6 +329,9 @@ export default function AdminAssignmentsPage() {
                       Due Date
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Show Results
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -363,6 +375,15 @@ export default function AdminAssignmentsPage() {
                         ) : (
                           'No due date'
                         )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          assignment.show_results 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {assignment.show_results ? 'Visible' : 'Hidden'}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${
@@ -499,6 +520,38 @@ export default function AdminAssignmentsPage() {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
+
+              {/* Show Results */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Result Visibility
+                </label>
+                <div className="flex items-center space-x-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="showResults"
+                      checked={showResults}
+                      onChange={() => setShowResults(true)}
+                      className="mr-2 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-900">Show results to students</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="showResults"
+                      checked={!showResults}
+                      onChange={() => setShowResults(false)}
+                      className="mr-2 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-900">Hide results from students</span>
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  When hidden, students won't see their scores or access the results section
+                </p>
+              </div>
             </div>
 
             <div className="flex justify-end space-x-3 mt-6">
@@ -573,6 +626,35 @@ export default function AdminAssignmentsPage() {
                   onChange={(e) => setEditDueDate(e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+              </div>
+
+              {/* Show Results */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Result Visibility
+                </label>
+                <div className="flex items-center space-x-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="editShowResults"
+                      checked={editShowResults}
+                      onChange={() => setEditShowResults(true)}
+                      className="mr-2 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-900">Show results</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="editShowResults"
+                      checked={!editShowResults}
+                      onChange={() => setEditShowResults(false)}
+                      className="mr-2 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-900">Hide results</span>
+                  </label>
+                </div>
               </div>
             </div>
 
