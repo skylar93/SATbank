@@ -45,7 +45,7 @@ export default function AdminAssignmentsPage() {
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
   const [showAssignModal, setShowAssignModal] = useState(false)
-  const [selectedExam, setSelectedExam] = useState('')
+  const [selectedExams, setSelectedExams] = useState<string[]>([])
   const [selectedStudents, setSelectedStudents] = useState<string[]>([])
   const [dueDate, setDueDate] = useState('')
   const [showResults, setShowResults] = useState(true)
@@ -140,61 +140,66 @@ export default function AdminAssignmentsPage() {
   }
 
   const handleCreateAssignment = async () => {
-    if (!selectedExam || selectedStudents.length === 0) return
+    if (selectedExams.length === 0 || selectedStudents.length === 0) return
 
     try {
-      // Check for existing assignments first
-      const { data: existingAssignments } = await supabase
-        .from('exam_assignments')
-        .select('student_id')
-        .eq('exam_id', selectedExam)
-        .in('student_id', selectedStudents)
+      let totalUpdated = 0
+      let totalCreated = 0
 
-      const existingStudentIds = existingAssignments?.map(a => a.student_id) || []
-      const newStudentIds = selectedStudents.filter(id => !existingStudentIds.includes(id))
-      
-      if (existingStudentIds.length > 0) {
-        // Update existing assignments
-        const { error: updateError } = await supabase
+      // Process each exam separately
+      for (const examId of selectedExams) {
+        // Check for existing assignments first
+        const { data: existingAssignments } = await supabase
           .from('exam_assignments')
-          .update({
+          .select('student_id')
+          .eq('exam_id', examId)
+          .in('student_id', selectedStudents)
+
+        const existingStudentIds = existingAssignments?.map(a => a.student_id) || []
+        const newStudentIds = selectedStudents.filter(id => !existingStudentIds.includes(id))
+        
+        if (existingStudentIds.length > 0) {
+          // Update existing assignments
+          const { error: updateError } = await supabase
+            .from('exam_assignments')
+            .update({
+              assigned_by: user?.id,
+              due_date: dueDate || null,
+              show_results: showResults,
+              is_active: true,
+              assigned_at: new Date().toISOString()
+            })
+            .eq('exam_id', examId)
+            .in('student_id', existingStudentIds)
+
+          if (updateError) throw updateError
+          totalUpdated += existingStudentIds.length
+        }
+
+        if (newStudentIds.length > 0) {
+          // Create new assignments
+          const newAssignments = newStudentIds.map(studentId => ({
+            exam_id: examId,
+            student_id: studentId,
             assigned_by: user?.id,
             due_date: dueDate || null,
             show_results: showResults,
-            is_active: true,
-            assigned_at: new Date().toISOString()
-          })
-          .eq('exam_id', selectedExam)
-          .in('student_id', existingStudentIds)
+            is_active: true
+          }))
 
-        if (updateError) throw updateError
+          const { error: insertError } = await supabase
+            .from('exam_assignments')
+            .insert(newAssignments)
+
+          if (insertError) throw insertError
+          totalCreated += newStudentIds.length
+        }
       }
-
-      if (newStudentIds.length > 0) {
-        // Create new assignments
-        const newAssignments = newStudentIds.map(studentId => ({
-          exam_id: selectedExam,
-          student_id: studentId,
-          assigned_by: user?.id,
-          due_date: dueDate || null,
-          show_results: showResults,
-          is_active: true
-        }))
-
-        const { error: insertError } = await supabase
-          .from('exam_assignments')
-          .insert(newAssignments)
-
-        if (insertError) throw insertError
-      }
-
-      const totalUpdated = existingStudentIds.length
-      const totalCreated = newStudentIds.length
       
       alert(`Assignment completed! Updated: ${totalUpdated}, Created: ${totalCreated}`)
 
       setShowAssignModal(false)
-      setSelectedExam('')
+      setSelectedExams([])
       setSelectedStudents([])
       setDueDate('')
       setShowResults(true)
@@ -442,32 +447,45 @@ export default function AdminAssignmentsPage() {
             </div>
 
             <div className="space-y-6">
-              {/* Select Exam */}
+              {/* Select Exams */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Exam
+                  Select Exams
                 </label>
-                <select
-                  value={selectedExam}
-                  onChange={(e) => setSelectedExam(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Choose an exam...</option>
+                <div className="border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
                   {exams.length === 0 ? (
-                    <option value="" disabled>No exams available</option>
+                    <div className="p-4 text-center text-gray-500">
+                      <AcademicCapIcon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                      <p className="text-sm">No exams found</p>
+                      <p className="text-xs text-gray-400 mt-1">Please create an exam first</p>
+                    </div>
                   ) : (
                     exams.map((exam) => (
-                      <option key={exam.id} value={exam.id}>
-                        {exam.title}
-                      </option>
+                      <label key={exam.id} className="flex items-center p-3 hover:bg-gray-50 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedExams.includes(exam.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedExams([...selectedExams, exam.id])
+                            } else {
+                              setSelectedExams(selectedExams.filter(id => id !== exam.id))
+                            }
+                          }}
+                          className="mr-3 text-blue-600 focus:ring-blue-500"
+                        />
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {exam.title}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {exam.description}
+                          </div>
+                        </div>
+                      </label>
                     ))
                   )}
-                </select>
-                {exams.length === 0 && (
-                  <p className="text-sm text-red-600 mt-1">
-                    No active exams found. Please create an exam first.
-                  </p>
-                )}
+                </div>
               </div>
 
               {/* Select Students */}
@@ -566,7 +584,7 @@ export default function AdminAssignmentsPage() {
               </button>
               <button
                 onClick={handleCreateAssignment}
-                disabled={!selectedExam || selectedStudents.length === 0}
+                disabled={selectedExams.length === 0 || selectedStudents.length === 0}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Create Assignment

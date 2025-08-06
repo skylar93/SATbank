@@ -140,6 +140,15 @@ export default function StudentResultsPage() {
     return Object.values(moduleScores).reduce((sum: number, score: any) => sum + (score || 0), 0)
   }
 
+  const calculatePercentageChange = (current: number | null, previous: number | null): { change: string, isZero: boolean } => {
+    if (!current || !previous || previous === 0) {
+      return { change: "0%", isZero: true }
+    }
+    const change = ((current - previous) / previous) * 100
+    const prefix = change >= 0 ? "+" : ""
+    return { change: `${prefix}${change.toFixed(1)}%`, isZero: false }
+  }
+
   const handleDeleteAttempt = async (attemptId: string) => {
     if (!confirm('Are you sure you want to discard this exam attempt? This action cannot be undone.')) {
       return
@@ -185,6 +194,22 @@ export default function StudentResultsPage() {
     : 0
   const bestScore = visibleCompletedAttempts.length > 0 
     ? Math.max(...visibleCompletedAttempts.map(a => getDisplayScore(a)))
+    : 0
+
+  // Calculate previous period stats for comparison (30 days ago)
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  
+  const previousPeriodAttempts = visibleCompletedAttempts.filter(a => 
+    a.completed_at && new Date(a.completed_at) < thirtyDaysAgo
+  )
+  
+  const previousTotalExams = previousPeriodAttempts.length
+  const previousBestScore = previousPeriodAttempts.length > 0 
+    ? Math.max(...previousPeriodAttempts.map(a => getDisplayScore(a)))
+    : 0
+  const previousAverageScore = previousPeriodAttempts.length > 0 
+    ? Math.round(previousPeriodAttempts.reduce((sum, a) => sum + getDisplayScore(a), 0) / previousPeriodAttempts.length)
     : 0
   
   // Mock progress data - replace with real data
@@ -262,10 +287,17 @@ export default function StudentResultsPage() {
               <StatsCard
                 title="Total Exams Taken"
                 value={attempts.length}
-                change="+2.5%"
-                changeType="positive"
+                change={(() => {
+                  const result = calculatePercentageChange(attempts.length, previousTotalExams)
+                  return result.change
+                })()}
+                changeType={(() => {
+                  const result = calculatePercentageChange(attempts.length, previousTotalExams)
+                  if (result.isZero) return "neutral"
+                  return attempts.length >= previousTotalExams ? "positive" : "negative"
+                })()}
                 miniChart={{
-                  data: [5, 8, 12, 15, 18, attempts.length],
+                  data: Array.from({length: 6}, (_, i) => Math.max(0, attempts.length - 5 + i)),
                   color: '#10b981'
                 }}
               />
@@ -273,10 +305,17 @@ export default function StudentResultsPage() {
               <StatsCard
                 title="Best Score"
                 value={bestScore ? bestScore : (visibleCompletedAttempts.length < completedAttempts.length ? 'Results Hidden' : 'No scores yet')}
-                change="+8.4%"
-                changeType="positive"
+                change={(() => {
+                  const result = calculatePercentageChange(bestScore || null, previousBestScore || null)
+                  return result.change
+                })()}
+                changeType={(() => {
+                  const result = calculatePercentageChange(bestScore || null, previousBestScore || null)
+                  if (result.isZero) return "neutral"
+                  return bestScore && previousBestScore && bestScore >= previousBestScore ? "positive" : "negative"
+                })()}
                 miniChart={{
-                  data: visibleCompletedAttempts.slice(-6).map(a => getDisplayScore(a)),
+                  data: visibleCompletedAttempts.length > 0 ? visibleCompletedAttempts.slice(-6).map(a => getDisplayScore(a)) : [0, 0, 0, 0, 0, 0],
                   color: '#8b5cf6'
                 }}
               />
@@ -284,10 +323,17 @@ export default function StudentResultsPage() {
               <StatsCard
                 title="Average Score"
                 value={averageScore ? averageScore : (visibleCompletedAttempts.length < completedAttempts.length ? 'Results Hidden' : 'No average yet')}
-                change="+5.2%"
-                changeType="positive"
+                change={(() => {
+                  const result = calculatePercentageChange(averageScore || null, previousAverageScore || null)
+                  return result.change
+                })()}
+                changeType={(() => {
+                  const result = calculatePercentageChange(averageScore || null, previousAverageScore || null)
+                  if (result.isZero) return "neutral"
+                  return averageScore && previousAverageScore && averageScore >= previousAverageScore ? "positive" : "negative"
+                })()}
                 miniChart={{
-                  data: visibleCompletedAttempts.length > 0 ? [1200, 1250, 1300, 1350, 1380, averageScore] : [0, 0, 0, 0, 0, 0],
+                  data: visibleCompletedAttempts.length > 0 ? visibleCompletedAttempts.slice(-6).map(a => getDisplayScore(a)) : [0, 0, 0, 0, 0, 0],
                   color: '#f59e0b'
                 }}
               />

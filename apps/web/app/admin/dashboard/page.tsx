@@ -48,6 +48,15 @@ export default function AdminDashboard() {
     weeklyTrend: [],
     scoreDistribution: []
   })
+  const [previousStats, setPreviousStats] = useState<{
+    totalStudents: number
+    totalAttempts: number
+    averageScore: number
+  }>({
+    totalStudents: 0,
+    totalAttempts: 0,
+    averageScore: 0
+  })
   const [recentAttempts, setRecentAttempts] = useState<RecentAttempt[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -58,13 +67,38 @@ export default function AdminDashboard() {
     }
   }, [user])
 
+  const calculatePercentageChange = (current: number, previous: number): { change: string; changeType: 'positive' | 'negative' | 'neutral' } => {
+    if (previous === 0) {
+      return { change: current > 0 ? '+100%' : '0%', changeType: current > 0 ? 'positive' : 'neutral' }
+    }
+    const percentChange = ((current - previous) / previous) * 100
+    const prefix = percentChange >= 0 ? '+' : ''
+    return {
+      change: `${prefix}${percentChange.toFixed(1)}%`,
+      changeType: percentChange > 0 ? 'positive' : percentChange < 0 ? 'negative' : 'neutral'
+    }
+  }
+
   const loadDashboardData = async () => {
     try {
-      // Load basic stats
+      // Get current date ranges
+      const now = new Date()
+      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString()
+      const todayStart = new Date().toISOString().split('T')[0]
+
+      // Load current month stats
       const [studentsData, attemptsData, todayAttemptsData] = await Promise.all([
         supabase.from('user_profiles').select('id').eq('role', 'student'),
-        supabase.from('test_attempts').select('*').eq('status', 'completed'),
-        supabase.from('test_attempts').select('*').eq('status', 'completed').gte('completed_at', new Date().toISOString().split('T')[0])
+        supabase.from('test_attempts').select('*').eq('status', 'completed').gte('completed_at', thisMonthStart),
+        supabase.from('test_attempts').select('*').eq('status', 'completed').gte('completed_at', todayStart)
+      ])
+
+      // Load previous month stats for comparison
+      const [prevStudentsData, prevAttemptsData] = await Promise.all([
+        supabase.from('user_profiles').select('id').eq('role', 'student').lte('created_at', lastMonthEnd),
+        supabase.from('test_attempts').select('*').eq('status', 'completed').gte('completed_at', lastMonthStart).lt('completed_at', thisMonthStart)
       ])
 
       if (studentsData.error) throw studentsData.error
@@ -78,13 +112,28 @@ export default function AdminDashboard() {
         : 0
       const completedToday = todayAttemptsData.data?.length || 0
 
-      // Generate weekly trend data
+      // Calculate previous month stats
+      const prevTotalStudents = prevStudentsData.data?.length || 0
+      const prevTotalAttempts = prevAttemptsData.data?.length || 0
+      const prevAverageScore = prevTotalAttempts > 0
+        ? Math.round((prevAttemptsData.data || []).reduce((sum, attempt) => sum + (attempt.total_score || 0), 0) / prevTotalAttempts)
+        : 0
+
+      setPreviousStats({
+        totalStudents: prevTotalStudents,
+        totalAttempts: prevTotalAttempts,
+        averageScore: prevAverageScore
+      })
+
+      // Generate weekly trend data (using all completed attempts, not just this month)
+      const { data: allAttemptsData } = await supabase.from('test_attempts').select('*').eq('status', 'completed')
+      
       const weeklyTrend = []
       for (let i = 6; i >= 0; i--) {
         const date = new Date()
         date.setDate(date.getDate() - i)
         const dateStr = date.toISOString().split('T')[0]
-        const dayAttempts = attemptsData.data?.filter(a => 
+        const dayAttempts = allAttemptsData?.filter(a => 
           a.completed_at && a.completed_at.startsWith(dateStr)
         ) || []
         
@@ -95,7 +144,7 @@ export default function AdminDashboard() {
         })
       }
 
-      // Generate score distribution
+      // Generate score distribution (using current month data)
       const scores = attemptsData.data?.map(a => a.total_score).filter(Boolean) || []
       const scoreDistribution = [
         { label: 'Excellent (1200+)', value: scores.filter(s => s >= 1200).length },
@@ -214,10 +263,10 @@ export default function AdminDashboard() {
                   <StatsCard
                     title="Total Students"
                     value={stats.totalStudents}
-                    change="+12%"
-                    changeType="positive"
+                    change={calculatePercentageChange(stats.totalStudents, previousStats.totalStudents).change}
+                    changeType={calculatePercentageChange(stats.totalStudents, previousStats.totalStudents).changeType}
                     miniChart={{
-                      data: [15, 18, 22, 19, 25, stats.totalStudents],
+                      data: Array.from({length: 6}, (_, i) => Math.max(0, stats.totalStudents - 5 + i)),
                       color: '#10b981'
                     }}
                   />
@@ -225,10 +274,10 @@ export default function AdminDashboard() {
                   <StatsCard
                     title="Completed Tests"
                     value={stats.totalAttempts}
-                    change="+8.5%"
-                    changeType="positive"
+                    change={calculatePercentageChange(stats.totalAttempts, previousStats.totalAttempts).change}
+                    changeType={calculatePercentageChange(stats.totalAttempts, previousStats.totalAttempts).changeType}
                     miniChart={{
-                      data: [45, 52, 48, 63, 71, stats.totalAttempts],
+                      data: Array.from({length: 6}, (_, i) => Math.max(0, stats.totalAttempts - 5 + i)),
                       color: '#8b5cf6'
                     }}
                   />
@@ -236,10 +285,10 @@ export default function AdminDashboard() {
                   <StatsCard
                     title="Average Score"
                     value={stats.averageScore}
-                    change="+2.1%"
-                    changeType="positive"
+                    change={calculatePercentageChange(stats.averageScore, previousStats.averageScore).change}
+                    changeType={calculatePercentageChange(stats.averageScore, previousStats.averageScore).changeType}
                     miniChart={{
-                      data: [1050, 1120, 1080, 1150, 1180, stats.averageScore],
+                      data: Array.from({length: 6}, (_, i) => Math.max(800, stats.averageScore - 50 + (i * 10))),
                       color: '#f59e0b'
                     }}
                   />

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
 import { type TestAttempt, ExamService } from '../../../lib/exam-service'
 import { AnalyticsService } from '../../../lib/analytics-service'
+import { WeeklyActivityService, type WeeklyActivityData } from '../../../lib/weekly-activity-service'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { ProgressChart, SubjectPerformanceChart, WeeklyActivityChart, CircularProgress } from '../../../components/charts'
 import { ModernScoreProgress, StatsCard } from '../../../components/modern-charts'
@@ -49,7 +50,14 @@ export default function StudentDashboard() {
     previousMonthAverageScore: null
   })
   const [scoreHistory, setScoreHistory] = useState<ScoreHistory[]>([])
+  const [studyStreakDays, setStudyStreakDays] = useState<string[]>([])
+  const [weeklyActivityData, setWeeklyActivityData] = useState<WeeklyActivityData>({
+    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    studyTime: [0, 0, 0, 0, 0, 0, 0],
+    practiceTests: [0, 0, 0, 0, 0, 0, 0]
+  })
   const [loading, setLoading] = useState(true)
+  const [weeklyActivityLoading, setWeeklyActivityLoading] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -63,16 +71,19 @@ export default function StudentDashboard() {
         console.log('🔍 Loading dashboard stats for user:', user.id)
         
         // Fetch all data in parallel using new AnalyticsService
-        const [overallStats, scoreHistoryData, recentAttempts, previousMonthStats] = await Promise.all([
+        const [overallStats, scoreHistoryData, recentAttempts, previousMonthStats, activityDays, weeklyActivity] = await Promise.all([
           AnalyticsService.getDashboardOverallStats(user.id),
           AnalyticsService.getDashboardScoreHistory(user.id),
           fetchRecentAttempts(user.id),
-          fetchPreviousMonthStats(user.id)
+          fetchPreviousMonthStats(user.id),
+          fetchUserActivityDays(user.id),
+          WeeklyActivityService.fetchWeeklyActivityData(user.id)
         ])
 
         console.log('📊 Overall stats:', overallStats)
         console.log('📈 Score history:', scoreHistoryData)
         console.log('📝 Recent attempts:', recentAttempts)
+        console.log('📅 Weekly activity:', weeklyActivity)
         
         // Check if user can see results for completed exams
         let canShowResults = true
@@ -105,6 +116,8 @@ export default function StudentDashboard() {
           previousMonthAverageScore: canShowResults ? previousMonthStats.averageScore : null
         })
         setScoreHistory(canShowResults ? scoreHistoryData : [])
+        setStudyStreakDays(activityDays)
+        setWeeklyActivityData(weeklyActivity)
       }
     } catch (error) {
       console.error('Error loading dashboard stats:', error)
@@ -164,6 +177,45 @@ export default function StudentDashboard() {
     return { examsTaken, bestScore, averageScore }
   }
 
+  const fetchUserActivityDays = async (userId: string): Promise<string[]> => {
+    const supabase = createClientComponentClient()
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    // Get dates when user completed tests, started tests, or accessed problem bank
+    const [completedTests, startedTests] = await Promise.all([
+      supabase
+        .from('test_attempts')
+        .select('completed_at')
+        .eq('user_id', userId)
+        .eq('status', 'completed')
+        .gte('completed_at', thirtyDaysAgo.toISOString()),
+      supabase
+        .from('test_attempts')
+        .select('started_at')
+        .eq('user_id', userId)
+        .gte('started_at', thirtyDaysAgo.toISOString())
+    ])
+
+    const activityDates = new Set<string>()
+
+    // Add completed test dates
+    completedTests.data?.forEach(attempt => {
+      if (attempt.completed_at) {
+        activityDates.add(attempt.completed_at.split('T')[0])
+      }
+    })
+
+    // Add started test dates
+    startedTests.data?.forEach(attempt => {
+      if (attempt.started_at) {
+        activityDates.add(attempt.started_at.split('T')[0])
+      }
+    })
+
+    return Array.from(activityDates).sort()
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -217,15 +269,8 @@ export default function StudentDashboard() {
     math: 720
   }
 
-  const weeklyData = {
-    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    studyTime: [2, 3, 1, 4, 2, 0, 1],
-    practiceTests: [1, 0, 0, 1, 1, 0, 0]
-  }
 
-  const studyStreakDays = [
-    '2024-03-15', '2024-03-16', '2024-03-17', '2024-03-19', '2024-03-20'
-  ]
+  // studyStreakDays is now loaded from real data via useState
 
   if (!user) return null
 
@@ -368,7 +413,13 @@ export default function StudentDashboard() {
                   </select>
                 </div>
               </div>
-              <WeeklyActivityChart data={weeklyData} />
+              {weeklyActivityLoading ? (
+                <div className="flex items-center justify-center py-16">
+                  <div className="w-8 h-8 border-4 border-gray-200 border-t-violet-600 rounded-full animate-spin"></div>
+                </div>
+              ) : (
+                <WeeklyActivityChart data={weeklyActivityData} />
+              )}
             </div>
 
           </div>
