@@ -1118,11 +1118,11 @@ export function QuestionDisplay({
                 
                 {showAnswerCheck && (
                   <div className={`p-3 border rounded-lg ${
-                    userAnswer === localQuestion.correct_answer
+                    userAnswer?.trim().toUpperCase() === localQuestion.correct_answer?.trim().toUpperCase()
                       ? 'bg-green-50 border-green-200'
                       : 'bg-red-50 border-red-200'
                   }`}>
-                    {userAnswer === localQuestion.correct_answer ? (
+                    {userAnswer?.trim().toUpperCase() === localQuestion.correct_answer?.trim().toUpperCase() ? (
                       <p className="text-sm text-green-800 font-medium">
                         ✅ 정답입니다!
                       </p>
