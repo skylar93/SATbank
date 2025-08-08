@@ -20,6 +20,7 @@ import {
   ArrowTrendingUpIcon,
   AcademicCapIcon
 } from '@heroicons/react/24/outline'
+import { formatTimeAgo } from '../../../lib/utils'
 
 interface DashboardStats {
   examsTaken: number
@@ -89,6 +90,8 @@ export default function StudentDashboard() {
         console.log('📊 Overall stats:', overallStats)
         console.log('📈 Score history:', scoreHistoryData)
         console.log('📝 Recent attempts:', recentAttempts)
+        console.log('📝 Recent attempts length:', recentAttempts.length)
+        console.log('📝 Recent attempts detailed:', JSON.stringify(recentAttempts, null, 2))
         console.log('📅 Weekly activity:', weeklyActivity)
         
         // Check if user can see results for completed exams
@@ -134,17 +137,20 @@ export default function StudentDashboard() {
   }
 
   const fetchRecentAttempts = async (userId: string): Promise<TestAttempt[]> => {
-    const supabase = createClientComponentClient()
-    const { data, error } = await supabase
-      .from('test_attempts')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('status', 'completed')
-      .order('completed_at', { ascending: false })
-      .limit(5)
-
-    if (error) throw error
-    return data || []
+    // Use the same method as AnalyticsService for consistency
+    const userAttempts = await ExamService.getUserAttempts(userId)
+    
+    // Filter valid attempts (same logic as results page)
+    const validAttempts = userAttempts.filter(attempt => 
+      attempt.status !== 'not_started' && attempt.status !== 'expired'
+    )
+    
+    // Sort by created_at descending and limit to 5
+    const sortedAttempts = validAttempts.sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    ).slice(0, 5)
+    
+    return sortedAttempts
   }
 
   const fetchPreviousMonthStats = async (userId: string) => {
@@ -593,7 +599,7 @@ export default function StudentDashboard() {
                       </p>
                     </div>
                     <span className="text-xs text-gray-400">
-                      {index === 0 ? '1h30m' : index === 1 ? '2 days' : '1 week'}
+                      {attempt.completed_at ? formatTimeAgo(attempt.completed_at) : 'In progress'}
                     </span>
                   </div>
                 ))}

@@ -23,7 +23,7 @@ export function RouteGuard({ children }: RouteGuardProps) {
     // If not authenticated and trying to access protected route
     if (!user && !isPublicRoute) {
       console.log('🛡️ RouteGuard: Redirecting unauthenticated user to login')
-      window.location.href = '/login'
+      router.push('/login')
       return
     }
 
@@ -31,9 +31,9 @@ export function RouteGuard({ children }: RouteGuardProps) {
     if (user && (pathname === '/login' || pathname === '/signup')) {
       console.log('🛡️ RouteGuard: Authenticated user on auth page, redirecting...')
       if (isAdmin) {
-        window.location.href = '/admin/dashboard'
+        router.push('/admin/dashboard')
       } else if (isStudent) {
-        window.location.href = '/student/dashboard'
+        router.push('/student/dashboard')
       }
       return
     }
@@ -41,7 +41,7 @@ export function RouteGuard({ children }: RouteGuardProps) {
     // Admin route protection
     if (user && pathname.startsWith('/admin') && !isAdmin) {
       console.log('🛡️ RouteGuard: Non-admin trying to access admin route')
-      window.location.href = '/student/dashboard'
+      router.push('/student/dashboard')
       return
     }
 
@@ -54,14 +54,14 @@ export function RouteGuard({ children }: RouteGuardProps) {
       
       if (!isExamPreview) {
         console.log('🛡️ RouteGuard: Non-student trying to access student route')
-        window.location.href = '/admin/dashboard'
+        router.push('/admin/dashboard')
         return
       } else {
         console.log('🛡️ RouteGuard: Allowing admin exam preview')
       }
     }
 
-  }, [user, loading, isAdmin, isStudent, pathname])
+  }, [user, loading, isAdmin, isStudent, pathname, router])
 
   // Show loading while checking authentication
   if (loading) {
