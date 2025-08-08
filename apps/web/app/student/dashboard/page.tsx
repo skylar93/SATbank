@@ -145,10 +145,15 @@ export default function StudentDashboard() {
       attempt.status !== 'not_started' && attempt.status !== 'expired'
     )
     
-    // Sort by created_at descending and limit to 5
-    const sortedAttempts = validAttempts.sort((a, b) => 
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    ).slice(0, 5)
+    // Sort by status (completed first) then by created_at descending
+    const sortedAttempts = validAttempts.sort((a, b) => {
+      // First priority: completed attempts come before in_progress
+      if (a.status === 'completed' && b.status !== 'completed') return -1
+      if (a.status !== 'completed' && b.status === 'completed') return 1
+      
+      // Second priority: sort by creation date (newest first)
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    }).slice(0, 5)
     
     return sortedAttempts
   }
@@ -582,12 +587,14 @@ export default function StudentDashboard() {
               </div>
               
               <div className="space-y-4">
-                {stats.recentAttempts.slice(0, 3).map((attempt, index) => (
+                {stats.recentAttempts.slice(0, 3).map((attempt, index) => {
+                  console.log(`🎯 Activity ${index} - Status: ${attempt.status}, Final scores:`, attempt.final_scores, 'Total score:', attempt.total_score)
+                  return (
                   <div key={attempt.id} className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
                       <span className="text-violet-600 font-semibold text-sm">
                         {stats.canShowResults 
-                          ? ((attempt as any).final_scores?.overall || attempt.total_score || 'N/A')
+                          ? (attempt.final_scores?.overall ?? attempt.total_score ?? 'N/A')
                           : '***'
                         }
                       </span>
@@ -602,7 +609,8 @@ export default function StudentDashboard() {
                       {attempt.completed_at ? formatTimeAgo(attempt.completed_at) : 'In progress'}
                     </span>
                   </div>
-                ))}
+                  )
+                })}
                 
                 {stats.recentAttempts.length === 0 && (
                   <div className="text-center py-8">
