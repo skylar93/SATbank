@@ -461,7 +461,7 @@ export class AnalyticsService {
     }
   }
 
-  // Dashboard functions using the new final_scores schema
+  // Dashboard functions - use same approach as results page for consistency
   static async getDashboardOverallStats(userId: string): Promise<{
     examsTaken: number;
     bestScore: number | null;
@@ -469,49 +469,70 @@ export class AnalyticsService {
   }> {
     console.log('🔍 Fetching dashboard stats for user:', userId)
     
-    const { data, error } = await supabase
-      .from('test_attempts')
-      .select(`
-        final_scores,
-        exam_id,
-        exam_assignments!inner(show_results)
-      `)
-      .eq('user_id', userId)
-      .eq('status', 'completed')
-      .eq('exam_assignments.student_id', userId)
-      .eq('exam_assignments.is_active', true)
-      .not('final_scores', 'is', null)
+    // Use ExamService.getUserAttempts() like results page does
+    const userAttempts = await ExamService.getUserAttempts(userId)
+    
+    // Filter completed attempts (same logic as results page)
+    const completedAttempts = userAttempts.filter(attempt => 
+      attempt.status === 'completed'
+    )
 
-    console.log('📊 Raw data from database:', data)
+    console.log('📊 All completed attempts:', completedAttempts)
 
-    if (error) {
-      console.error('Error fetching overall stats:', error)
-      return { examsTaken: 0, bestScore: null, averageScore: null }
-    }
-
-    if (!data || data.length === 0) {
+    if (!completedAttempts || completedAttempts.length === 0) {
       console.log('⚠️ No completed attempts found')
       return { examsTaken: 0, bestScore: null, averageScore: null }
     }
 
-    // Total exams include both visible and hidden results
-    const examsTaken = data.length
+    // Check result visibility for each unique exam (same as results page)
+    const uniqueExamIds = [...new Set(completedAttempts.filter(a => a.exam_id).map(a => a.exam_id!))]
+    const resultVisibility = new Map<string, boolean>()
+    
+    await Promise.all(
+      uniqueExamIds.map(async (examId) => {
+        try {
+          const canShow = await ExamService.canShowResults(userId, examId)
+          resultVisibility.set(examId, canShow)
+        } catch (error) {
+          // Default to true for practice mode or if there's an error
+          resultVisibility.set(examId, true)
+        }
+      })
+    )
 
-    // Filter out attempts where results are hidden for score calculations
-    const visibleAttempts = data.filter(attempt => {
-      const showResults = (attempt as any).exam_assignments?.show_results ?? true
-      console.log('🔍 Checking attempt - show_results:', showResults)
-      return showResults
-    })
+    console.log('👁️ Result visibility map:', resultVisibility)
 
-    const scores = visibleAttempts
+    // Helper function to check if results can be shown for an attempt (same as results page)
+    const canShowAttemptResults = (attempt: any): boolean => {
+      if (!attempt.exam_id) return true // Practice mode, always show
+      return resultVisibility.get(attempt.exam_id) ?? true
+    }
+
+    // Helper function to get display score (same as results page)
+    const getDisplayScore = (attempt: any): number => {
+      return attempt.final_scores?.overall || attempt.total_score || 0
+    }
+
+    // Filter visible completed attempts for score calculations
+    const visibleCompletedAttempts = completedAttempts.filter(canShowAttemptResults)
+    
+    console.log('📊 All completed attempts (for count):', completedAttempts.length)
+    console.log('👁️ Visible completed attempts (for stats):', visibleCompletedAttempts)
+
+    // Total exams taken (all completed attempts)
+    const examsTaken = completedAttempts.length
+
+    // Calculate scores only from visible attempts
+    const scores = visibleCompletedAttempts
       .map(attempt => {
-        console.log('📈 Processing attempt final_scores:', attempt.final_scores)
-        return (attempt.final_scores as any)?.overall
+        const score = getDisplayScore(attempt)
+        console.log('📈 Processing attempt score:', score)
+        return score
       })
       .filter((score): score is number => {
-        console.log('✅ Score after filter:', score, typeof score)
-        return typeof score === 'number'
+        const isValid = typeof score === 'number' && score > 0
+        console.log('✅ Score validation:', score, 'is valid:', isValid)
+        return isValid
       })
 
     console.log('🎯 Final processed scores:', scores)
@@ -527,36 +548,58 @@ export class AnalyticsService {
     date: string;
     score: number;
   }>> {
-    const { data, error } = await supabase
-      .from('test_attempts')
-      .select(`
-        completed_at,
-        final_scores,
-        exam_id,
-        exam_assignments!inner(show_results)
-      `)
-      .eq('user_id', userId)
-      .eq('status', 'completed')
-      .eq('exam_assignments.student_id', userId)
-      .eq('exam_assignments.is_active', true)
-      .not('final_scores', 'is', null)
-      .order('completed_at', { ascending: true })
+    // Use ExamService.getUserAttempts() like results page does for consistency
+    const userAttempts = await ExamService.getUserAttempts(userId)
+    
+    // Filter completed attempts (same logic as results page)
+    const completedAttempts = userAttempts.filter(attempt => 
+      attempt.status === 'completed'
+    )
 
-    if (error) {
-      console.error('Error fetching score history:', error)
+    if (!completedAttempts || completedAttempts.length === 0) {
+      console.log('⚠️ No score history found')
       return []
     }
 
-    if (!data) return []
-
-    return data
-      .filter(attempt => {
-        const showResults = (attempt as any).exam_assignments?.show_results ?? true
-        return showResults && attempt.final_scores && (attempt.final_scores as any)?.overall
+    // Check result visibility for each unique exam (same as results page)
+    const uniqueExamIds = [...new Set(completedAttempts.filter(a => a.exam_id).map(a => a.exam_id!))]
+    const resultVisibility = new Map<string, boolean>()
+    
+    await Promise.all(
+      uniqueExamIds.map(async (examId) => {
+        try {
+          const canShow = await ExamService.canShowResults(userId, examId)
+          resultVisibility.set(examId, canShow)
+        } catch (error) {
+          // Default to true for practice mode or if there's an error
+          resultVisibility.set(examId, true)
+        }
       })
+    )
+
+    // Helper function to check if results can be shown for an attempt (same as results page)
+    const canShowAttemptResults = (attempt: any): boolean => {
+      if (!attempt.exam_id) return true // Practice mode, always show
+      return resultVisibility.get(attempt.exam_id) ?? true
+    }
+
+    // Helper function to get display score (same as results page)
+    const getDisplayScore = (attempt: any): number => {
+      return attempt.final_scores?.overall || attempt.total_score || 0
+    }
+
+    // Filter visible completed attempts and return score history
+    const visibleCompletedAttempts = completedAttempts.filter(canShowAttemptResults)
+
+    return visibleCompletedAttempts
+      .filter(attempt => {
+        const score = getDisplayScore(attempt)
+        return score > 0 && attempt.completed_at
+      })
+      .sort((a, b) => new Date(a.completed_at!).getTime() - new Date(b.completed_at!).getTime())
       .map(attempt => ({
-        date: new Date(attempt.completed_at).toISOString().split('T')[0],
-        score: (attempt.final_scores as any).overall
+        date: new Date(attempt.completed_at!).toISOString().split('T')[0],
+        score: getDisplayScore(attempt)
       }))
   }
 }

@@ -51,6 +51,11 @@ export default function StudentDashboard() {
   })
   const [scoreHistory, setScoreHistory] = useState<ScoreHistory[]>([])
   const [studyStreakDays, setStudyStreakDays] = useState<string[]>([])
+  const [subjectData, setSubjectData] = useState<{reading: number, writing: number, math: number}>({
+    reading: 0,
+    writing: 0,
+    math: 0
+  })
   const [weeklyActivityData, setWeeklyActivityData] = useState<WeeklyActivityData>({
     days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     studyTime: [0, 0, 0, 0, 0, 0, 0],
@@ -71,13 +76,14 @@ export default function StudentDashboard() {
         console.log('🔍 Loading dashboard stats for user:', user.id)
         
         // Fetch all data in parallel using new AnalyticsService
-        const [overallStats, scoreHistoryData, recentAttempts, previousMonthStats, activityDays, weeklyActivity] = await Promise.all([
+        const [overallStats, scoreHistoryData, recentAttempts, previousMonthStats, activityDays, weeklyActivity, subjectScores] = await Promise.all([
           AnalyticsService.getDashboardOverallStats(user.id),
           AnalyticsService.getDashboardScoreHistory(user.id),
           fetchRecentAttempts(user.id),
           fetchPreviousMonthStats(user.id),
           fetchUserActivityDays(user.id),
-          WeeklyActivityService.fetchWeeklyActivityData(user.id)
+          WeeklyActivityService.fetchWeeklyActivityData(user.id),
+          fetchUserSubjectScores(user.id)
         ])
 
         console.log('📊 Overall stats:', overallStats)
@@ -118,6 +124,7 @@ export default function StudentDashboard() {
         setScoreHistory(canShowResults ? scoreHistoryData : [])
         setStudyStreakDays(activityDays)
         setWeeklyActivityData(weeklyActivity)
+        setSubjectData(canShowResults ? subjectScores : { reading: 0, writing: 0, math: 0 })
       }
     } catch (error) {
       console.error('Error loading dashboard stats:', error)
@@ -216,6 +223,96 @@ export default function StudentDashboard() {
     return Array.from(activityDates).sort()
   }
 
+  const fetchUserSubjectScores = async (userId: string): Promise<{reading: number, writing: number, math: number}> => {
+    const supabase = createClientComponentClient()
+    
+    // Get the most recent completed test attempt
+    const { data: attempts, error } = await supabase
+      .from('test_attempts')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'completed')
+      .order('completed_at', { ascending: false })
+      .limit(1)
+
+    if (error || !attempts || attempts.length === 0) {
+      console.log('No completed attempts found for subject scores')
+      return { reading: 0, writing: 0, math: 0 }
+    }
+
+    const mostRecentAttempt = attempts[0]
+
+    // Check if we have final_scores data
+    if (mostRecentAttempt.final_scores && mostRecentAttempt.final_scores.english && mostRecentAttempt.final_scores.math) {
+      // Use final_scores data
+      const englishScore = mostRecentAttempt.final_scores.english
+      const mathScore = mostRecentAttempt.final_scores.math
+      
+      // For SAT, reading and writing are combined into Evidence-Based Reading and Writing (EBRW)
+      // We'll split the english score evenly between reading and writing for display
+      return {
+        reading: Math.round(englishScore / 2),
+        writing: Math.round(englishScore / 2), 
+        math: mathScore
+      }
+    }
+
+    // Fallback: Calculate from user answers if no final_scores available
+    const { data: answers, error: answersError } = await supabase
+      .from('user_answers')
+      .select(`
+        *,
+        questions:question_id (
+          module_type,
+          difficulty_level
+        )
+      `)
+      .eq('attempt_id', mostRecentAttempt.id)
+
+    if (answersError || !answers) {
+      console.log('Could not fetch answers for subject score calculation')
+      return { reading: 0, writing: 0, math: 0 }
+    }
+
+    // Calculate scores by module
+    const moduleStats = {
+      english1: { correct: 0, total: 0 },
+      english2: { correct: 0, total: 0 },
+      math1: { correct: 0, total: 0 },
+      math2: { correct: 0, total: 0 }
+    }
+
+    answers.forEach((answer: any) => {
+      const question = answer.questions
+      if (question && question.module_type) {
+        moduleStats[question.module_type as keyof typeof moduleStats].total++
+        if (answer.is_correct) {
+          moduleStats[question.module_type as keyof typeof moduleStats].correct++
+        }
+      }
+    })
+
+    // Convert to approximate SAT scores (simplified conversion)
+    const convertToScore = (correct: number, total: number) => {
+      if (total === 0) return 0
+      const percentage = correct / total
+      return Math.round(200 + (percentage * 600)) // Scale to 200-800 range
+    }
+
+    const readingScore = convertToScore(moduleStats.english1.correct, moduleStats.english1.total)
+    const writingScore = convertToScore(moduleStats.english2.correct, moduleStats.english2.total)
+    const mathScore = convertToScore(
+      moduleStats.math1.correct + moduleStats.math2.correct, 
+      moduleStats.math1.total + moduleStats.math2.total
+    )
+
+    return {
+      reading: readingScore,
+      writing: writingScore,
+      math: mathScore
+    }
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -263,11 +360,6 @@ export default function StudentDashboard() {
     ]
   }
 
-  const subjectData = {
-    reading: 650,
-    writing: 670,
-    math: 720
-  }
 
 
   // studyStreakDays is now loaded from real data via useState

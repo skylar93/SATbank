@@ -25,6 +25,9 @@ interface AdminStats {
   completedToday: number
   weeklyTrend: Array<{ label: string; value: number; date: string }>
   scoreDistribution: Array<{ label: string; value: number }>
+  studentsTrend: number[]
+  attemptsTrend: number[]
+  scoreTrend: number[]
 }
 
 interface RecentAttempt {
@@ -46,7 +49,10 @@ export default function AdminDashboard() {
     averageScore: 0,
     completedToday: 0,
     weeklyTrend: [],
-    scoreDistribution: []
+    scoreDistribution: [],
+    studentsTrend: [],
+    attemptsTrend: [],
+    scoreTrend: []
   })
   const [previousStats, setPreviousStats] = useState<{
     totalStudents: number
@@ -127,8 +133,13 @@ export default function AdminDashboard() {
 
       // Generate weekly trend data (using all completed attempts, not just this month)
       const { data: allAttemptsData } = await supabase.from('test_attempts').select('*').eq('status', 'completed')
+      const { data: allStudentsData } = await supabase.from('user_profiles').select('id, created_at').eq('role', 'student')
       
       const weeklyTrend = []
+      const studentsTrend = []
+      const attemptsTrend = []
+      const scoreTrend = []
+      
       for (let i = 6; i >= 0; i--) {
         const date = new Date()
         date.setDate(date.getDate() - i)
@@ -142,6 +153,31 @@ export default function AdminDashboard() {
           value: dayAttempts.length,
           date: dateStr
         })
+        
+        // For miniCharts - get cumulative data up to each day
+        const dayEnd = new Date(date)
+        dayEnd.setHours(23, 59, 59, 999)
+        
+        // Get students count up to this day
+        const studentsUpToDay = allStudentsData?.filter(s => 
+          s.created_at && new Date(s.created_at) <= dayEnd
+        ).length || 0
+        
+        studentsTrend.push(studentsUpToDay)
+        
+        // Get attempts count up to this day
+        const attemptsUpToDay = allAttemptsData?.filter(a => 
+          a.completed_at && new Date(a.completed_at) <= dayEnd
+        ) || []
+        
+        attemptsTrend.push(attemptsUpToDay.length)
+        
+        // Get average score up to this day
+        const avgScore = attemptsUpToDay.length > 0
+          ? attemptsUpToDay.reduce((sum, attempt) => sum + (attempt.total_score || 0), 0) / attemptsUpToDay.length
+          : 0
+        
+        scoreTrend.push(Math.round(avgScore))
       }
 
       // Generate score distribution (using current month data)
@@ -159,7 +195,10 @@ export default function AdminDashboard() {
         averageScore,
         completedToday,
         weeklyTrend,
-        scoreDistribution
+        scoreDistribution,
+        studentsTrend,
+        attemptsTrend,
+        scoreTrend
       })
 
       // Load recent attempts with user details - join manually since no direct FK
@@ -266,7 +305,7 @@ export default function AdminDashboard() {
                     change={calculatePercentageChange(stats.totalStudents, previousStats.totalStudents).change}
                     changeType={calculatePercentageChange(stats.totalStudents, previousStats.totalStudents).changeType}
                     miniChart={{
-                      data: Array.from({length: 6}, (_, i) => Math.max(0, stats.totalStudents - 5 + i)),
+                      data: stats.studentsTrend.length > 0 ? stats.studentsTrend : [0],
                       color: '#10b981'
                     }}
                   />
@@ -277,7 +316,7 @@ export default function AdminDashboard() {
                     change={calculatePercentageChange(stats.totalAttempts, previousStats.totalAttempts).change}
                     changeType={calculatePercentageChange(stats.totalAttempts, previousStats.totalAttempts).changeType}
                     miniChart={{
-                      data: Array.from({length: 6}, (_, i) => Math.max(0, stats.totalAttempts - 5 + i)),
+                      data: stats.attemptsTrend.length > 0 ? stats.attemptsTrend : [0],
                       color: '#8b5cf6'
                     }}
                   />
@@ -288,7 +327,7 @@ export default function AdminDashboard() {
                     change={calculatePercentageChange(stats.averageScore, previousStats.averageScore).change}
                     changeType={calculatePercentageChange(stats.averageScore, previousStats.averageScore).changeType}
                     miniChart={{
-                      data: Array.from({length: 6}, (_, i) => Math.max(800, stats.averageScore - 50 + (i * 10))),
+                      data: stats.scoreTrend.length > 0 ? stats.scoreTrend : [0],
                       color: '#f59e0b'
                     }}
                   />
