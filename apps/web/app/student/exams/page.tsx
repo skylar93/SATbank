@@ -35,9 +35,9 @@ export default function StudentExamsPage() {
     try {
       if (!user?.id) return
       
-      // Get only assigned exams for this student
-      const assignedExams = await ExamService.getAssignedExams(user.id)
-      setExams(assignedExams)
+      // Get all available exams (assigned + mock exams)
+      const availableExams = await ExamService.getAvailableExams(user.id)
+      setExams(availableExams)
     } catch (err: any) {
       setError(err.message)
     } finally {

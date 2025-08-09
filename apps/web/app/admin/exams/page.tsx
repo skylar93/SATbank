@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../../../contexts/auth-context'
 import { supabase } from '../../../lib/supabase'
 import Link from 'next/link'
-import { RichTextEditor } from '../../../components/rich-text-editor'
+import { WysiwygEditor } from '../../../components/wysiwyg-editor'
 
 interface Question {
   id: string
@@ -572,11 +572,10 @@ export default function ManageExamsPage() {
             <div className="mb-4">
               <h3 className="font-medium text-gray-900 mb-2">Question Text:</h3>
               {editingQuestion === question.id ? (
-                <RichTextEditor
+                <WysiwygEditor
                   value={editForm.question_text || ''}
                   onChange={(value) => setEditForm({...editForm, question_text: value})}
-                  rows={4}
-                  showPreview={true}
+                  height={120}
                 />
               ) : (
                 <div className="p-3 bg-gray-50 rounded-md">
@@ -613,7 +612,7 @@ export default function ManageExamsPage() {
                             <label className="block text-xs font-medium text-gray-700 mb-1">
                               Text Content
                             </label>
-                            <RichTextEditor
+                            <WysiwygEditor
                               value={optionData.text || ''}
                               onChange={(newValue) => {
                                 const updatedOption = { ...optionData, text: newValue };
@@ -623,8 +622,7 @@ export default function ManageExamsPage() {
                                 });
                               }}
                               placeholder={`Enter text for option ${key}...`}
-                              rows={2}
-                              showPreview={true}
+                              height={80}
                               compact={true}
                             />
                           </div>
@@ -789,11 +787,10 @@ export default function ManageExamsPage() {
               <div className="mb-4">
                 <h3 className="font-medium text-gray-900 mb-2">Explanation:</h3>
                 {editingQuestion === question.id ? (
-                  <RichTextEditor
+                  <WysiwygEditor
                     value={editForm.explanation || ''}
                     onChange={(value) => setEditForm({...editForm, explanation: value})}
-                    rows={3}
-                    showPreview={true}
+                    height={100}
                   />
                 ) : (
                   <div className="p-3 bg-gray-50 rounded-md">
