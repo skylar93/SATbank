@@ -467,7 +467,6 @@ export class AnalyticsService {
     bestScore: number | null;
     averageScore: number | null;
   }> {
-    console.log('🔍 Fetching dashboard stats for user:', userId)
     
     // Use ExamService.getUserAttempts() like results page does
     const userAttempts = await ExamService.getUserAttempts(userId)
@@ -477,10 +476,8 @@ export class AnalyticsService {
       attempt.status === 'completed'
     )
 
-    console.log('📊 All completed attempts:', completedAttempts)
 
     if (!completedAttempts || completedAttempts.length === 0) {
-      console.log('⚠️ No completed attempts found')
       return { examsTaken: 0, bestScore: null, averageScore: null }
     }
 
@@ -500,7 +497,6 @@ export class AnalyticsService {
       })
     )
 
-    console.log('👁️ Result visibility map:', resultVisibility)
 
     // Helper function to check if results can be shown for an attempt (same as results page)
     const canShowAttemptResults = (attempt: any): boolean => {
@@ -516,8 +512,6 @@ export class AnalyticsService {
     // Filter visible completed attempts for score calculations
     const visibleCompletedAttempts = completedAttempts.filter(canShowAttemptResults)
     
-    console.log('📊 All completed attempts (for count):', completedAttempts.length)
-    console.log('👁️ Visible completed attempts (for stats):', visibleCompletedAttempts)
 
     // Total exams taken (all completed attempts)
     const examsTaken = completedAttempts.length
@@ -526,21 +520,17 @@ export class AnalyticsService {
     const scores = visibleCompletedAttempts
       .map(attempt => {
         const score = getDisplayScore(attempt)
-        console.log('📈 Processing attempt score:', score)
         return score
       })
       .filter((score): score is number => {
         const isValid = typeof score === 'number' && score > 0
-        console.log('✅ Score validation:', score, 'is valid:', isValid)
         return isValid
       })
 
-    console.log('🎯 Final processed scores:', scores)
 
     const bestScore = scores.length > 0 ? Math.max(...scores) : null
     const averageScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null
 
-    console.log('📊 Final stats:', { examsTaken, bestScore, averageScore })
     return { examsTaken, bestScore, averageScore }
   }
 
@@ -557,7 +547,6 @@ export class AnalyticsService {
     )
 
     if (!completedAttempts || completedAttempts.length === 0) {
-      console.log('⚠️ No score history found')
       return []
     }
 
