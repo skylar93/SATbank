@@ -43,6 +43,9 @@ export interface QuestionAnalysis {
   difficulty: 'easy' | 'medium' | 'hard'
   topicTags: string[]
   explanation: string | null
+  questionText: string
+  options: Record<string, string> | null
+  questionImageUrl: string | null
 }
 
 export interface PerformanceAnalytics {
@@ -297,7 +300,10 @@ export class AnalyticsService {
         timeSpent: answer.time_spent_seconds || 0,
         difficulty: question.difficulty_level,
         topicTags: question.topic_tags || [],
-        explanation: question.explanation
+        explanation: question.explanation,
+        questionText: question.question_text,
+        options: question.options,
+        questionImageUrl: question.question_image_url
       }
     }).sort((a, b) => a.questionNumber - b.questionNumber)
   }

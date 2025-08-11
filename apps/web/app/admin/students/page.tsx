@@ -20,6 +20,7 @@ interface StudentData {
     average_score: number
     latest_score: number | null
     latest_date: string | null
+    latest_attempt_id: string | null
   }
 }
 
@@ -79,8 +80,14 @@ export default function AdminStudentsPage() {
 
           const completedAttempts = attempts?.filter(a => a.status === 'completed') || []
           const totalAttempts = attempts?.length || 0
+          
+          // Helper function to get the display score (prefer final_scores.overall, fallback to total_score)
+          const getDisplayScore = (attempt: any): number => {
+            return attempt.final_scores?.overall || attempt.total_score || 0
+          }
+          
           const averageScore = completedAttempts.length > 0
-            ? Math.round(completedAttempts.reduce((sum, a) => sum + (a.total_score || 0), 0) / completedAttempts.length)
+            ? Math.round(completedAttempts.reduce((sum, a) => sum + getDisplayScore(a), 0) / completedAttempts.length)
             : 0
           const latestAttempt = completedAttempts.sort((a, b) => 
             new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime()
@@ -92,8 +99,9 @@ export default function AdminStudentsPage() {
               total: totalAttempts,
               completed: completedAttempts.length,
               average_score: averageScore,
-              latest_score: latestAttempt?.total_score || null,
-              latest_date: latestAttempt?.completed_at || null
+              latest_score: latestAttempt ? getDisplayScore(latestAttempt) : null,
+              latest_date: latestAttempt?.completed_at || null,
+              latest_attempt_id: latestAttempt?.id || null
             }
           }
         })
@@ -527,9 +535,9 @@ export default function AdminStudentsPage() {
                           >
                             View Details
                           </Link>
-                          {student.attempts.latest_score && (
+                          {student.attempts.latest_score && student.attempts.latest_attempt_id && (
                             <Link
-                              href={`/student/results/${student.attempts.latest_date ? 'latest' : ''}`}
+                              href={`/admin/results/${student.attempts.latest_attempt_id}`}
                               className="text-green-600 hover:text-green-700"
                             >
                               Latest Results

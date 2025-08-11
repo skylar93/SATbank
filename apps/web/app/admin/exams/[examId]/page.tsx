@@ -5,12 +5,18 @@ import { useParams } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { supabase } from '@/lib/supabase'
 import { CurveSelector } from '@/components/admin/curve-selector'
+import { CurveDistributionChart } from '@/components/admin/curve-distribution-chart'
 import { Button } from '@/components/ui/button'
 import { Toast } from '@/components/ui/toast'
 
 interface ScoringCurve {
   id: number
   curve_name: string
+  curve_data?: {
+    raw: number
+    lower: number
+    upper: number
+  }[]
 }
 
 interface Exam {
@@ -53,7 +59,7 @@ export default function EditExamPage() {
           .single(),
         supabase
           .from('scoring_curves')
-          .select('id, curve_name')
+          .select('id, curve_name, curve_data')
           .order('curve_name')
       ])
 
@@ -277,6 +283,59 @@ export default function EditExamPage() {
             )}
           </div>
         </div>
+
+        {/* Curve Distribution Visualization */}
+        {(selectedEnglishCurve || selectedMathCurve) && (
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mt-6">
+            <div className="px-6 py-4 -mx-6 -mt-6 mb-6 border-b border-purple-100 bg-gradient-to-r from-purple-500 to-pink-500">
+              <h2 className="text-lg font-semibold text-white">Curve Distribution Analysis</h2>
+            </div>
+            
+            <div className="space-y-6">
+              {selectedEnglishCurve && (
+                <div>
+                  {(() => {
+                    const englishCurve = curves.find(c => c.id === selectedEnglishCurve)
+                    if (!englishCurve?.curve_data) return null
+                    
+                    return (
+                      <CurveDistributionChart
+                        curveName={`${englishCurve.curve_name} (Reading & Writing)`}
+                        curveData={englishCurve.curve_data}
+                        type="line"
+                        height={500}
+                      />
+                    )
+                  })()}
+                </div>
+              )}
+              
+              {selectedMathCurve && (
+                <div>
+                  {(() => {
+                    const mathCurve = curves.find(c => c.id === selectedMathCurve)
+                    if (!mathCurve?.curve_data) return null
+                    
+                    return (
+                      <CurveDistributionChart
+                        curveName={`${mathCurve.curve_name} (Math)`}
+                        curveData={mathCurve.curve_data}
+                        type="line"
+                        height={500}
+                      />
+                    )
+                  })()}
+                </div>
+              )}
+              
+              {!selectedEnglishCurve && !selectedMathCurve && (
+                <div className="text-center py-12 text-purple-600/70">
+                  <p>Select scoring curves above to view their distributions</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Toast Notification */}

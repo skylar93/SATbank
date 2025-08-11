@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 
 // Dynamically import ReactQuill to avoid SSR issues
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
@@ -64,6 +64,61 @@ export function WysiwygEditor({
     setEditorValue(content)
     onChange(content)
   }
+
+  // Convert markdown to HTML helper
+  const convertMarkdownToHtml = (markdown: string) => {
+    if (!markdown) return '';
+    
+    // Handle literal \n\n strings directly - split on them to create paragraphs
+    let processedMarkdown = markdown;
+    
+    // If we have literal \n\n, split on them to create separate paragraphs
+    const paragraphs = processedMarkdown.split(/\\n\\n/);
+    
+    let result = paragraphs.map(paragraph => {
+      if (!paragraph.trim()) return '';
+      
+      // Apply formatting to each paragraph
+      let formattedParagraph = paragraph.trim()
+        // Convert any remaining literal \n to <br>
+        .replace(/\\n/g, '<br>')
+        // Handle formatting
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/__(.*?)__/g, '<u>$1</u>') // Use <u> tag for underline
+        .replace(/_(.*?)_/g, '<em>$1</em>')
+        .replace(/\^\^(.*?)\^\^/g, '<sup>$1</sup>')
+        .replace(/~~(.*?)~~/g, '<sub>$1</sub>')
+        .replace(/---/g, '—');
+      
+      return `<p>${formattedParagraph}</p>`;
+    }).filter(p => p);
+    
+    // Join paragraphs with spacing
+    return result.join('<p><br></p>');
+  };
+
+  const isMarkdown = (text: string) => {
+    if (!text) return false;
+    return text.includes('**') || text.includes('__') || text.includes('*') || 
+           text.includes('^^') || text.includes('~~') || text.includes('\\n\\n') || 
+           text.includes('---') || text.match(/\$.*?\$/);
+  };
+
+  // Update editor value when prop changes
+  useEffect(() => {
+    let processedValue = value || '';
+    
+    // If the value looks like markdown, convert it to HTML
+    if (isMarkdown(processedValue)) {
+      console.log('Converting markdown in WysiwygEditor:', processedValue.substring(0, 100));
+      processedValue = convertMarkdownToHtml(processedValue);
+      console.log('Converted to HTML:', processedValue.substring(0, 100));
+    }
+    
+    console.log('WysiwygEditor setting value:', processedValue.substring(0, 100))
+    setEditorValue(processedValue)
+  }, [value])
 
   return (
     <div className={`${className}`}>
