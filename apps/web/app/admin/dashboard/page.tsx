@@ -17,6 +17,7 @@ import {
   ArrowTrendingUpIcon,
   AcademicCapIcon
 } from '@heroicons/react/24/outline'
+import { ScoringDebug } from '../../../components/debug/scoring-debug'
 
 interface AdminStats {
   totalStudents: number
@@ -489,6 +490,11 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Debug Section - Add at the bottom */}
+            <div className="mt-8">
+              <ScoringDebug />
             </div>
           </>
         )}
