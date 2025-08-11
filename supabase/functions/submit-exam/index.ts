@@ -193,10 +193,10 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
 
   console.log('🔢 Raw scores calculated - English:', englishRawScore, 'Math:', mathRawScore)
 
-  // Step 5: Fetch scoring curves
+  // Step 5: Fetch scoring curves with names for debugging
   const { data: englishCurve, error: englishCurveError } = await supabase
     .from('scoring_curves')
-    .select('curve_data')
+    .select('id, curve_name, curve_data')
     .eq('id', examData.english_scoring_curve_id)
     .single()
 
@@ -204,11 +204,14 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
 
   const { data: mathCurve, error: mathCurveError } = await supabase
     .from('scoring_curves')
-    .select('curve_data')
+    .select('id, curve_name, curve_data')
     .eq('id', examData.math_scoring_curve_id)
     .single()
 
   if (mathCurveError) throw new Error(`Failed to get Math scoring curve: ${mathCurveError.message}`)
+  
+  console.log('📋 English curve info:', { id: englishCurve.id, name: englishCurve.curve_name })
+  console.log('📋 Math curve info:', { id: mathCurve.id, name: mathCurve.curve_name })
 
   // Step 6: Validate curve data and map raw scores to scaled scores
   console.log('📊 English curve data:', englishCurve.curve_data)
@@ -223,18 +226,23 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
   const englishScaledScore = mapRawToScaled(englishRawScore, englishCurve.curve_data)
   const mathScaledScore = mapRawToScaled(mathRawScore, mathCurve.curve_data)
   
-  console.log('⚖️ Scaled scores - English:', englishScaledScore, 'Math:', mathScaledScore)
+  console.log('⚖️ Scaled scores:')
+  console.log(`  - English raw ${englishRawScore} → scaled ${englishScaledScore} (using curve: ${englishCurve.curve_name})`)
+  console.log(`  - Math raw ${mathRawScore} → scaled ${mathScaledScore} (using curve: ${mathCurve.curve_name})`)
 
   // Step 7: Calculate overall score
   const overallScore = englishScaledScore + mathScaledScore
   
   console.log('🎯 Final overall score:', overallScore)
 
-  return {
+  const finalScores = {
     overall: overallScore,
     english: englishScaledScore,
     math: mathScaledScore
   }
+  
+  console.log('📊 Final scores object:', finalScores)
+  return finalScores
 }
 
 serve(async (req) => {
