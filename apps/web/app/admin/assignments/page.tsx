@@ -301,15 +301,15 @@ export default function AdminAssignmentsPage() {
       <div className="p-6">
 
         {/* Search */}
-        <div className="mb-6">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-6">
           <div className="relative">
-            <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
+            <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-3 text-purple-400" />
             <input
               type="text"
               placeholder="Search assignments..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -320,44 +320,44 @@ export default function AdminAssignmentsPage() {
             <p className="text-gray-600">Loading assignments...</p>
           </div>
         ) : (
-          <div className="bg-white shadow rounded-lg overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 overflow-hidden">
+              <table className="min-w-full divide-y divide-purple-200">
+                <thead className="bg-gradient-to-r from-purple-50 to-pink-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                       Student
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                       Exam
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                       Assigned
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                       Due Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                       Show Results
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-purple-100">
                   {filteredAssignments.map((assignment) => (
-                    <tr key={assignment.id} className="hover:bg-gray-50">
+                    <tr key={assignment.id} className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <UserIcon className="w-8 h-8 text-gray-400 mr-3" />
+                          <UserIcon className="w-8 h-8 text-purple-400 mr-3" />
                           <div>
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-purple-900">
                               {assignment.user_profiles?.full_name}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-purple-600/70">
                               {assignment.user_profiles?.email}
                             </div>
                           </div>
@@ -365,16 +365,16 @@ export default function AdminAssignmentsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <AcademicCapIcon className="w-5 h-5 text-blue-500 mr-2" />
-                          <div className="text-sm text-gray-900">
+                          <AcademicCapIcon className="w-5 h-5 text-purple-500 mr-2" />
+                          <div className="text-sm text-purple-900">
                             {assignment.exams?.title}
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-600/70">
                         {new Date(assignment.assigned_at).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-600/70">
                         {assignment.due_date ? (
                           <div className="flex items-center">
                             <CalendarIcon className="w-4 h-4 mr-1" />
@@ -406,13 +406,13 @@ export default function AdminAssignmentsPage() {
                         <div className="flex space-x-3">
                           <button
                             onClick={() => handleEditAssignment(assignment)}
-                            className="text-blue-600 hover:text-blue-700"
+                            className="text-purple-600 hover:text-purple-800 font-medium"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDeleteAssignment(assignment.id)}
-                            className="text-red-600 hover:text-red-700"
+                            className="text-red-600 hover:text-red-700 font-medium"
                           >
                             Delete
                           </button>
@@ -425,8 +425,8 @@ export default function AdminAssignmentsPage() {
               
             {filteredAssignments.length === 0 && (
               <div className="text-center py-12">
-                <AcademicCapIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No assignments found</p>
+                <AcademicCapIcon className="w-12 h-12 text-purple-400 mx-auto mb-4" />
+                <p className="text-purple-600/70">No assignments found</p>
               </div>
             )}
           </div>

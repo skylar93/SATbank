@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import { Question } from '../../lib/exam-service'
 import { InlineMath, BlockMath } from 'react-katex'
 import { supabase } from '../../lib/supabase'
-import { WysiwygEditor } from '../wysiwyg-editor'
+import { RichTextEditor } from '../rich-text-editor'
+// import { WysiwygEditor } from '../wysiwyg-editor' // KEEPING COMMENTED OUT - HTML conversion functionality removed
 import { ImageUpload } from '../image-upload'
 import { HelpCircle } from 'lucide-react'
 
@@ -592,7 +593,7 @@ export function QuestionDisplay({
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Text Content
                     </label>
-                    <WysiwygEditor
+                    <RichTextEditor
                       value={optionData.text || ''}
                       onChange={(newValue) => {
                         const updatedOption = { ...optionData, text: newValue };
@@ -602,7 +603,7 @@ export function QuestionDisplay({
                         });
                       }}
                       placeholder={`Enter text for option ${key}...`}
-                      height={80}
+                      rows={3}
                       compact={true}
                     />
                   </div>
@@ -870,11 +871,12 @@ export function QuestionDisplay({
                   </div>
                 )}
                 
-                <WysiwygEditor
+                <RichTextEditor
                   value={editForm.question_text}
                   onChange={(value) => setEditForm({...editForm, question_text: value})}
                   placeholder="Enter question text..."
-                  height={150}
+                  rows={8}
+                  showPreview={true}
                 />
               </div>
               
@@ -1051,11 +1053,11 @@ export function QuestionDisplay({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Explanation (Optional)
                 </label>
-                <WysiwygEditor
+                <RichTextEditor
                   value={editForm.explanation}
                   onChange={(value) => setEditForm({...editForm, explanation: value})}
                   placeholder="Explain the correct answer..."
-                  height={100}
+                  rows={5}
                 />
               </div>
             </div>

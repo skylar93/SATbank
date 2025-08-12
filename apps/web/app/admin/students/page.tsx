@@ -318,11 +318,11 @@ export default function AdminStudentsPage() {
         ) : (
           <>
             {/* Filters and Search */}
-            <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {/* Search */}
                 <div className="lg:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-purple-600 mb-2">
                     Search Students
                   </label>
                   <input
@@ -330,19 +330,19 @@ export default function AdminStudentsPage() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search by name or email..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
 
                 {/* Grade Level Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-purple-600 mb-2">
                     Grade Level
                   </label>
                   <select
                     value={filters.gradeLevel}
                     onChange={(e) => setFilters({...filters, gradeLevel: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="all">All Grades</option>
                     <option value="9">Grade 9</option>
@@ -354,13 +354,13 @@ export default function AdminStudentsPage() {
 
                 {/* Score Range Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-purple-600 mb-2">
                     Performance
                   </label>
                   <select
                     value={filters.scoreRange}
                     onChange={(e) => setFilters({...filters, scoreRange: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="all">All Students</option>
                     <option value="high">High (1200+)</option>
@@ -372,14 +372,14 @@ export default function AdminStudentsPage() {
 
                 {/* Sort Options */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-purple-600 mb-2">
                     Sort By
                   </label>
                   <div className="flex">
                     <select
                       value={filters.sortBy}
                       onChange={(e) => setFilters({...filters, sortBy: e.target.value as any})}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 px-3 py-2 border border-purple-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                       <option value="name">Name</option>
                       <option value="score">Latest Score</option>
@@ -388,7 +388,7 @@ export default function AdminStudentsPage() {
                     </select>
                     <button
                       onClick={() => setFilters({...filters, sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc'})}
-                      className="px-3 py-2 bg-gray-100 border border-l-0 border-gray-300 rounded-r-md hover:bg-gray-200 transition-colors"
+                      className="px-3 py-2 bg-purple-100 border border-l-0 border-purple-300 rounded-r-md hover:bg-purple-200 transition-colors"
                       title={`Sort ${filters.sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
                     >
                       {filters.sortOrder === 'asc' ? '↑' : '↓'}
@@ -400,23 +400,23 @@ export default function AdminStudentsPage() {
 
             {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white p-4 rounded-2xl shadow-sm">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
                 <div className="text-2xl font-bold text-emerald-500">{filteredStudents.length}</div>
-                <div className="text-sm text-gray-500">Students Shown</div>
+                <div className="text-sm text-purple-600/70">Students Shown</div>
               </div>
-              <div className="bg-white p-4 rounded-2xl shadow-sm">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
                 <div className="text-2xl font-bold text-violet-500">
                   {filteredStudents.filter(s => s.attempts.completed > 0).length}
                 </div>
-                <div className="text-sm text-gray-500">Have Taken Tests</div>
+                <div className="text-sm text-purple-600/70">Have Taken Tests</div>
               </div>
-              <div className="bg-white p-4 rounded-2xl shadow-sm">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
                 <div className="text-2xl font-bold text-blue-500">
                   {filteredStudents.reduce((sum, s) => sum + s.attempts.completed, 0)}
                 </div>
-                <div className="text-sm text-gray-500">Total Completions</div>
+                <div className="text-sm text-purple-600/70">Total Completions</div>
               </div>
-              <div className="bg-white p-4 rounded-2xl shadow-sm">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
                 <div className="text-2xl font-bold text-amber-500">
                   {Math.round(
                     filteredStudents
@@ -425,58 +425,58 @@ export default function AdminStudentsPage() {
                     Math.max(filteredStudents.filter(s => s.attempts.latest_score).length, 1)
                   )}
                 </div>
-                <div className="text-sm text-gray-500">Average Score</div>
+                <div className="text-sm text-purple-600/70">Average Score</div>
               </div>
             </div>
 
             {/* Students Table */}
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-purple-200">
+                  <thead className="bg-gradient-to-r from-purple-50 to-pink-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                         Student
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                         Grade & Target
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                         Latest Score
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                         Performance
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                         Tests Taken
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                         Last Activity
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                         Answer Visibility
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y divide-purple-100">
                     {filteredStudents.map((student) => (
-                      <tr key={student.id} className="hover:bg-gray-50">
+                      <tr key={student.id} className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-purple-900">
                               {student.full_name}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-purple-600/70">
                               {student.email}
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-900">
                           <div>Grade {student.grade_level || 'N/A'}</div>
-                          <div className="text-gray-500">
+                          <div className="text-purple-600/70">
                             Target: {student.target_score || 'None'}
                           </div>
                         </td>
@@ -485,7 +485,7 @@ export default function AdminStudentsPage() {
                             {student.attempts.latest_score || 'No tests'}
                           </div>
                           {student.attempts.latest_score && (
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-purple-600/70">
                               Avg: {student.attempts.average_score}
                             </div>
                           )}
@@ -505,13 +505,13 @@ export default function AdminStudentsPage() {
                             {getPerformanceLevel(student.attempts.latest_score)}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-900">
                           <div>{student.attempts.completed} completed</div>
-                          <div className="text-gray-500">
+                          <div className="text-purple-600/70">
                             {student.attempts.total} total
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-600/70">
                           {formatDate(student.attempts.latest_date)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -523,7 +523,7 @@ export default function AdminStudentsPage() {
                               disabled={updatingAnswerVisibility === student.id}
                               className="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out disabled:opacity-50"
                             />
-                            <span className="ml-2 text-sm text-gray-700">
+                            <span className="ml-2 text-sm text-purple-700">
                               {student.show_correct_answers ? 'Enabled' : 'Disabled'}
                             </span>
                           </label>
@@ -531,14 +531,14 @@ export default function AdminStudentsPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                           <Link
                             href={`/admin/students/${student.id}`}
-                            className="text-blue-600 hover:text-blue-700"
+                            className="text-purple-600 hover:text-purple-800 font-medium"
                           >
                             View Details
                           </Link>
                           {student.attempts.latest_score && student.attempts.latest_attempt_id && (
                             <Link
                               href={`/admin/results/${student.attempts.latest_attempt_id}`}
-                              className="text-green-600 hover:text-green-700"
+                              className="text-emerald-600 hover:text-emerald-700 font-medium"
                             >
                               Latest Results
                             </Link>
@@ -552,7 +552,7 @@ export default function AdminStudentsPage() {
 
               {filteredStudents.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-gray-500">No students found matching your criteria</p>
+                  <p className="text-purple-600/70">No students found matching your criteria</p>
                 </div>
               )}
             </div>

@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../../../contexts/auth-context'
 import { supabase } from '../../../lib/supabase'
 import Link from 'next/link'
-import { WysiwygEditor } from '../../../components/wysiwyg-editor'
+import { RichTextEditor } from '../../../components/rich-text-editor'
+// import { WysiwygEditor } from '../../../components/wysiwyg-editor' // KEEPING COMMENTED OUT - HTML conversion functionality removed
 
 interface Question {
   id: string
@@ -537,11 +538,11 @@ export default function ManageExamsPage() {
             <div className="mb-4">
               <h3 className="font-medium text-gray-900 mb-2">Question Text:</h3>
               {editingQuestion === question.id ? (
-                <WysiwygEditor
+                <RichTextEditor
                   key={`question-text-${editingQuestion}`}
                   value={editForm.question_text || ''}
                   onChange={(value) => setEditForm({...editForm, question_text: value})}
-                  height={120}
+                  rows={6}
                 />
               ) : (
                 <div className="p-3 bg-gray-50 rounded-md">
@@ -578,7 +579,7 @@ export default function ManageExamsPage() {
                             <label className="block text-xs font-medium text-gray-700 mb-1">
                               Text Content
                             </label>
-                            <WysiwygEditor
+                            <RichTextEditor
                               key={`option-${key}-${editingQuestion}`}
                               value={optionData.text || ''}
                               onChange={(newValue) => {
@@ -589,7 +590,7 @@ export default function ManageExamsPage() {
                                 });
                               }}
                               placeholder={`Enter text for option ${key}...`}
-                              height={80}
+                              rows={3}
                               compact={true}
                             />
                           </div>
@@ -754,11 +755,11 @@ export default function ManageExamsPage() {
               <div className="mb-4">
                 <h3 className="font-medium text-gray-900 mb-2">Explanation:</h3>
                 {editingQuestion === question.id ? (
-                  <WysiwygEditor
+                  <RichTextEditor
                     key={`explanation-${editingQuestion}`}
                     value={editForm.explanation || ''}
                     onChange={(value) => setEditForm({...editForm, explanation: value})}
-                    height={100}
+                    rows={5}
                   />
                 ) : (
                   <div className="p-3 bg-gray-50 rounded-md">

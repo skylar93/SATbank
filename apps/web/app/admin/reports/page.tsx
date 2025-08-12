@@ -327,7 +327,7 @@ export default function AdminReportsPage() {
               <select
                 value={dateRange}
                 onChange={(e) => setDateRange(e.target.value as any)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
                 <option value="week">Last Week</option>
                 <option value="month">Last Month</option>
@@ -383,49 +383,49 @@ export default function AdminReportsPage() {
           <>
             {/* Key Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-2xl shadow-sm">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <div className="flex items-center">
                   <div className="text-3xl font-bold text-emerald-500">{analytics.totalStudents}</div>
                   <div className="ml-4">
-                    <div className="text-sm font-medium text-gray-900">Total Students</div>
-                    <div className="text-xs text-gray-500">Registered users</div>
+                    <div className="text-sm font-medium text-purple-900">Total Students</div>
+                    <div className="text-xs text-purple-600/70">Registered users</div>
                   </div>
                 </div>
               </div>
-              <div className="bg-white p-6 rounded-2xl shadow-sm">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <div className="flex items-center">
                   <div className="text-3xl font-bold text-violet-500">{analytics.completedAttempts}</div>
                   <div className="ml-4">
-                    <div className="text-sm font-medium text-gray-900">Completed Tests</div>
-                    <div className="text-xs text-gray-500">of {analytics.totalAttempts} attempts</div>
+                    <div className="text-sm font-medium text-purple-900">Completed Tests</div>
+                    <div className="text-xs text-purple-600/70">of {analytics.totalAttempts} attempts</div>
                   </div>
                 </div>
               </div>
-              <div className="bg-white p-6 rounded-2xl shadow-sm">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <div className="flex items-center">
                   <div className="text-3xl font-bold text-blue-500">{analytics.averageScore}</div>
                   <div className="ml-4">
-                    <div className="text-sm font-medium text-gray-900">Average Score</div>
-                    <div className="text-xs text-gray-500">Out of 1600</div>
+                    <div className="text-sm font-medium text-purple-900">Average Score</div>
+                    <div className="text-xs text-purple-600/70">Out of 1600</div>
                   </div>
                 </div>
               </div>
-              <div className="bg-white p-6 rounded-2xl shadow-sm">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <div className="flex items-center">
                   <div className="text-3xl font-bold text-amber-500">
                     {analytics.timeAnalysis.averageTestDuration}min
                   </div>
                   <div className="ml-4">
-                    <div className="text-sm font-medium text-gray-900">Avg Duration</div>
-                    <div className="text-xs text-gray-500">Test completion time</div>
+                    <div className="text-sm font-medium text-purple-900">Avg Duration</div>
+                    <div className="text-xs text-purple-600/70">Test completion time</div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Tab Navigation */}
-            <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-              <div className="border-b border-gray-200 pb-4">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-6">
+              <div className="border-b border-purple-200 pb-4">
                 <nav className="-mb-px flex space-x-8">
                   {[
                     { id: 'overview', label: 'Overview' },
@@ -438,8 +438,8 @@ export default function AdminReportsPage() {
                       onClick={() => setActiveReport(tab.id as any)}
                       className={`py-2 px-1 border-b-2 font-medium text-sm ${
                         activeReport === tab.id
-                          ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          ? 'border-purple-500 text-purple-600'
+                          : 'border-transparent text-purple-400 hover:text-purple-700 hover:border-purple-300'
                       }`}
                     >
                       {tab.label}
@@ -453,41 +453,41 @@ export default function AdminReportsPage() {
             {activeReport === 'overview' && (
               <div className="space-y-6">
                 {/* Score Distribution */}
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Score Distribution</h3>
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+                  <h3 className="text-lg font-semibold text-purple-900 mb-4">Score Distribution</h3>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="text-center p-4 bg-emerald-50 rounded-lg">
                       <div className="text-2xl font-bold text-emerald-500">{analytics.scoreDistribution.excellent}</div>
-                      <div className="text-sm text-gray-600">Excellent (1200+)</div>
+                      <div className="text-sm text-purple-600/70">Excellent (1200+)</div>
                     </div>
                     <div className="text-center p-4 bg-blue-50 rounded-lg">
                       <div className="text-2xl font-bold text-blue-500">{analytics.scoreDistribution.good}</div>
-                      <div className="text-sm text-gray-600">Good (1000-1199)</div>
+                      <div className="text-sm text-purple-600/70">Good (1000-1199)</div>
                     </div>
                     <div className="text-center p-4 bg-amber-50 rounded-lg">
                       <div className="text-2xl font-bold text-amber-500">{analytics.scoreDistribution.fair}</div>
-                      <div className="text-sm text-gray-600">Fair (800-999)</div>
+                      <div className="text-sm text-purple-600/70">Fair (800-999)</div>
                     </div>
                     <div className="text-center p-4 bg-slate-50 rounded-lg">
                       <div className="text-2xl font-bold text-slate-500">{analytics.scoreDistribution.poor}</div>
-                      <div className="text-sm text-gray-600">Needs Improvement (&lt;800)</div>
+                      <div className="text-sm text-purple-600/70">Needs Improvement (&lt;800)</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Module Performance */}
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Module Performance</h3>
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+                  <h3 className="text-lg font-semibold text-purple-900 mb-4">Module Performance</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {Object.entries(analytics.modulePerformance).map(([module, data]) => (
                       <div key={module} className="p-4 bg-gray-50 rounded-lg">
-                        <div className="text-lg font-bold text-gray-900">
+                        <div className="text-lg font-bold text-purple-900">
                           {data.avg}
                         </div>
-                        <div className="text-sm text-gray-600 capitalize mb-1">
+                        <div className="text-sm text-purple-600 capitalize mb-1">
                           {module.replace(/(\d)/g, ' $1')}
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-purple-600/70">
                           {data.attempts} attempts
                         </div>
                       </div>
@@ -500,19 +500,19 @@ export default function AdminReportsPage() {
             {activeReport === 'performance' && (
               <div className="space-y-6">
                 {/* Difficulty Analysis */}
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance by Difficulty</h3>
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+                  <h3 className="text-lg font-semibold text-purple-900 mb-4">Performance by Difficulty</h3>
                   <div className="space-y-4">
                     {Object.entries(analytics.difficultyAnalysis).map(([difficulty, stats]) => (
                       <div key={difficulty} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div>
-                          <div className="font-medium text-gray-900 capitalize">{difficulty}</div>
-                          <div className="text-sm text-gray-600">
+                          <div className="font-medium text-purple-900 capitalize">{difficulty}</div>
+                          <div className="text-sm text-purple-600/70">
                             {stats.correct} / {stats.attempted} correct
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-lg font-bold text-gray-900">
+                          <div className="text-lg font-bold text-purple-900">
                             {formatPercentage(stats.percentage)}
                           </div>
                           <div className="w-32 bg-gray-200 rounded-full h-2 mt-1">
@@ -531,26 +531,26 @@ export default function AdminReportsPage() {
                 </div>
 
                 {/* Time Analysis */}
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Time Analysis</h3>
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+                  <h3 className="text-lg font-semibold text-purple-900 mb-4">Time Analysis</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="text-center p-4 bg-blue-50 rounded-lg">
                       <div className="text-2xl font-bold text-blue-500">
                         {analytics.timeAnalysis.averageTestDuration}min
                       </div>
-                      <div className="text-sm text-gray-600">Average Duration</div>
+                      <div className="text-sm text-purple-600/70">Average Duration</div>
                     </div>
                     <div className="text-center p-4 bg-emerald-50 rounded-lg">
                       <div className="text-2xl font-bold text-emerald-500">
                         {analytics.timeAnalysis.fastestCompletion}min
                       </div>
-                      <div className="text-sm text-gray-600">Fastest Completion</div>
+                      <div className="text-sm text-purple-600/70">Fastest Completion</div>
                     </div>
                     <div className="text-center p-4 bg-amber-50 rounded-lg">
                       <div className="text-2xl font-bold text-amber-500">
                         {analytics.timeAnalysis.slowestCompletion}min
                       </div>
-                      <div className="text-sm text-gray-600">Slowest Completion</div>
+                      <div className="text-sm text-purple-600/70">Slowest Completion</div>
                     </div>
                   </div>
                 </div>
@@ -560,13 +560,13 @@ export default function AdminReportsPage() {
             {activeReport === 'trends' && (
               <div className="space-y-6">
                 {/* Daily Trends */}
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Activity (Last 7 Days)</h3>
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+                  <h3 className="text-lg font-semibold text-purple-900 mb-4">Daily Activity (Last 7 Days)</h3>
                   <div className="space-y-3">
                     {analytics.trends.daily.map((day, index) => (
                       <div key={day.date} className="flex items-center justify-between p-3 bg-gray-50 rounded">
                         <div>
-                          <div className="font-medium text-gray-900">
+                          <div className="font-medium text-purple-900">
                             {new Date(day.date).toLocaleDateString('en-US', { 
                               weekday: 'long', 
                               month: 'short', 
@@ -576,10 +576,10 @@ export default function AdminReportsPage() {
                         </div>
                         <div className="flex items-center space-x-4">
                           <div className="text-right">
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-purple-900">
                               {day.completions} tests
                             </div>
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-purple-600/70">
                               Avg: {day.avgScore || 'N/A'}
                             </div>
                           </div>
@@ -602,20 +602,20 @@ export default function AdminReportsPage() {
             {activeReport === 'topics' && (
               <div className="space-y-6">
                 {/* Topic Performance */}
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 10 Topic Performance</h3>
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+                  <h3 className="text-lg font-semibold text-purple-900 mb-4">Top 10 Topic Performance</h3>
                   <div className="space-y-3">
                     {analytics.topicPerformance.map((topic, index) => (
                       <div key={topic.topic} className="flex items-center justify-between p-3 bg-gray-50 rounded">
                         <div className="flex-1">
-                          <div className="font-medium text-gray-900">{topic.topic}</div>
-                          <div className="text-sm text-gray-600">
+                          <div className="font-medium text-purple-900">{topic.topic}</div>
+                          <div className="text-sm text-purple-600/70">
                             {topic.correct} / {topic.attempted} correct
                           </div>
                         </div>
                         <div className="flex items-center space-x-4">
                           <div className="text-right">
-                            <div className="text-lg font-bold text-gray-900">
+                            <div className="text-lg font-bold text-purple-900">
                               {formatPercentage(topic.percentage)}
                             </div>
                           </div>
