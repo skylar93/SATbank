@@ -218,6 +218,7 @@ export default function ManageExamsPage() {
         .from('questions')
         .update({
           question_text: editForm.question_text,
+          question_type: editForm.question_type,
           options: editForm.options,
           correct_answer: editForm.correct_answer,
           explanation: editForm.explanation,
@@ -502,9 +503,29 @@ export default function ManageExamsPage() {
                 }`}>
                   {question.difficulty_level}
                 </span>
-                <span className="px-2 py-1 bg-gray-100 text-purple-800 rounded text-sm">
-                  {question.question_type.replace('_', ' ')}
-                </span>
+                {editingQuestion === question.id ? (
+                  <select
+                    value={editForm.question_type || question.question_type}
+                    onChange={(e) => {
+                      const newType = e.target.value;
+                      setEditForm({
+                        ...editForm,
+                        question_type: newType,
+                        // Initialize empty options if changing to multiple_choice
+                        ...(newType === 'multiple_choice' && !editForm.options ? { options: {} } : {})
+                      });
+                    }}
+                    className="px-2 py-1 bg-white border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  >
+                    <option value="multiple_choice">Multiple Choice</option>
+                    <option value="grid_in">Grid In</option>
+                    <option value="short_answer">Short Answer</option>
+                  </select>
+                ) : (
+                  <span className="px-2 py-1 bg-gray-100 text-purple-800 rounded text-sm">
+                    {question.question_type.replace('_', ' ')}
+                  </span>
+                )}
               </div>
               
               <div className="flex space-x-2">
@@ -551,12 +572,20 @@ export default function ManageExamsPage() {
               )}
             </div>
 
-            {/* Options for Multiple Choice */}
-            {question.question_type === 'multiple_choice' && question.options && (
+            {/* Options for Multiple Choice or when editing to add options */}
+            {(question.question_type === 'multiple_choice' || editingQuestion === question.id) && (
               <div className="mb-4">
                 <h3 className="font-medium text-gray-900 mb-2">Answer Options:</h3>
                 {editingQuestion === question.id ? (
                   <div className="space-y-4">
+                    {/* Show message if no options exist yet */}
+                    {(!editForm.options || Object.keys(editForm.options).length === 0) && (
+                      <div className="text-center p-4 bg-gray-50 rounded border-2 border-dashed border-gray-300">
+                        <p className="text-gray-600 text-sm mb-2">No answer choices found for this question.</p>
+                        <p className="text-gray-500 text-xs">Click "Add Answer Choice" below to create new options.</p>
+                      </div>
+                    )}
+                    
                     {Object.entries(editForm.options || {}).map(([key, value]) => {
                       let optionData;
                       try {
@@ -570,9 +599,24 @@ export default function ManageExamsPage() {
 
                       return (
                         <div key={key} className="space-y-3 p-3 border border-gray-200 rounded">
-                          <div className="flex items-center">
-                            <span className="font-medium text-gray-700 w-6">{key}.</span>
-                            <span className="text-sm text-gray-600">Option {key}</span>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <span className="font-medium text-gray-700 w-6">{key}.</span>
+                              <span className="text-sm text-gray-600">Option {key}</span>
+                            </div>
+                            <button
+                              onClick={() => {
+                                const newOptions = { ...(editForm.options || {}) };
+                                delete newOptions[key];
+                                setEditForm({
+                                  ...editForm,
+                                  options: newOptions
+                                });
+                              }}
+                              className="text-red-600 hover:text-red-800 text-sm font-medium"
+                            >
+                              Remove
+                            </button>
                           </div>
                           
                           <div>
@@ -632,6 +676,31 @@ export default function ManageExamsPage() {
                         </div>
                       );
                     })}
+                    
+                    {/* Add New Option Button */}
+                    <div className="text-center">
+                      <button
+                        onClick={() => {
+                          const currentOptions = editForm.options || {};
+                          const existingKeys = Object.keys(currentOptions);
+                          const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+                          const nextKey = letters.find(letter => !existingKeys.includes(letter)) || 'A';
+                          
+                          const newOptions = {
+                            ...currentOptions,
+                            [nextKey]: JSON.stringify({ text: '' })
+                          };
+                          
+                          setEditForm({
+                            ...editForm,
+                            options: newOptions
+                          });
+                        }}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-medium"
+                      >
+                        + Add Answer Choice
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-2">

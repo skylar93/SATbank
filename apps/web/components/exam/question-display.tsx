@@ -564,14 +564,23 @@ export function QuestionDisplay({
   };
   
   const renderAnswerOptions = () => {
-    if (localQuestion.question_type === 'multiple_choice' && localQuestion.options) {
+    if (localQuestion.question_type === 'multiple_choice' || isEditing) {
       if (isEditing) {
         return (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Answer Options
             </label>
-            {Object.entries(editForm.options).map(([key, value]) => {
+            
+            {/* Show message if no options exist yet */}
+            {(!editForm.options || Object.keys(editForm.options).length === 0) && (
+              <div className="text-center p-4 bg-gray-50 rounded border-2 border-dashed border-gray-300">
+                <p className="text-gray-600 text-sm mb-2">No answer choices found for this question.</p>
+                <p className="text-gray-500 text-xs">Click "Add Answer Choice" below to create new options.</p>
+              </div>
+            )}
+            
+            {Object.entries(editForm.options || {}).map(([key, value]) => {
               let optionData;
               try {
                 optionData = typeof value === 'string' ? JSON.parse(value) : value;
@@ -584,9 +593,24 @@ export function QuestionDisplay({
 
               return (
                 <div key={key} className="space-y-3 p-4 border border-gray-200 rounded-lg">
-                  <div className="flex items-center">
-                    <span className="font-medium text-gray-700 w-8">{key}.</span>
-                    <span className="text-sm text-gray-600">Option {key}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <span className="font-medium text-gray-700 w-8">{key}.</span>
+                      <span className="text-sm text-gray-600">Option {key}</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const newOptions = { ...(editForm.options || {}) };
+                        delete newOptions[key];
+                        setEditForm({
+                          ...editForm,
+                          options: newOptions
+                        });
+                      }}
+                      className="text-red-600 hover:text-red-800 text-sm font-medium"
+                    >
+                      Remove
+                    </button>
                   </div>
                   
                   <div>
@@ -599,7 +623,7 @@ export function QuestionDisplay({
                         const updatedOption = { ...optionData, text: newValue };
                         setEditForm({
                           ...editForm,
-                          options: {...editForm.options, [key]: JSON.stringify(updatedOption)}
+                          options: {...(editForm.options || {}), [key]: JSON.stringify(updatedOption)}
                         });
                       }}
                       placeholder={`Enter text for option ${key}...`}
@@ -607,9 +631,69 @@ export function QuestionDisplay({
                       compact={true}
                     />
                   </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Image URL (Optional)
+                    </label>
+                    <input
+                      type="url"
+                      value={optionData.imageUrl || ''}
+                      onChange={(e) => {
+                        const updatedOption = { ...optionData, imageUrl: e.target.value };
+                        setEditForm({
+                          ...editForm,
+                          options: {...(editForm.options || {}), [key]: JSON.stringify(updatedOption)}
+                        });
+                      }}
+                      placeholder="https://example.com/image.jpg"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  {optionData.imageUrl && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Preview
+                      </label>
+                      <img
+                        src={optionData.imageUrl}
+                        alt={`Option ${key} preview`}
+                        className="max-w-full h-auto max-h-20 border border-gray-200 rounded"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               );
             })}
+            
+            {/* Add New Option Button */}
+            <div className="text-center">
+              <button
+                onClick={() => {
+                  const currentOptions = editForm.options || {};
+                  const existingKeys = Object.keys(currentOptions);
+                  const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+                  const nextKey = letters.find(letter => !existingKeys.includes(letter)) || 'A';
+                  
+                  const newOptions = {
+                    ...currentOptions,
+                    [nextKey]: JSON.stringify({ text: '' })
+                  };
+                  
+                  setEditForm({
+                    ...editForm,
+                    options: newOptions
+                  });
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-medium"
+              >
+                + Add Answer Choice
+              </button>
+            </div>
           </div>
         )
       }
