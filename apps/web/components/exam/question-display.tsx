@@ -700,7 +700,7 @@ export function QuestionDisplay({
 
       return (
         <div className="space-y-3">
-          {Object.entries(localQuestion.options).map(([key, value]) => (
+          {Object.entries(localQuestion.options || {}).map(([key, value]) => (
             <label
               key={key}
               className={`
