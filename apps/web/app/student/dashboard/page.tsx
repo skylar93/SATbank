@@ -20,6 +20,7 @@ import {
   ArrowTrendingUpIcon,
   AcademicCapIcon
 } from '@heroicons/react/24/outline'
+import { formatTimeAgo } from '../../../lib/utils'
 
 interface DashboardStats {
   examsTaken: number
@@ -73,7 +74,6 @@ export default function StudentDashboard() {
   const loadDashboardStats = async () => {
     try {
       if (user) {
-        console.log('🔍 Loading dashboard stats for user:', user.id)
         
         // Fetch all data in parallel using new AnalyticsService
         const [overallStats, scoreHistoryData, recentAttempts, previousMonthStats, activityDays, weeklyActivity, subjectScores] = await Promise.all([
@@ -86,10 +86,6 @@ export default function StudentDashboard() {
           fetchUserSubjectScores(user.id)
         ])
 
-        console.log('📊 Overall stats:', overallStats)
-        console.log('📈 Score history:', scoreHistoryData)
-        console.log('📝 Recent attempts:', recentAttempts)
-        console.log('📅 Weekly activity:', weeklyActivity)
         
         // Check if user can see results for completed exams
         let canShowResults = true
@@ -100,16 +96,11 @@ export default function StudentDashboard() {
             try {
               canShowResults = await ExamService.canShowResults(user.id, mostRecentExam.exam_id)
             } catch (error) {
-              console.log('Could not check result visibility, defaulting to true:', error)
               canShowResults = true
             }
           }
         }
         
-        // Debug score history data
-        scoreHistoryData.forEach((item, index) => {
-          console.log(`Score ${index}:`, item.score, typeof item.score)
-        })
 
         setStats({
           examsTaken: overallStats.examsTaken,
@@ -127,24 +118,31 @@ export default function StudentDashboard() {
         setSubjectData(canShowResults ? subjectScores : { reading: 0, writing: 0, math: 0 })
       }
     } catch (error) {
-      console.error('Error loading dashboard stats:', error)
     } finally {
       setLoading(false)
     }
   }
 
   const fetchRecentAttempts = async (userId: string): Promise<TestAttempt[]> => {
-    const supabase = createClientComponentClient()
-    const { data, error } = await supabase
-      .from('test_attempts')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('status', 'completed')
-      .order('completed_at', { ascending: false })
-      .limit(5)
-
-    if (error) throw error
-    return data || []
+    // Use the same method as AnalyticsService for consistency
+    const userAttempts = await ExamService.getUserAttempts(userId)
+    
+    // Filter valid attempts (same logic as results page)
+    const validAttempts = userAttempts.filter(attempt => 
+      attempt.status !== 'not_started' && attempt.status !== 'expired'
+    )
+    
+    // Sort by status (completed first) then by created_at descending
+    const sortedAttempts = validAttempts.sort((a, b) => {
+      // First priority: completed attempts come before in_progress
+      if (a.status === 'completed' && b.status !== 'completed') return -1
+      if (a.status !== 'completed' && b.status === 'completed') return 1
+      
+      // Second priority: sort by creation date (newest first)
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    }).slice(0, 5)
+    
+    return sortedAttempts
   }
 
   const fetchPreviousMonthStats = async (userId: string) => {
@@ -163,7 +161,6 @@ export default function StudentDashboard() {
       .lte('completed_at', endOfPreviousMonth.toISOString())
 
     if (error) {
-      console.error('Error fetching previous month stats:', error)
       return { examsTaken: 0, bestScore: null, averageScore: null }
     }
 
@@ -236,7 +233,6 @@ export default function StudentDashboard() {
       .limit(1)
 
     if (error || !attempts || attempts.length === 0) {
-      console.log('No completed attempts found for subject scores')
       return { reading: 0, writing: 0, math: 0 }
     }
 
@@ -270,7 +266,6 @@ export default function StudentDashboard() {
       .eq('attempt_id', mostRecentAttempt.id)
 
     if (answersError || !answers) {
-      console.log('Could not fetch answers for subject score calculation')
       return { reading: 0, writing: 0, math: 0 }
     }
 
@@ -576,12 +571,13 @@ export default function StudentDashboard() {
               </div>
               
               <div className="space-y-4">
-                {stats.recentAttempts.slice(0, 3).map((attempt, index) => (
+                {stats.recentAttempts.slice(0, 3).map((attempt, index) => {
+                  return (
                   <div key={attempt.id} className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
                       <span className="text-violet-600 font-semibold text-sm">
                         {stats.canShowResults 
-                          ? ((attempt as any).final_scores?.overall || attempt.total_score || 'N/A')
+                          ? (attempt.final_scores?.overall ?? attempt.total_score ?? 'N/A')
                           : '***'
                         }
                       </span>
@@ -593,10 +589,11 @@ export default function StudentDashboard() {
                       </p>
                     </div>
                     <span className="text-xs text-gray-400">
-                      {index === 0 ? '1h30m' : index === 1 ? '2 days' : '1 week'}
+                      {attempt.completed_at ? formatTimeAgo(attempt.completed_at) : 'In progress'}
                     </span>
                   </div>
-                ))}
+                  )
+                })}
                 
                 {stats.recentAttempts.length === 0 && (
                   <div className="text-center py-8">

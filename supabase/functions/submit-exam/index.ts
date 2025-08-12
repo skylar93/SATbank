@@ -22,8 +22,48 @@ interface FinalScores {
   math: number
 }
 
+// Helper function to validate curve data structure and values
+function validateCurveData(curveData: any[]): boolean {
+  if (!Array.isArray(curveData) || curveData.length === 0) {
+    throw new Error('Invalid curve data: must be non-empty array')
+  }
+  
+  for (const point of curveData) {
+    if (typeof point.raw !== 'number' || 
+        typeof point.lower !== 'number' || 
+        typeof point.upper !== 'number') {
+      throw new Error(`Invalid curve point: ${JSON.stringify(point)}`)
+    }
+    
+    if (point.lower > point.upper) {
+      throw new Error(`Invalid curve range: lower (${point.lower}) > upper (${point.upper})`)
+    }
+  }
+  
+  return true
+}
+
+// Helper function to validate answer data structure
+function validateAnswer(answer: any): boolean {
+  return answer && 
+         answer.questions && 
+         typeof answer.questions.module_type === 'string' &&
+         answer.questions.module_type.trim() !== ''
+}
+
 // Helper function to map raw score to scaled score using curve data
 function mapRawToScaled(rawScore: number, curveData: any[]): number {
+  // Validate inputs
+  if (typeof rawScore !== 'number' || rawScore < 0) {
+    console.warn(`Invalid raw score: ${rawScore}, using 0`)
+    rawScore = 0
+  }
+  
+  if (!Array.isArray(curveData) || curveData.length === 0) {
+    console.error('Empty or invalid curve data, using minimum score')
+    return 200 // SAT minimum section score
+  }
+  
   // Find the curve data point that matches the raw score
   const curvePoint = curveData.find(point => point.raw === rawScore)
   
@@ -35,16 +75,46 @@ function mapRawToScaled(rawScore: number, curveData: any[]): number {
     const sortedCurve = [...curveData].sort((a, b) => Math.abs(a.raw - rawScore) - Math.abs(b.raw - rawScore))
     const closestPoint = sortedCurve[0]
     
-    if (closestPoint) {
-      return Math.round((closestPoint.lower + closestPoint.upper) / 2)
+    if (closestPoint && 
+        typeof closestPoint.lower === 'number' && 
+        typeof closestPoint.upper === 'number') {
+      const scaledScore = Math.round((closestPoint.lower + closestPoint.upper) / 2)
+      console.log(`Using closest curve point for raw score ${rawScore}: ${closestPoint.raw} → ${scaledScore}`)
+      return scaledScore
     }
     
-    // Ultimate fallback
+    // Ultimate fallback - use boundary scores
+    const minRaw = Math.min(...curveData.map(p => p.raw))
+    const maxRaw = Math.max(...curveData.map(p => p.raw))
+    
+    if (rawScore < minRaw) {
+      const minPoint = curveData.find(p => p.raw === minRaw)
+      const minScore = minPoint ? Math.round((minPoint.lower + minPoint.upper) / 2) : 200
+      console.log(`Raw score ${rawScore} below minimum ${minRaw}, using minimum scaled score: ${minScore}`)
+      return minScore
+    }
+    
+    if (rawScore > maxRaw) {
+      const maxPoint = curveData.find(p => p.raw === maxRaw)
+      const maxScore = maxPoint ? Math.round((maxPoint.lower + maxPoint.upper) / 2) : 800
+      console.log(`Raw score ${rawScore} above maximum ${maxRaw}, using maximum scaled score: ${maxScore}`)
+      return maxScore
+    }
+    
+    console.error(`Unable to map raw score ${rawScore}, using fallback score 200`)
     return 200 // Minimum SAT section score
   }
 
+  // Validate curve point data
+  if (typeof curvePoint.lower !== 'number' || typeof curvePoint.upper !== 'number') {
+    console.error(`Invalid curve point data: ${JSON.stringify(curvePoint)}, using fallback`)
+    return 200
+  }
+  
   // Calculate the middle of the score range
-  return Math.round((curvePoint.lower + curvePoint.upper) / 2)
+  const scaledScore = Math.round((curvePoint.lower + curvePoint.upper) / 2)
+  console.log(`Mapped raw score ${rawScore} to scaled score ${scaledScore} (range: ${curvePoint.lower}-${curvePoint.upper})`)
+  return scaledScore
 }
 
 // Calculate final scaled scores for a completed exam attempt
@@ -71,12 +141,15 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
     throw new Error(`Exam ${attemptData.exam_id} does not have scoring curves assigned`)
   }
 
-  // Step 3: Get all user answers with question details
+  // Step 3: Get all user answers with question details (using inner join to ensure question data exists)
   const { data: answers, error: answersError } = await supabase
     .from('user_answers')
     .select(`
-      *,
-      questions:question_id (
+      id,
+      user_answer,
+      is_correct,
+      time_spent_seconds,
+      questions:question_id!inner (
         module_type,
         points
       )
@@ -84,6 +157,13 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
     .eq('attempt_id', attemptId)
 
   if (answersError) throw new Error(`Failed to get user answers: ${answersError.message}`)
+  
+  // Validate that all answers have question data
+  const invalidAnswers = answers?.filter(a => !validateAnswer(a)) || []
+  if (invalidAnswers.length > 0) {
+    console.warn(`${invalidAnswers.length} answers have invalid question data:`, invalidAnswers)
+    throw new Error(`${invalidAnswers.length} answers missing valid question data - possible database integrity issue`)
+  }
 
   // Step 4: Calculate raw scores by subject
   let englishRawScore = 0
@@ -91,24 +171,32 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
 
   console.log('📝 Processing answers:', answers?.length, 'total answers')
   answers?.forEach((answer: any) => {
-    if (answer.is_correct && answer.questions) {
-      const moduleType = answer.questions.module_type
-      const points = answer.questions.points || 1
+    // Validate answer structure
+    if (!validateAnswer(answer)) {
+      console.warn('Invalid answer data, skipping:', answer)
+      return
+    }
+    
+    if (answer.is_correct) {
+      const moduleType = answer.questions.module_type.toLowerCase().trim()
+      const points = Math.max(0, Number(answer.questions.points) || 1)
 
-      if (moduleType.startsWith('english')) {
+      if (moduleType.includes('english')) {
         englishRawScore += points
-      } else if (moduleType.startsWith('math')) {
+      } else if (moduleType.includes('math')) {
         mathRawScore += points
+      } else {
+        console.warn('Unknown module type:', moduleType, 'for answer:', answer.id)
       }
     }
   })
 
   console.log('🔢 Raw scores calculated - English:', englishRawScore, 'Math:', mathRawScore)
 
-  // Step 5: Fetch scoring curves
+  // Step 5: Fetch scoring curves with names for debugging
   const { data: englishCurve, error: englishCurveError } = await supabase
     .from('scoring_curves')
-    .select('curve_data')
+    .select('id, curve_name, curve_data')
     .eq('id', examData.english_scoring_curve_id)
     .single()
 
@@ -116,31 +204,45 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
 
   const { data: mathCurve, error: mathCurveError } = await supabase
     .from('scoring_curves')
-    .select('curve_data')
+    .select('id, curve_name, curve_data')
     .eq('id', examData.math_scoring_curve_id)
     .single()
 
   if (mathCurveError) throw new Error(`Failed to get Math scoring curve: ${mathCurveError.message}`)
+  
+  console.log('📋 English curve info:', { id: englishCurve.id, name: englishCurve.curve_name })
+  console.log('📋 Math curve info:', { id: mathCurve.id, name: mathCurve.curve_name })
 
-  // Step 6: Map raw scores to scaled scores
+  // Step 6: Validate curve data and map raw scores to scaled scores
   console.log('📊 English curve data:', englishCurve.curve_data)
   console.log('📊 Math curve data:', mathCurve.curve_data)
+  
+  // Validate curve data before processing
+  validateCurveData(englishCurve.curve_data)
+  validateCurveData(mathCurve.curve_data)
+  
+  console.log(`🔢 Raw scores calculated - English: ${englishRawScore}, Math: ${mathRawScore}`)
   
   const englishScaledScore = mapRawToScaled(englishRawScore, englishCurve.curve_data)
   const mathScaledScore = mapRawToScaled(mathRawScore, mathCurve.curve_data)
   
-  console.log('⚖️ Scaled scores - English:', englishScaledScore, 'Math:', mathScaledScore)
+  console.log('⚖️ Scaled scores:')
+  console.log(`  - English raw ${englishRawScore} → scaled ${englishScaledScore} (using curve: ${englishCurve.curve_name})`)
+  console.log(`  - Math raw ${mathRawScore} → scaled ${mathScaledScore} (using curve: ${mathCurve.curve_name})`)
 
   // Step 7: Calculate overall score
   const overallScore = englishScaledScore + mathScaledScore
   
   console.log('🎯 Final overall score:', overallScore)
 
-  return {
+  const finalScores = {
     overall: overallScore,
     english: englishScaledScore,
     math: mathScaledScore
   }
+  
+  console.log('📊 Final scores object:', finalScores)
+  return finalScores
 }
 
 serve(async (req) => {

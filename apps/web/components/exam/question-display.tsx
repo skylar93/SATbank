@@ -5,6 +5,7 @@ import { Question } from '../../lib/exam-service'
 import { InlineMath, BlockMath } from 'react-katex'
 import { supabase } from '../../lib/supabase'
 import { RichTextEditor } from '../rich-text-editor'
+// import { WysiwygEditor } from '../wysiwyg-editor' // KEEPING COMMENTED OUT - HTML conversion functionality removed
 import { ImageUpload } from '../image-upload'
 import { HelpCircle } from 'lucide-react'
 
@@ -602,8 +603,7 @@ export function QuestionDisplay({
                         });
                       }}
                       placeholder={`Enter text for option ${key}...`}
-                      rows={2}
-                      showPreview={true}
+                      rows={3}
                       compact={true}
                     />
                   </div>
@@ -875,9 +875,8 @@ export function QuestionDisplay({
                   value={editForm.question_text}
                   onChange={(value) => setEditForm({...editForm, question_text: value})}
                   placeholder="Enter question text..."
-                  rows={6}
+                  rows={8}
                   showPreview={true}
-                  tableData={localQuestion.table_data}
                 />
               </div>
               
@@ -1058,8 +1057,7 @@ export function QuestionDisplay({
                   value={editForm.explanation}
                   onChange={(value) => setEditForm({...editForm, explanation: value})}
                   placeholder="Explain the correct answer..."
-                  rows={3}
-                  showPreview={true}
+                  rows={5}
                 />
               </div>
             </div>
@@ -1118,11 +1116,11 @@ export function QuestionDisplay({
                 
                 {showAnswerCheck && (
                   <div className={`p-3 border rounded-lg ${
-                    userAnswer === localQuestion.correct_answer
+                    userAnswer?.trim().toUpperCase() === String(localQuestion.correct_answer).trim().toUpperCase()
                       ? 'bg-green-50 border-green-200'
                       : 'bg-red-50 border-red-200'
                   }`}>
-                    {userAnswer === localQuestion.correct_answer ? (
+                    {userAnswer?.trim().toUpperCase() === String(localQuestion.correct_answer).trim().toUpperCase() ? (
                       <p className="text-sm text-green-800 font-medium">
                         ✅ 정답입니다!
                       </p>

@@ -212,13 +212,20 @@ export default function StudentResultsPage() {
     ? Math.round(previousPeriodAttempts.reduce((sum, a) => sum + getDisplayScore(a), 0) / previousPeriodAttempts.length)
     : 0
   
-  // Mock progress data - replace with real data
+  // Progress data based on actual test attempts
+  const recentAttempts = visibleCompletedAttempts.slice(-5)
   const progressData = {
-    labels: ['Test 1', 'Test 2', 'Test 3', 'Test 4', 'Test 5'],
+    labels: recentAttempts.map((attempt, index) => {
+      if (attempt.completed_at) {
+        const date = new Date(attempt.completed_at)
+        return `${date.getMonth() + 1}/${date.getDate()}`
+      }
+      return `Test ${index + 1}`
+    }),
     datasets: [
       {
         label: 'Total Score',
-        data: visibleCompletedAttempts.slice(-5).map(a => getDisplayScore(a)),
+        data: recentAttempts.map(a => getDisplayScore(a)),
         borderColor: '#8b5cf6',
         backgroundColor: 'rgba(139, 92, 246, 0.1)',
         fill: true

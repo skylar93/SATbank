@@ -120,6 +120,30 @@ export class ExamService {
     return (data?.map((assignment: any) => assignment.exams as Exam).filter((exam: Exam | null) => exam !== null) as Exam[]) || []
   }
 
+  // Get available exams for a student (including mock exams and assigned exams)
+  static async getAvailableExams(userId: string): Promise<Exam[]> {
+    // Get assigned exams
+    const assignedExams = await this.getAssignedExams(userId)
+    
+    // Get mock exams (available to all students)
+    const { data: mockExams, error } = await supabase
+      .from('exams')
+      .select('*')
+      .eq('is_mock_exam', true)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+
+    // Combine and deduplicate exams
+    const allExams = [...assignedExams, ...(mockExams || [])]
+    const uniqueExams = allExams.filter((exam, index, self) => 
+      index === self.findIndex(e => e.id === exam.id)
+    )
+
+    return uniqueExams
+  }
+
   // Get exam by ID
   static async getExam(examId: string): Promise<Exam | null> {
     const { data, error } = await supabase
@@ -132,17 +156,24 @@ export class ExamService {
     return data
   }
 
-  // Check if a student has access to an exam (is assigned to it)
+  // Check if a student has access to an exam (is assigned to it or it's a mock exam)
   static async hasExamAccess(userId: string, examId: string): Promise<boolean> {
+    // First check if it's a mock exam (available to all students)
+    const exam = await this.getExam(examId)
+    if (exam?.is_mock_exam) {
+      return true
+    }
+
+    // Check if student is assigned to the exam
     const { data, error } = await supabase
       .from('exam_assignments')
       .select('id')
       .eq('student_id', userId)
       .eq('exam_id', examId)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" error
+    if (error) {
       throw error
     }
     
@@ -157,9 +188,9 @@ export class ExamService {
       .eq('student_id', userId)
       .eq('exam_id', examId)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" error
+    if (error) {
       throw error
     }
     

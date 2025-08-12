@@ -7,14 +7,13 @@ export interface WeeklyActivityData {
 }
 
 export class WeeklyActivityService {
-  private static supabase = createClientComponentClient()
-
   static async fetchWeeklyActivityData(userId: string): Promise<WeeklyActivityData> {
     try {
       // Get last 7 days of test attempts
       const last7Days = this.getLast7Days()
+      const supabase = createClientComponentClient()
       
-      const { data: attempts, error } = await this.supabase
+      const { data: attempts, error } = await supabase
         .from('test_attempts')
         .select('started_at, completed_at, status')
         .eq('user_id', userId)
@@ -22,7 +21,6 @@ export class WeeklyActivityService {
         .order('started_at', { ascending: true })
 
       if (error) {
-        console.error('Error fetching weekly activity data:', error)
         return this.getEmptyWeeklyData()
       }
 
@@ -73,7 +71,6 @@ export class WeeklyActivityService {
         ]
       }
     } catch (error) {
-      console.error('Error in fetchWeeklyActivityData:', error)
       return this.getEmptyWeeklyData()
     }
   }

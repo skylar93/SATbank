@@ -5,6 +5,7 @@ import { useAuth } from '../../../contexts/auth-context'
 import { supabase } from '../../../lib/supabase'
 import Link from 'next/link'
 import { RichTextEditor } from '../../../components/rich-text-editor'
+// import { WysiwygEditor } from '../../../components/wysiwyg-editor' // KEEPING COMMENTED OUT - HTML conversion functionality removed
 
 interface Question {
   id: string
@@ -40,6 +41,51 @@ export default function ManageExamsPage() {
   const [editingQuestion, setEditingQuestion] = useState<string | null>(null)
   const [editForm, setEditForm] = useState<Partial<Question>>({})
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards')
+
+  // Utility functions
+  const convertMarkdownToHtml = (markdown: string) => {
+    if (!markdown) return '';
+    
+    let result = markdown
+      // Handle formatting first
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/__(.*?)__/g, '<span class="underline">$1</span>')
+      .replace(/_(.*?)_/g, '<em>$1</em>')
+      .replace(/\^\^(.*?)\^\^/g, '<sup>$1</sup>')
+      .replace(/~~(.*?)~~/g, '<sub>$1</sub>')
+      .replace(/---/g, '—')
+      // Handle line breaks
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+    
+    // Wrap in paragraph tags if it doesn't start with HTML tag
+    if (!result.startsWith('<')) {
+      result = '<p>' + result + '</p>';
+    }
+    
+    // Clean up multiple paragraph tags
+    return result
+      .replace(/<p><p>/g, '<p>')
+      .replace(/<\/p><\/p>/g, '</p>');
+  };
+
+  const renderHtmlContent = (html: string) => {
+    if (!html) return '';
+    
+    // Clean HTML and handle math expressions
+    const processedHtml = html
+      .replace(/\$\$([\s\S]*?)\$\$/g, '<span class="bg-blue-100 px-1 rounded text-blue-800 font-mono">$$$1$$</span>')
+      .replace(/\$([^$\n]*?)\$/g, '<span class="bg-blue-100 px-1 rounded text-blue-800 font-mono">$$$1$$</span>')
+      .replace(/---/g, '—');
+    
+    return (
+      <div 
+        dangerouslySetInnerHTML={{ __html: processedHtml }}
+        className="prose prose-sm max-w-none"
+      />
+    );
+  };
 
   useEffect(() => {
     if (user && isAdmin) {
@@ -118,9 +164,50 @@ export default function ManageExamsPage() {
     }
   }
 
+  const isMarkdown = (text: string) => {
+    if (!text) return false;
+    // Check for markdown patterns
+    return text.includes('**') || text.includes('__') || text.includes('*') || 
+           text.includes('^^') || text.includes('~~') || text.includes('\n\n') || 
+           text.includes('---') || text.match(/\$.*?\$/);
+  }
+
   const handleEditClick = (question: Question) => {
+    console.log('Edit clicked for question:', question.id)
+    console.log('Original question text:', question.question_text)
+    console.log('Is question text markdown?', isMarkdown(question.question_text))
+    
     setEditingQuestion(question.id)
-    setEditForm(question)
+    
+    // Convert markdown to HTML for editor compatibility (force conversion for now)
+    const processedQuestion = {
+      ...question,
+      question_text: convertMarkdownToHtml(question.question_text),
+      explanation: question.explanation ? convertMarkdownToHtml(question.explanation) : '',
+      options: question.options ? Object.fromEntries(
+        Object.entries(question.options).map(([key, value]) => {
+          let optionData;
+          try {
+            optionData = typeof value === 'string' ? JSON.parse(value) : value;
+            if (typeof optionData !== 'object') {
+              optionData = { text: String(value) };
+            }
+          } catch {
+            optionData = { text: String(value) };
+          }
+          
+          // Convert markdown to HTML for option text (force conversion)
+          if (optionData.text) {
+            optionData.text = convertMarkdownToHtml(optionData.text);
+          }
+          
+          return [key, JSON.stringify(optionData)];
+        })
+      ) : question.options
+    };
+    
+    console.log('Processed question text:', processedQuestion.question_text)
+    setEditForm(processedQuestion)
   }
 
   const handleSaveEdit = async () => {
@@ -160,127 +247,6 @@ export default function ManageExamsPage() {
     setEditingQuestion(null)
     setEditForm({})
   }
-
-  const renderTextWithFormattingAndMath = (text: string) => {
-    if (!text) return text;
-    
-    const parts = [];
-    let lastIndex = 0;
-    
-    // Combined regex for math expressions, formatting, line breaks, and dashes
-    const combinedRegex = /(\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|\*\*(.*?)\*\*|\*(.*?)\*|__(.*?)__|_(.*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|\n)/g;
-    let match;
-    
-    while ((match = combinedRegex.exec(text)) !== null) {
-      // Add text before current match
-      if (match.index > lastIndex) {
-        const textBefore = text.substring(lastIndex, match.index);
-        if (textBefore) {
-          parts.push(
-            <span key={`text-${lastIndex}`}>
-              {textBefore}
-            </span>
-          );
-        }
-      }
-      
-      const matchedContent = match[1];
-      
-      // Handle math expressions (simplified preview without KaTeX)
-      if (matchedContent.startsWith('$')) {
-        const cleanMath = matchedContent.replace(/^\$+|\$+$/g, '').trim();
-        parts.push(
-          <span key={`math-${match.index}`} className="bg-blue-100 px-1 rounded text-blue-800 font-mono">
-            ${cleanMath}$
-          </span>
-        );
-      }
-      // Handle bold formatting **text**
-      else if (match[2] !== undefined) {
-        parts.push(
-          <strong key={`bold-${match.index}`} className="font-bold">
-            {match[2]}
-          </strong>
-        );
-      }
-      // Handle italic formatting *text*
-      else if (match[3] !== undefined) {
-        parts.push(
-          <em key={`italic-${match.index}`} className="italic">
-            {match[3]}
-          </em>
-        );
-      }
-      // Handle underline formatting __text__
-      else if (match[4] !== undefined) {
-        parts.push(
-          <span key={`underline-${match.index}`} className="underline">
-            {match[4]}
-          </span>
-        );
-      }
-      // Handle italic formatting _text_
-      else if (match[5] !== undefined) {
-        parts.push(
-          <em key={`italic2-${match.index}`} className="italic">
-            {match[5]}
-          </em>
-        );
-      }
-      // Handle superscript formatting ^^text^^
-      else if (match[6] !== undefined) {
-        parts.push(
-          <sup key={`superscript-${match.index}`} className="text-sm">
-            {match[6]}
-          </sup>
-        );
-      }
-      // Handle subscript formatting ~~text~~
-      else if (match[7] !== undefined) {
-        parts.push(
-          <sub key={`subscript-${match.index}`} className="text-sm">
-            {match[7]}
-          </sub>
-        );
-      }
-      // Handle triple dashes ---
-      else if (matchedContent === '---') {
-        parts.push(
-          <span key={`dash-${match.index}`} className="mx-1">
-            —
-          </span>
-        );
-      }
-      // Handle line breaks \n
-      else if (matchedContent === '\n') {
-        parts.push(
-          <br key={`br-${match.index}`} />
-        );
-      }
-      
-      lastIndex = match.index + match[0].length;
-    }
-    
-    // Add remaining text
-    if (lastIndex < text.length) {
-      const remainingText = text.substring(lastIndex);
-      if (remainingText) {
-        parts.push(
-          <span key={`text-${lastIndex}`}>
-            {remainingText}
-          </span>
-        );
-      }
-    }
-    
-    // If no formatting was found, return the original text
-    if (parts.length === 0) {
-      return text;
-    }
-    
-    return <>{parts}</>;
-  };
-
 
   useEffect(() => {
     if (isAdmin) {
@@ -474,7 +440,7 @@ export default function ManageExamsPage() {
                         </span>
                         <div className="max-w-md">
                           <div className="text-sm text-purple-900 truncate">
-                            {renderTextWithFormattingAndMath(question.question_text.substring(0, 100) + (question.question_text.length > 100 ? '...' : ''))}
+                            {renderHtmlContent(question.question_text.substring(0, 100) + (question.question_text.length > 100 ? '...' : ''))}
                           </div>
                         </div>
                       </div>
@@ -573,14 +539,14 @@ export default function ManageExamsPage() {
               <h3 className="font-medium text-gray-900 mb-2">Question Text:</h3>
               {editingQuestion === question.id ? (
                 <RichTextEditor
+                  key={`question-text-${editingQuestion}`}
                   value={editForm.question_text || ''}
                   onChange={(value) => setEditForm({...editForm, question_text: value})}
-                  rows={4}
-                  showPreview={true}
+                  rows={6}
                 />
               ) : (
                 <div className="p-3 bg-gray-50 rounded-md">
-                  <div className="text-gray-900 leading-relaxed">{renderTextWithFormattingAndMath(question.question_text)}</div>
+                  <div className="text-gray-900 leading-relaxed">{renderHtmlContent(question.question_text)}</div>
                 </div>
               )}
             </div>
@@ -614,6 +580,7 @@ export default function ManageExamsPage() {
                               Text Content
                             </label>
                             <RichTextEditor
+                              key={`option-${key}-${editingQuestion}`}
                               value={optionData.text || ''}
                               onChange={(newValue) => {
                                 const updatedOption = { ...optionData, text: newValue };
@@ -623,8 +590,7 @@ export default function ManageExamsPage() {
                                 });
                               }}
                               placeholder={`Enter text for option ${key}...`}
-                              rows={2}
-                              showPreview={true}
+                              rows={3}
                               compact={true}
                             />
                           </div>
@@ -690,7 +656,7 @@ export default function ManageExamsPage() {
                           <div className={`flex-1 ${question.correct_answer === key ? 'text-green-600 font-medium' : 'text-gray-900'}`}>
                             {optionData.text && (
                               <div className="mb-1">
-                                {renderTextWithFormattingAndMath(optionData.text)}
+                                {renderHtmlContent(optionData.text)}
                               </div>
                             )}
                             {optionData.imageUrl && (
@@ -790,14 +756,14 @@ export default function ManageExamsPage() {
                 <h3 className="font-medium text-gray-900 mb-2">Explanation:</h3>
                 {editingQuestion === question.id ? (
                   <RichTextEditor
+                    key={`explanation-${editingQuestion}`}
                     value={editForm.explanation || ''}
                     onChange={(value) => setEditForm({...editForm, explanation: value})}
-                    rows={3}
-                    showPreview={true}
+                    rows={5}
                   />
                 ) : (
                   <div className="p-3 bg-gray-50 rounded-md">
-                    <div className="text-gray-900 leading-relaxed">{renderTextWithFormattingAndMath(question.explanation || '')}</div>
+                    <div className="text-gray-900 leading-relaxed">{renderHtmlContent(question.explanation || '')}</div>
                   </div>
                 )}
               </div>

@@ -30,6 +30,14 @@ interface TestAttemptSummary {
   module_scores: any
   time_spent: any
   status: string
+  final_scores?: {
+    overall: number
+    [key: string]: any
+  }
+  exam?: {
+    id: string
+    title: string
+  }
 }
 
 export default function StudentDetailPage() {
@@ -67,10 +75,16 @@ export default function StudentDetailPage() {
 
       setStudent(studentData)
 
-      // Load all test attempts
+      // Load all test attempts with exam info
       const { data: attemptsData, error: attemptsError } = await supabase
         .from('test_attempts')
-        .select('*')
+        .select(`
+          *,
+          exam:exams (
+            id,
+            title
+          )
+        `)
         .eq('user_id', studentId)
         .order('created_at', { ascending: false })
 
@@ -123,9 +137,14 @@ export default function StudentDetailPage() {
     }
   }
 
+  // Helper function to get display score (consistent with analytics service)
+  const getDisplayScore = (attempt: TestAttemptSummary): number => {
+    return attempt.final_scores?.overall || attempt.total_score || 0
+  }
+
   const calculateStats = () => {
     const completedAttempts = attempts.filter(a => a.status === 'completed')
-    const scores = completedAttempts.map(a => a.total_score).filter(Boolean)
+    const scores = completedAttempts.map(a => getDisplayScore(a)).filter(Boolean)
     
     return {
       totalAttempts: attempts.length,
@@ -298,30 +317,33 @@ export default function StudentDetailPage() {
             {/* Recent Performance */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Performance</h3>
-              {attempts.filter(a => a.status === 'completed').slice(0, 3).map((attempt, index) => (
-                <div key={attempt.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                  <div>
-                    <div className="font-medium text-gray-900">
-                      Test completed {formatDate(attempt.completed_at)}
+              {attempts.filter(a => a.status === 'completed').slice(0, 3).map((attempt, index) => {
+                const displayScore = getDisplayScore(attempt)
+                return (
+                  <div key={attempt.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        {attempt.exam?.title || 'SAT Mock Exam'} - {formatDate(attempt.completed_at)}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Duration: {attempt.created_at ? Math.round((new Date(attempt.completed_at).getTime() - new Date(attempt.created_at).getTime()) / (1000 * 60)) : 'N/A'} minutes
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-500">
-                      Duration: {attempt.created_at ? Math.round((new Date(attempt.completed_at).getTime() - new Date(attempt.created_at).getTime()) / (1000 * 60)) : 'N/A'} minutes
+                    <div className="text-right">
+                      <div className={`text-lg font-bold ${getScoreColor(displayScore)}`}>
+                        {displayScore}
+                      </div>
+                      <button
+                        onClick={() => loadAttemptDetails(attempt.id)}
+                        className="text-sm text-blue-600 hover:text-blue-700"
+                        disabled={detailsLoading}
+                      >
+                        View Details
+                      </button>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className={`text-lg font-bold ${getScoreColor(attempt.total_score)}`}>
-                      {attempt.total_score}
-                    </div>
-                    <button
-                      onClick={() => loadAttemptDetails(attempt.id)}
-                      className="text-sm text-blue-600 hover:text-blue-700"
-                      disabled={detailsLoading}
-                    >
-                      View Details
-                    </button>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
               {attempts.filter(a => a.status === 'completed').length === 0 && (
                 <p className="text-gray-500 text-center py-4">No completed tests yet</p>
               )}
@@ -394,6 +416,9 @@ export default function StudentDetailPage() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Exam
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Date
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -411,48 +436,54 @@ export default function StudentDetailPage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {attempts.map((attempt) => (
-                    <tr key={attempt.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {attempt.completed_at ? formatDate(attempt.completed_at) : 'In Progress'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(attempt.status)}`}>
-                          {attempt.status.replace('_', ' ')}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {attempt.status === 'completed' ? (
-                          <div className={`text-sm font-medium ${getScoreColor(attempt.total_score)}`}>
-                            {attempt.total_score}
-                          </div>
-                        ) : (
-                          <span className="text-sm text-gray-400">N/A</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {attempt.module_scores && Object.keys(attempt.module_scores).length > 0 ? (
-                          <div className="text-xs">
-                            {Object.entries(attempt.module_scores).map(([module, score]) => (
-                              <div key={module}>{module}: {String(score)}</div>
-                            ))}
-                          </div>
-                        ) : (
-                          'N/A'
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        {attempt.status === 'completed' && (
-                          <Link
-                            href={`/student/results/${attempt.id}`}
-                            className="text-blue-600 hover:text-blue-700"
-                          >
-                            View Results
-                          </Link>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  {attempts.map((attempt) => {
+                    const displayScore = getDisplayScore(attempt)
+                    return (
+                      <tr key={attempt.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {attempt.exam?.title || 'SAT Mock Exam'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {attempt.completed_at ? formatDate(attempt.completed_at) : 'In Progress'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(attempt.status)}`}>
+                            {attempt.status.replace('_', ' ')}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {attempt.status === 'completed' ? (
+                            <div className={`text-sm font-medium ${getScoreColor(displayScore)}`}>
+                              {displayScore}
+                            </div>
+                          ) : (
+                            <span className="text-sm text-gray-400">N/A</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {attempt.module_scores && Object.keys(attempt.module_scores).length > 0 ? (
+                            <div className="text-xs">
+                              {Object.entries(attempt.module_scores).map(([module, score]) => (
+                                <div key={module}>{module}: {String(score)}</div>
+                              ))}
+                            </div>
+                          ) : (
+                            'N/A'
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          {attempt.status === 'completed' && (
+                            <Link
+                              href={`/admin/results/${attempt.id}`}
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              View Results
+                            </Link>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -475,20 +506,22 @@ export default function StudentDetailPage() {
                   .filter(a => a.status === 'completed')
                   .reverse()
                   .map((attempt, index, array) => {
-                    const improvement = index > 0 ? attempt.total_score - array[index - 1].total_score : 0
+                    const displayScore = getDisplayScore(attempt)
+                    const prevDisplayScore = index > 0 ? getDisplayScore(array[index - 1]) : 0
+                    const improvement = index > 0 ? displayScore - prevDisplayScore : 0
                     return (
                       <div key={attempt.id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
                         <div>
                           <div className="text-sm font-medium text-gray-900">
-                            Test #{index + 1}
+                            {attempt.exam?.title || `Test #${index + 1}`}
                           </div>
                           <div className="text-xs text-gray-500">
                             {formatDate(attempt.completed_at)}
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className={`text-lg font-bold ${getScoreColor(attempt.total_score)}`}>
-                            {attempt.total_score}
+                          <div className={`text-lg font-bold ${getScoreColor(displayScore)}`}>
+                            {displayScore}
                           </div>
                           {improvement !== 0 && (
                             <div className={`text-xs ${improvement > 0 ? 'text-green-600' : 'text-red-600'}`}>
