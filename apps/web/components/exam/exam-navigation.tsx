@@ -102,20 +102,22 @@ export function ExamNavigation({
     if (isCompact) {
       // Compact top navigation for preview mode
       return (
-        <div className="bg-white border-b border-gray-200 px-4 py-2 shadow-sm">
+        <div className="bg-white/80 backdrop-blur-sm border-b border-purple-100 px-4 py-2 shadow-lg">
           <div className="flex items-center justify-between">
             {/* Left: Module Overview - Horizontal layout */}
             <div className="flex items-center space-x-4">
-              <span className="text-xs text-orange-600 font-medium">Preview:</span>
+              <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-semibold">Preview:</span>
               {allModules.map((module, moduleIndex) => {
                 const isCurrentModule = moduleIndex === currentModuleIndex
                 const moduleShortName = module.module.replace(/^(\w+)(\d)$/, '$1$2').toUpperCase()
                 return (
-                  <div key={moduleIndex} className={`flex items-center space-x-1 px-2 py-1 rounded text-xs ${
-                    isCurrentModule ? 'bg-blue-100 text-blue-800' : 'text-gray-600'
-                  }`}>
-                    <span className="font-medium">{moduleShortName}</span>
-                    <div className="flex flex-wrap gap-0.5 max-w-xs">
+                  <div key={moduleIndex} className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs backdrop-blur-sm ${
+                    isCurrentModule 
+                      ? 'bg-gradient-to-r from-purple-100 to-violet-100 text-purple-800 border border-purple-200' 
+                      : 'bg-white/60 text-gray-600 hover:bg-white/80'
+                  } transition-all duration-200`}>
+                    <span className="font-semibold">{moduleShortName}</span>
+                    <div className="flex flex-wrap gap-1 max-w-xs">
                       {module.questions.map((_, qIndex) => {
                         const isCurrent = isCurrentModule && (qIndex + 1) === currentQuestion
                         const globalQuestionIndex = allModules.slice(0, moduleIndex)
@@ -127,12 +129,12 @@ export function ExamNavigation({
                             key={qIndex}
                             onClick={() => onGoToModule && onGoToModule(moduleIndex, qIndex)}
                             disabled={disabled}
-                            className={`w-4 h-4 text-xs rounded transition-all ${
+                            className={`w-5 h-5 text-xs rounded-md font-medium transition-all duration-200 ${
                               isCurrent 
-                                ? 'bg-blue-600 text-white' 
+                                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-sm' 
                                 : isAnswered
-                                ? 'bg-green-200 text-green-800 hover:bg-green-300'
-                                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                ? 'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 hover:from-emerald-200 hover:to-green-200'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             } disabled:opacity-50`}
                             title={`Question ${qIndex + 1}`}
                           >
@@ -151,17 +153,17 @@ export function ExamNavigation({
               <button
                 onClick={onPrevious}
                 disabled={disabled}
-                className="px-2 py-1 text-xs text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1.5 text-xs font-medium text-purple-700 bg-white/60 border border-purple-200 rounded-lg hover:bg-white/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
               >
                 ← Prev
               </button>
-              <span className="text-xs text-gray-600 px-2">
+              <span className="text-xs text-purple-600 px-2 font-medium">
                 {currentQuestion}/{totalQuestions}
               </span>
               <button
                 onClick={onNext}
                 disabled={disabled}
-                className="px-2 py-1 text-xs text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1.5 text-xs font-medium text-purple-700 bg-white/60 border border-purple-200 rounded-lg hover:bg-white/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
               >
                 Next →
               </button>
@@ -173,13 +175,13 @@ export function ExamNavigation({
     
     // Full navigation for bottom position
     return (
-      <div className="bg-white border-t border-gray-200 px-6 py-4">
+      <div className="bg-white/80 backdrop-blur-sm border-t border-purple-100 px-6 py-4">
         <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-gray-600">
-              <span className="font-medium text-orange-600">Admin Preview - All Modules</span>
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-sm">
+              <span className="font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Admin Preview - All Modules</span>
             </div>
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-purple-600/70">
               Navigate freely between all modules and questions
             </div>
           </div>
@@ -189,16 +191,18 @@ export function ExamNavigation({
             {allModules.map((module, moduleIndex) => {
               const isCurrentModule = moduleIndex === currentModuleIndex
               return (
-                <div key={moduleIndex} className={`border rounded-lg p-3 ${
-                  isCurrentModule ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                <div key={moduleIndex} className={`border rounded-xl p-4 backdrop-blur-sm transition-all duration-200 ${
+                  isCurrentModule 
+                    ? 'border-purple-300 bg-gradient-to-r from-purple-50 to-violet-50' 
+                    : 'border-purple-100 bg-white/50 hover:bg-white/70'
                 }`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className={`text-sm font-medium ${
-                      isCurrentModule ? 'text-blue-800' : 'text-gray-700'
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className={`text-sm font-semibold ${
+                      isCurrentModule ? 'text-purple-800' : 'text-purple-700'
                     }`}>
                       {getModuleName(module.module)}
                     </h4>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-purple-600/70 px-2 py-1 bg-purple-100 rounded-full">
                       {module.questions.length} questions
                     </span>
                   </div>
@@ -218,20 +222,20 @@ export function ExamNavigation({
                           onClick={() => onGoToModule && onGoToModule(moduleIndex, qIndex)}
                           disabled={disabled}
                           className={`
-                            w-8 h-8 text-sm font-medium rounded transition-all relative
+                            w-9 h-9 text-sm font-semibold rounded-lg transition-all duration-200 relative shadow-sm
                             disabled:opacity-50 disabled:cursor-not-allowed
                             ${isCurrent 
-                              ? 'bg-blue-600 text-white border-2 border-blue-600' 
+                              ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white border-2 border-purple-500' 
                               : isAnswered
-                              ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
-                              : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
+                              ? 'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 border border-emerald-300 hover:from-emerald-200 hover:to-green-200'
+                              : 'bg-white/80 text-purple-600 border border-purple-200 hover:bg-white hover:border-purple-300'
                             }
                           `}
                         >
                           {questionNum}
                           {isMarked && (
-                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center">
-                              <span className="text-xs text-white">🏷️</span>
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center shadow-sm">
+                              <span className="text-xs text-white font-bold">!</span>
                             </div>
                           )}
                         </button>
@@ -245,28 +249,28 @@ export function ExamNavigation({
         </div>
         
         {/* Admin Navigation Controls */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+        <div className="flex items-center justify-between pt-4 border-t border-purple-200">
           <div className="flex items-center space-x-4">
             <button
               onClick={onPrevious}
               disabled={disabled}
-              className="px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-purple-700 bg-white/60 border border-purple-200 rounded-lg hover:bg-white/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium backdrop-blur-sm"
             >
               ← Previous
             </button>
             <button
               onClick={onNext}
               disabled={disabled}
-              className="px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-purple-700 bg-white/60 border border-purple-200 rounded-lg hover:bg-white/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium backdrop-blur-sm"
             >
               Next →
             </button>
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-purple-700 font-medium">
               Module {currentModuleIndex + 1} of {allModules.length} • Question {currentQuestion} of {totalQuestions}
             </div>
           </div>
           
-          <div className="text-xs text-orange-600 font-medium">
+          <div className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-semibold">
             🔍 Admin Preview Mode - Full Navigation Enabled
           </div>
         </div>

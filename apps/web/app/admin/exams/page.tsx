@@ -704,7 +704,8 @@ export default function ManageExamsPage() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {Object.entries(question.options).map(([key, value]) => {
+                    {question.options && Object.keys(question.options).length > 0 ? (
+                      Object.entries(question.options).map(([key, value]) => {
                       let optionData;
                       try {
                         optionData = typeof value === 'string' ? JSON.parse(value) : value;
@@ -738,7 +739,12 @@ export default function ManageExamsPage() {
                           </div>
                         </div>
                       );
-                    })}
+                    })
+                    ) : (
+                      <div className="text-center p-4 bg-gray-50 rounded border-2 border-dashed border-gray-300">
+                        <p className="text-gray-600 text-sm">No answer choices available for this question.</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

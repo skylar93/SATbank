@@ -649,7 +649,7 @@ function ExamPageContent() {
                   </span>
                   <button
                     onClick={() => router.push('/admin/exams')}
-                    className="text-orange-600 hover:text-orange-800 text-sm font-medium underline"
+                    className="text-purple-600 hover:text-purple-800 text-sm font-semibold underline transition-colors duration-200"
                   >
                     ← Back to Admin Panel
                   </button>
@@ -836,13 +836,13 @@ function ExamPageContent() {
       {/* Header with Timer */}
       <div className="bg-white shadow-sm border-b px-6 py-4">
         {isPreviewMode && (
-          <div className="mb-3 p-2 bg-orange-100 border border-orange-300 rounded text-center">
-            <span className="text-orange-800 text-sm font-medium">
+          <div className="mb-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg text-center backdrop-blur-sm">
+            <span className="text-purple-700 text-sm font-semibold">
               🔍 Admin Preview Mode - Changes will not be saved
             </span>
             <button
               onClick={() => router.push('/admin/exams')}
-              className="ml-4 text-orange-600 hover:text-orange-800 text-xs underline"
+              className="ml-4 text-purple-600 hover:text-purple-800 text-xs font-medium underline transition-colors duration-200"
             >
               Back to Admin Panel
             </button>

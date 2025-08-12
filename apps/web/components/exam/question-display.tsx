@@ -633,22 +633,40 @@ export function QuestionDisplay({
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Image URL (Optional)
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Image Upload (Optional)
                     </label>
-                    <input
-                      type="url"
-                      value={optionData.imageUrl || ''}
-                      onChange={(e) => {
-                        const updatedOption = { ...optionData, imageUrl: e.target.value };
+                    <ImageUpload
+                      onImageUploaded={(imageUrl) => {
+                        const updatedOption = { ...optionData, imageUrl };
                         setEditForm({
                           ...editForm,
                           options: {...(editForm.options || {}), [key]: JSON.stringify(updatedOption)}
                         });
                       }}
-                      placeholder="https://example.com/image.jpg"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="mb-2"
                     />
+                    {optionData.imageUrl && (
+                      <div className="mt-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500">Current image:</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updatedOption = { ...optionData };
+                              delete updatedOption.imageUrl;
+                              setEditForm({
+                                ...editForm,
+                                options: {...(editForm.options || {}), [key]: JSON.stringify(updatedOption)}
+                              });
+                            }}
+                            className="text-xs text-red-600 hover:text-red-800"
+                          >
+                            Remove Image
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
                   {optionData.imageUrl && (
@@ -866,14 +884,14 @@ export function QuestionDisplay({
               {isAdminPreview && (
                 <>
                   <span className={`
-                    px-2 py-1 rounded text-xs font-medium
-                    ${localQuestion.difficulty_level === 'easy' ? 'bg-green-100 text-green-800' : ''}
-                    ${localQuestion.difficulty_level === 'medium' ? 'bg-yellow-100 text-yellow-800' : ''}
-                    ${localQuestion.difficulty_level === 'hard' ? 'bg-red-100 text-red-800' : ''}
+                    px-2 py-1 rounded-full text-xs font-medium transition-all duration-200
+                    ${localQuestion.difficulty_level === 'easy' ? 'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700' : ''}
+                    ${localQuestion.difficulty_level === 'medium' ? 'bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-700' : ''}
+                    ${localQuestion.difficulty_level === 'hard' ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-700' : ''}
                   `}>
                     {localQuestion.difficulty_level}
                   </span>
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
+                  <span className="px-2 py-1 bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 rounded-full text-xs font-medium">
                     {localQuestion.module_type.replace(/(\d)/, ' $1').toUpperCase()}
                   </span>
                 </>
@@ -885,14 +903,14 @@ export function QuestionDisplay({
                       <button
                         onClick={handleSaveEdit}
                         disabled={saving}
-                        className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded transition-colors disabled:opacity-50"
+                        className="px-3 py-1 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white text-xs rounded-lg transition-all duration-200 shadow-sm disabled:opacity-50 font-medium"
                       >
                         {saving ? 'Saving...' : 'Save'}
                       </button>
                       <button
                         onClick={handleCancelEdit}
                         disabled={saving}
-                        className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded transition-colors disabled:opacity-50"
+                        className="px-3 py-1 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white text-xs rounded-lg transition-all duration-200 shadow-sm disabled:opacity-50 font-medium"
                       >
                         Cancel
                       </button>
@@ -900,7 +918,7 @@ export function QuestionDisplay({
                   ) : (
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-xs rounded transition-colors"
+                      className="px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs rounded-lg transition-all duration-200 shadow-sm font-medium"
                     >
                       Edit Question
                     </button>
@@ -915,7 +933,7 @@ export function QuestionDisplay({
               {localQuestion.topic_tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs"
+                  className="px-2 py-1 bg-gradient-to-r from-purple-50 to-violet-50 text-purple-600 border border-purple-200 rounded-full text-xs font-medium"
                 >
                   {tag}
                 </span>
@@ -1193,7 +1211,7 @@ export function QuestionDisplay({
               <div className="space-y-3">
                 <button
                   onClick={() => setShowAnswerCheck(!showAnswerCheck)}
-                  className="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition-colors"
+                  className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium rounded-lg transition-all duration-200 shadow-lg"
                 >
                   {showAnswerCheck ? 'Hide Answer' : 'Check Answer'}
                 </button>

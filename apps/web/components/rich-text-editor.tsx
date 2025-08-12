@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Bold, Italic, Underline, Search, Replace, Superscript, Subscript, Undo, Redo, AlignCenter, Table, Image, AlignLeft, AlignRight } from 'lucide-react'
+import { Bold, Italic, Underline, Search, Replace, Superscript, Subscript, Undo, Redo, AlignCenter, Table, AlignLeft, AlignRight } from 'lucide-react'
 import { InlineMath, BlockMath } from 'react-katex'
 
 interface RichTextEditorProps {
@@ -34,12 +34,8 @@ export function RichTextEditor({
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [previewMode, setPreviewMode] = useState(false)
   const [showTableEditor, setShowTableEditor] = useState(false)
-  const [showImageDialog, setShowImageDialog] = useState(false)
   const [tableRows, setTableRows] = useState(2)
   const [tableCols, setTableCols] = useState(2)
-  const [imageUrl, setImageUrl] = useState('')
-  const [imageAlt, setImageAlt] = useState('')
-  const [imagePosition, setImagePosition] = useState<'left' | 'center' | 'right'>('center')
   
   // Undo/Redo functionality
   const [history, setHistory] = useState<string[]>([])
@@ -244,32 +240,6 @@ export function RichTextEditor({
     }, 0)
 
     setShowTableEditor(false)
-  }
-
-  const insertImage = (url: string, alt: string, position: 'left' | 'center' | 'right') => {
-    if (!textareaRef.current) return
-
-    const start = textareaRef.current.selectionStart
-    const end = textareaRef.current.selectionEnd
-    
-    // Create positioned image syntax
-    const imageText = `\n{{img-${position}}}![${alt}](${url}){{/img-${position}}}\n`
-    
-    const newText = value.substring(0, start) + imageText + value.substring(end)
-    onChange(newText)
-
-    setTimeout(() => {
-      if (textareaRef.current) {
-        const newPosition = start + imageText.length
-        textareaRef.current.setSelectionRange(newPosition, newPosition)
-        textareaRef.current.focus()
-      }
-    }, 0)
-
-    setShowImageDialog(false)
-    setImageUrl('')
-    setImageAlt('')
-    setImagePosition('center')
   }
 
   const handleFind = (direction: 'next' | 'prev') => {
@@ -746,14 +716,6 @@ export function RichTextEditor({
             >
               <Table size={16} />
             </button>
-            <button
-              type="button"
-              onClick={() => setShowImageDialog(!showImageDialog)}
-              className="p-1.5 hover:bg-gray-200 rounded transition-colors"
-              title="Insert Image"
-            >
-              <Image size={16} />
-            </button>
           </div>
         )}
 
@@ -894,87 +856,6 @@ export function RichTextEditor({
         </div>
       )}
 
-      {/* Image Dialog Panel */}
-      {showImageDialog && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded">
-          <div className="space-y-3">
-            <div className="flex flex-wrap gap-3 items-center">
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium">Image URL:</label>
-                <input
-                  type="text"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="px-2 py-1 border border-gray-300 rounded text-sm flex-1 min-w-[200px]"
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium">Alt text:</label>
-                <input
-                  type="text"
-                  value={imageAlt}
-                  onChange={(e) => setImageAlt(e.target.value)}
-                  className="px-2 py-1 border border-gray-300 rounded text-sm"
-                  placeholder="Image description"
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <label className="text-sm font-medium">Position:</label>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setImagePosition('left')}
-                  className={`p-1.5 rounded transition-colors ${
-                    imagePosition === 'left' ? 'bg-blue-200 text-blue-800' : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                  title="Align Left"
-                >
-                  <AlignLeft size={14} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setImagePosition('center')}
-                  className={`p-1.5 rounded transition-colors ${
-                    imagePosition === 'center' ? 'bg-blue-200 text-blue-800' : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                  title="Align Center"
-                >
-                  <AlignCenter size={14} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setImagePosition('right')}
-                  className={`p-1.5 rounded transition-colors ${
-                    imagePosition === 'right' ? 'bg-blue-200 text-blue-800' : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                  title="Align Right"
-                >
-                  <AlignRight size={14} />
-                </button>
-              </div>
-              <div className="flex items-center gap-1 ml-auto">
-                <button
-                  type="button"
-                  onClick={() => insertImage(imageUrl, imageAlt, imagePosition)}
-                  disabled={!imageUrl.trim()}
-                  className="px-3 py-1 text-sm bg-green-500 text-white hover:bg-green-600 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Insert Image
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowImageDialog(false)}
-                  className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Editor/Preview Area */}
       {previewMode && showPreview ? (
