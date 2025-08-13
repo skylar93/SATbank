@@ -93,7 +93,8 @@ export interface Question {
   question_text: string
   question_image_url: string | null
   options: Record<string, string> | null // {"A": "text", "B": "text", etc.}
-  correct_answer: string
+  correct_answer: string // For multiple_choice questions
+  correct_answers: string[] | null // For grid_in questions - array of acceptable answers
   explanation: string | null
   points: number
   topic_tags: string[] | null

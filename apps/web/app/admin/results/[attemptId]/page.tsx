@@ -8,6 +8,7 @@ import { Navigation } from '../../../../components/navigation'
 import { AnalyticsService, type ComprehensiveResults } from '../../../../lib/analytics-service'
 import { ExportService } from '../../../../lib/export-service'
 import { ModuleType, ExamService } from '../../../../lib/exam-service'
+import { ScoringService } from '../../../../lib/scoring-service'
 import { supabase } from '../../../../lib/supabase'
 
 interface StudentProfile {
@@ -38,6 +39,14 @@ export default function AdminDetailedResultsPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'questions' | 'comparison'>('overview')
   const [exporting, setExporting] = useState(false)
   const [questionFilter, setQuestionFilter] = useState<'all' | 'correct' | 'incorrect' | 'skipped'>('all')
+  const [regrading, setRegrading] = useState<string | null>(null)
+  const [regradeModal, setRegradeModal] = useState<{
+    questionId: string
+    userAnswerId: string
+    currentCorrect: boolean
+    questionNumber: number
+  } | null>(null)
+  const [regradeReason, setRegradeReason] = useState('')
 
   const attemptId = params.attemptId as string
 
@@ -135,6 +144,130 @@ export default function AdminDetailedResultsPage() {
     } finally {
       setExporting(false)
     }
+  }
+
+  const handleRegradeQuestion = async () => {
+    if (!regradeModal || !regradeReason.trim() || !user) return
+    
+    setRegrading(regradeModal.userAnswerId)
+    try {
+      console.log('Starting regrade for question:', regradeModal.questionNumber)
+      
+      // Check admin role first
+      if (user.profile?.role !== 'admin') {
+        throw new Error('Admin access required')
+      }
+
+      // Get current user answer
+      const { data: userAnswer, error: answerError } = await supabase
+        .from('user_answers')
+        .select('id, attempt_id, is_correct')
+        .eq('id', regradeModal.userAnswerId)
+        .single()
+
+      if (answerError || !userAnswer) {
+        throw new Error('User answer not found')
+      }
+
+      const oldIsCorrect = userAnswer.is_correct
+      const newIsCorrect = !regradeModal.currentCorrect
+
+      // Don't update if the value is the same
+      if (oldIsCorrect === newIsCorrect) {
+        throw new Error('New grading result is the same as current result')
+      }
+
+      // Update the user answer
+      const { error: updateError } = await supabase
+        .from('user_answers')
+        .update({ is_correct: newIsCorrect })
+        .eq('id', regradeModal.userAnswerId)
+
+      if (updateError) {
+        throw new Error(`Failed to update user answer: ${updateError.message}`)
+      }
+
+      // Log the regrade action (optional - may fail due to RLS)
+      try {
+        await supabase
+          .from('regrade_history')
+          .insert({
+            user_answer_id: regradeModal.userAnswerId,
+            attempt_id: userAnswer.attempt_id,
+            admin_id: user.id,
+            old_is_correct: oldIsCorrect,
+            new_is_correct: newIsCorrect,
+            reason: regradeReason.trim(),
+            regraded_at: new Date().toISOString()
+          })
+      } catch (logError) {
+        console.warn('Failed to log regrade action:', logError)
+        // Don't fail the whole operation for logging errors
+      }
+
+      // Recalculate scores using scoring service
+      try {
+        const newScores = await ScoringService.calculateFinalScores(userAnswer.attempt_id)
+        
+        // Update the test attempt with new scores
+        const { error: scoreUpdateError } = await supabase
+          .from('test_attempts')
+          .update({
+            total_score: newScores.overall,
+            final_scores: {
+              overall: newScores.overall,
+              english: newScores.english,
+              math: newScores.math
+            },
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', userAnswer.attempt_id)
+
+        if (scoreUpdateError) {
+          // Revert the user answer change if score update fails
+          await supabase
+            .from('user_answers')
+            .update({ is_correct: oldIsCorrect })
+            .eq('id', regradeModal.userAnswerId)
+          
+          throw new Error(`Failed to update attempt scores: ${scoreUpdateError.message}`)
+        }
+
+        console.log('Regrade successful:', { oldIsCorrect, newIsCorrect, newScores })
+        
+        // Reload results to show updated scores
+        await loadResults()
+        
+        setRegradeModal(null)
+        setRegradeReason('')
+        setError(null)
+
+      } catch (scoringError: any) {
+        // Revert the user answer change if scoring fails
+        await supabase
+          .from('user_answers')
+          .update({ is_correct: oldIsCorrect })
+          .eq('id', regradeModal.userAnswerId)
+        
+        throw new Error(`Scoring calculation failed: ${scoringError.message}`)
+      }
+      
+    } catch (err: any) {
+      console.error('Regrade error:', err)
+      setError(`Regrade failed: ${err.message}`)
+    } finally {
+      setRegrading(null)
+    }
+  }
+
+  const openRegradeModal = (question: any) => {
+    setRegradeModal({
+      questionId: question.questionId,
+      userAnswerId: question.userAnswerId,
+      currentCorrect: question.isCorrect,
+      questionNumber: question.questionNumber
+    })
+    setRegradeReason('')
   }
 
   const formatTime = (seconds: number) => {
@@ -571,6 +704,25 @@ export default function AdminDetailedResultsPage() {
                                 </div>
                               </div>
                             </div>
+                            
+                            {/* Regrade Button */}
+                            <div className="flex-shrink-0">
+                              <button
+                                onClick={() => openRegradeModal(question)}
+                                disabled={regrading === question.userAnswerId}
+                                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                                  question.isCorrect
+                                    ? 'bg-red-100 text-red-700 hover:bg-red-200 disabled:bg-red-50'
+                                    : 'bg-green-100 text-green-700 hover:bg-green-200 disabled:bg-green-50'
+                                }`}
+                              >
+                                {regrading === question.userAnswerId ? (
+                                  'Regrading...'
+                                ) : (
+                                  question.isCorrect ? 'Mark Incorrect' : 'Mark Correct'
+                                )}
+                              </button>
+                            </div>
                           </div>
 
                           {/* Question Content */}
@@ -759,6 +911,64 @@ export default function AdminDetailedResultsPage() {
           </div>
         )}
       </div>
+
+      {/* Regrade Confirmation Modal */}
+      {regradeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Regrade Question {regradeModal.questionNumber}
+            </h3>
+            
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">
+                Current status: <span className={`font-medium ${regradeModal.currentCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                  {regradeModal.currentCorrect ? 'Correct' : 'Incorrect'}
+                </span>
+              </p>
+              <p className="text-sm text-gray-600 mb-4">
+                New status: <span className={`font-medium ${!regradeModal.currentCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                  {!regradeModal.currentCorrect ? 'Correct' : 'Incorrect'}
+                </span>
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="regrade-reason" className="block text-sm font-medium text-gray-700 mb-2">
+                Reason for regrading (required):
+              </label>
+              <textarea
+                id="regrade-reason"
+                rows={3}
+                value={regradeReason}
+                onChange={(e) => setRegradeReason(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Explain why this question needs to be regraded..."
+              />
+            </div>
+
+            <div className="flex space-x-3">
+              <button
+                onClick={() => {
+                  setRegradeModal(null)
+                  setRegradeReason('')
+                }}
+                disabled={regrading !== null}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRegradeQuestion}
+                disabled={!regradeReason.trim() || regrading !== null}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 transition-colors"
+              >
+                {regrading !== null ? 'Regrading...' : 'Confirm Regrade'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

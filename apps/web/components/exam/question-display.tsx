@@ -299,6 +299,7 @@ export function QuestionDisplay({
     question_type: question.question_type,
     options: question.options || {},
     correct_answer: question.correct_answer,
+    correct_answers: question.correct_answers || (question.question_type === 'grid_in' ? [question.correct_answer] : null),
     explanation: question.explanation || '',
     table_data: question.table_data || null
   })
@@ -314,12 +315,13 @@ export function QuestionDisplay({
       question_type: question.question_type,
       options: question.options || {},
       correct_answer: question.correct_answer,
+      correct_answers: question.correct_answers || (question.question_type === 'grid_in' ? [question.correct_answer] : null),
       explanation: question.explanation || '',
       table_data: question.table_data || null
     })
     // Reset answer check when question changes
     setShowAnswerCheck(false)
-  }, [question.id, question.question_text, question.options, question.correct_answer, question.explanation])
+  }, [question.id, question.question_text, question.options, question.correct_answer, question.correct_answers, question.explanation])
 
   const handleSaveEdit = async () => {
     if (!onQuestionUpdate) return
@@ -366,16 +368,27 @@ export function QuestionDisplay({
       }
 
       // Match the admin panel approach exactly
+      const updateData: any = {
+        question_text: editForm.question_text,
+        question_type: editForm.question_type,
+        options: editForm.options,
+        explanation: editForm.explanation,
+        table_data: editForm.table_data
+      }
+
+      // Handle correct answers based on question type
+      if (editForm.question_type === 'grid_in') {
+        updateData.correct_answers = editForm.correct_answers
+        // Keep correct_answer for backward compatibility
+        updateData.correct_answer = editForm.correct_answers?.[0] || ''
+      } else {
+        updateData.correct_answer = editForm.correct_answer
+        updateData.correct_answers = null
+      }
+
       const { data, error } = await supabase
         .from('questions')
-        .update({
-          question_text: editForm.question_text,
-          question_type: editForm.question_type,
-          options: editForm.options,
-          correct_answer: editForm.correct_answer,
-          explanation: editForm.explanation,
-          table_data: editForm.table_data
-        })
+        .update(updateData)
         .eq('id', question.id)
 
       console.log('🔍 Supabase response:', { data, error })
@@ -1113,9 +1126,14 @@ export function QuestionDisplay({
                       setLocalQuestion({...localQuestion, question_type: newType});
                       setEditForm({...editForm, question_type: newType});
                       
-                      // Reset options if switching to grid_in
+                      // Reset options and correct answers based on question type
                       if (newType === 'grid_in') {
-                        setEditForm({...editForm, options: {}, question_type: newType});
+                        setEditForm({
+                          ...editForm, 
+                          options: {}, 
+                          question_type: newType,
+                          correct_answers: editForm.correct_answer ? [editForm.correct_answer] : ['']
+                        });
                       } else if (newType === 'multiple_choice' && !editForm.options) {
                         // Set default options if switching to multiple choice
                         setEditForm({
@@ -1126,7 +1144,8 @@ export function QuestionDisplay({
                             'C': '{"text": "Option C"}',
                             'D': '{"text": "Option D"}'
                           },
-                          question_type: newType
+                          question_type: newType,
+                          correct_answers: null
                         });
                       }
                     }}
@@ -1139,15 +1158,61 @@ export function QuestionDisplay({
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Correct Answer
+                    Correct Answer{editForm.question_type === 'grid_in' ? 's' : ''}
+                    {editForm.question_type === 'grid_in' && (
+                      <span className="text-sm text-gray-500 ml-1">(Multiple answers allowed)</span>
+                    )}
                   </label>
-                  <input
-                    type="text"
-                    value={editForm.correct_answer}
-                    onChange={(e) => setEditForm({...editForm, correct_answer: e.target.value})}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    placeholder={localQuestion.question_type === 'multiple_choice' ? "Correct answer (e.g., A, B, C, D)" : "Correct numeric/text answer"}
-                  />
+                  
+                  {editForm.question_type === 'grid_in' ? (
+                    <div className="space-y-3">
+                      {(editForm.correct_answers || ['']).map((answer, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={answer}
+                            onChange={(e) => {
+                              const newAnswers = [...(editForm.correct_answers || [''])];
+                              newAnswers[index] = e.target.value;
+                              setEditForm({...editForm, correct_answers: newAnswers});
+                            }}
+                            className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            placeholder={`Correct answer ${index + 1}`}
+                          />
+                          {(editForm.correct_answers || []).length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newAnswers = editForm.correct_answers?.filter((_, i) => i !== index) || [];
+                                setEditForm({...editForm, correct_answers: newAnswers});
+                              }}
+                              className="px-3 py-2 text-red-600 hover:text-red-800 border border-red-300 hover:border-red-400 rounded-md transition-colors"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newAnswers = [...(editForm.correct_answers || ['']), ''];
+                          setEditForm({...editForm, correct_answers: newAnswers});
+                        }}
+                        className="w-full px-4 py-2 text-orange-600 hover:text-orange-800 border border-orange-300 hover:border-orange-400 rounded-md transition-colors"
+                      >
+                        + Add Another Correct Answer
+                      </button>
+                    </div>
+                  ) : (
+                    <input
+                      type="text"
+                      value={editForm.correct_answer}
+                      onChange={(e) => setEditForm({...editForm, correct_answer: e.target.value})}
+                      className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="Correct answer (e.g., A, B, C, D)"
+                    />
+                  )}
                 </div>
               </div>
               

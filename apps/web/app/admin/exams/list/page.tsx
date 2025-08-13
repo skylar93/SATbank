@@ -116,8 +116,8 @@ export default function ExamsListPage() {
       <div className="p-6">
         {/* Exams Table */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-purple-100 bg-gradient-to-r from-purple-500 to-pink-500">
-            <h2 className="text-lg font-semibold text-white">All Exams</h2>
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">All Exams</h2>
           </div>
 
           {exams.length === 0 ? (

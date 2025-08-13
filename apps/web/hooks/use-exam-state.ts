@@ -254,7 +254,11 @@ export function useExamState() {
       for (const [questionId, examAnswer] of Object.entries(currentModule.answers)) {
         const question = currentModule.questions.find(q => q.id === questionId)
         if (question && examAnswer.answer) {
-          const isCorrect = checkAnswer(examAnswer.answer, question.correct_answer)
+          // Use correct_answers for grid_in questions, correct_answer for multiple_choice
+          const correctAnswers = question.question_type === 'grid_in' 
+            ? question.correct_answers || [question.correct_answer]
+            : question.correct_answer
+          const isCorrect = checkAnswer(examAnswer.answer, correctAnswers)
           
           await ExamService.submitAnswer({
             attempt_id: examState.attempt.id,

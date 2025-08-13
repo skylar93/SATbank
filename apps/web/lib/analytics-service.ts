@@ -34,6 +34,7 @@ export interface DetailedScore {
 
 export interface QuestionAnalysis {
   questionId: string
+  userAnswerId: string
   questionNumber: number
   moduleType: ModuleType
   userAnswer: string | null
@@ -292,6 +293,7 @@ export class AnalyticsService {
 
       return {
         questionId: question.id,
+        userAnswerId: answer.id,
         questionNumber: question.question_number,
         moduleType: question.module_type,
         userAnswer: answer.user_answer,
