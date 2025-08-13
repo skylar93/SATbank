@@ -147,110 +147,42 @@ export default function AdminDetailedResultsPage() {
   }
 
   const handleRegradeQuestion = async () => {
-    if (!regradeModal || !regradeReason.trim() || !user) return
+    if (!regradeModal || !regradeReason.trim()) return
     
     setRegrading(regradeModal.userAnswerId)
     try {
       console.log('Starting regrade for question:', regradeModal.questionNumber)
       
-      // Check admin role first
-      if (user.profile?.role !== 'admin') {
-        throw new Error('Admin access required')
+      const response = await fetch('/api/admin/regrade-question', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include cookies for authentication
+        body: JSON.stringify({
+          userAnswerId: regradeModal.userAnswerId,
+          newIsCorrect: !regradeModal.currentCorrect,
+          reason: regradeReason.trim()
+        })
+      })
+
+      console.log('Response status:', response.status)
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.log('Error response:', errorData)
+        throw new Error(errorData.error || 'Failed to regrade question')
       }
 
-      // Get current user answer
-      const { data: userAnswer, error: answerError } = await supabase
-        .from('user_answers')
-        .select('id, attempt_id, is_correct')
-        .eq('id', regradeModal.userAnswerId)
-        .single()
-
-      if (answerError || !userAnswer) {
-        throw new Error('User answer not found')
-      }
-
-      const oldIsCorrect = userAnswer.is_correct
-      const newIsCorrect = !regradeModal.currentCorrect
-
-      // Don't update if the value is the same
-      if (oldIsCorrect === newIsCorrect) {
-        throw new Error('New grading result is the same as current result')
-      }
-
-      // Update the user answer
-      const { error: updateError } = await supabase
-        .from('user_answers')
-        .update({ is_correct: newIsCorrect })
-        .eq('id', regradeModal.userAnswerId)
-
-      if (updateError) {
-        throw new Error(`Failed to update user answer: ${updateError.message}`)
-      }
-
-      // Log the regrade action (optional - may fail due to RLS)
-      try {
-        await supabase
-          .from('regrade_history')
-          .insert({
-            user_answer_id: regradeModal.userAnswerId,
-            attempt_id: userAnswer.attempt_id,
-            admin_id: user.id,
-            old_is_correct: oldIsCorrect,
-            new_is_correct: newIsCorrect,
-            reason: regradeReason.trim(),
-            regraded_at: new Date().toISOString()
-          })
-      } catch (logError) {
-        console.warn('Failed to log regrade action:', logError)
-        // Don't fail the whole operation for logging errors
-      }
-
-      // Recalculate scores using scoring service
-      try {
-        const newScores = await ScoringService.calculateFinalScores(userAnswer.attempt_id)
-        
-        // Update the test attempt with new scores
-        const { error: scoreUpdateError } = await supabase
-          .from('test_attempts')
-          .update({
-            total_score: newScores.overall,
-            final_scores: {
-              overall: newScores.overall,
-              english: newScores.english,
-              math: newScores.math
-            },
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', userAnswer.attempt_id)
-
-        if (scoreUpdateError) {
-          // Revert the user answer change if score update fails
-          await supabase
-            .from('user_answers')
-            .update({ is_correct: oldIsCorrect })
-            .eq('id', regradeModal.userAnswerId)
-          
-          throw new Error(`Failed to update attempt scores: ${scoreUpdateError.message}`)
-        }
-
-        console.log('Regrade successful:', { oldIsCorrect, newIsCorrect, newScores })
-        
-        // Reload results to show updated scores
-        await loadResults()
-        
-        setRegradeModal(null)
-        setRegradeReason('')
-        setError(null)
-
-      } catch (scoringError: any) {
-        // Revert the user answer change if scoring fails
-        await supabase
-          .from('user_answers')
-          .update({ is_correct: oldIsCorrect })
-          .eq('id', regradeModal.userAnswerId)
-        
-        throw new Error(`Scoring calculation failed: ${scoringError.message}`)
-      }
+      const result = await response.json()
+      console.log('Regrade successful:', result)
+      
+      // Reload results to show updated scores
+      await loadResults()
+      
+      setRegradeModal(null)
+      setRegradeReason('')
+      setError(null)
       
     } catch (err: any) {
       console.error('Regrade error:', err)
