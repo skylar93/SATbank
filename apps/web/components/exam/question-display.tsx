@@ -299,7 +299,7 @@ export function QuestionDisplay({
     question_type: question.question_type,
     options: question.options || {},
     correct_answer: question.correct_answer,
-    correct_answers: question.correct_answers || (question.question_type === 'grid_in' ? [question.correct_answer] : null),
+    correct_answers: question.correct_answers || (question.question_type === 'grid_in' ? [question.correct_answer] : []),
     explanation: question.explanation || '',
     table_data: question.table_data || null
   })
@@ -315,7 +315,7 @@ export function QuestionDisplay({
       question_type: question.question_type,
       options: question.options || {},
       correct_answer: question.correct_answer,
-      correct_answers: question.correct_answers || (question.question_type === 'grid_in' ? [question.correct_answer] : null),
+      correct_answers: question.correct_answers || (question.question_type === 'grid_in' ? [question.correct_answer] : []),
       explanation: question.explanation || '',
       table_data: question.table_data || null
     })
@@ -442,6 +442,7 @@ export function QuestionDisplay({
       question_type: localQuestion.question_type,
       options: localQuestion.options || {},
       correct_answer: localQuestion.correct_answer,
+      correct_answers: localQuestion.correct_answers || (localQuestion.question_type === 'grid_in' ? [localQuestion.correct_answer] : []),
       explanation: localQuestion.explanation || '',
       table_data: localQuestion.table_data || null
     })
@@ -1145,7 +1146,7 @@ export function QuestionDisplay({
                             'D': '{"text": "Option D"}'
                           },
                           question_type: newType,
-                          correct_answers: null
+                          correct_answers: []
                         });
                       }
                     }}

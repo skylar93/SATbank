@@ -30,7 +30,8 @@ export interface Question {
   question_text: string
   question_image_url: string | null
   options: Record<string, string> | null
-  correct_answer: string | string[]
+  correct_answer: string
+  correct_answers: string[] | null
   explanation: string | null
   points: number
   topic_tags: string[] | null

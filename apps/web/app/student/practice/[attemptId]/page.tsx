@@ -7,28 +7,7 @@ import { Navigation } from '../../../../components/navigation'
 import { QuestionDisplay } from '../../../../components/exam/question-display'
 import { ExamTimer } from '../../../../components/exam/exam-timer'
 import { createClient } from '../../../../lib/supabase'
-
-interface Question {
-  id: string
-  exam_id: string
-  module_type: 'english1' | 'english2' | 'math1' | 'math2'
-  question_number: number
-  question_type: 'multiple_choice' | 'grid_in' | 'essay'
-  difficulty_level: 'easy' | 'medium' | 'hard'
-  question_text: string
-  question_image_url: string | null
-  options: Record<string, string> | null
-  correct_answer: string
-  explanation: string | null
-  points: number
-  topic_tags: string[] | null
-  table_data?: {
-    headers: string[]
-    rows: string[][]
-  } | null
-  created_at: string
-  updated_at: string
-}
+import { Question } from '../../../../lib/exam-service'
 
 interface PracticeSettings {
   shuffleQuestions: boolean
