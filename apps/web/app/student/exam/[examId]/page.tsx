@@ -14,45 +14,27 @@ function ExamPageContent() {
   const params = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, loading: authLoading, isAdmin } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const examId = params.examId as string
-  const previewParam = searchParams.get('preview') === 'true'
-  const isPreviewMode = previewParam && isAdmin
   
   // Debug logging for preview mode issues (disabled)
   // console.log('🔍 ExamPage Debug:', {
   //   examId,
-  //   previewParam,
-  //   isAdmin,
   //   user: user?.email,
   //   userProfile: user?.profile,
   //   userRole: user?.profile?.role,
   //   authLoading,
-  //   isPreviewMode,
   //   hasUser: !!user,
   //   hasProfile: !!user?.profile,
   //   timestamp: new Date().toISOString()
   // })
   
-  // Debug preview mode
-  if (previewParam && !authLoading) {
-    console.log('🔍 PREVIEW MODE:', {
-      isAdmin,
-      role: user?.profile?.role,
-      examId,
-      isPreviewMode
-    })
-  }
 
   // Handle invalid examId - but only after auth is loaded
   if (!examId || examId === 'null' || examId === 'undefined') {
     if (!authLoading) {
       // If in preview mode, redirect to admin panel instead of student dashboard
-      if (previewParam && isAdmin) {
-        router.push('/admin/exams')
-      } else {
-        router.push('/student/dashboard')
-      }
+      router.push('/student/dashboard')
       return <div>Redirecting...</div>
     } else {
       // Still loading auth, show loading state
@@ -78,8 +60,6 @@ function ExamPageContent() {
     nextQuestion,
     previousQuestion,
     goToQuestion,
-    goToModuleAndQuestion,
-    updateQuestionInState,
     nextModule,
     completeExam,
     handleTimeExpired: handleTimeExpiredFromHook,
@@ -126,11 +106,8 @@ function ExamPageContent() {
       examId,
       hasInitialized,
       loading,
-      previewParam,
-      isAdmin,
-      isPreviewMode,
       userProfile: user?.profile,
-      shouldInitialize: !authLoading && examId && !hasInitialized && !loading && ((user && !previewParam) || isPreviewMode)
+      shouldInitialize: !authLoading && user && examId && !hasInitialized && !loading
     })
     
     // Don't do anything if auth is still loading
@@ -139,64 +116,27 @@ function ExamPageContent() {
       return
     }
     
-    // If we have a user but no profile yet, wait for profile to load
-    // (This prevents premature redirects for admin users whose profile hasn't loaded)
-    if (user && !user.profile && previewParam) {
-      console.log('⏳ User found but profile not loaded yet, waiting for admin check...')
-      // Add a timeout to prevent infinite waiting
-      setTimeout(() => {
-        if (user && !user.profile && previewParam) {
-          console.warn('⚠️ Profile loading timeout, proceeding without profile check')
-          // Force initialization if we've been waiting too long
-          setHasInitialized(true)
-          initializeExam(examId, previewParam)
-        }
-      }, 5000) // 5 second timeout
-      return
-    }
-    
-    // For preview mode: need admin user with loaded profile
-    // For regular mode: need any user
-    const canInitialize = examId && !hasInitialized && !loading && 
-      ((previewParam && isAdmin) || (!previewParam && user))
-    
-    // Debug the canInitialize condition
-    console.log('🔍 canInitialize breakdown:', {
-      examId: !!examId,
-      hasInitialized,
-      loading,
-      previewParam,
-      isAdmin,
-      user: !!user,
-      previewCondition: previewParam && isAdmin,
-      regularCondition: !previewParam && user,
-      finalCanInitialize: canInitialize
-    })
+    // For student mode: need authenticated user
+    const canInitialize = examId && !hasInitialized && !loading && user
     
     if (canInitialize) {
-      console.log('🚀 ExamPage useEffect: Starting exam initialization', { isPreviewMode })
+      console.log('🚀 ExamPage useEffect: Starting exam initialization')
       setHasInitialized(true)
-      initializeExam(examId, isPreviewMode)
-    } else if (!authLoading && !user && !previewParam) {
-      // Not authenticated and not preview mode - redirect to dashboard
+      initializeExam(examId)
+    } else if (!authLoading && !user) {
+      // Not authenticated - redirect to dashboard
       console.log('❌ Not authenticated, redirecting to dashboard')
       router.push('/student/dashboard')
-    } else if (!authLoading && user && user.profile && previewParam && !isAdmin) {
-      // Preview mode with loaded profile but not admin - redirect to admin panel
-      console.log('❌ Preview mode but not admin (profile loaded), redirecting to admin panel')
-      router.push('/admin/exams')
     } else {
       // Log why we're not initializing
       console.log('⏳ Not ready to initialize yet:', {
         authLoading,
         hasUser: !!user,
         hasProfile: !!user?.profile,
-        previewParam,
-        isAdmin,
         canInitialize
       })
     }
-  }, [authLoading, user, examId, hasInitialized, loading, initializeExam, isAdmin, previewParam, isPreviewMode, router])
+  }, [authLoading, user, examId, hasInitialized, loading, initializeExam, router])
 
   // Update current answer when question changes (but not when user is actively selecting)
   useEffect(() => {
@@ -214,7 +154,7 @@ function ExamPageContent() {
 
   // Handle exam start
   const handleStartExam = async () => {
-    await startExam(isPreviewMode)
+    await startExam()
     setShowStartScreen(false)
   }
 
@@ -236,7 +176,7 @@ function ExamPageContent() {
     setCurrentAnswer(answer)
     
     // Store answer locally only - not saved to database until module completion
-    setLocalAnswer(answer, isPreviewMode)
+    setLocalAnswer(answer)
     
     // Clear the flag after a short delay to allow answer loading on navigation
     setTimeout(() => setIsUserSelecting(false), 100)
@@ -245,16 +185,10 @@ function ExamPageContent() {
   // Save current answer locally before navigation
   const saveCurrentAnswer = () => {
     if (currentAnswer.trim()) {
-      setLocalAnswer(currentAnswer, isPreviewMode)
+      setLocalAnswer(currentAnswer)
     }
   }
 
-  // Handle question updates during admin preview
-  const handleQuestionUpdate = (updatedQuestion: Question) => {
-    // Update the question in the cached exam state so it persists during navigation
-    updateQuestionInState(updatedQuestion)
-    console.log('✅ Question updated in database and state:', updatedQuestion.id)
-  }
 
 
   // Handle timer expiration with popup notification
@@ -281,7 +215,7 @@ function ExamPageContent() {
         
         try {
           // Call the original handler from hook
-          await handleTimeExpiredFromHook(isPreviewMode)
+          await handleTimeExpiredFromHook()
           console.log('Successfully advanced module')
           
           // Navigate to results if exam is complete
@@ -316,16 +250,6 @@ function ExamPageContent() {
     goToQuestion(questionIndex)
   }
   
-  // Handle admin navigation to specific module and question
-  const handleGoToModule = (moduleIndex: number, questionIndex: number) => {
-    if (!isPreviewMode) return // Only allow in preview mode
-    
-    saveCurrentAnswer()
-    setIsUserSelecting(false)
-    
-    console.log('Admin navigation to module:', moduleIndex, 'question:', questionIndex)
-    goToModuleAndQuestion(moduleIndex, questionIndex)
-  }
 
   // Handle next question
   const handleNext = () => {
@@ -334,42 +258,12 @@ function ExamPageContent() {
     nextQuestion()
   }
 
-  // Handle keyboard navigation
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      // Only handle keyboard navigation in preview mode and when not typing in inputs
-      if (!isPreviewMode || examState.status !== 'in_progress') return
-      
-      const target = event.target as HTMLElement
-      const isInputActive = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
-      
-      if (isInputActive) return
-      
-      const currentModule = examState.modules[examState.currentModuleIndex]
-      if (!currentModule) return
-      
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault()
-        if (currentModule.currentQuestionIndex > 0) {
-          handlePrevious()
-        }
-      } else if (event.key === 'ArrowRight') {
-        event.preventDefault()
-        if (currentModule.currentQuestionIndex < currentModule.questions.length - 1) {
-          handleNext()
-        }
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [isPreviewMode, examState.status, examState.modules, examState.currentModuleIndex, handleNext, handlePrevious])
 
   // Handle module completion
   const handleSubmitModule = async () => {
     saveCurrentAnswer()
     try {
-      await nextModule(isPreviewMode)
+      await nextModule()
     } catch (error) {
       console.error('Failed to submit module:', error)
       // Show error to user or handle accordingly
@@ -383,12 +277,7 @@ function ExamPageContent() {
     saveCurrentAnswer()
     try {
       await completeExam()
-      if (isPreviewMode) {
-        console.log('Preview mode: exam completed, redirecting to admin panel')
-        router.push('/admin/exams')
-      } else {
-        router.push('/student/results')
-      }
+      router.push('/student/results')
     } catch (error) {
       console.error('Failed to complete exam:', error)
       // Show error to user or handle accordingly
@@ -454,7 +343,7 @@ function ExamPageContent() {
       // Save current answer if there is one
       if (currentAnswer && currentAnswer.trim()) {
         console.log('🚪 handleConfirmExit: Saving current answer')
-        setLocalAnswer(currentAnswer, isPreviewMode)
+        setLocalAnswer(currentAnswer)
       }
       
       // Save all answers for the current module
@@ -485,35 +374,18 @@ function ExamPageContent() {
     setShowExitConfirm(false)
   }
 
-  // Get answered questions for current module (or all modules in admin preview)
+  // Get answered questions for current module
   const getAnsweredQuestions = () => {
-    if (isPreviewMode) {
-      // For admin preview: return global question indexes with answers
-      const answeredSet = new Set<number>()
-      let globalIndex = 1
-      
-      examState.modules.forEach((module) => {
-        module.questions.forEach((question) => {
-          if (module.answers[question.id]) {
-            answeredSet.add(globalIndex)
-          }
-          globalIndex++
-        })
-      })
-      return answeredSet
-    } else {
-      // For student mode: only current module questions
-      const currentModule = examState.modules[examState.currentModuleIndex]
-      if (!currentModule) return new Set<number>()
-      
-      const answeredSet = new Set<number>()
-      currentModule.questions.forEach((question, index) => {
-        if (currentModule.answers[question.id]) {
-          answeredSet.add(index + 1) // Convert to 1-based indexing
-        }
-      })
-      return answeredSet
-    }
+    const currentModule = examState.modules[examState.currentModuleIndex]
+    if (!currentModule) return new Set<number>()
+    
+    const answeredSet = new Set<number>()
+    currentModule.questions.forEach((question, index) => {
+      if (currentModule.answers[question.id]) {
+        answeredSet.add(index + 1) // Convert to 1-based indexing
+      }
+    })
+    return answeredSet
   }
 
   // Show conflict modal FIRST if there's an existing attempt
@@ -596,18 +468,16 @@ function ExamPageContent() {
             <div className="text-red-600 text-xl mb-4">Error loading exam</div>
             <p className="text-gray-600 mb-4">{error}</p>
             <div className="text-xs text-gray-500 mb-4">
-              Preview Mode: {isPreviewMode ? 'Yes' : 'No'}<br/>
-              Admin: {isAdmin ? 'Yes' : 'No'}<br/>
               Exam ID: {examId}
             </div>
             <button
               onClick={() => {
-                console.log('🔄 Redirecting from error state to:', isPreviewMode ? '/admin/exams' : '/student/dashboard')
-                router.push(isPreviewMode ? '/admin/exams' : '/student/dashboard')
+                console.log('🔄 Redirecting from error state to dashboard')
+                router.push('/student/dashboard')
               }}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
             >
-              Return to {isPreviewMode ? 'Admin Panel' : 'Dashboard'}
+              Return to Dashboard
             </button>
           </div>
         </div>
@@ -640,22 +510,6 @@ function ExamPageContent() {
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto py-8 px-4">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-            {isPreviewMode && (
-              <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-2xl">
-                <div className="flex items-center justify-between">
-                  <span className="text-orange-800 font-medium flex items-center">
-                    <span className="mr-2">🔍</span>
-                    Admin Preview Mode
-                  </span>
-                  <button
-                    onClick={() => router.push('/admin/exams')}
-                    className="text-purple-600 hover:text-purple-800 text-sm font-semibold underline transition-colors duration-200"
-                  >
-                    ← Back to Admin Panel
-                  </button>
-                </div>
-              </div>
-            )}
             
             <div className="text-center mb-8">
               <div className="w-20 h-20 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
@@ -747,14 +601,9 @@ function ExamPageContent() {
                 onClick={handleStartExam}
                 className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white px-12 py-4 rounded-2xl text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
-                {isPreviewMode ? 'Preview Exam' : 'Start Exam'}
+                Start Exam
               </button>
               
-              {isPreviewMode && (
-                <p className="text-sm text-gray-500 bg-gray-50 px-4 py-2 rounded-xl inline-block">
-                  Preview mode: Navigate through questions without saving answers
-                </p>
-              )}
             </div>
           </div>
         </div>
@@ -842,7 +691,7 @@ function ExamPageContent() {
               onClick={handleExitAttempt}
               className="text-gray-500 hover:text-gray-700 text-sm"
             >
-              ← {isPreviewMode ? 'Exit Preview' : 'Exit Exam'}
+              ← Exit Exam
             </button>
             <h1 className="text-xl font-semibold text-gray-900">
               {examState.exam.title}
@@ -853,47 +702,16 @@ function ExamPageContent() {
           </div>
           
           <div className="flex items-center space-x-4">
-            {!isPreviewMode && (
-              <ExamTimer
-                initialTimeSeconds={currentModule.timeRemaining}
-                onTimeExpired={handleTimeExpired}
-                onTimeUpdate={updateTimer}
-                isPaused={examState.status !== 'in_progress' || showTimeExpiredModal}
-              />
-            )}
-            {isPreviewMode && (
-              <div className="bg-purple-500 text-white px-3 py-1.5 rounded-full text-xs font-medium">
-                Preview Mode
-              </div>
-            )}
+            <ExamTimer
+              initialTimeSeconds={currentModule.timeRemaining}
+              onTimeExpired={handleTimeExpired}
+              onTimeUpdate={updateTimer}
+              isPaused={examState.status !== 'in_progress' || showTimeExpiredModal}
+            />
           </div>
         </div>
       </div>
 
-      {/* Top Navigation for Preview Mode */}
-      {isPreviewMode && (
-        <ExamNavigation
-          currentQuestion={currentModule.currentQuestionIndex + 1}
-          totalQuestions={currentModule.questions.length}
-          currentModule={currentModule.module}
-          hasAnswer={!!currentAnswer}
-          isLastQuestion={isLastQuestion}
-          isLastModule={isLastModule}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          onGoToQuestion={handleGoToQuestion}
-          onSubmitModule={handleSubmitModule}
-          onSubmitExam={handleSubmitExam}
-          answeredQuestions={getAnsweredQuestions()}
-          markedQuestions={getMarkedQuestions()}
-          disabled={examState.status !== 'in_progress' || timeExpiredRef.current}
-          isAdminPreview={isPreviewMode && isAdmin}
-          allModules={examState.modules}
-          currentModuleIndex={examState.currentModuleIndex}
-          onGoToModule={handleGoToModule}
-          isCompact={true}
-        />
-      )}
 
       {/* Main Question Area */}
       <div className="flex-1 overflow-hidden">
@@ -904,36 +722,30 @@ function ExamPageContent() {
           userAnswer={currentAnswer}
           onAnswerChange={handleAnswerChange}
           disabled={examState.status !== 'in_progress' || timeExpiredRef.current}
-          isAdminPreview={isPreviewMode && isAdmin}
-          onQuestionUpdate={handleQuestionUpdate}
+          isAdminPreview={false}
           isMarkedForReview={isMarkedForReview()}
           onToggleMarkForReview={() => toggleMarkForReview()}
         />
       </div>
 
-      {/* Bottom Navigation (only for non-preview mode) */}
-      {!isPreviewMode && (
-        <ExamNavigation
-          currentQuestion={currentModule.currentQuestionIndex + 1}
-          totalQuestions={currentModule.questions.length}
-          currentModule={currentModule.module}
-          hasAnswer={!!currentAnswer}
-          isLastQuestion={isLastQuestion}
-          isLastModule={isLastModule}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          onGoToQuestion={handleGoToQuestion}
-          onSubmitModule={handleSubmitModule}
-          onSubmitExam={handleSubmitExam}
-          answeredQuestions={getAnsweredQuestions()}
-          markedQuestions={getMarkedQuestions()}
-          disabled={examState.status !== 'in_progress' || timeExpiredRef.current}
-          isAdminPreview={isPreviewMode && isAdmin}
-          allModules={examState.modules}
-          currentModuleIndex={examState.currentModuleIndex}
-          onGoToModule={handleGoToModule}
-        />
-      )}
+      {/* Bottom Navigation */}
+      <ExamNavigation
+        currentQuestion={currentModule.currentQuestionIndex + 1}
+        totalQuestions={currentModule.questions.length}
+        currentModule={currentModule.module}
+        hasAnswer={!!currentAnswer}
+        isLastQuestion={isLastQuestion}
+        isLastModule={isLastModule}
+        onNext={handleNext}
+        onPrevious={handlePrevious}
+        onGoToQuestion={handleGoToQuestion}
+        onSubmitModule={handleSubmitModule}
+        onSubmitExam={handleSubmitExam}
+        answeredQuestions={getAnsweredQuestions()}
+        markedQuestions={getMarkedQuestions()}
+        disabled={examState.status !== 'in_progress' || timeExpiredRef.current}
+        isAdminPreview={false}
+      />
 
       {/* Time Expired Modal */}
       {showTimeExpiredModal && (

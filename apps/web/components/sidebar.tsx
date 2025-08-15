@@ -43,8 +43,8 @@ const adminNavigationItems: SidebarItem[] = [
   { name: 'Students', href: '/admin/students', icon: UserCircleIcon },
   { name: 'Assignments', href: '/admin/assignments', icon: AcademicCapIcon },
   { name: 'Reports', href: '/admin/reports', icon: ClipboardDocumentListIcon },
-  { name: 'Exam Management', href: '/admin/exams/list', icon: Cog6ToothIcon },
-  { name: 'Manage Questions', href: '/admin/exams', icon: DocumentTextIcon },
+  { name: 'Exam Management', href: '/admin/exams', icon: Cog6ToothIcon },
+  { name: 'Question Bank', href: '/admin/questions', icon: DocumentTextIcon },
 ]
 
 export function Sidebar() {
@@ -149,8 +149,8 @@ function SidebarContent({ navigationItems, pathname, user, isAdmin, handleSignOu
         {navigationItems.map((item) => {
           // Check if current path matches exactly or starts with the base path
           const isActive = pathname === item.href || 
-            (item.href === '/admin/exams/list' && pathname.startsWith('/admin/exams/') && pathname !== '/admin/exams') ||
-            (item.href === '/admin/exams' && pathname === '/admin/exams')
+            (item.href === '/admin/exams' && pathname.startsWith('/admin/exams/') && pathname !== '/admin/questions') ||
+            (item.href === '/admin/questions' && pathname === '/admin/questions')
           const IconComponent = item.icon
           
           return (

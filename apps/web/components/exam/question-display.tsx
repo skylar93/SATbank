@@ -8,6 +8,8 @@ import { RichTextEditor } from '../rich-text-editor'
 // import { WysiwygEditor } from '../wysiwyg-editor' // KEEPING COMMENTED OUT - HTML conversion functionality removed
 import { ImageUpload } from '../image-upload'
 import { HelpCircle } from 'lucide-react'
+import { TableEditor } from '../admin/TableEditor'
+import { parseTableFromMarkdown, buildTableMarkdown } from '../../lib/utils'
 
 // Shared text rendering function
 export const renderTextWithFormattingAndMath = (text: string) => {
@@ -377,10 +379,12 @@ export function QuestionDisplay({
   // Update local question when prop changes
   useEffect(() => {
     setLocalQuestion(question)
+    // Reset the form directly with the new question's data.
+    // The processing will be handled by handleEditClick when needed.
     setEditForm({
       question_text: question.question_text,
       question_type: question.question_type,
-      options: question.options || {},
+      options: question.options || {}, // Use the raw options here
       correct_answer: question.correct_answer,
       correct_answers: parseCorrectAnswers(question),
       explanation: question.explanation || '',
@@ -388,6 +392,8 @@ export function QuestionDisplay({
     })
     // Reset answer check when question changes
     setShowAnswerCheck(false)
+    // If you are in edit mode and the question changes, exit edit mode to prevent confusion
+    setIsEditing(false)
   }, [question.id, question.question_text, question.options, question.correct_answer, question.correct_answers, question.explanation])
 
   const handleSaveEdit = async () => {
@@ -507,6 +513,50 @@ export function QuestionDisplay({
       console.log('🔄 Save process completed, success:', success)
     }
   }
+
+  const handleEditClick = () => {
+    console.log('🚀 handleEditClick called, localQuestion.options:', localQuestion.options);
+    
+    // Process options - keep table_data intact for the table editor to use
+    const processedOptions = localQuestion.options ? Object.fromEntries(
+      Object.entries(localQuestion.options).map(([key, value]) => {
+        console.log(`🔧 Processing option ${key}:`, { originalValue: value, valueType: typeof value });
+        
+        let optionData;
+        try {
+          optionData = typeof value === 'string' ? JSON.parse(value) : value;
+          if (typeof optionData !== 'object' || optionData === null) {
+            optionData = { text: String(value) };
+          }
+        } catch (e) {
+          console.log(`❌ JSON parse failed for option ${key}:`, e);
+          optionData = { text: String(value) };
+        }
+
+        console.log(`✅ Processed option ${key}:`, optionData);
+
+        // Keep the original structure intact - don't convert to markdown yet
+        // The table editor will handle the display and conversion
+        return [key, JSON.stringify(optionData)];
+      })
+    ) : {};
+
+    console.log('📝 Final processedOptions:', processedOptions);
+
+    // Set the fully prepared form state
+    setEditForm({
+      question_text: localQuestion.question_text,
+      question_type: localQuestion.question_type,
+      options: processedOptions,
+      correct_answer: localQuestion.correct_answer,
+      correct_answers: parseCorrectAnswers(localQuestion),
+      explanation: localQuestion.explanation || '',
+      table_data: localQuestion.table_data || null
+    });
+
+    // THEN, enter edit mode
+    setIsEditing(true);
+  };
 
   const handleCancelEdit = () => {
     setEditForm({
@@ -718,6 +768,98 @@ export function QuestionDisplay({
                       showPreview={true}
                     />
                   </div>
+
+                  {/* Table Editor for Answer Options */}
+                  {(() => {
+                    const optionText = optionData.text || '';
+                    let tableDataInOption = parseTableFromMarkdown(optionText);
+                    
+                    // DEBUG: Log all the data we're working with
+                    console.log(`🔍 DEBUG Option ${key}:`, {
+                      optionText,
+                      optionData,
+                      tableDataFromMarkdown: tableDataInOption,
+                      hasTableData: !!(optionData.table_data),
+                      tableDataStructure: optionData.table_data,
+                      hasDirectHeaders: !!(optionData.headers),
+                      hasDirectRows: !!(optionData.rows),
+                      directHeaders: optionData.headers,
+                      directRows: optionData.rows
+                    });
+                    
+                    // Check if there's table_data in the original option that wasn't converted to markdown yet
+                    if (!tableDataInOption && optionData.table_data && optionData.table_data.headers && optionData.table_data.rows) {
+                      tableDataInOption = optionData.table_data;
+                      console.log(`✅ Found table_data in option ${key}:`, tableDataInOption);
+                    }
+                    
+                    // ALSO check if the table data is directly in optionData (not nested in table_data)
+                    if (!tableDataInOption && optionData.headers && optionData.rows) {
+                      tableDataInOption = { headers: optionData.headers, rows: optionData.rows };
+                      console.log(`✅ Found direct table structure in option ${key}:`, tableDataInOption);
+                    }
+                    
+                    console.log(`🎯 Final tableDataInOption for ${key}:`, tableDataInOption);
+                    
+                    // TEMPORARY DEBUG: Force show table editor for debugging
+                    if (!tableDataInOption) {
+                      console.log(`⚠️ No table found for option ${key}, showing debug info`);
+                      return (
+                        <div className="mt-2 p-3 border border-red-200 rounded-lg bg-red-50">
+                          <h4 className="text-sm font-semibold text-red-800 mb-2">DEBUG: No Table Found for Option {key}</h4>
+                          <pre className="text-xs overflow-auto">
+                            {JSON.stringify({
+                              optionText,
+                              hasTableData: !!(optionData.table_data),
+                              tableDataStructure: optionData.table_data,
+                              parsedFromMarkdown: parseTableFromMarkdown(optionText)
+                            }, null, 2)}
+                          </pre>
+                        </div>
+                      );
+                    }
+                    
+                    if (tableDataInOption) {
+                      return (
+                        <div className="mt-2 p-3 border border-blue-200 rounded-lg bg-blue-50">
+                          <h4 className="text-sm font-semibold text-blue-800 mb-2">Table Editor (for Option {key})</h4>
+                          <TableEditor
+                            tableData={tableDataInOption}
+                            isCompact={true}
+                            onTableDataChange={(newTableData) => {
+                              const newTableMarkdown = buildTableMarkdown(newTableData);
+                              let updatedText = optionText;
+                              
+                              // If text already contains table markdown, replace it
+                              if (parseTableFromMarkdown(optionText)) {
+                                updatedText = optionText.replace(
+                                  /{{table}}[\s\S]*?{{\/table}}/,
+                                  newTableMarkdown
+                                );
+                              } else {
+                                // If no table markdown exists, append it
+                                updatedText = `${optionText}\n${newTableMarkdown}`.trim();
+                              }
+                              
+                              const updatedOption = { 
+                                ...optionData, 
+                                text: updatedText,
+                                table_data: undefined // Remove table_data as it's now in markdown format
+                              };
+                              setEditForm(prevForm => ({
+                                ...prevForm,
+                                options: {
+                                  ...(prevForm.options || {}),
+                                  [key]: JSON.stringify(updatedOption)
+                                }
+                              }));
+                            }}
+                          />
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
                   
                   
                   {optionData.imageUrl && (
@@ -978,7 +1120,7 @@ export function QuestionDisplay({
                     </>
                   ) : (
                     <button
-                      onClick={() => setIsEditing(true)}
+                      onClick={handleEditClick}
                       className="px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs rounded-lg transition-all duration-200 shadow-sm font-medium"
                     >
                       Edit Question
@@ -1044,105 +1186,12 @@ export function QuestionDisplay({
               </div>
               
               {editForm.table_data && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Table Data
-                  </label>
-                  <div className="space-y-4 p-4 border border-gray-300 rounded-md bg-gray-50">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">
-                        Headers (comma separated)
-                      </label>
-                      <input
-                        type="text"
-                        value={editForm.table_data?.headers?.join(', ') || ''}
-                        onChange={(e) => {
-                          const headers = e.target.value.split(',').map(h => h.trim()).filter(h => h);
-                          setEditForm({
-                            ...editForm,
-                            table_data: {
-                              ...editForm.table_data,
-                              headers,
-                              rows: editForm.table_data?.rows || []
-                            }
-                          });
-                        }}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        placeholder="Header 1, Header 2, Header 3..."
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">
-                        Table Rows
-                      </label>
-                      <div className="space-y-2">
-                        {editForm.table_data?.rows?.map((row, rowIndex) => (
-                          <div key={rowIndex} className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={row.join(', ')}
-                              onChange={(e) => {
-                                const newRowData = e.target.value.split(',').map(cell => cell.trim());
-                                const newRows = [...(editForm.table_data?.rows || [])];
-                                newRows[rowIndex] = newRowData;
-                                setEditForm({
-                                  ...editForm,
-                                  table_data: {
-                                    ...editForm.table_data,
-                                    headers: editForm.table_data?.headers || [],
-                                    rows: newRows
-                                  }
-                                });
-                              }}
-                              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                              placeholder={`Row ${rowIndex + 1} data (comma separated)...`}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newRows = editForm.table_data?.rows?.filter((_, i) => i !== rowIndex) || [];
-                                setEditForm({
-                                  ...editForm,
-                                  table_data: {
-                                    ...editForm.table_data,
-                                    headers: editForm.table_data?.headers || [],
-                                    rows: newRows
-                                  }
-                                });
-                              }}
-                              className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )) || []}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newRows = [...(editForm.table_data?.rows || []), ['']];
-                            setEditForm({
-                              ...editForm,
-                              table_data: {
-                                ...editForm.table_data,
-                                headers: editForm.table_data?.headers || [],
-                                rows: newRows
-                              }
-                            });
-                          }}
-                          className="px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600"
-                        >
-                          + Add Row
-                        </button>
-                      </div>
-                    </div>
-                    <div className="pt-2 border-t border-gray-300">
-                      <label className="block text-xs font-medium text-gray-600 mb-1">
-                        Preview
-                      </label>
-                      {editForm.table_data && renderTable(editForm.table_data, true)}
-                    </div>
-                  </div>
-                </div>
+                <TableEditor
+                  tableData={editForm.table_data}
+                  onTableDataChange={(newTableData) => {
+                    setEditForm({ ...editForm, table_data: newTableData });
+                  }}
+                />
               )}
               
               
