@@ -47,8 +47,41 @@ export default function ManageExamsPage() {
   const convertMarkdownToHtml = (markdown: string) => {
     if (!markdown) return '';
     
-    let result = markdown
-      // Handle formatting first
+    let result = markdown;
+    
+    // Handle tables first (before other formatting)
+    result = result.replace(/{{table}}([\s\S]*?){{\/table}}/g, (match, tableContent) => {
+      const lines = tableContent.trim().split('\n').filter((line: string) => line.trim());
+      
+      if (lines.length >= 3) {
+        const headers = lines[0].split('|').map((h: string) => h.trim());
+        const rows = lines.slice(2).map((line: string) => line.split('|').map((cell: string) => cell.trim()));
+        
+        let tableHtml = '<table class="w-full border-collapse border border-gray-300 bg-white my-4">';
+        tableHtml += '<thead><tr class="bg-gray-50">';
+        headers.forEach((header: string) => {
+          tableHtml += `<th class="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900">${header}</th>`;
+        });
+        tableHtml += '</tr></thead><tbody>';
+        
+        rows.forEach((row: string[], i: number) => {
+          const rowClass = i % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+          tableHtml += `<tr class="${rowClass}">`;
+          row.forEach((cell: string) => {
+            tableHtml += `<td class="border border-gray-300 px-4 py-2 text-gray-900">${cell}</td>`;
+          });
+          tableHtml += '</tr>';
+        });
+        
+        tableHtml += '</tbody></table>';
+        return tableHtml;
+      }
+      
+      return match; // Return original if parsing fails
+    });
+    
+    // Handle other formatting
+    result = result
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/__(.*?)__/g, '<span class="underline">$1</span>')
@@ -173,18 +206,53 @@ export default function ManageExamsPage() {
            text.includes('---') || text.match(/\$.*?\$/);
   }
 
+  // Extract table data from markdown text
+  const extractTableData = (text: string) => {
+    if (!text) return null;
+    
+    const tableMatch = text.match(/{{table}}([\s\S]*?){{\/table}}/);
+    if (!tableMatch) return null;
+    
+    const tableContent = tableMatch[1].trim();
+    const lines = tableContent.split('\n').filter(line => line.trim());
+    
+    if (lines.length >= 3) {
+      const headers = lines[0].split('|').map(h => h.trim());
+      const rows = lines.slice(2).map(line => line.split('|').map(cell => cell.trim()));
+      
+      return { headers, rows };
+    }
+    
+    return null;
+  }
+
   const handleEditClick = (question: Question) => {
     console.log('Edit clicked for question:', question.id)
     console.log('Original question text:', question.question_text)
-    console.log('Is question text markdown?', isMarkdown(question.question_text))
+    console.log('Original options:', question.options)
+    
+    // Log each option to see its content
+    if (question.options) {
+      Object.entries(question.options).forEach(([key, value]) => {
+        console.log(`Option ${key}:`, value)
+        if (typeof value === 'string') {
+          try {
+            const parsed = JSON.parse(value)
+            console.log(`Parsed option ${key}:`, parsed)
+          } catch (e) {
+            console.log(`Could not parse option ${key}, treating as string:`, value)
+          }
+        }
+      })
+    }
     
     setEditingQuestion(question.id)
     
-    // Convert markdown to HTML for editor compatibility (force conversion for now)
+    // Keep original markdown for editing - DO NOT convert to HTML
     let processedQuestion = {
       ...question,
-      question_text: convertMarkdownToHtml(question.question_text),
-      explanation: question.explanation ? convertMarkdownToHtml(question.explanation) : '',
+      question_text: question.question_text, // Keep original markdown
+      explanation: question.explanation || '',
       options: question.options ? Object.fromEntries(
         Object.entries(question.options).map(([key, value]) => {
           let optionData;
@@ -197,10 +265,8 @@ export default function ManageExamsPage() {
             optionData = { text: String(value) };
           }
           
-          // Convert markdown to HTML for option text (force conversion)
-          if (optionData.text) {
-            optionData.text = convertMarkdownToHtml(optionData.text);
-          }
+          // Keep original markdown for option text - DO NOT convert to HTML
+          console.log(`Processing option ${key}, text:`, optionData.text)
           
           return [key, JSON.stringify(optionData)];
         })
@@ -517,7 +583,10 @@ export default function ManageExamsPage() {
                     </td>
                     <td className="px-4 py-4">
                       <button
-                        onClick={() => handleEditClick(question)}
+                        onClick={() => {
+                          console.log('🔥 TABLE EDIT BUTTON CLICKED for question:', question.id);
+                          handleEditClick(question);
+                        }}
                         className="text-sm text-purple-600 hover:text-purple-800 font-medium"
                       >
                         Edit
@@ -591,7 +660,10 @@ export default function ManageExamsPage() {
                   </>
                 ) : (
                   <button
-                    onClick={() => handleEditClick(question)}
+                    onClick={() => {
+                      console.log('🔥 EDIT BUTTON CLICKED for question:', question.id);
+                      handleEditClick(question);
+                    }}
                     className="px-3 py-1 bg-violet-600 text-white rounded text-sm hover:bg-violet-700"
                   >
                     Edit
@@ -609,6 +681,7 @@ export default function ManageExamsPage() {
                   value={editForm.question_text || ''}
                   onChange={(value) => setEditForm({...editForm, question_text: value})}
                   rows={6}
+                  tableData={extractTableData(editForm.question_text || '')}
                 />
               ) : (
                 <div className="p-3 bg-gray-50 rounded-md">
@@ -681,6 +754,7 @@ export default function ManageExamsPage() {
                               placeholder={`Enter text for option ${key}...`}
                               rows={3}
                               compact={true}
+                              tableData={extractTableData(optionData.text || '')}
                             />
                           </div>
                           
@@ -926,6 +1000,7 @@ export default function ManageExamsPage() {
                     value={editForm.explanation || ''}
                     onChange={(value) => setEditForm({...editForm, explanation: value})}
                     rows={5}
+                    tableData={extractTableData(editForm.explanation || '')}
                   />
                 ) : (
                   <div className="p-3 bg-gray-50 rounded-md">

@@ -1209,9 +1209,6 @@ export function QuestionDisplay({
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Correct Answer{editForm.question_type === 'grid_in' ? 's' : ''}
-                    {editForm.question_type === 'grid_in' && (
-                      <span className="text-sm text-gray-500 ml-1">(Multiple answers allowed)</span>
-                    )}
                   </label>
                   
                   {editForm.question_type === 'grid_in' ? (

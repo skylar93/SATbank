@@ -37,6 +37,8 @@ export function RichTextEditor({
   const [showImageUpload, setShowImageUpload] = useState(false)
   const [tableRows, setTableRows] = useState(2)
   const [tableCols, setTableCols] = useState(2)
+  const [showVisualTableEditor, setShowVisualTableEditor] = useState(false)
+  const [editableTableData, setEditableTableData] = useState<{headers: string[], rows: string[][]} | null>(null)
   
   // Undo/Redo functionality
   const [history, setHistory] = useState<string[]>([])
@@ -81,6 +83,18 @@ export function RichTextEditor({
       setCurrentMatch(0)
     }
   }, [findText, value])
+
+  // Initialize editable table data when tableData changes
+  useEffect(() => {
+    if (tableData && tableData.headers && tableData.rows) {
+      setEditableTableData({
+        headers: [...tableData.headers],
+        rows: tableData.rows.map((row: string[]) => [...row])
+      })
+    } else {
+      setEditableTableData(null)
+    }
+  }, [tableData])
 
   // Initialize history with first value
   useEffect(() => {
@@ -241,6 +255,79 @@ export function RichTextEditor({
     }, 0)
 
     setShowTableEditor(false)
+  }
+
+  // Update table in text
+  const updateTableInText = (tableData: {headers: string[], rows: string[][]}) => {
+    const headers = tableData.headers.join(' | ')
+    const separator = Array(tableData.headers.length).fill('---').join(' | ')
+    const rows = tableData.rows.map(row => row.join(' | ')).join('\n')
+    
+    const newTableText = `{{table}}\n${headers}\n${separator}\n${rows}\n{{/table}}`
+    
+    // Replace existing table in text
+    const tableRegex = /{{table}}[\s\S]*?{{\/table}}/
+    const newText = value.replace(tableRegex, newTableText)
+    onChange(newText)
+  }
+
+  // Add/remove rows and columns
+  const addTableRow = () => {
+    if (editableTableData) {
+      const newRow = Array(editableTableData.headers.length).fill('')
+      const updatedData = {
+        ...editableTableData,
+        rows: [...editableTableData.rows, newRow]
+      }
+      setEditableTableData(updatedData)
+      updateTableInText(updatedData)
+    }
+  }
+
+  const removeTableRow = (rowIndex: number) => {
+    if (editableTableData && editableTableData.rows.length > 1) {
+      const updatedData = {
+        ...editableTableData,
+        rows: editableTableData.rows.filter((_, i) => i !== rowIndex)
+      }
+      setEditableTableData(updatedData)
+      updateTableInText(updatedData)
+    }
+  }
+
+  const addTableColumn = () => {
+    if (editableTableData) {
+      const updatedData = {
+        headers: [...editableTableData.headers, 'New Header'],
+        rows: editableTableData.rows.map(row => [...row, ''])
+      }
+      setEditableTableData(updatedData)
+      updateTableInText(updatedData)
+    }
+  }
+
+  const removeTableColumn = (colIndex: number) => {
+    if (editableTableData && editableTableData.headers.length > 1) {
+      const updatedData = {
+        headers: editableTableData.headers.filter((_, i) => i !== colIndex),
+        rows: editableTableData.rows.map(row => row.filter((_, i) => i !== colIndex))
+      }
+      setEditableTableData(updatedData)
+      updateTableInText(updatedData)
+    }
+  }
+
+  const updateTableCell = (rowIndex: number, colIndex: number, newValue: string, isHeader = false) => {
+    if (editableTableData) {
+      const updatedData = { ...editableTableData }
+      if (isHeader) {
+        updatedData.headers[colIndex] = newValue
+      } else {
+        updatedData.rows[rowIndex][colIndex] = newValue
+      }
+      setEditableTableData(updatedData)
+      updateTableInText(updatedData)
+    }
   }
 
   const handleFind = (direction: 'next' | 'prev') => {
@@ -930,33 +1017,120 @@ export function RichTextEditor({
             rows={rows}
             className={`w-full p-3 border border-gray-300 rounded-b-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${className}`}
           />
-          {/* Show table data below textarea in edit mode */}
-          {tableData && tableData.headers && tableData.rows && (
+          {/* Visual Table Editor */}
+          {editableTableData && editableTableData.headers && editableTableData.rows && (
             <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded">
-              <div className="text-sm font-medium text-gray-700 mb-2">Table Data from Database:</div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-sm font-medium text-gray-700">Table Editor:</div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowVisualTableEditor(!showVisualTableEditor)}
+                    className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                  >
+                    {showVisualTableEditor ? 'Hide Editor' : 'Edit Table'}
+                  </button>
+                  {showVisualTableEditor && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={addTableRow}
+                        className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                      >
+                        + Row
+                      </button>
+                      <button
+                        type="button"
+                        onClick={addTableColumn}
+                        className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                      >
+                        + Col
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+              
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300 bg-white">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      {tableData.headers.map((header: string, i: number) => (
-                        <th key={i} className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900">
-                          {header}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tableData.rows.map((row: string[], i: number) => (
-                      <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                        {row.map((cell: string, j: number) => (
-                          <td key={j} className="border border-gray-300 px-4 py-2 text-gray-900">
-                            {cell}
-                          </td>
+                {showVisualTableEditor ? (
+                  <table className="w-full border-collapse border border-gray-300 bg-white">
+                    <thead>
+                      <tr className="bg-blue-50">
+                        {editableTableData.headers.map((header, i) => (
+                          <th key={i} className="border border-gray-300 p-1 relative group">
+                            <input
+                              type="text"
+                              value={header}
+                              onChange={(e) => updateTableCell(-1, i, e.target.value, true)}
+                              className="w-full px-2 py-1 text-sm font-semibold text-gray-900 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
+                              placeholder={`Header ${i + 1}`}
+                            />
+                            {editableTableData.headers.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removeTableColumn(i)}
+                                className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                title="Remove column"
+                              >
+                                ×
+                              </button>
+                            )}
+                          </th>
                         ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {editableTableData.rows.map((row, rowIndex) => (
+                        <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                          {row.map((cell, colIndex) => (
+                            <td key={colIndex} className="border border-gray-300 p-1 relative group">
+                              <input
+                                type="text"
+                                value={cell}
+                                onChange={(e) => updateTableCell(rowIndex, colIndex, e.target.value)}
+                                className="w-full px-2 py-1 text-sm text-gray-900 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
+                                placeholder={`Cell ${rowIndex + 1}-${colIndex + 1}`}
+                              />
+                              {colIndex === 0 && editableTableData.rows.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => removeTableRow(rowIndex)}
+                                  className="absolute -top-1 -left-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                  title="Remove row"
+                                >
+                                  ×
+                                </button>
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <table className="w-full border-collapse border border-gray-300 bg-white">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        {editableTableData.headers.map((header, i) => (
+                          <th key={i} className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900">
+                            {header}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {editableTableData.rows.map((row, i) => (
+                        <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                          {row.map((cell, j) => (
+                            <td key={j} className="border border-gray-300 px-4 py-2 text-gray-900">
+                              {cell}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
           )}
