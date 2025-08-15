@@ -285,27 +285,15 @@ const parseCorrectAnswers = (question: Question): string[] => {
     return [];
   }
   
-  console.log('🔍 parseCorrectAnswers DEBUG:', {
-    questionId: question.id,
-    correct_answers: question.correct_answers,
-    correct_answers_type: typeof question.correct_answers,
-    correct_answer: question.correct_answer,
-    correct_answer_type: typeof question.correct_answer
-  });
-  
   let answers: any = question.correct_answers;
   
   // Handle null/undefined
   if (!answers) {
-    console.log('🔍 No correct_answers, using correct_answer:', question.correct_answer);
     return [question.correct_answer || ''];
   }
   
-  // Handle array case (which seems to be the issue)
+  // Handle array case
   if (Array.isArray(answers)) {
-    console.log('🔍 correct_answers is array:', answers);
-    
-    // Check if array contains JSON strings that need to be parsed
     const parsedAnswers: string[] = [];
     
     for (const answer of answers) {
@@ -313,7 +301,6 @@ const parseCorrectAnswers = (question: Question): string[] => {
         // Try to parse as JSON
         try {
           const parsed = JSON.parse(answer);
-          console.log('🔍 Parsed JSON from array element:', parsed);
           
           if (Array.isArray(parsed)) {
             // If parsed result is an array, add all elements
@@ -324,7 +311,6 @@ const parseCorrectAnswers = (question: Question): string[] => {
           }
         } catch (error) {
           // If parsing fails, treat as regular string
-          console.log('🔍 JSON parse failed for array element, treating as string:', answer);
           parsedAnswers.push(String(answer || '').trim());
         }
       } else {
@@ -334,35 +320,29 @@ const parseCorrectAnswers = (question: Question): string[] => {
     }
     
     const filtered = parsedAnswers.filter((a: string) => a.length > 0);
-    console.log('🔍 Final parsed array answers:', filtered);
     return filtered.length > 0 ? filtered : [question.correct_answer || ''];
   }
   
   // If it's a string, try to parse it as JSON
   if (typeof answers === 'string') {
-    console.log('🔍 correct_answers is string, attempting to parse:', answers);
     try {
       answers = JSON.parse(answers);
-      console.log('🔍 JSON parsed successfully:', answers);
       
       if (Array.isArray(answers)) {
         const filtered = answers
           .map((a: any) => String(a || '').trim())
           .filter((a: string) => a.length > 0);
-        console.log('🔍 Final string-parsed answers:', filtered);
         return filtered.length > 0 ? filtered : [question.correct_answer || ''];
       } else {
         return [String(answers).trim()];
       }
     } catch (error) {
-      // If parsing fails, treat as single answer (not an array)
-      console.log('🔍 JSON parse failed, treating as single answer:', answers);
+      // If parsing fails, treat as single answer
       return [answers];
     }
   }
   
   // Fallback for other types
-  console.log('🔍 Fallback conversion:', answers);
   return [String(answers) || question.correct_answer || ''];
 };
 
@@ -670,8 +650,8 @@ export function QuestionDisplay({
   };
   
   const renderAnswerOptions = () => {
-    if (localQuestion.question_type === 'multiple_choice' || isEditing) {
-      if (isEditing) {
+    if (localQuestion.question_type === 'multiple_choice' || (isEditing && editForm.question_type === 'multiple_choice')) {
+      if (isEditing && editForm.question_type === 'multiple_choice') {
         return (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -892,7 +872,7 @@ export function QuestionDisplay({
       )
     }
 
-    if (localQuestion.question_type === 'grid_in') {
+    if (localQuestion.question_type === 'grid_in' || (isEditing && editForm.question_type === 'grid_in')) {
       return (
         <div className="space-y-4">
           <div className="bg-gray-50 p-4 rounded-lg">
