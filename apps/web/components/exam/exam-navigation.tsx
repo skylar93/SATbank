@@ -106,14 +106,13 @@ export function ExamNavigation({
           <div className="flex items-center justify-between">
             {/* Left: Module Overview - Horizontal layout */}
             <div className="flex items-center space-x-4">
-              <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-semibold">Preview:</span>
               {allModules.map((module, moduleIndex) => {
                 const isCurrentModule = moduleIndex === currentModuleIndex
                 const moduleShortName = module.module.replace(/^(\w+)(\d)$/, '$1$2').toUpperCase()
                 return (
                   <div key={moduleIndex} className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs backdrop-blur-sm ${
                     isCurrentModule 
-                      ? 'bg-gradient-to-r from-purple-100 to-violet-100 text-purple-800 border border-purple-200' 
+                      ? 'bg-purple-50 text-purple-800 border border-purple-200' 
                       : 'bg-white/60 text-gray-600 hover:bg-white/80'
                   } transition-all duration-200`}>
                     <span className="font-semibold">{moduleShortName}</span>
@@ -131,9 +130,9 @@ export function ExamNavigation({
                             disabled={disabled}
                             className={`w-5 h-5 text-xs rounded-md font-medium transition-all duration-200 ${
                               isCurrent 
-                                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-sm' 
+                                ? 'bg-purple-600 text-white shadow-sm' 
                                 : isAnswered
-                                ? 'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 hover:from-emerald-200 hover:to-green-200'
+                                ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             } disabled:opacity-50`}
                             title={`Question ${qIndex + 1}`}
@@ -148,25 +147,8 @@ export function ExamNavigation({
               })}
             </div>
             
-            {/* Right: Navigation Controls */}
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={onPrevious}
-                disabled={disabled}
-                className="px-3 py-1.5 text-xs font-medium text-purple-700 bg-white/60 border border-purple-200 rounded-lg hover:bg-white/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
-              >
-                ← Prev
-              </button>
-              <span className="text-xs text-purple-600 px-2 font-medium">
-                {currentQuestion}/{totalQuestions}
-              </span>
-              <button
-                onClick={onNext}
-                disabled={disabled}
-                className="px-3 py-1.5 text-xs font-medium text-purple-700 bg-white/60 border border-purple-200 rounded-lg hover:bg-white/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
-              >
-                Next →
-              </button>
+            {/* Right: Empty space */}
+            <div className="flex items-center">
             </div>
           </div>
         </div>
@@ -179,7 +161,7 @@ export function ExamNavigation({
         <div className="mb-4">
           <div className="flex items-center justify-between mb-3">
             <div className="text-sm">
-              <span className="font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Admin Preview - All Modules</span>
+              <span className="font-semibold text-purple-700">Admin Preview - All Modules</span>
             </div>
             <div className="text-xs text-purple-600/70">
               Navigate freely between all modules and questions
@@ -193,7 +175,7 @@ export function ExamNavigation({
               return (
                 <div key={moduleIndex} className={`border rounded-xl p-4 backdrop-blur-sm transition-all duration-200 ${
                   isCurrentModule 
-                    ? 'border-purple-300 bg-gradient-to-r from-purple-50 to-violet-50' 
+                    ? 'border-purple-300 bg-purple-50' 
                     : 'border-purple-100 bg-white/50 hover:bg-white/70'
                 }`}>
                   <div className="flex items-center justify-between mb-3">
@@ -225,9 +207,9 @@ export function ExamNavigation({
                             w-9 h-9 text-sm font-semibold rounded-lg transition-all duration-200 relative shadow-sm
                             disabled:opacity-50 disabled:cursor-not-allowed
                             ${isCurrent 
-                              ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white border-2 border-purple-500' 
+                              ? 'bg-purple-600 text-white border-2 border-purple-500' 
                               : isAnswered
-                              ? 'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 border border-emerald-300 hover:from-emerald-200 hover:to-green-200'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100'
                               : 'bg-white/80 text-purple-600 border border-purple-200 hover:bg-white hover:border-purple-300'
                             }
                           `}
@@ -270,7 +252,7 @@ export function ExamNavigation({
             </div>
           </div>
           
-          <div className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-semibold">
+          <div className="text-xs text-purple-700 font-semibold">
             🔍 Admin Preview Mode - Full Navigation Enabled
           </div>
         </div>

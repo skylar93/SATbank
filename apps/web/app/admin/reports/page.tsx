@@ -337,14 +337,14 @@ export default function AdminReportsPage() {
               <button
                 onClick={() => exportReport('summary')}
                 disabled={exporting || !analytics}
-                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 Export Summary
               </button>
               <button
                 onClick={() => exportReport('detailed')}
                 disabled={exporting || !analytics}
-                className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 Export Detailed
               </button>
@@ -376,7 +376,7 @@ export default function AdminReportsPage() {
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading analytics...</p>
           </div>
         ) : analytics && (
@@ -403,7 +403,7 @@ export default function AdminReportsPage() {
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <div className="flex items-center">
-                  <div className="text-3xl font-bold text-blue-500">{analytics.averageScore}</div>
+                  <div className="text-3xl font-bold text-purple-500">{analytics.averageScore}</div>
                   <div className="ml-4">
                     <div className="text-sm font-medium text-purple-900">Average Score</div>
                     <div className="text-xs text-purple-600/70">Out of 1600</div>
@@ -460,8 +460,8 @@ export default function AdminReportsPage() {
                       <div className="text-2xl font-bold text-emerald-500">{analytics.scoreDistribution.excellent}</div>
                       <div className="text-sm text-purple-600/70">Excellent (1200+)</div>
                     </div>
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-500">{analytics.scoreDistribution.good}</div>
+                    <div className="text-center p-4 bg-purple-50 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-500">{analytics.scoreDistribution.good}</div>
                       <div className="text-sm text-purple-600/70">Good (1000-1199)</div>
                     </div>
                     <div className="text-center p-4 bg-amber-50 rounded-lg">
@@ -534,7 +534,7 @@ export default function AdminReportsPage() {
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                   <h3 className="text-lg font-semibold text-purple-900 mb-4">Time Analysis</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-center p-4 bg-purple-50 rounded-lg">
                       <div className="text-2xl font-bold text-blue-500">
                         {analytics.timeAnalysis.averageTestDuration}min
                       </div>
@@ -585,7 +585,7 @@ export default function AdminReportsPage() {
                           </div>
                           <div className="w-20 bg-gray-200 rounded-full h-2">
                             <div 
-                              className="bg-blue-500 h-2 rounded-full"
+                              className="bg-purple-500 h-2 rounded-full"
                               style={{ 
                                 width: `${(day.completions / Math.max(...analytics.trends.daily.map(d => d.completions), 1)) * 100}%` 
                               }}

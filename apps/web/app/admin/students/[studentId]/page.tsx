@@ -167,7 +167,7 @@ export default function StudentDetailPage() {
   }
 
   const getScoreColor = (score: number) => {
-    if (score >= 1200) return 'text-green-600'
+    if (score >= 1200) return 'text-purple-600'
     if (score >= 1000) return 'text-blue-600'
     if (score >= 800) return 'text-yellow-600'
     return 'text-red-600'
@@ -175,7 +175,7 @@ export default function StudentDetailPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800'
+      case 'completed': return 'bg-purple-100 text-purple-800'
       case 'in_progress': return 'bg-blue-100 text-blue-800'
       case 'expired': return 'bg-red-100 text-red-800'
       default: return 'bg-gray-100 text-gray-800'
@@ -219,78 +219,80 @@ export default function StudentDetailPage() {
   const stats = calculateStats()
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       <Navigation />
       
       <div className="max-w-6xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {student.full_name}
-              </h1>
-              <p className="text-gray-600">{student.email}</p>
-              <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                <span>Grade: {student.grade_level || 'Not specified'}</span>
-                <span>Target Score: {student.target_score || 'Not set'}</span>
-                <span>Member since: {formatDate(student.created_at)}</span>
+          <div className="bg-white rounded-xl p-6 shadow-lg border border-slate-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-slate-800 mb-2">
+                  {student.full_name}
+                </h1>
+                <p className="text-slate-600 text-lg mb-3">{student.email}</p>
+                <div className="flex items-center space-x-6 text-sm text-slate-500">
+                  <span>Grade: {student.grade_level || 'Not specified'}</span>
+                  <span>Target Score: {student.target_score || 'Not set'}</span>
+                  <span>Member since: {formatDate(student.created_at)}</span>
+                </div>
               </div>
-            </div>
-            <div className="flex space-x-3">
-              <button
-                onClick={exportStudentData}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-              >
-                Export Data
-              </button>
-              <Link
-                href="/admin/students"
-                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
-              >
-                ← Back to Students
-              </Link>
+              <div className="flex space-x-3">
+                <button
+                  onClick={exportStudentData}
+                  className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                >
+                  Export Data
+                </button>
+                <Link
+                  href="/admin/students"
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-medium transition-colors"
+                >
+                  ← Back to Students
+                </Link>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8">
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <div className="text-2xl font-bold text-blue-600">{stats.totalAttempts}</div>
-            <div className="text-sm text-gray-500">Total Attempts</div>
+          <div className="bg-white p-5 rounded-lg shadow-lg border border-slate-200">
+            <div className="text-2xl font-bold text-slate-700 mb-1">{stats.totalAttempts}</div>
+            <div className="text-sm text-slate-500">Total Attempts</div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <div className="text-2xl font-bold text-green-600">{stats.completedAttempts}</div>
-            <div className="text-sm text-gray-500">Completed</div>
+          <div className="bg-white p-5 rounded-lg shadow-lg border border-slate-200">
+            <div className="text-2xl font-bold text-blue-600 mb-1">{stats.completedAttempts}</div>
+            <div className="text-sm text-slate-500">Completed</div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <div className={`text-2xl font-bold ${getScoreColor(stats.latestScore)}`}>
+          <div className="bg-white p-5 rounded-lg shadow-lg border border-slate-200">
+            <div className={`text-2xl font-bold mb-1 ${getScoreColor(stats.latestScore)}`}>
               {stats.latestScore || 'N/A'}
             </div>
-            <div className="text-sm text-gray-500">Latest Score</div>
+            <div className="text-sm text-slate-500">Latest Score</div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <div className={`text-2xl font-bold ${getScoreColor(stats.bestScore)}`}>
+          <div className="bg-white p-5 rounded-lg shadow-lg border border-slate-200">
+            <div className={`text-2xl font-bold mb-1 ${getScoreColor(stats.bestScore)}`}>
               {stats.bestScore || 'N/A'}
             </div>
-            <div className="text-sm text-gray-500">Best Score</div>
+            <div className="text-sm text-slate-500">Best Score</div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <div className="text-2xl font-bold text-purple-600">{stats.averageScore || 'N/A'}</div>
-            <div className="text-sm text-gray-500">Average Score</div>
+          <div className="bg-white p-5 rounded-lg shadow-lg border border-slate-200">
+            <div className="text-2xl font-bold text-slate-700 mb-1">{stats.averageScore || 'N/A'}</div>
+            <div className="text-sm text-slate-500">Average Score</div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <div className={`text-2xl font-bold ${stats.improvement >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          <div className="bg-white p-5 rounded-lg shadow-lg border border-slate-200">
+            <div className={`text-2xl font-bold mb-1 ${stats.improvement >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
               {stats.improvement > 0 ? '+' : ''}{stats.improvement || 'N/A'}
             </div>
-            <div className="text-sm text-gray-500">Improvement</div>
+            <div className="text-sm text-slate-500">Improvement</div>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="border-b border-gray-200 mb-6">
-          <nav className="-mb-px flex space-x-8">
+        <div className="bg-white rounded-2xl shadow-lg p-2 mb-8">
+          <nav className="flex space-x-2">
             {[
               { id: 'overview', label: 'Overview' },
               { id: 'attempts', label: 'Test Attempts' },
@@ -299,10 +301,10 @@ export default function StudentDetailPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                className={`py-3 px-6 rounded-xl font-medium text-sm transition-all duration-200 ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
                 }`}
               >
                 {tab.label}
@@ -315,8 +317,8 @@ export default function StudentDetailPage() {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Recent Performance */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Performance</h3>
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Recent Performance</h3>
               {attempts.filter(a => a.status === 'completed').slice(0, 3).map((attempt, index) => {
                 const displayScore = getDisplayScore(attempt)
                 return (
@@ -335,7 +337,7 @@ export default function StudentDetailPage() {
                       </div>
                       <button
                         onClick={() => loadAttemptDetails(attempt.id)}
-                        className="text-sm text-blue-600 hover:text-blue-700"
+                        className="text-sm text-purple-600 hover:text-purple-700"
                         disabled={detailsLoading}
                       >
                         View Details
@@ -351,8 +353,8 @@ export default function StudentDetailPage() {
 
             {/* Performance Summary */}
             {selectedAttempt && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Latest Test Analysis</h3>
+              <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Latest Test Analysis</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <h4 className="font-medium text-gray-900 mb-3">Module Scores</h4>
@@ -377,7 +379,7 @@ export default function StudentDetailPage() {
                           <div className="text-sm text-gray-600 mb-1">Strengths:</div>
                           <div className="flex flex-wrap gap-1">
                             {selectedAttempt.performanceAnalytics.strengthAreas.slice(0, 3).map((area, idx) => (
-                              <span key={idx} className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                              <span key={idx} className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded text-xs">
                                 {area}
                               </span>
                             ))}
@@ -389,7 +391,7 @@ export default function StudentDetailPage() {
                           <div className="text-sm text-gray-600 mb-1">Areas for improvement:</div>
                           <div className="flex flex-wrap gap-1">
                             {selectedAttempt.performanceAnalytics.weaknessAreas.slice(0, 3).map((area, idx) => (
-                              <span key={idx} className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">
+                              <span key={idx} className="bg-red-50 text-red-700 px-2 py-1 rounded text-xs">
                                 {area}
                               </span>
                             ))}
@@ -405,10 +407,10 @@ export default function StudentDetailPage() {
         )}
 
         {activeTab === 'attempts' && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">All Test Attempts</h3>
-              <p className="text-gray-600 mt-1">Complete history of student test attempts</p>
+          <div className="bg-white rounded-lg shadow-lg border border-slate-200">
+            <div className="p-6 border-b border-slate-100">
+              <h3 className="text-lg font-semibold text-slate-800">All Test Attempts</h3>
+              <p className="text-slate-600 mt-1">Complete history of student test attempts</p>
             </div>
             
             <div className="overflow-x-auto">
@@ -447,7 +449,7 @@ export default function StudentDetailPage() {
                           {attempt.completed_at ? formatDate(attempt.completed_at) : 'In Progress'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(attempt.status)}`}>
+                          <span className={`inline-flex px-3 py-2 text-xs font-semibold rounded-full ${getStatusColor(attempt.status)}`}>
                             {attempt.status.replace('_', ' ')}
                           </span>
                         </td>
@@ -475,7 +477,7 @@ export default function StudentDetailPage() {
                           {attempt.status === 'completed' && (
                             <Link
                               href={`/admin/results/${attempt.id}`}
-                              className="text-blue-600 hover:text-blue-700"
+                              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
                             >
                               View Results
                             </Link>
@@ -499,8 +501,8 @@ export default function StudentDetailPage() {
         {activeTab === 'progress' && (
           <div className="space-y-6">
             {/* Score Progression Chart (Simplified) */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Score Progression</h3>
+            <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-6">
+              <h3 className="text-lg font-semibold text-slate-800 mb-4">Score Progression</h3>
               <div className="space-y-4">
                 {attempts
                   .filter(a => a.status === 'completed')
@@ -510,12 +512,12 @@ export default function StudentDetailPage() {
                     const prevDisplayScore = index > 0 ? getDisplayScore(array[index - 1]) : 0
                     const improvement = index > 0 ? displayScore - prevDisplayScore : 0
                     return (
-                      <div key={attempt.id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                      <div key={attempt.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-slate-800">
                             {attempt.exam?.title || `Test #${index + 1}`}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-slate-500">
                             {formatDate(attempt.completed_at)}
                           </div>
                         </div>
@@ -524,7 +526,7 @@ export default function StudentDetailPage() {
                             {displayScore}
                           </div>
                           {improvement !== 0 && (
-                            <div className={`text-xs ${improvement > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            <div className={`text-xs font-medium px-2 py-1 rounded ${improvement > 0 ? 'text-emerald-700 bg-emerald-100' : 'text-red-700 bg-red-100'}`}>
                               {improvement > 0 ? '+' : ''}{improvement}
                             </div>
                           )}
@@ -540,8 +542,8 @@ export default function StudentDetailPage() {
 
             {/* Goal Tracking */}
             {student.target_score && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Goal Progress</h3>
+              <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Goal Progress</h3>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">Target Score:</span>
                   <span className="text-sm font-medium text-gray-900">{student.target_score}</span>
@@ -552,9 +554,9 @@ export default function StudentDetailPage() {
                     {stats.bestScore || 0}
                   </span>
                 </div>
-                <div className="bg-gray-200 rounded-full h-4">
+                <div className="bg-slate-200 rounded-full h-4 overflow-hidden">
                   <div 
-                    className="bg-blue-600 h-4 rounded-full transition-all duration-300"
+                    className="bg-blue-500 h-4 rounded-full transition-all duration-500"
                     style={{ 
                       width: `${Math.min((stats.bestScore / student.target_score) * 100, 100)}%` 
                     }}

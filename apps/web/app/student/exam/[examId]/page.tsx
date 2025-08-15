@@ -835,19 +835,6 @@ function ExamPageContent() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header with Timer */}
       <div className="bg-white shadow-sm border-b px-6 py-4">
-        {isPreviewMode && (
-          <div className="mb-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg text-center backdrop-blur-sm">
-            <span className="text-purple-700 text-sm font-semibold">
-              🔍 Admin Preview Mode - Changes will not be saved
-            </span>
-            <button
-              onClick={() => router.push('/admin/exams')}
-              className="ml-4 text-purple-600 hover:text-purple-800 text-xs font-medium underline transition-colors duration-200"
-            >
-              Back to Admin Panel
-            </button>
-          </div>
-        )}
         
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -875,20 +862,9 @@ function ExamPageContent() {
               />
             )}
             {isPreviewMode && (
-              <span className="text-sm text-orange-600 font-medium">
-                Preview Mode - No Timer • Use ← → keys to navigate
-              </span>
-            )}
-            {process.env.NODE_ENV === 'development' && isPreviewMode && (
-              <button
-                onClick={() => {
-                  console.log('Test button clicked - simulating timer expiry')
-                  handleTimeExpired()
-                }}
-                className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
-              >
-                Test Timer Expiry
-              </button>
+              <div className="bg-purple-500 text-white px-3 py-1.5 rounded-full text-xs font-medium">
+                Preview Mode
+              </div>
             )}
           </div>
         </div>

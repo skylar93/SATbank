@@ -250,8 +250,8 @@ export default function AdminDashboard() {
   }
 
   const getScoreColor = (score: number) => {
-    if (score >= 1200) return 'text-green-600'
-    if (score >= 1000) return 'text-blue-600'
+    if (score >= 1200) return 'text-purple-600'
+    if (score >= 1000) return 'text-violet-600'
     if (score >= 800) return 'text-yellow-600'
     return 'text-red-600'
   }
@@ -289,7 +289,7 @@ export default function AdminDashboard() {
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading dashboard...</p>
           </div>
         ) : (
@@ -338,24 +338,28 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                   <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
                     <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">Test Completions (Last 7 Days)</h3>
-                    <ProgressChart
-                      data={stats.weeklyTrend}
-                      title=""
-                      type="line"
-                      color="#10B981"
-                      height={250}
-                    />
+                    <div className="w-full overflow-hidden">
+                      <ProgressChart
+                        data={stats.weeklyTrend}
+                        title=""
+                        type="line"
+                        color="#10B981"
+                        height={250}
+                      />
+                    </div>
                   </div>
                   
                   <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
                     <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">Score Distribution</h3>
-                    <ProgressChart
-                      data={stats.scoreDistribution}
-                      title=""
-                      type="bar"
-                      color="#3B82F6"
-                      height={250}
-                    />
+                    <div className="w-full overflow-hidden">
+                      <ProgressChart
+                        data={stats.scoreDistribution}
+                        title=""
+                        type="bar"
+                        color="#3B82F6"
+                        height={250}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -365,9 +369,9 @@ export default function AdminDashboard() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <Link
                       href="/admin/students"
-                      className="flex items-center p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors"
+                      className="flex items-center p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition-colors"
                     >
-                      <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4">
+                      <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mr-4">
                         <AcademicCapIcon className="w-6 h-6 text-white" />
                       </div>
                       <div>
@@ -378,9 +382,9 @@ export default function AdminDashboard() {
 
                     <Link
                       href="/admin/exams"
-                      className="flex items-center p-4 bg-green-50 hover:bg-green-100 rounded-xl transition-colors"
+                      className="flex items-center p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition-colors"
                     >
-                      <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mr-4">
+                      <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mr-4">
                         <BookOpenIcon className="w-6 h-6 text-white" />
                       </div>
                       <div>
@@ -436,7 +440,7 @@ export default function AdminDashboard() {
                     <h3 className="text-base md:text-lg font-semibold text-gray-900">Recent Completions</h3>
                     <Link
                       href="/admin/students"
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-sm text-purple-600 hover:text-purple-700 font-medium"
                     >
                       View all
                     </Link>
@@ -445,8 +449,8 @@ export default function AdminDashboard() {
                   <div className="space-y-4">
                     {recentAttempts.slice(0, 5).map((attempt) => (
                       <div key={attempt.id} className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-blue-600 font-semibold text-sm">
+                        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                          <span className="text-purple-600 font-semibold text-sm">
                             {attempt.user_profiles?.full_name?.charAt(0) || 'U'}
                           </span>
                         </div>

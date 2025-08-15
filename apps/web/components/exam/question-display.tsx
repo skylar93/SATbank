@@ -279,6 +279,93 @@ interface QuestionDisplayProps {
   onToggleMarkForReview?: () => void
 }
 
+// Helper function to parse correct answers for grid-in questions
+const parseCorrectAnswers = (question: Question): string[] => {
+  if (question.question_type !== 'grid_in') {
+    return [];
+  }
+  
+  console.log('🔍 parseCorrectAnswers DEBUG:', {
+    questionId: question.id,
+    correct_answers: question.correct_answers,
+    correct_answers_type: typeof question.correct_answers,
+    correct_answer: question.correct_answer,
+    correct_answer_type: typeof question.correct_answer
+  });
+  
+  let answers: any = question.correct_answers;
+  
+  // Handle null/undefined
+  if (!answers) {
+    console.log('🔍 No correct_answers, using correct_answer:', question.correct_answer);
+    return [question.correct_answer || ''];
+  }
+  
+  // Handle array case (which seems to be the issue)
+  if (Array.isArray(answers)) {
+    console.log('🔍 correct_answers is array:', answers);
+    
+    // Check if array contains JSON strings that need to be parsed
+    const parsedAnswers: string[] = [];
+    
+    for (const answer of answers) {
+      if (typeof answer === 'string' && (answer.startsWith('[') || answer.startsWith('"'))) {
+        // Try to parse as JSON
+        try {
+          const parsed = JSON.parse(answer);
+          console.log('🔍 Parsed JSON from array element:', parsed);
+          
+          if (Array.isArray(parsed)) {
+            // If parsed result is an array, add all elements
+            parsedAnswers.push(...parsed.map((p: any) => String(p || '').trim()));
+          } else {
+            // If parsed result is a single value, add it
+            parsedAnswers.push(String(parsed || '').trim());
+          }
+        } catch (error) {
+          // If parsing fails, treat as regular string
+          console.log('🔍 JSON parse failed for array element, treating as string:', answer);
+          parsedAnswers.push(String(answer || '').trim());
+        }
+      } else {
+        // Regular string, just add it
+        parsedAnswers.push(String(answer || '').trim());
+      }
+    }
+    
+    const filtered = parsedAnswers.filter((a: string) => a.length > 0);
+    console.log('🔍 Final parsed array answers:', filtered);
+    return filtered.length > 0 ? filtered : [question.correct_answer || ''];
+  }
+  
+  // If it's a string, try to parse it as JSON
+  if (typeof answers === 'string') {
+    console.log('🔍 correct_answers is string, attempting to parse:', answers);
+    try {
+      answers = JSON.parse(answers);
+      console.log('🔍 JSON parsed successfully:', answers);
+      
+      if (Array.isArray(answers)) {
+        const filtered = answers
+          .map((a: any) => String(a || '').trim())
+          .filter((a: string) => a.length > 0);
+        console.log('🔍 Final string-parsed answers:', filtered);
+        return filtered.length > 0 ? filtered : [question.correct_answer || ''];
+      } else {
+        return [String(answers).trim()];
+      }
+    } catch (error) {
+      // If parsing fails, treat as single answer (not an array)
+      console.log('🔍 JSON parse failed, treating as single answer:', answers);
+      return [answers];
+    }
+  }
+  
+  // Fallback for other types
+  console.log('🔍 Fallback conversion:', answers);
+  return [String(answers) || question.correct_answer || ''];
+};
+
 export function QuestionDisplay({
   question,
   questionNumber,
@@ -299,7 +386,7 @@ export function QuestionDisplay({
     question_type: question.question_type,
     options: question.options || {},
     correct_answer: question.correct_answer,
-    correct_answers: question.correct_answers || (question.question_type === 'grid_in' ? [question.correct_answer] : []),
+    correct_answers: parseCorrectAnswers(question),
     explanation: question.explanation || '',
     table_data: question.table_data || null
   })
@@ -315,7 +402,7 @@ export function QuestionDisplay({
       question_type: question.question_type,
       options: question.options || {},
       correct_answer: question.correct_answer,
-      correct_answers: question.correct_answers || (question.question_type === 'grid_in' ? [question.correct_answer] : []),
+      correct_answers: parseCorrectAnswers(question),
       explanation: question.explanation || '',
       table_data: question.table_data || null
     })
@@ -378,9 +465,14 @@ export function QuestionDisplay({
 
       // Handle correct answers based on question type
       if (editForm.question_type === 'grid_in') {
-        updateData.correct_answers = editForm.correct_answers
+        // Ensure correct_answers is stored as a JSON array in the database
+        const cleanAnswers = (editForm.correct_answers || [])
+          .map((a: any) => String(a || '').trim())
+          .filter((a: string) => a.length > 0);
+        
+        updateData.correct_answers = cleanAnswers.length > 0 ? cleanAnswers : [''];
         // Keep correct_answer for backward compatibility
-        updateData.correct_answer = editForm.correct_answers?.[0] || ''
+        updateData.correct_answer = cleanAnswers[0] || ''
       } else {
         updateData.correct_answer = editForm.correct_answer
         updateData.correct_answers = null
@@ -442,7 +534,7 @@ export function QuestionDisplay({
       question_type: localQuestion.question_type,
       options: localQuestion.options || {},
       correct_answer: localQuestion.correct_answer,
-      correct_answers: localQuestion.correct_answers || (localQuestion.question_type === 'grid_in' ? [localQuestion.correct_answer] : []),
+      correct_answers: parseCorrectAnswers(localQuestion),
       explanation: localQuestion.explanation || '',
       table_data: localQuestion.table_data || null
     })
@@ -643,45 +735,10 @@ export function QuestionDisplay({
                       placeholder={`Enter text for option ${key}...`}
                       rows={3}
                       compact={true}
+                      showPreview={true}
                     />
                   </div>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Image Upload (Optional)
-                    </label>
-                    <ImageUpload
-                      onImageUploaded={(imageUrl) => {
-                        const updatedOption = { ...optionData, imageUrl };
-                        setEditForm({
-                          ...editForm,
-                          options: {...(editForm.options || {}), [key]: JSON.stringify(updatedOption)}
-                        });
-                      }}
-                      className="mb-2"
-                    />
-                    {optionData.imageUrl && (
-                      <div className="mt-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">Current image:</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const updatedOption = { ...optionData };
-                              delete updatedOption.imageUrl;
-                              setEditForm({
-                                ...editForm,
-                                options: {...(editForm.options || {}), [key]: JSON.stringify(updatedOption)}
-                              });
-                            }}
-                            className="text-xs text-red-600 hover:text-red-800"
-                          >
-                            Remove Image
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
                   
                   {optionData.imageUrl && (
                     <div>
@@ -858,7 +915,17 @@ export function QuestionDisplay({
           {showExplanation && (
             <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
               <p className="text-sm text-green-800">
-                <strong>Correct Answer:</strong> {localQuestion.correct_answer}
+                <strong>Correct Answer{(() => {
+                  if (localQuestion.question_type === 'grid_in') {
+                    const parsedAnswers = parseCorrectAnswers(localQuestion);
+                    return parsedAnswers.length > 1 ? 's' : '';
+                  }
+                  return '';
+                })()}:</strong>{' '}
+                {localQuestion.question_type === 'grid_in'
+                  ? parseCorrectAnswers(localQuestion).join(', ')
+                  : localQuestion.correct_answer
+                }
               </p>
             </div>
           )}
@@ -1098,22 +1165,6 @@ export function QuestionDisplay({
                 </div>
               )}
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Question Image Upload
-                </label>
-                <ImageUpload
-                  onImageUploaded={(imageUrl) => {
-                    // Add the image URL to the question text
-                    const newText = editForm.question_text + `\n\n![Question Image](${imageUrl})`;
-                    setEditForm({...editForm, question_text: newText});
-                  }}
-                  className="mb-2"
-                />
-                <p className="text-xs text-gray-500">
-                  Upload an image that will be inserted into the question text. You can also manually add image URLs in markdown format: ![alt text](image-url)
-                </p>
-              </div>
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
@@ -1129,22 +1180,40 @@ export function QuestionDisplay({
                       
                       // Reset options and correct answers based on question type
                       if (newType === 'grid_in') {
+                        // Get current answers, prioritizing parsed correct_answers
+                        let currentAnswers: string[] = [];
+                        
+                        if (editForm.correct_answers && Array.isArray(editForm.correct_answers) && editForm.correct_answers.length > 0) {
+                          // Use existing correct_answers if it's a valid array
+                          currentAnswers = editForm.correct_answers.map(a => String(a || '').trim()).filter(a => a.length > 0);
+                        } else if (editForm.correct_answer) {
+                          // Use correct_answer as fallback
+                          currentAnswers = [String(editForm.correct_answer).trim()];
+                        } else {
+                          // Default empty answer
+                          currentAnswers = [''];
+                        }
+                        
                         setEditForm({
                           ...editForm, 
                           options: {}, 
                           question_type: newType,
-                          correct_answers: editForm.correct_answer ? [editForm.correct_answer] : ['']
+                          correct_answers: currentAnswers
                         });
-                      } else if (newType === 'multiple_choice' && !editForm.options) {
+                      } else if (newType === 'multiple_choice') {
                         // Set default options if switching to multiple choice
+                        const defaultOptions = editForm.options && Object.keys(editForm.options).length > 0 
+                          ? editForm.options
+                          : {
+                              'A': '{"text": "Option A"}',
+                              'B': '{"text": "Option B"}',
+                              'C': '{"text": "Option C"}',
+                              'D': '{"text": "Option D"}'
+                            };
+                        
                         setEditForm({
                           ...editForm, 
-                          options: {
-                            'A': '{"text": "Option A"}',
-                            'B': '{"text": "Option B"}',
-                            'C': '{"text": "Option C"}',
-                            'D': '{"text": "Option D"}'
-                          },
+                          options: defaultOptions,
                           question_type: newType,
                           correct_answers: []
                         });
@@ -1167,25 +1236,26 @@ export function QuestionDisplay({
                   
                   {editForm.question_type === 'grid_in' ? (
                     <div className="space-y-3">
-                      {(editForm.correct_answers || ['']).map((answer, index) => (
+                      {/* Display current answers as individual text boxes */}
+                      {(editForm.correct_answers && editForm.correct_answers.length > 0 ? editForm.correct_answers : ['']).map((answer: string, index: number) => (
                         <div key={index} className="flex items-center gap-2">
                           <input
                             type="text"
-                            value={answer}
+                            value={String(answer || '')}
                             onChange={(e) => {
                               const newAnswers = [...(editForm.correct_answers || [''])];
                               newAnswers[index] = e.target.value;
                               setEditForm({...editForm, correct_answers: newAnswers});
                             }}
                             className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                            placeholder={`Correct answer ${index + 1}`}
+                            placeholder={`Correct answer ${index + 1} (e.g., 18, 3/4, 0.75)`}
                           />
                           {(editForm.correct_answers || []).length > 1 && (
                             <button
                               type="button"
                               onClick={() => {
-                                const newAnswers = editForm.correct_answers?.filter((_, i) => i !== index) || [];
-                                setEditForm({...editForm, correct_answers: newAnswers});
+                                const newAnswers = editForm.correct_answers?.filter((_: string, i: number) => i !== index) || [];
+                                setEditForm({...editForm, correct_answers: newAnswers.length === 0 ? [''] : newAnswers});
                               }}
                               className="px-3 py-2 text-red-600 hover:text-red-800 border border-red-300 hover:border-red-400 rounded-md transition-colors"
                             >
@@ -1284,21 +1354,78 @@ export function QuestionDisplay({
                 
                 {showAnswerCheck && (
                   <div className={`p-3 border rounded-lg ${
-                    userAnswer?.trim().toUpperCase() === String(localQuestion.correct_answer).trim().toUpperCase()
-                      ? 'bg-green-50 border-green-200'
-                      : 'bg-red-50 border-red-200'
+                    (() => {
+                      if (!userAnswer) return 'bg-red-50 border-red-200';
+                      
+                      // For grid-in questions, check if user's single answer matches any of the correct answers
+                      if (localQuestion.question_type === 'grid_in') {
+                        const userAnswerTrimmed = userAnswer.trim().toUpperCase();
+                        const correctAnswers = parseCorrectAnswers(localQuestion).map(a => String(a).trim().toUpperCase());
+                        
+                        // Check if user's answer matches any of the correct answers
+                        const hasMatch = correctAnswers.includes(userAnswerTrimmed);
+                        return hasMatch ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
+                      }
+                      
+                      // For multiple choice, use existing logic
+                      return userAnswer?.trim().toUpperCase() === String(localQuestion.correct_answer).trim().toUpperCase()
+                        ? 'bg-green-50 border-green-200'
+                        : 'bg-red-50 border-red-200';
+                    })()
                   }`}>
-                    {userAnswer?.trim().toUpperCase() === String(localQuestion.correct_answer).trim().toUpperCase() ? (
-                      <p className="text-sm text-green-800 font-medium">
-                        ✅ 정답입니다!
-                      </p>
-                    ) : (
-                      <p className="text-sm text-red-800">
-                        <span className="font-medium">❌ 오답입니다.</span>
-                        <br />
-                        <strong>정답:</strong> {localQuestion.correct_answer}
-                      </p>
-                    )}
+                    {(() => {
+                      if (!userAnswer) {
+                        return (
+                          <p className="text-sm text-red-800">
+                            <span className="font-medium">❌ 답안을 입력해주세요.</span>
+                          </p>
+                        );
+                      }
+                      
+                      // For grid-in questions, check if user's single answer matches any of the correct answers
+                      if (localQuestion.question_type === 'grid_in') {
+                        const userAnswerTrimmed = userAnswer.trim().toUpperCase();
+                        const correctAnswers = parseCorrectAnswers(localQuestion).map(a => String(a).trim().toUpperCase());
+                        
+                        const hasMatch = correctAnswers.includes(userAnswerTrimmed);
+                        
+                        if (hasMatch) {
+                          return (
+                            <p className="text-sm text-green-800 font-medium">
+                              ✅ 정답입니다!
+                            </p>
+                          );
+                        } else {
+                          return (
+                            <p className="text-sm text-red-800">
+                              <span className="font-medium">❌ 오답입니다.</span>
+                              <br />
+                              <strong>정답:</strong> {localQuestion.question_type === 'grid_in'
+                                ? parseCorrectAnswers(localQuestion).join(', ')
+                                : localQuestion.correct_answer
+                              }
+                            </p>
+                          );
+                        }
+                      }
+                      
+                      // For multiple choice, use existing logic
+                      if (userAnswer?.trim().toUpperCase() === String(localQuestion.correct_answer).trim().toUpperCase()) {
+                        return (
+                          <p className="text-sm text-green-800 font-medium">
+                            ✅ 정답입니다!
+                          </p>
+                        );
+                      } else {
+                        return (
+                          <p className="text-sm text-red-800">
+                            <span className="font-medium">❌ 오답입니다.</span>
+                            <br />
+                            <strong>정답:</strong> {localQuestion.correct_answer}
+                          </p>
+                        );
+                      }
+                    })()}
                   </div>
                 )}
               </div>

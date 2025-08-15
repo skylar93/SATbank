@@ -18,6 +18,7 @@ interface Question {
   table_data?: any
   options?: any
   correct_answer: string | string[]
+  correct_answers?: string[] | null
   explanation?: string
   topic_tags?: string[]
   exam_id?: string
@@ -75,8 +76,8 @@ export default function ManageExamsPage() {
     
     // Clean HTML and handle math expressions
     const processedHtml = html
-      .replace(/\$\$([\s\S]*?)\$\$/g, '<span class="bg-blue-100 px-1 rounded text-blue-800 font-mono">$$$1$$</span>')
-      .replace(/\$([^$\n]*?)\$/g, '<span class="bg-blue-100 px-1 rounded text-blue-800 font-mono">$$$1$$</span>')
+      .replace(/\$\$([\s\S]*?)\$\$/g, '<span class="bg-purple-100 px-1 rounded text-purple-800 font-mono">$$$1$$</span>')
+      .replace(/\$([^$\n]*?)\$/g, '<span class="bg-purple-100 px-1 rounded text-purple-800 font-mono">$$$1$$</span>')
       .replace(/---/g, '—');
     
     return (
@@ -180,7 +181,7 @@ export default function ManageExamsPage() {
     setEditingQuestion(question.id)
     
     // Convert markdown to HTML for editor compatibility (force conversion for now)
-    const processedQuestion = {
+    let processedQuestion = {
       ...question,
       question_text: convertMarkdownToHtml(question.question_text),
       explanation: question.explanation ? convertMarkdownToHtml(question.explanation) : '',
@@ -205,8 +206,35 @@ export default function ManageExamsPage() {
         })
       ) : question.options
     };
+
+    // Handle correct_answers for grid-in questions
+    if (question.question_type === 'grid_in' && (question as any).correct_answers) {
+      let correctAnswers = (question as any).correct_answers;
+      
+      // Parse JSON if it's a string
+      if (typeof correctAnswers === 'string') {
+        try {
+          correctAnswers = JSON.parse(correctAnswers);
+        } catch {
+          correctAnswers = [correctAnswers];
+        }
+      }
+      
+      // Ensure it's an array
+      if (!Array.isArray(correctAnswers)) {
+        correctAnswers = [String(correctAnswers || question.correct_answer || '')];
+      }
+      
+      // Filter and clean answers
+      const cleanAnswers = correctAnswers
+        .map((a: any) => String(a || '').trim())
+        .filter((a: string) => a.length > 0);
+      
+      processedQuestion.correct_answer = cleanAnswers.length > 0 ? cleanAnswers : [''];
+    }
     
     console.log('Processed question text:', processedQuestion.question_text)
+    console.log('Processed correct answers:', processedQuestion.correct_answer)
     setEditForm(processedQuestion)
   }
 
@@ -214,16 +242,33 @@ export default function ManageExamsPage() {
     if (!editingQuestion || !editForm) return
 
     try {
+      // Prepare update data
+      const updateData: any = {
+        question_text: editForm.question_text,
+        question_type: editForm.question_type,
+        options: editForm.options,
+        explanation: editForm.explanation,
+        table_data: editForm.table_data
+      }
+
+      // Handle correct answers based on question type
+      if (editForm.question_type === 'grid_in') {
+        // For grid-in questions, store multiple answers in correct_answers field
+        const cleanAnswers = Array.isArray(editForm.correct_answer)
+          ? editForm.correct_answer.map((a: any) => String(a || '').trim()).filter((a: string) => a.length > 0)
+          : (editForm.correct_answer ? [String(editForm.correct_answer).trim()] : []);
+        
+        updateData.correct_answers = cleanAnswers.length > 0 ? cleanAnswers : [''];
+        updateData.correct_answer = cleanAnswers[0] || ''; // Keep for backward compatibility
+      } else {
+        // For multiple choice, use correct_answer
+        updateData.correct_answer = editForm.correct_answer;
+        updateData.correct_answers = null;
+      }
+
       const { data, error } = await supabase
         .from('questions')
-        .update({
-          question_text: editForm.question_text,
-          question_type: editForm.question_type,
-          options: editForm.options,
-          correct_answer: editForm.correct_answer,
-          explanation: editForm.explanation,
-          table_data: editForm.table_data
-        })
+        .update(updateData)
         .eq('id', editingQuestion)
         .select()
 
@@ -458,7 +503,7 @@ export default function ManageExamsPage() {
                     </td>
                     <td className="px-4 py-4">
                       <span className={`px-2 py-1 text-xs font-medium rounded ${
-                        question.difficulty_level === 'easy' ? 'bg-green-100 text-green-800' :
+                        question.difficulty_level === 'easy' ? 'bg-purple-100 text-purple-800' :
                         question.difficulty_level === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-red-100 text-red-800'
                       }`}>
@@ -466,7 +511,7 @@ export default function ManageExamsPage() {
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="px-2 py-1 text-xs font-medium bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 rounded">
+                      <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded">
                         {question.correct_answer}
                       </span>
                     </td>
@@ -497,7 +542,7 @@ export default function ManageExamsPage() {
                   {question.module_type.replace(/(\d)/, ' $1').toUpperCase()} - Q{question.question_number}
                 </span>
                 <span className={`px-2 py-1 rounded text-sm font-medium ${
-                  question.difficulty_level === 'easy' ? 'bg-green-100 text-green-800' :
+                  question.difficulty_level === 'easy' ? 'bg-purple-100 text-purple-800' :
                   question.difficulty_level === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                   'bg-red-100 text-red-800'
                 }`}>
@@ -696,7 +741,7 @@ export default function ManageExamsPage() {
                             options: newOptions
                           });
                         }}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-medium"
+                        className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors text-sm font-medium"
                       >
                         + Add Answer Choice
                       </button>
@@ -719,11 +764,11 @@ export default function ManageExamsPage() {
                       return (
                         <div key={key} className="flex items-start space-x-2">
                           <span className={`font-medium w-6 ${
-                            question.correct_answer === key ? 'text-green-600' : 'text-gray-700'
+                            question.correct_answer === key ? 'text-purple-600' : 'text-gray-700'
                           }`}>
                             {key}.
                           </span>
-                          <div className={`flex-1 ${question.correct_answer === key ? 'text-green-600 font-medium' : 'text-gray-900'}`}>
+                          <div className={`flex-1 ${question.correct_answer === key ? 'text-purple-600 font-medium' : 'text-gray-900'}`}>
                             {optionData.text && (
                               <div className="mb-1">
                                 {renderHtmlContent(optionData.text)}
@@ -786,38 +831,84 @@ export default function ManageExamsPage() {
                       })}
                     </div>
                   ) : (
-                    // Text input for grid-in or other types
-                    <input
-                      type="text"
-                      value={Array.isArray(editForm.correct_answer) 
-                        ? editForm.correct_answer.join(', ') 
-                        : (editForm.correct_answer || '')
-                      }
-                      onChange={(e) => {
-                        const value = e.target.value
-                        const answers = value.includes(',') 
-                          ? value.split(',').map(a => a.trim()).filter(a => a)
-                          : [value.trim()].filter(a => a)
-                        setEditForm({
-                          ...editForm, 
-                          correct_answer: answers.length === 1 ? answers[0] : answers
-                        })
-                      }}
-                      placeholder="Enter answer(s), separate multiple with commas"
-                      className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-violet-500"
-                    />
+                    // Individual text inputs for grid-in or other types
+                    <div className="space-y-3">
+                      {(() => {
+                        // Convert current answer to array format
+                        let currentAnswers = [];
+                        if (Array.isArray(editForm.correct_answer)) {
+                          currentAnswers = editForm.correct_answer;
+                        } else if (editForm.correct_answer) {
+                          currentAnswers = [editForm.correct_answer];
+                        } else {
+                          currentAnswers = [''];
+                        }
+                        
+                        return currentAnswers.map((answer, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={String(answer || '')}
+                              onChange={(e) => {
+                                const newAnswers = [...currentAnswers];
+                                newAnswers[index] = e.target.value;
+                                // Clean empty answers except keep at least one
+                                const cleanAnswers = newAnswers.filter((a, i) => a.trim() || i === 0);
+                                setEditForm({
+                                  ...editForm,
+                                  correct_answer: cleanAnswers.length === 1 ? cleanAnswers[0] : cleanAnswers
+                                });
+                              }}
+                              placeholder={`Correct answer ${index + 1} (e.g., 18, 3/4, 0.75)`}
+                              className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-violet-500"
+                            />
+                            {currentAnswers.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newAnswers = currentAnswers.filter((_, i) => i !== index);
+                                  setEditForm({
+                                    ...editForm,
+                                    correct_answer: newAnswers.length === 1 ? newAnswers[0] : newAnswers
+                                  });
+                                }}
+                                className="px-3 py-2 text-red-600 hover:text-red-800 border border-red-300 hover:border-red-400 rounded transition-colors"
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+                        ));
+                      })()}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentAnswers = Array.isArray(editForm.correct_answer) 
+                            ? editForm.correct_answer 
+                            : (editForm.correct_answer ? [editForm.correct_answer] : ['']);
+                          const newAnswers = [...currentAnswers, ''];
+                          setEditForm({
+                            ...editForm,
+                            correct_answer: newAnswers
+                          });
+                        }}
+                        className="w-full px-4 py-2 text-violet-600 hover:text-violet-800 border border-violet-300 hover:border-violet-400 rounded transition-colors"
+                      >
+                        + Add Another Correct Answer
+                      </button>
+                    </div>
                   )}
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-1">
                   {Array.isArray(question.correct_answer) ? (
                     question.correct_answer.map((answer, index) => (
-                      <span key={index} className="px-2 py-1 bg-green-100 text-green-800 rounded font-medium">
+                      <span key={index} className="px-2 py-1 bg-purple-100 text-purple-800 rounded font-medium">
                         {answer}
                       </span>
                     ))
                   ) : (
-                    <span className="px-2 py-1 bg-green-100 text-green-800 rounded font-medium">
+                    <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded font-medium">
                       {question.correct_answer}
                     </span>
                   )}

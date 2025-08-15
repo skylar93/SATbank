@@ -281,7 +281,7 @@ export default function AdminAssignmentsPage() {
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setShowAssignModal(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium flex items-center"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium flex items-center"
             >
               <PlusIcon className="w-5 h-5 mr-2" />
               New Assignment
@@ -387,7 +387,7 @@ export default function AdminAssignmentsPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                           assignment.show_results 
-                            ? 'bg-green-100 text-green-800' 
+                            ? 'bg-purple-100 text-purple-800' 
                             : 'bg-red-100 text-red-800'
                         }`}>
                           {assignment.show_results ? 'Visible' : 'Hidden'}
@@ -396,7 +396,7 @@ export default function AdminAssignmentsPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                           assignment.is_active 
-                            ? 'bg-green-100 text-green-800' 
+                            ? 'bg-purple-100 text-purple-800' 
                             : 'bg-gray-100 text-gray-800'
                         }`}>
                           {assignment.is_active ? 'Active' : 'Inactive'}
@@ -472,7 +472,7 @@ export default function AdminAssignmentsPage() {
                               setSelectedExams(selectedExams.filter(id => id !== exam.id))
                             }
                           }}
-                          className="mr-3 text-blue-600 focus:ring-blue-500"
+                          className="mr-3 text-purple-600 focus:ring-purple-500"
                         />
                         <div>
                           <div className="text-sm font-medium text-gray-900">
@@ -513,7 +513,7 @@ export default function AdminAssignmentsPage() {
                               setSelectedStudents(selectedStudents.filter(id => id !== student.id))
                             }
                           }}
-                          className="mr-3 text-blue-600 focus:ring-blue-500"
+                          className="mr-3 text-purple-600 focus:ring-purple-500"
                         />
                         <div>
                           <div className="text-sm font-medium text-gray-900">
@@ -554,7 +554,7 @@ export default function AdminAssignmentsPage() {
                       name="showResults"
                       checked={showResults}
                       onChange={() => setShowResults(true)}
-                      className="mr-2 text-blue-600 focus:ring-blue-500"
+                      className="mr-2 text-purple-600 focus:ring-purple-500"
                     />
                     <span className="text-sm text-gray-900">Show results to students</span>
                   </label>
@@ -564,7 +564,7 @@ export default function AdminAssignmentsPage() {
                       name="showResults"
                       checked={!showResults}
                       onChange={() => setShowResults(false)}
-                      className="mr-2 text-blue-600 focus:ring-blue-500"
+                      className="mr-2 text-purple-600 focus:ring-purple-500"
                     />
                     <span className="text-sm text-gray-900">Hide results from students</span>
                   </label>
@@ -585,7 +585,7 @@ export default function AdminAssignmentsPage() {
               <button
                 onClick={handleCreateAssignment}
                 disabled={selectedExams.length === 0 || selectedStudents.length === 0}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Create Assignment
               </button>
@@ -661,7 +661,7 @@ export default function AdminAssignmentsPage() {
                       name="editShowResults"
                       checked={editShowResults}
                       onChange={() => setEditShowResults(true)}
-                      className="mr-2 text-blue-600 focus:ring-blue-500"
+                      className="mr-2 text-purple-600 focus:ring-purple-500"
                     />
                     <span className="text-sm text-gray-900">Show results</span>
                   </label>
@@ -671,7 +671,7 @@ export default function AdminAssignmentsPage() {
                       name="editShowResults"
                       checked={!editShowResults}
                       onChange={() => setEditShowResults(false)}
-                      className="mr-2 text-blue-600 focus:ring-blue-500"
+                      className="mr-2 text-purple-600 focus:ring-purple-500"
                     />
                     <span className="text-sm text-gray-900">Hide results</span>
                   </label>
@@ -688,7 +688,7 @@ export default function AdminAssignmentsPage() {
               </button>
               <button
                 onClick={handleUpdateAssignment}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
               >
                 Update Assignment
               </button>

@@ -26,25 +26,29 @@ export function ProgressChart({
   const { maxValue, minValue, chartData } = useMemo(() => {
     if (data.length === 0) return { maxValue: 0, minValue: 0, chartData: [] }
     
-    const values = data.map(d => d.value)
+    const values = data.map(d => d.value).filter(v => typeof v === 'number' && !isNaN(v))
+    if (values.length === 0) return { maxValue: 0, minValue: 0, chartData: [] }
+    
     const max = Math.max(...values)
     const min = Math.min(...values)
     
     // Add some padding to the range
-    const range = max - min
+    const range = max - min || 1
     const padding = range * 0.1
     const maxVal = max + padding
     const minVal = Math.max(0, min - padding)
     
-    // Calculate positions for visualization
-    const chartHeight = height - 40 // Leave space for labels
-    const chartWidth = 100 // Percentage width per point
+    // Calculate positions for visualization using fixed coordinate system
+    const chartHeight = height - 60 // Leave space for labels
+    const chartWidth = 300 // Fixed width for proper scaling
     
     const processedData = data.map((point, index) => {
-      const x = (index / Math.max(data.length - 1, 1)) * 90 + 5 // 5% margin on each side
+      const x = data.length === 1 
+        ? chartWidth / 2 
+        : (index / (data.length - 1)) * (chartWidth - 40) + 20 // 20px margin on each side
       const y = maxVal > minVal 
-        ? ((maxVal - point.value) / (maxVal - minVal)) * chartHeight + 20
-        : chartHeight / 2
+        ? ((maxVal - point.value) / (maxVal - minVal)) * chartHeight + 30
+        : chartHeight / 2 + 30
       
       return {
         ...point,
@@ -86,8 +90,7 @@ export function ProgressChart({
         <svg 
           width="100%" 
           height={height}
-          viewBox={`0 0 100 ${height}`}
-          preserveAspectRatio="none"
+          viewBox={`0 0 340 ${height}`}
           className="overflow-visible"
         >
           
@@ -118,7 +121,7 @@ export function ProgressChart({
               
               {/* Fill area under line */}
               <path
-                d={`M ${chartData[0]?.x},${height - 20} L ${chartData.map(d => `${d.x},${d.y}`).join(' L ')} L ${chartData[chartData.length - 1]?.x},${height - 20} Z`}
+                d={`M ${chartData[0]?.x},${height - 30} L ${chartData.map(d => `${d.x},${d.y}`).join(' L ')} L ${chartData[chartData.length - 1]?.x},${height - 30} Z`}
                 fill={color}
                 fillOpacity="0.1"
               />
@@ -126,10 +129,10 @@ export function ProgressChart({
           ) : (
             /* Bar chart */
             chartData.map((point, index) => {
-              const barWidth = 80 / chartData.length
-              const barHeight = point.normalizedValue * (height - 40)
+              const barWidth = Math.max(20, 260 / chartData.length)
+              const barHeight = point.normalizedValue * (height - 60)
               const barX = point.x - barWidth / 2
-              const barY = height - 20 - barHeight
+              const barY = height - 30 - barHeight
               
               return (
                 <rect
@@ -137,9 +140,10 @@ export function ProgressChart({
                   x={barX}
                   y={barY}
                   width={barWidth}
-                  height={barHeight}
+                  height={Math.max(1, barHeight)}
                   fill={color}
                   fillOpacity="0.8"
+                  rx="2"
                   className="hover:fill-opacity-100 transition-all cursor-pointer"
                 >
                   <title>{`${point.label}: ${point.value}`}</title>
@@ -150,21 +154,20 @@ export function ProgressChart({
         </svg>
         
         {/* Y-axis labels */}
-        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 py-5">
+        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 py-8">
           <span>{formatValue(maxValue)}</span>
           <span>{formatValue((maxValue + minValue) / 2)}</span>
           <span>{formatValue(minValue)}</span>
         </div>
         
         {/* X-axis labels */}
-        <div className="absolute bottom-0 left-0 w-full flex justify-between text-xs text-gray-500 px-2">
+        <div className="absolute bottom-0 left-0 w-full h-6 text-xs text-gray-500">
           {chartData.map((point, index) => (
             <span 
               key={index} 
-              className="truncate max-w-16"
+              className="absolute truncate max-w-16 text-center"
               style={{ 
-                position: 'absolute',
-                left: `${point.x}%`,
+                left: `${(point.x / 340) * 100}%`,
                 transform: 'translateX(-50%)'
               }}
             >

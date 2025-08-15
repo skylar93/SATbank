@@ -280,7 +280,7 @@ export default function AdminStudentsPage() {
               <button
                 onClick={handleExportAll}
                 disabled={exporting}
-                className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 {exporting ? 'Exporting...' : 'Export Data'}
               </button>
@@ -401,7 +401,7 @@ export default function AdminStudentsPage() {
             {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
-                <div className="text-2xl font-bold text-emerald-500">{filteredStudents.length}</div>
+                <div className="text-2xl font-bold text-purple-500">{filteredStudents.length}</div>
                 <div className="text-sm text-purple-600/70">Students Shown</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
@@ -494,7 +494,7 @@ export default function AdminStudentsPage() {
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                             student.attempts.latest_score
                               ? student.attempts.latest_score >= 1200
-                                ? 'bg-emerald-100 text-emerald-800'
+                                ? 'bg-purple-100 text-purple-800'
                                 : student.attempts.latest_score >= 1000
                                 ? 'bg-blue-100 text-blue-800'
                                 : student.attempts.latest_score >= 800
@@ -538,7 +538,7 @@ export default function AdminStudentsPage() {
                           {student.attempts.latest_score && student.attempts.latest_attempt_id && (
                             <Link
                               href={`/admin/results/${student.attempts.latest_attempt_id}`}
-                              className="text-emerald-600 hover:text-emerald-700 font-medium"
+                              className="text-violet-600 hover:text-violet-700 font-medium"
                             >
                               Latest Results
                             </Link>

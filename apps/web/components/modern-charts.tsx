@@ -232,12 +232,15 @@ function MiniLineChart({ data, color }: MiniLineChartProps) {
     isFinite(value)
   )
 
+  // Create a unique gradient ID to avoid conflicts
+  const gradientId = `gradient-${color.replace('#', '')}-${Math.random().toString(36).substr(2, 9)}`
+
   // Handle edge cases
   if (validData.length === 0) {
     // No valid data - render empty chart
     return (
       <svg width="64" height="48" className="overflow-visible">
-        <line x1="0" y1="24" x2="64" y2="24" stroke={color} strokeWidth="1" opacity="0.3" />
+        <line x1="4" y1="24" x2="60" y2="24" stroke={color} strokeWidth="1" opacity="0.3" />
       </svg>
     )
   }
@@ -246,8 +249,8 @@ function MiniLineChart({ data, color }: MiniLineChartProps) {
     // Single data point - render horizontal line
     return (
       <svg width="64" height="48" className="overflow-visible">
-        <line x1="0" y1="24" x2="64" y2="24" stroke={color} strokeWidth="2" />
-        <circle cx="32" cy="24" r="2" fill={color} />
+        <line x1="4" y1="24" x2="60" y2="24" stroke={color} strokeWidth="2" />
+        <circle cx="32" cy="24" r="3" fill={color} />
       </svg>
     )
   }
@@ -255,14 +258,15 @@ function MiniLineChart({ data, color }: MiniLineChartProps) {
   const max = Math.max(...validData)
   const min = Math.min(...validData)
   const range = max - min || 1
+  const padding = 4 // Add padding to prevent clipping
 
   const points = validData.map((value, index) => {
-    const x = (index / (validData.length - 1)) * 64
-    const y = 48 - ((value - min) / range) * 48
+    const x = padding + (index / (validData.length - 1)) * (64 - padding * 2)
+    const y = padding + (1 - (value - min) / range) * (48 - padding * 2)
     
     // Double-check for NaN values
     if (isNaN(x) || isNaN(y)) {
-      return '0,24' // fallback to center
+      return `${padding},24` // fallback to left center
     }
     
     return `${x},${y}`
@@ -271,14 +275,14 @@ function MiniLineChart({ data, color }: MiniLineChartProps) {
   return (
     <svg width="64" height="48" className="overflow-visible">
       <defs>
-        <linearGradient id={`gradient-${color}`} x1="0%" y1="0%" x2="0%" y2="100%">
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor={color} stopOpacity="0.2" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
       <path
-        d={`M 0,48 L ${points} L 64,48 Z`}
-        fill={`url(#gradient-${color})`}
+        d={`M ${padding},${48 - padding} L ${points} L ${64 - padding},${48 - padding} Z`}
+        fill={`url(#${gradientId})`}
       />
       <polyline
         points={points}
@@ -288,6 +292,20 @@ function MiniLineChart({ data, color }: MiniLineChartProps) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+      {/* Add dots for each data point */}
+      {validData.map((value, index) => {
+        const x = padding + (index / (validData.length - 1)) * (64 - padding * 2)
+        const y = padding + (1 - (value - min) / range) * (48 - padding * 2)
+        return (
+          <circle
+            key={index}
+            cx={x}
+            cy={y}
+            r="1.5"
+            fill={color}
+          />
+        )
+      })}
     </svg>
   )
 }

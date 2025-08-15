@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Bold, Italic, Underline, Search, Replace, Superscript, Subscript, Undo, Redo, AlignCenter, Table, AlignLeft, AlignRight } from 'lucide-react'
+import { Bold, Italic, Underline, Search, Replace, Superscript, Subscript, Undo, Redo, AlignCenter, Table, AlignLeft, AlignRight, Image } from 'lucide-react'
 import { InlineMath, BlockMath } from 'react-katex'
 
 interface RichTextEditorProps {
@@ -34,6 +34,7 @@ export function RichTextEditor({
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [previewMode, setPreviewMode] = useState(false)
   const [showTableEditor, setShowTableEditor] = useState(false)
+  const [showImageUpload, setShowImageUpload] = useState(false)
   const [tableRows, setTableRows] = useState(2)
   const [tableCols, setTableCols] = useState(2)
   
@@ -675,7 +676,7 @@ export function RichTextEditor({
 
         {/* Math Symbols */}
         <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
-          {mathSymbols.slice(0, compact ? 3 : 6).map((item) => (
+          {mathSymbols.slice(0, compact ? 5 : 6).map((item) => (
             <button
               key={item.latex}
               type="button"
@@ -689,35 +690,39 @@ export function RichTextEditor({
         </div>
 
         {/* Common Fractions */}
-        {!compact && (
-          <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
-            {commonFractions.slice(0, 3).map((frac) => (
-              <button
-                key={frac.latex}
-                type="button"
-                onClick={() => insertFraction(frac.latex)}
-                className="px-2 py-1 text-sm hover:bg-gray-200 rounded transition-colors"
-                title={`Insert ${frac.display}`}
-              >
-                {frac.display}
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
+          {commonFractions.slice(0, compact ? 2 : 3).map((frac) => (
+            <button
+              key={frac.latex}
+              type="button"
+              onClick={() => insertFraction(frac.latex)}
+              className="px-2 py-1 text-sm hover:bg-gray-200 rounded transition-colors"
+              title={`Insert ${frac.display}`}
+            >
+              {frac.display}
+            </button>
+          ))}
+        </div>
 
         {/* Table and Image Tools */}
-        {!compact && (
-          <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
-            <button
-              type="button"
-              onClick={() => setShowTableEditor(!showTableEditor)}
-              className="p-1.5 hover:bg-gray-200 rounded transition-colors"
-              title="Insert Table"
-            >
-              <Table size={16} />
-            </button>
-          </div>
-        )}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
+          <button
+            type="button"
+            onClick={() => setShowTableEditor(!showTableEditor)}
+            className="p-1.5 hover:bg-gray-200 rounded transition-colors"
+            title="Insert Table"
+          >
+            <Table size={compact ? 14 : 16} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowImageUpload(!showImageUpload)}
+            className="p-1.5 hover:bg-gray-200 rounded transition-colors"
+            title="Insert Image"
+          >
+            <Image size={compact ? 14 : 16} />
+          </button>
+        </div>
 
         {/* Tools */}
         <div className="flex items-center gap-1">
@@ -804,6 +809,56 @@ export function RichTextEditor({
                 disabled={totalMatches === 0}
               >
                 Replace All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Upload Panel */}
+      {showImageUpload && (
+        <div className="p-3 bg-green-50 border border-green-200 rounded">
+          <div className="flex flex-wrap gap-3 items-center">
+            <div className="flex items-center gap-2 flex-1">
+              <label className="text-sm font-medium">Image URL:</label>
+              <input
+                type="url"
+                placeholder="https://example.com/image.jpg"
+                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    const input = e.target as HTMLInputElement
+                    if (input.value.trim()) {
+                      insertFormat(`![Image](${input.value.trim()})`)
+                      input.value = ''
+                      setShowImageUpload(false)
+                    }
+                  }
+                }}
+              />
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={(e) => {
+                  const input = e.currentTarget.previousElementSibling?.querySelector('input') as HTMLInputElement
+                  if (input?.value.trim()) {
+                    insertFormat(`![Image](${input.value.trim()})`)
+                    input.value = ''
+                    setShowImageUpload(false)
+                  }
+                }}
+                className="px-3 py-1 text-sm bg-green-500 text-white hover:bg-green-600 rounded"
+              >
+                Insert Image
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowImageUpload(false)}
+                className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded"
+              >
+                Cancel
               </button>
             </div>
           </div>
