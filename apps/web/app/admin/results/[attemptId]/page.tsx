@@ -573,16 +573,16 @@ export default function AdminDetailedResultsPage() {
         )}
 
         {activeTab === 'questions' && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100">
+            <div className="p-6 border-b border-purple-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">❓ Question Analysis</h3>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">Filter:</span>
+                  <span className="text-sm text-purple-600">Filter:</span>
                   <select
                     value={questionFilter}
                     onChange={(e) => setQuestionFilter(e.target.value as any)}
-                    className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="px-3 py-1 border border-purple-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="all">All Questions</option>
                     <option value="incorrect">❌ Incorrect Only</option>
@@ -591,30 +591,33 @@ export default function AdminDetailedResultsPage() {
                   </select>
                 </div>
               </div>
-              <p className="text-gray-600">
+              <p className="text-purple-600/70">
                 Detailed analysis of each question with correct answers always shown (Admin View)
               </p>
             </div>
             
-            <div className="space-y-8">
+            <div className="p-6 space-y-8">
               {Object.entries(getQuestionsGroupedByModule()).map(([moduleType, questions]) => {
                 if (questions.length === 0) return null
                 
                 return (
-                  <div key={moduleType} className="border-b border-gray-200 pb-6 last:border-b-0">
+                  <div key={moduleType} className="border-b border-purple-200 pb-6 last:border-b-0">
                     <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                       <span className="w-3 h-3 bg-purple-500 rounded-full mr-2"></span>
                       {getModuleDisplayName(moduleType as ModuleType)}
-                      <span className="ml-2 text-sm font-normal text-gray-500">
+                      <span className="ml-2 text-sm font-normal text-purple-600/70">
                         ({questions.length} question{questions.length !== 1 ? 's' : ''})
                       </span>
                     </h4>
                     
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       {questions.map((question, index) => (
-                        <div key={question.questionId} className="bg-gray-50 rounded-lg p-6">
+                        <div 
+                          key={question.questionId} 
+                          className="border rounded-xl p-6 border-purple-200 bg-white/50 backdrop-blur-sm"
+                        >
                           <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-4">
                               <div className="flex-shrink-0">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
                                   question.isCorrect ? 'bg-purple-500' : 'bg-red-500'
@@ -622,22 +625,17 @@ export default function AdminDetailedResultsPage() {
                                   {question.isCorrect ? '✓' : '✗'}
                                 </div>
                               </div>
-                              <div>
-                                <div className="font-medium text-gray-900">
-                                  Q{question.questionNumber}
-                                </div>
-                                <div className="flex items-center space-x-2 mt-1">
-                                  <span className={`px-2 py-1 rounded text-xs font-medium ${getDifficultyColor(question.difficulty)}`}>
-                                    {question.difficulty}
-                                  </span>
-                                  <span className="text-sm text-gray-500">
-                                    Time: {formatTime(question.timeSpent)}
-                                  </span>
-                                </div>
-                              </div>
+                              <span className="px-2 py-1 bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 rounded text-sm font-medium">
+                                {getModuleDisplayName(moduleType as ModuleType).replace('Module ', 'M')} - Q{question.questionNumber}
+                              </span>
+                              <span className={`px-2 py-1 rounded text-sm font-medium ${getDifficultyColor(question.difficulty)}`}>
+                                {question.difficulty}
+                              </span>
+                              <span className="text-sm text-gray-500">
+                                Time: {formatTime(question.timeSpent)}
+                              </span>
                             </div>
                             
-                            {/* Regrade Button */}
                             <div className="flex-shrink-0">
                               <button
                                 onClick={() => openRegradeModal(question)}
@@ -658,53 +656,71 @@ export default function AdminDetailedResultsPage() {
                           </div>
 
                           {/* Question Content */}
-                          <div className="mb-4 p-4 bg-white rounded border">
-                            <div className="text-sm text-gray-600 mb-2 font-medium">Question:</div>
-                            <div className="text-sm text-gray-900 mb-3 whitespace-pre-wrap">
-                              {question.questionText}
-                            </div>
-                            
-                            {question.questionImageUrl && (
-                              <div className="mb-3">
-                                <img 
-                                  src={question.questionImageUrl} 
-                                  alt="Question image" 
-                                  className="max-w-full h-auto rounded border"
-                                />
+                          <div className="mb-4">
+                            <h3 className="font-medium text-gray-900 mb-2">Question Text:</h3>
+                            <div className="p-3 bg-gray-50 rounded-md">
+                              <div className="text-gray-900 leading-relaxed whitespace-pre-wrap">
+                                {question.questionText}
                               </div>
-                            )}
-                            
-                            {question.options && (
-                              <div className="space-y-1">
-                                <div className="text-sm text-gray-600 font-medium">Options:</div>
+                              
+                              {question.questionImageUrl && (
+                                <div className="mt-3">
+                                  <img 
+                                    src={question.questionImageUrl} 
+                                    alt="Question image" 
+                                    className="max-w-full h-auto rounded border"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Options for Multiple Choice */}
+                          {question.options && (
+                            <div className="mb-4">
+                              <h3 className="font-medium text-gray-900 mb-2">Answer Options:</h3>
+                              <div className="space-y-2">
                                 {Object.entries(question.options).map(([key, value]) => (
-                                  <div 
-                                    key={key} 
-                                    className={`text-sm p-2 rounded ${
+                                  <div key={key} className="flex items-start space-x-2">
+                                    <span className={`font-medium w-6 ${
+                                      question.correctAnswer === key ? 'text-purple-600' : 'text-gray-700'
+                                    }`}>
+                                      {key}.
+                                    </span>
+                                    <div className={`flex-1 p-2 rounded ${
                                       question.userAnswer === key 
-                                        ? (question.isCorrect ? 'bg-purple-100 text-purple-800' : 'bg-red-100 text-red-800')
+                                        ? (question.isCorrect ? 'bg-purple-100 text-purple-800 border border-purple-200' : 'bg-red-100 text-red-800 border border-red-200')
                                         : question.correctAnswer === key 
-                                          ? 'bg-purple-100 text-purple-800' 
-                                          : 'bg-gray-100'
-                                    }`}
-                                  >
-                                    <span className="font-medium">{key}.</span> {value}
+                                          ? 'bg-purple-100 text-purple-800 border border-purple-200 font-medium' 
+                                          : 'bg-gray-50 text-gray-900 border border-gray-200'
+                                    }`}>
+                                      {typeof value === 'string' ? value : (
+                                        typeof value === 'object' && value !== null ? 
+                                          (value as any).text || JSON.stringify(value) : 
+                                          String(value)
+                                      )}
+                                    </div>
                                   </div>
                                 ))}
                               </div>
-                            )}
-                          </div>
+                            </div>
+                          )}
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
+                          {/* Answer Summary */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-4">
                             <div>
-                              <div className="text-gray-600">Student Answer:</div>
-                              <div className={`font-medium ${question.isCorrect ? 'text-purple-600' : 'text-red-600'}`}>
+                              <div className="text-gray-600 font-medium mb-1">Student Answer:</div>
+                              <div className={`px-2 py-1 rounded font-medium ${
+                                question.isCorrect ? 'bg-purple-100 text-purple-800' : 'bg-red-100 text-red-800'
+                              }`}>
                                 {question.userAnswer || 'No answer'}
                               </div>
                             </div>
                             <div>
-                              <div className="text-gray-600">Correct Answer{Array.isArray(question.correctAnswer) && question.correctAnswer.length > 1 ? 's' : ''}:</div>
-                              <div className="font-medium text-purple-600">
+                              <div className="text-gray-600 font-medium mb-1">
+                                Correct Answer{Array.isArray(question.correctAnswer) && question.correctAnswer.length > 1 ? 's' : ''}:
+                              </div>
+                              <div className="px-2 py-1 bg-purple-100 text-purple-800 rounded font-medium">
                                 {Array.isArray(question.correctAnswer) 
                                   ? question.correctAnswer.join(', ')
                                   : question.correctAnswer
@@ -713,9 +729,10 @@ export default function AdminDetailedResultsPage() {
                             </div>
                           </div>
 
+                          {/* Topic Tags */}
                           {question.topicTags && question.topicTags.length > 0 && (
-                            <div className="mb-3">
-                              <div className="text-sm text-gray-600 mb-1">Topics:</div>
+                            <div className="mb-4">
+                              <h3 className="font-medium text-gray-900 mb-2">Topics:</h3>
                               <div className="flex flex-wrap gap-1">
                                 {question.topicTags.map((tag, tagIndex) => (
                                   <span key={tagIndex} className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">
@@ -726,10 +743,11 @@ export default function AdminDetailedResultsPage() {
                             </div>
                           )}
 
+                          {/* Explanation */}
                           {question.explanation && (
                             <div className="p-3 bg-purple-50 rounded">
-                              <div className="text-sm text-gray-600 mb-1">Explanation:</div>
-                              <div className="text-sm text-gray-800">{question.explanation}</div>
+                              <div className="text-sm font-medium text-gray-600 mb-1">Explanation:</div>
+                              <div className="text-sm text-gray-800 leading-relaxed">{question.explanation}</div>
                             </div>
                           )}
                         </div>
