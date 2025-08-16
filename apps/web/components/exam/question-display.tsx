@@ -515,33 +515,24 @@ export function QuestionDisplay({
   }
 
   const handleEditClick = () => {
-    console.log('🚀 handleEditClick called, localQuestion.options:', localQuestion.options);
-    
     // Process options - keep table_data intact for the table editor to use
     const processedOptions = localQuestion.options ? Object.fromEntries(
       Object.entries(localQuestion.options).map(([key, value]) => {
-        console.log(`🔧 Processing option ${key}:`, { originalValue: value, valueType: typeof value });
-        
         let optionData;
         try {
           optionData = typeof value === 'string' ? JSON.parse(value) : value;
           if (typeof optionData !== 'object' || optionData === null) {
             optionData = { text: String(value) };
           }
-        } catch (e) {
-          console.log(`❌ JSON parse failed for option ${key}:`, e);
+        } catch {
           optionData = { text: String(value) };
         }
-
-        console.log(`✅ Processed option ${key}:`, optionData);
 
         // Keep the original structure intact - don't convert to markdown yet
         // The table editor will handle the display and conversion
         return [key, JSON.stringify(optionData)];
       })
     ) : {};
-
-    console.log('📝 Final processedOptions:', processedOptions);
 
     // Set the fully prepared form state
     setEditForm({
@@ -774,49 +765,14 @@ export function QuestionDisplay({
                     const optionText = optionData.text || '';
                     let tableDataInOption = parseTableFromMarkdown(optionText);
                     
-                    // DEBUG: Log all the data we're working with
-                    console.log(`🔍 DEBUG Option ${key}:`, {
-                      optionText,
-                      optionData,
-                      tableDataFromMarkdown: tableDataInOption,
-                      hasTableData: !!(optionData.table_data),
-                      tableDataStructure: optionData.table_data,
-                      hasDirectHeaders: !!(optionData.headers),
-                      hasDirectRows: !!(optionData.rows),
-                      directHeaders: optionData.headers,
-                      directRows: optionData.rows
-                    });
-                    
                     // Check if there's table_data in the original option that wasn't converted to markdown yet
                     if (!tableDataInOption && optionData.table_data && optionData.table_data.headers && optionData.table_data.rows) {
                       tableDataInOption = optionData.table_data;
-                      console.log(`✅ Found table_data in option ${key}:`, tableDataInOption);
                     }
                     
                     // ALSO check if the table data is directly in optionData (not nested in table_data)
                     if (!tableDataInOption && optionData.headers && optionData.rows) {
                       tableDataInOption = { headers: optionData.headers, rows: optionData.rows };
-                      console.log(`✅ Found direct table structure in option ${key}:`, tableDataInOption);
-                    }
-                    
-                    console.log(`🎯 Final tableDataInOption for ${key}:`, tableDataInOption);
-                    
-                    // TEMPORARY DEBUG: Force show table editor for debugging
-                    if (!tableDataInOption) {
-                      console.log(`⚠️ No table found for option ${key}, showing debug info`);
-                      return (
-                        <div className="mt-2 p-3 border border-red-200 rounded-lg bg-red-50">
-                          <h4 className="text-sm font-semibold text-red-800 mb-2">DEBUG: No Table Found for Option {key}</h4>
-                          <pre className="text-xs overflow-auto">
-                            {JSON.stringify({
-                              optionText,
-                              hasTableData: !!(optionData.table_data),
-                              tableDataStructure: optionData.table_data,
-                              parsedFromMarkdown: parseTableFromMarkdown(optionText)
-                            }, null, 2)}
-                          </pre>
-                        </div>
-                      );
                     }
                     
                     if (tableDataInOption) {
