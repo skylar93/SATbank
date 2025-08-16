@@ -3,19 +3,20 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
-import { AnalyticsService } from '../../../lib/analytics-service'
-import { ProgressChart, SubjectPerformanceChart, WeeklyActivityChart, CircularProgress } from '../../../components/charts'
-import { ModernScoreProgress, StatsCard } from '../../../components/modern-charts'
+import {
+  WeeklyActivityChart,
+  CircularProgress,
+} from '../../../components/charts'
+import {
+  ModernScoreProgress,
+  StatsCard,
+} from '../../../components/modern-charts'
 import { supabase } from '../../../lib/supabase'
-import { 
-  ChartBarIcon, 
-  TrophyIcon, 
-  FireIcon,
+import {
+  ChartBarIcon,
+  TrophyIcon,
   BookOpenIcon,
-  ClockIcon,
-  CalendarIcon,
-  ArrowTrendingUpIcon,
-  AcademicCapIcon
+  AcademicCapIcon,
 } from '@heroicons/react/24/outline'
 
 interface AdminStats {
@@ -52,7 +53,7 @@ export default function AdminDashboard() {
     scoreDistribution: [],
     studentsTrend: [],
     attemptsTrend: [],
-    scoreTrend: []
+    scoreTrend: [],
   })
   const [previousStats, setPreviousStats] = useState<{
     totalStudents: number
@@ -61,7 +62,7 @@ export default function AdminDashboard() {
   }>({
     totalStudents: 0,
     totalAttempts: 0,
-    averageScore: 0
+    averageScore: 0,
   })
   const [recentAttempts, setRecentAttempts] = useState<RecentAttempt[]>([])
   const [loading, setLoading] = useState(true)
@@ -73,15 +74,26 @@ export default function AdminDashboard() {
     }
   }, [user])
 
-  const calculatePercentageChange = (current: number, previous: number): { change: string; changeType: 'positive' | 'negative' | 'neutral' } => {
+  const calculatePercentageChange = (
+    current: number,
+    previous: number
+  ): { change: string; changeType: 'positive' | 'negative' | 'neutral' } => {
     if (previous === 0) {
-      return { change: current > 0 ? '+100%' : '0%', changeType: current > 0 ? 'positive' : 'neutral' }
+      return {
+        change: current > 0 ? '+100%' : '0%',
+        changeType: current > 0 ? 'positive' : 'neutral',
+      }
     }
     const percentChange = ((current - previous) / previous) * 100
     const prefix = percentChange >= 0 ? '+' : ''
     return {
       change: `${prefix}${percentChange.toFixed(1)}%`,
-      changeType: percentChange > 0 ? 'positive' : percentChange < 0 ? 'negative' : 'neutral'
+      changeType:
+        percentChange > 0
+          ? 'positive'
+          : percentChange < 0
+            ? 'negative'
+            : 'neutral',
     }
   }
 
@@ -89,22 +101,56 @@ export default function AdminDashboard() {
     try {
       // Get current date ranges
       const now = new Date()
-      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
-      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()
-      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString()
+      const thisMonthStart = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1
+      ).toISOString()
+      const lastMonthStart = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        1
+      ).toISOString()
+      const lastMonthEnd = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        0,
+        23,
+        59,
+        59
+      ).toISOString()
       const todayStart = new Date().toISOString().split('T')[0]
 
       // Load current month stats
-      const [studentsData, attemptsData, todayAttemptsData] = await Promise.all([
-        supabase.from('user_profiles').select('id').eq('role', 'student'),
-        supabase.from('test_attempts').select('*').eq('status', 'completed').gte('completed_at', thisMonthStart),
-        supabase.from('test_attempts').select('*').eq('status', 'completed').gte('completed_at', todayStart)
-      ])
+      const [studentsData, attemptsData, todayAttemptsData] = await Promise.all(
+        [
+          supabase.from('user_profiles').select('id').eq('role', 'student'),
+          supabase
+            .from('test_attempts')
+            .select('*')
+            .eq('status', 'completed')
+            .gte('completed_at', thisMonthStart),
+          supabase
+            .from('test_attempts')
+            .select('*')
+            .eq('status', 'completed')
+            .gte('completed_at', todayStart),
+        ]
+      )
 
       // Load previous month stats for comparison
       const [prevStudentsData, prevAttemptsData] = await Promise.all([
-        supabase.from('user_profiles').select('id').eq('role', 'student').lte('created_at', lastMonthEnd),
-        supabase.from('test_attempts').select('*').eq('status', 'completed').gte('completed_at', lastMonthStart).lt('completed_at', thisMonthStart)
+        supabase
+          .from('user_profiles')
+          .select('id')
+          .eq('role', 'student')
+          .lte('created_at', lastMonthEnd),
+        supabase
+          .from('test_attempts')
+          .select('*')
+          .eq('status', 'completed')
+          .gte('completed_at', lastMonthStart)
+          .lt('completed_at', thisMonthStart),
       ])
 
       if (studentsData.error) throw studentsData.error
@@ -113,80 +159,118 @@ export default function AdminDashboard() {
 
       const totalStudents = studentsData.data?.length || 0
       const totalAttempts = attemptsData.data?.length || 0
-      const averageScore = totalAttempts > 0 
-        ? Math.round(attemptsData.data.reduce((sum, attempt) => sum + (attempt.total_score || 0), 0) / totalAttempts)
-        : 0
+      const averageScore =
+        totalAttempts > 0
+          ? Math.round(
+              attemptsData.data.reduce(
+                (sum, attempt) => sum + (attempt.total_score || 0),
+                0
+              ) / totalAttempts
+            )
+          : 0
       const completedToday = todayAttemptsData.data?.length || 0
 
       // Calculate previous month stats
       const prevTotalStudents = prevStudentsData.data?.length || 0
       const prevTotalAttempts = prevAttemptsData.data?.length || 0
-      const prevAverageScore = prevTotalAttempts > 0
-        ? Math.round((prevAttemptsData.data || []).reduce((sum, attempt) => sum + (attempt.total_score || 0), 0) / prevTotalAttempts)
-        : 0
+      const prevAverageScore =
+        prevTotalAttempts > 0
+          ? Math.round(
+              (prevAttemptsData.data || []).reduce(
+                (sum, attempt) => sum + (attempt.total_score || 0),
+                0
+              ) / prevTotalAttempts
+            )
+          : 0
 
       setPreviousStats({
         totalStudents: prevTotalStudents,
         totalAttempts: prevTotalAttempts,
-        averageScore: prevAverageScore
+        averageScore: prevAverageScore,
       })
 
       // Generate weekly trend data (using all completed attempts, not just this month)
-      const { data: allAttemptsData } = await supabase.from('test_attempts').select('*').eq('status', 'completed')
-      const { data: allStudentsData } = await supabase.from('user_profiles').select('id, created_at').eq('role', 'student')
-      
+      const { data: allAttemptsData } = await supabase
+        .from('test_attempts')
+        .select('*')
+        .eq('status', 'completed')
+      const { data: allStudentsData } = await supabase
+        .from('user_profiles')
+        .select('id, created_at')
+        .eq('role', 'student')
+
       const weeklyTrend = []
       const studentsTrend = []
       const attemptsTrend = []
       const scoreTrend = []
-      
+
       for (let i = 6; i >= 0; i--) {
         const date = new Date()
         date.setDate(date.getDate() - i)
         const dateStr = date.toISOString().split('T')[0]
-        const dayAttempts = allAttemptsData?.filter(a => 
-          a.completed_at && a.completed_at.startsWith(dateStr)
-        ) || []
-        
+        const dayAttempts =
+          allAttemptsData?.filter(
+            (a) => a.completed_at && a.completed_at.startsWith(dateStr)
+          ) || []
+
         weeklyTrend.push({
           label: date.toLocaleDateString('en-US', { weekday: 'short' }),
           value: dayAttempts.length,
-          date: dateStr
+          date: dateStr,
         })
-        
+
         // For miniCharts - get cumulative data up to each day
         const dayEnd = new Date(date)
         dayEnd.setHours(23, 59, 59, 999)
-        
+
         // Get students count up to this day
-        const studentsUpToDay = allStudentsData?.filter(s => 
-          s.created_at && new Date(s.created_at) <= dayEnd
-        ).length || 0
-        
+        const studentsUpToDay =
+          allStudentsData?.filter(
+            (s) => s.created_at && new Date(s.created_at) <= dayEnd
+          ).length || 0
+
         studentsTrend.push(studentsUpToDay)
-        
+
         // Get attempts count up to this day
-        const attemptsUpToDay = allAttemptsData?.filter(a => 
-          a.completed_at && new Date(a.completed_at) <= dayEnd
-        ) || []
-        
+        const attemptsUpToDay =
+          allAttemptsData?.filter(
+            (a) => a.completed_at && new Date(a.completed_at) <= dayEnd
+          ) || []
+
         attemptsTrend.push(attemptsUpToDay.length)
-        
+
         // Get average score up to this day
-        const avgScore = attemptsUpToDay.length > 0
-          ? attemptsUpToDay.reduce((sum, attempt) => sum + (attempt.total_score || 0), 0) / attemptsUpToDay.length
-          : 0
-        
+        const avgScore =
+          attemptsUpToDay.length > 0
+            ? attemptsUpToDay.reduce(
+                (sum, attempt) => sum + (attempt.total_score || 0),
+                0
+              ) / attemptsUpToDay.length
+            : 0
+
         scoreTrend.push(Math.round(avgScore))
       }
 
       // Generate score distribution (using current month data)
-      const scores = attemptsData.data?.map(a => a.total_score).filter(Boolean) || []
+      const scores =
+        attemptsData.data?.map((a) => a.total_score).filter(Boolean) || []
       const scoreDistribution = [
-        { label: 'Excellent (1200+)', value: scores.filter(s => s >= 1200).length },
-        { label: 'Good (1000-1199)', value: scores.filter(s => s >= 1000 && s < 1200).length },
-        { label: 'Fair (800-999)', value: scores.filter(s => s >= 800 && s < 1000).length },
-        { label: 'Needs Work (<800)', value: scores.filter(s => s < 800).length }
+        {
+          label: 'Excellent (1200+)',
+          value: scores.filter((s) => s >= 1200).length,
+        },
+        {
+          label: 'Good (1000-1199)',
+          value: scores.filter((s) => s >= 1000 && s < 1200).length,
+        },
+        {
+          label: 'Fair (800-999)',
+          value: scores.filter((s) => s >= 800 && s < 1000).length,
+        },
+        {
+          label: 'Needs Work (<800)',
+          value: scores.filter((s) => s < 800).length,
+        },
       ]
 
       setStats({
@@ -198,21 +282,24 @@ export default function AdminDashboard() {
         scoreDistribution,
         studentsTrend,
         attemptsTrend,
-        scoreTrend
+        scoreTrend,
       })
 
       // Load recent attempts with user details - join manually since no direct FK
-      const { data: recentAttemptsData, error: recentAttemptsError } = await supabase
-        .from('test_attempts')
-        .select('*')
-        .eq('status', 'completed')
-        .order('completed_at', { ascending: false })
-        .limit(10)
+      const { data: recentAttemptsData, error: recentAttemptsError } =
+        await supabase
+          .from('test_attempts')
+          .select('*')
+          .eq('status', 'completed')
+          .order('completed_at', { ascending: false })
+          .limit(10)
 
       if (recentAttemptsError) throw recentAttemptsError
 
       // Get user profiles for the attempts
-      const userIds = recentAttemptsData?.map(attempt => attempt.user_id).filter(Boolean) || []
+      const userIds =
+        recentAttemptsData?.map((attempt) => attempt.user_id).filter(Boolean) ||
+        []
       let recentData = recentAttemptsData || []
 
       if (userIds.length > 0) {
@@ -224,14 +311,16 @@ export default function AdminDashboard() {
         if (profilesError) throw profilesError
 
         // Manually join the data
-        recentData = recentAttemptsData?.map(attempt => ({
-          ...attempt,
-          user_profiles: profilesData?.find(profile => profile.id === attempt.user_id) || null
-        })) || []
+        recentData =
+          recentAttemptsData?.map((attempt) => ({
+            ...attempt,
+            user_profiles:
+              profilesData?.find((profile) => profile.id === attempt.user_id) ||
+              null,
+          })) || []
       }
 
       setRecentAttempts(recentData)
-
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -244,7 +333,7 @@ export default function AdminDashboard() {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
@@ -263,8 +352,12 @@ export default function AdminDashboard() {
       <div className="bg-white px-6 py-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600">Monitor student performance and system analytics</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Admin Dashboard
+            </h1>
+            <p className="text-gray-600">
+              Monitor student performance and system analytics
+            </p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
@@ -274,17 +367,17 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-        
+
         {/* Separator line */}
         <div className="border-b border-gray-200"></div>
       </div>
 
       <div className="p-4 md:p-6">
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <p className="text-red-800">Error loading dashboard: {error}</p>
-            </div>
-          )}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <p className="text-red-800">Error loading dashboard: {error}</p>
+          </div>
+        )}
 
         {loading ? (
           <div className="text-center py-12">
@@ -302,33 +395,70 @@ export default function AdminDashboard() {
                   <StatsCard
                     title="Total Students"
                     value={stats.totalStudents}
-                    change={calculatePercentageChange(stats.totalStudents, previousStats.totalStudents).change}
-                    changeType={calculatePercentageChange(stats.totalStudents, previousStats.totalStudents).changeType}
+                    change={
+                      calculatePercentageChange(
+                        stats.totalStudents,
+                        previousStats.totalStudents
+                      ).change
+                    }
+                    changeType={
+                      calculatePercentageChange(
+                        stats.totalStudents,
+                        previousStats.totalStudents
+                      ).changeType
+                    }
                     miniChart={{
-                      data: stats.studentsTrend.length > 0 ? stats.studentsTrend : [0],
-                      color: '#10b981'
+                      data:
+                        stats.studentsTrend.length > 0
+                          ? stats.studentsTrend
+                          : [0],
+                      color: '#10b981',
                     }}
                   />
-                  
+
                   <StatsCard
                     title="Completed Tests"
                     value={stats.totalAttempts}
-                    change={calculatePercentageChange(stats.totalAttempts, previousStats.totalAttempts).change}
-                    changeType={calculatePercentageChange(stats.totalAttempts, previousStats.totalAttempts).changeType}
+                    change={
+                      calculatePercentageChange(
+                        stats.totalAttempts,
+                        previousStats.totalAttempts
+                      ).change
+                    }
+                    changeType={
+                      calculatePercentageChange(
+                        stats.totalAttempts,
+                        previousStats.totalAttempts
+                      ).changeType
+                    }
                     miniChart={{
-                      data: stats.attemptsTrend.length > 0 ? stats.attemptsTrend : [0],
-                      color: '#8b5cf6'
+                      data:
+                        stats.attemptsTrend.length > 0
+                          ? stats.attemptsTrend
+                          : [0],
+                      color: '#8b5cf6',
                     }}
                   />
-                  
+
                   <StatsCard
                     title="Average Score"
                     value={stats.averageScore}
-                    change={calculatePercentageChange(stats.averageScore, previousStats.averageScore).change}
-                    changeType={calculatePercentageChange(stats.averageScore, previousStats.averageScore).changeType}
+                    change={
+                      calculatePercentageChange(
+                        stats.averageScore,
+                        previousStats.averageScore
+                      ).change
+                    }
+                    changeType={
+                      calculatePercentageChange(
+                        stats.averageScore,
+                        previousStats.averageScore
+                      ).changeType
+                    }
                     miniChart={{
-                      data: stats.scoreTrend.length > 0 ? stats.scoreTrend : [0],
-                      color: '#f59e0b'
+                      data:
+                        stats.scoreTrend.length > 0 ? stats.scoreTrend : [0],
+                      color: '#f59e0b',
                     }}
                   />
                 </div>
@@ -337,53 +467,82 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                   <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
                     <div className="flex items-center justify-between mb-4 md:mb-6">
-                      <h3 className="text-base md:text-lg font-semibold text-gray-900">Test Completions (Last 7 Days)</h3>
+                      <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                        Test Completions (Last 7 Days)
+                      </h3>
                       <div className="flex items-center space-x-2">
-                        <button className="px-3 py-1 text-sm bg-emerald-100 text-emerald-600 rounded-lg">This Week</button>
-                        <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Last Week</button>
+                        <button className="px-3 py-1 text-sm bg-emerald-100 text-emerald-600 rounded-lg">
+                          This Week
+                        </button>
+                        <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">
+                          Last Week
+                        </button>
                       </div>
                     </div>
                     <div className="w-full overflow-hidden">
-                      <ModernScoreProgress 
+                      <ModernScoreProgress
                         data={{
-                          labels: stats.weeklyTrend.map(item => item.label),
-                          datasets: [{
-                            label: 'Completions',
-                            data: stats.weeklyTrend.map(item => item.value),
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true
-                          }]
+                          labels: stats.weeklyTrend.map((item) => item.label),
+                          datasets: [
+                            {
+                              label: 'Completions',
+                              data: stats.weeklyTrend.map((item) => item.value),
+                              borderColor: '#10b981',
+                              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                              fill: true,
+                            },
+                          ],
                         }}
                       />
                     </div>
                   </div>
-                  
+
                   <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
-                    <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">Score Distribution</h3>
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">
+                      Score Distribution
+                    </h3>
                     <div className="w-full overflow-hidden">
                       <div className="space-y-4">
                         {stats.scoreDistribution.map((item, index) => {
-                          const total = stats.scoreDistribution.reduce((sum, dist) => sum + dist.value, 0)
-                          const percentage = total > 0 ? (item.value / total) * 100 : 0
-                          const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444']
+                          const total = stats.scoreDistribution.reduce(
+                            (sum, dist) => sum + dist.value,
+                            0
+                          )
+                          const percentage =
+                            total > 0 ? (item.value / total) * 100 : 0
+                          const colors = [
+                            '#10b981',
+                            '#3b82f6',
+                            '#f59e0b',
+                            '#ef4444',
+                          ]
                           return (
-                            <div key={index} className="flex items-center justify-between">
+                            <div
+                              key={index}
+                              className="flex items-center justify-between"
+                            >
                               <div className="flex items-center space-x-3">
-                                <div className={`w-3 h-3 rounded-full`} style={{backgroundColor: colors[index]}}></div>
-                                <span className="text-sm text-gray-700">{item.label}</span>
+                                <div
+                                  className={`w-3 h-3 rounded-full`}
+                                  style={{ backgroundColor: colors[index] }}
+                                ></div>
+                                <span className="text-sm text-gray-700">
+                                  {item.label}
+                                </span>
                               </div>
                               <div className="flex items-center space-x-3">
                                 <div className="w-24 bg-gray-200 rounded-full h-2">
-                                  <div 
-                                    className="h-2 rounded-full" 
+                                  <div
+                                    className="h-2 rounded-full"
                                     style={{
                                       width: `${percentage}%`,
-                                      backgroundColor: colors[index]
+                                      backgroundColor: colors[index],
                                     }}
                                   ></div>
                                 </div>
-                                <span className="text-sm font-semibold w-8">{item.value}</span>
+                                <span className="text-sm font-semibold w-8">
+                                  {item.value}
+                                </span>
                               </div>
                             </div>
                           )
@@ -396,7 +555,9 @@ export default function AdminDashboard() {
                 {/* Weekly System Activity */}
                 <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
                   <div className="flex items-center justify-between mb-4 md:mb-6">
-                    <h3 className="text-base md:text-lg font-semibold text-gray-900">Weekly System Activity</h3>
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                      Weekly System Activity
+                    </h3>
                     <div className="flex items-center space-x-2">
                       <span className="text-sm text-gray-500">This Week</span>
                       <select className="text-sm border border-gray-300 rounded-lg px-2 py-1">
@@ -406,18 +567,24 @@ export default function AdminDashboard() {
                       </select>
                     </div>
                   </div>
-                  <WeeklyActivityChart 
+                  <WeeklyActivityChart
                     data={{
-                      days: stats.weeklyTrend.map(item => item.label),
-                      studyTime: stats.weeklyTrend.map(item => item.value * 30), // Approximate study time
-                      practiceTests: stats.weeklyTrend.map(item => item.value)
+                      days: stats.weeklyTrend.map((item) => item.label),
+                      studyTime: stats.weeklyTrend.map(
+                        (item) => item.value * 30
+                      ), // Approximate study time
+                      practiceTests: stats.weeklyTrend.map(
+                        (item) => item.value
+                      ),
                     }}
                   />
                 </div>
 
                 {/* Quick Actions */}
                 <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
-                  <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">Quick Actions</h3>
+                  <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">
+                    Quick Actions
+                  </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <Link
                       href="/admin/students"
@@ -427,8 +594,12 @@ export default function AdminDashboard() {
                         <AcademicCapIcon className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">View Students</h4>
-                        <p className="text-sm text-gray-600">Manage all students</p>
+                        <h4 className="font-semibold text-gray-900">
+                          View Students
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          Manage all students
+                        </p>
                       </div>
                     </Link>
 
@@ -466,32 +637,50 @@ export default function AdminDashboard() {
                 {/* System Overview */}
                 <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
                   <div className="flex items-center justify-between mb-4 md:mb-6">
-                    <h3 className="text-base md:text-lg font-semibold text-gray-900">System Overview</h3>
-                    <button className="text-sm text-gray-500 hover:text-gray-700">Refresh</button>
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                      System Overview
+                    </h3>
+                    <button className="text-sm text-gray-500 hover:text-gray-700">
+                      Refresh
+                    </button>
                   </div>
-                  
+
                   <div className="flex justify-center mb-6">
-                    <CircularProgress 
-                      percentage={stats.averageScore ? Math.round((stats.averageScore / 1600) * 100) : 0} 
-                      size={120} 
+                    <CircularProgress
+                      percentage={
+                        stats.averageScore
+                          ? Math.round((stats.averageScore / 1600) * 100)
+                          : 0
+                      }
+                      size={120}
                     />
                   </div>
 
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3">
                       <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                      <span className="text-sm text-gray-700">Today's Tests</span>
-                      <span className="ml-auto text-sm font-semibold">{stats.completedToday}</span>
+                      <span className="text-sm text-gray-700">
+                        Today's Tests
+                      </span>
+                      <span className="ml-auto text-sm font-semibold">
+                        {stats.completedToday}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                      <span className="text-sm text-gray-700">Active Students</span>
-                      <span className="ml-auto text-sm font-semibold">{stats.totalStudents}</span>
+                      <span className="text-sm text-gray-700">
+                        Active Students
+                      </span>
+                      <span className="ml-auto text-sm font-semibold">
+                        {stats.totalStudents}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <div className="w-3 h-3 rounded-full bg-purple-500"></div>
                       <span className="text-sm text-gray-700">Avg Score</span>
-                      <span className="ml-auto text-sm font-semibold">{stats.averageScore}</span>
+                      <span className="ml-auto text-sm font-semibold">
+                        {stats.averageScore}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -499,7 +688,9 @@ export default function AdminDashboard() {
                 {/* Recent Test Attempts */}
                 <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
                   <div className="flex items-center justify-between mb-4 md:mb-6">
-                    <h3 className="text-base md:text-lg font-semibold text-gray-900">Recent Completions</h3>
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                      Recent Completions
+                    </h3>
                     <Link
                       href="/admin/students"
                       className="text-sm text-purple-600 hover:text-purple-700 font-medium"
@@ -507,10 +698,13 @@ export default function AdminDashboard() {
                       View all
                     </Link>
                   </div>
-                  
+
                   <div className="space-y-4">
                     {recentAttempts.slice(0, 5).map((attempt) => (
-                      <div key={attempt.id} className="flex items-center space-x-3">
+                      <div
+                        key={attempt.id}
+                        className="flex items-center space-x-3"
+                      >
                         <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
                           <span className="text-purple-600 font-semibold text-sm">
                             {attempt.user_profiles?.full_name?.charAt(0) || 'U'}
@@ -529,11 +723,15 @@ export default function AdminDashboard() {
                         </span>
                       </div>
                     ))}
-                    
+
                     {recentAttempts.length === 0 && (
                       <div className="text-center py-8">
-                        <p className="text-gray-500 text-sm">No recent completions</p>
-                        <p className="text-xs text-gray-400 mt-1">Test results will appear here</p>
+                        <p className="text-gray-500 text-sm">
+                          No recent completions
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Test results will appear here
+                        </p>
                       </div>
                     )}
                   </div>
@@ -545,8 +743,13 @@ export default function AdminDashboard() {
                     <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                       <TrophyIcon className="w-8 h-8 text-white" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">System Running</h3>
-                    <p className="text-indigo-100 text-sm mb-4">Monitor student progress and manage the platform efficiently.</p>
+                    <h3 className="text-lg font-semibold mb-2">
+                      System Running
+                    </h3>
+                    <p className="text-indigo-100 text-sm mb-4">
+                      Monitor student progress and manage the platform
+                      efficiently.
+                    </p>
                     <Link
                       href="/admin/reports"
                       className="bg-white text-indigo-600 font-semibold py-2 px-6 rounded-lg hover:bg-indigo-50 transition-colors inline-block"
@@ -557,7 +760,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
-
           </>
         )}
       </div>

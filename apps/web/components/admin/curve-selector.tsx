@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import {
   Select,
@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from '@/components/ui/select'
 
 interface ScoringCurve {
   id: number
@@ -24,11 +24,11 @@ export function CurveSelector({
   curves,
   currentCurveId,
   onCurveChange,
-  placeholder = "Select a scoring curve"
+  placeholder = 'Select a scoring curve',
 }: CurveSelectorProps) {
   return (
     <Select
-      value={currentCurveId?.toString() || ""}
+      value={currentCurveId?.toString() || ''}
       onValueChange={(value) => onCurveChange(parseInt(value))}
     >
       <SelectTrigger className="w-full">

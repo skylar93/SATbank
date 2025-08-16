@@ -1,7 +1,17 @@
-"use client"
+'use client'
 
 import { useState } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from 'recharts'
 
 interface CurvePoint {
   raw: number
@@ -16,11 +26,11 @@ interface CurveDistributionChartProps {
   height?: number
 }
 
-export function CurveDistributionChart({ 
-  curveName, 
-  curveData, 
+export function CurveDistributionChart({
+  curveName,
+  curveData,
   type = 'line',
-  height = 500 
+  height = 500,
 }: CurveDistributionChartProps) {
   const [viewMode, setViewMode] = useState<'chart' | 'table'>('table')
 
@@ -33,12 +43,12 @@ export function CurveDistributionChart({
   }
 
   // Transform data for chart
-  const chartData = curveData.map(point => ({
+  const chartData = curveData.map((point) => ({
     raw: point.raw,
     average: Math.round((point.lower + point.upper) / 2),
     lower: point.lower,
     upper: point.upper,
-    range: point.upper - point.lower
+    range: point.upper - point.lower,
   }))
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -49,7 +59,7 @@ export function CurveDistributionChart({
           <p className="font-medium">{`Raw Score: ${label}`}</p>
           <p className="text-blue-600">{`Scaled: ${data.lower} - ${data.upper}`}</p>
           <p className="text-purple-600">{`Average: ${data.average}`}</p>
-          <p className="text-gray-600">{`Range: ±${Math.round(data.range/2)}`}</p>
+          <p className="text-gray-600">{`Range: ±${Math.round(data.range / 2)}`}</p>
         </div>
       )
     }
@@ -85,65 +95,89 @@ export function CurveDistributionChart({
           </div>
         </div>
         <div className="flex items-center space-x-4 text-sm text-gray-600 mt-2">
-          <span>Raw Score Range: {Math.min(...curveData.map(p => p.raw))} - {Math.max(...curveData.map(p => p.raw))}</span>
-          <span>Scaled Score Range: {Math.min(...curveData.map(p => p.lower))} - {Math.max(...curveData.map(p => p.upper))}</span>
+          <span>
+            Raw Score Range: {Math.min(...curveData.map((p) => p.raw))} -{' '}
+            {Math.max(...curveData.map((p) => p.raw))}
+          </span>
+          <span>
+            Scaled Score Range: {Math.min(...curveData.map((p) => p.lower))} -{' '}
+            {Math.max(...curveData.map((p) => p.upper))}
+          </span>
         </div>
       </div>
-      
+
       {viewMode === 'chart' ? (
         <ResponsiveContainer width="100%" height={height}>
           {type === 'line' ? (
-            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart
+              data={chartData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="raw" 
-                label={{ value: 'Raw Score', position: 'insideBottom', offset: -5 }}
+              <XAxis
+                dataKey="raw"
+                label={{
+                  value: 'Raw Score',
+                  position: 'insideBottom',
+                  offset: -5,
+                }}
               />
-              <YAxis 
-                label={{ value: 'Scaled Score', angle: -90, position: 'insideLeft' }}
+              <YAxis
+                label={{
+                  value: 'Scaled Score',
+                  angle: -90,
+                  position: 'insideLeft',
+                }}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Line 
-                type="monotone" 
-                dataKey="average" 
-                stroke="#8b5cf6" 
+              <Line
+                type="monotone"
+                dataKey="average"
+                stroke="#8b5cf6"
                 strokeWidth={2}
                 dot={{ fill: '#8b5cf6', strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6 }}
               />
-              <Line 
-                type="monotone" 
-                dataKey="lower" 
-                stroke="#94a3b8" 
+              <Line
+                type="monotone"
+                dataKey="lower"
+                stroke="#94a3b8"
                 strokeWidth={1}
                 strokeDasharray="5 5"
                 dot={false}
               />
-              <Line 
-                type="monotone" 
-                dataKey="upper" 
-                stroke="#94a3b8" 
+              <Line
+                type="monotone"
+                dataKey="upper"
+                stroke="#94a3b8"
                 strokeWidth={1}
                 strokeDasharray="5 5"
                 dot={false}
               />
             </LineChart>
           ) : (
-            <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <BarChart
+              data={chartData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="raw" 
-                label={{ value: 'Raw Score', position: 'insideBottom', offset: -5 }}
+              <XAxis
+                dataKey="raw"
+                label={{
+                  value: 'Raw Score',
+                  position: 'insideBottom',
+                  offset: -5,
+                }}
               />
-              <YAxis 
-                label={{ value: 'Scaled Score', angle: -90, position: 'insideLeft' }}
+              <YAxis
+                label={{
+                  value: 'Scaled Score',
+                  angle: -90,
+                  position: 'insideLeft',
+                }}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Bar 
-                dataKey="average" 
-                fill="#8b5cf6"
-                radius={[2, 2, 0, 0]}
-              />
+              <Bar dataKey="average" fill="#8b5cf6" radius={[2, 2, 0, 0]} />
             </BarChart>
           )}
         </ResponsiveContainer>
@@ -153,10 +187,18 @@ export function CurveDistributionChart({
             <table className="w-full text-sm">
               <thead className="bg-gray-50 sticky top-0">
                 <tr>
-                  <th className="px-4 py-3 text-left font-medium text-gray-900 border-b">Raw Score</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-900 border-b">Scaled Range</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-900 border-b">Average</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-900 border-b">Range</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-900 border-b">
+                    Raw Score
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-900 border-b">
+                    Scaled Range
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-900 border-b">
+                    Average
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-900 border-b">
+                    Range
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -197,10 +239,16 @@ export function CurveDistributionChart({
           <div className="font-medium text-purple-900">Difficulty</div>
           <div className="text-purple-700">
             {(() => {
-              const avgSlope = chartData.reduce((acc, curr, i, arr) => {
-                if (i === 0) return acc
-                return acc + ((curr.average - arr[i-1].average) / (curr.raw - arr[i-1].raw))
-              }, 0) / (chartData.length - 1)
+              const avgSlope =
+                chartData.reduce((acc, curr, i, arr) => {
+                  if (i === 0) return acc
+                  return (
+                    acc +
+                    (curr.average - arr[i - 1].average) /
+                      (curr.raw - arr[i - 1].raw)
+                  )
+                }, 0) /
+                (chartData.length - 1)
               return avgSlope > 7 ? 'Easy' : avgSlope > 5 ? 'Medium' : 'Hard'
             })()}
           </div>
@@ -208,7 +256,12 @@ export function CurveDistributionChart({
         <div className="bg-blue-50 p-3 rounded">
           <div className="font-medium text-blue-900">Avg Range</div>
           <div className="text-blue-700">
-            ±{Math.round(chartData.reduce((acc, curr) => acc + curr.range, 0) / chartData.length / 2)}
+            ±
+            {Math.round(
+              chartData.reduce((acc, curr) => acc + curr.range, 0) /
+                chartData.length /
+                2
+            )}
           </div>
         </div>
         <div className="bg-green-50 p-3 rounded">
@@ -218,7 +271,9 @@ export function CurveDistributionChart({
         <div className="bg-orange-50 p-3 rounded">
           <div className="font-medium text-orange-900">Scale Type</div>
           <div className="text-orange-700">
-            {Math.max(...curveData.map(p => p.upper)) <= 800 ? 'Section' : 'Total'}
+            {Math.max(...curveData.map((p) => p.upper)) <= 800
+              ? 'Section'
+              : 'Total'}
           </div>
         </div>
       </div>

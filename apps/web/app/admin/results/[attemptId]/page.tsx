@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../contexts/auth-context'
-import { AnalyticsService, type ComprehensiveResults } from '../../../../lib/analytics-service'
+import {
+  AnalyticsService,
+  type ComprehensiveResults,
+} from '../../../../lib/analytics-service'
 import { ExportService } from '../../../../lib/export-service'
 import { ModuleType, ExamService } from '../../../../lib/exam-service'
 import { ScoringService } from '../../../../lib/scoring-service'
@@ -35,9 +38,13 @@ export default function AdminDetailedResultsPage() {
   const [classStats, setClassStats] = useState<ClassStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'overview' | 'questions' | 'comparison'>('overview')
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'questions' | 'comparison'
+  >('overview')
   const [exporting, setExporting] = useState(false)
-  const [questionFilter, setQuestionFilter] = useState<'all' | 'correct' | 'incorrect' | 'skipped'>('all')
+  const [questionFilter, setQuestionFilter] = useState<
+    'all' | 'correct' | 'incorrect' | 'skipped'
+  >('all')
   const [regrading, setRegrading] = useState<string | null>(null)
   const [regradeModal, setRegradeModal] = useState<{
     questionId: string
@@ -58,7 +65,8 @@ export default function AdminDetailedResultsPage() {
   const loadResults = async () => {
     try {
       // Load comprehensive results
-      const comprehensiveResults = await AnalyticsService.getComprehensiveResults(attemptId)
+      const comprehensiveResults =
+        await AnalyticsService.getComprehensiveResults(attemptId)
       setResults(comprehensiveResults)
 
       // Load student profile
@@ -82,9 +90,11 @@ export default function AdminDetailedResultsPage() {
 
       // Load class statistics if this is from an assigned exam
       if (attemptData.exam_id) {
-        await loadClassStats(attemptData.exam_id, comprehensiveResults.detailedScore.totalScore)
+        await loadClassStats(
+          attemptData.exam_id,
+          comprehensiveResults.detailedScore.totalScore
+        )
       }
-
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -104,21 +114,29 @@ export default function AdminDetailedResultsPage() {
 
       if (allAttempts && allAttempts.length > 0) {
         // Get display scores for all attempts
-        const scores = allAttempts.map(attempt => 
-          attempt.final_scores?.overall || attempt.total_score || 0
-        ).filter(score => score > 0)
+        const scores = allAttempts
+          .map(
+            (attempt) =>
+              attempt.final_scores?.overall || attempt.total_score || 0
+          )
+          .filter((score) => score > 0)
 
         if (scores.length > 0) {
-          const averageScore = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
+          const averageScore = Math.round(
+            scores.reduce((sum, score) => sum + score, 0) / scores.length
+          )
           const sortedScores = scores.sort((a, b) => b - a)
-          const studentRank = sortedScores.findIndex(score => score <= studentScore) + 1
-          const percentile = Math.round((1 - (studentRank - 1) / scores.length) * 100)
+          const studentRank =
+            sortedScores.findIndex((score) => score <= studentScore) + 1
+          const percentile = Math.round(
+            (1 - (studentRank - 1) / scores.length) * 100
+          )
 
           setClassStats({
             totalStudents: scores.length,
             averageScore,
             studentRank,
-            percentile
+            percentile,
           })
         }
       }
@@ -129,15 +147,14 @@ export default function AdminDetailedResultsPage() {
 
   const handleExport = async () => {
     if (!results || !student) return
-    
+
     setExporting(true)
     try {
       // Export detailed admin report
       await ExportService.exportStudentResults(attemptId)
-      
+
       // Also download text report
       ExportService.downloadTextReport(results)
-      
     } catch (err: any) {
       setError(`Export failed: ${err.message}`)
     } finally {
@@ -147,22 +164,30 @@ export default function AdminDetailedResultsPage() {
 
   const handleRegradeQuestion = async () => {
     if (!regradeModal || !regradeReason.trim()) return
-    
+
     setRegrading(regradeModal.userAnswerId)
     try {
       console.log('Starting regrade for question:', regradeModal.questionNumber)
+      
+      // Get access token from Supabase
+      const { data: { session } } = await supabase.auth.getSession()
+
+      const requestBody = {
+        userAnswerId: regradeModal.userAnswerId,
+        newIsCorrect: !regradeModal.currentCorrect,
+        reason: regradeReason.trim(),
+      }
+      
+      console.log('Sending regrade request with body:', requestBody)
       
       const response = await fetch('/api/admin/regrade-question', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {}),
         },
         credentials: 'include', // Include cookies for authentication
-        body: JSON.stringify({
-          userAnswerId: regradeModal.userAnswerId,
-          newIsCorrect: !regradeModal.currentCorrect,
-          reason: regradeReason.trim()
-        })
+        body: JSON.stringify(requestBody),
       })
 
       console.log('Response status:', response.status)
@@ -175,14 +200,13 @@ export default function AdminDetailedResultsPage() {
 
       const result = await response.json()
       console.log('Regrade successful:', result)
-      
+
       // Reload results to show updated scores
       await loadResults()
-      
+
       setRegradeModal(null)
       setRegradeReason('')
       setError(null)
-      
     } catch (err: any) {
       console.error('Regrade error:', err)
       setError(`Regrade failed: ${err.message}`)
@@ -192,11 +216,14 @@ export default function AdminDetailedResultsPage() {
   }
 
   const openRegradeModal = (question: any) => {
+    console.log('Opening regrade modal for question:', question)
+    console.log('Question userAnswerId:', question.userAnswerId)
+    
     setRegradeModal({
       questionId: question.questionId,
       userAnswerId: question.userAnswerId,
       currentCorrect: question.isCorrect,
-      questionNumber: question.questionNumber
+      questionNumber: question.questionNumber,
     })
     setRegradeReason('')
   }
@@ -213,16 +240,16 @@ export default function AdminDetailedResultsPage() {
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
   const getModuleDisplayName = (moduleType: ModuleType) => {
     const names = {
       english1: 'Reading & Writing Module 1',
-      english2: 'Reading & Writing Module 2', 
+      english2: 'Reading & Writing Module 2',
       math1: 'Math Module 1 (No Calculator)',
-      math2: 'Math Module 2 (Calculator)'
+      math2: 'Math Module 2 (Calculator)',
     }
     return names[moduleType]
   }
@@ -236,41 +263,49 @@ export default function AdminDetailedResultsPage() {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'bg-purple-100 text-purple-800'
-      case 'medium': return 'bg-yellow-100 text-yellow-800'
-      case 'hard': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'easy':
+        return 'bg-purple-100 text-purple-800'
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'hard':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getFilteredQuestions = () => {
     if (!results) return []
-    
-    return results.questionAnalysis.filter(question => {
+
+    return results.questionAnalysis.filter((question) => {
       switch (questionFilter) {
-        case 'correct': return question.isCorrect
-        case 'incorrect': return !question.isCorrect
-        case 'skipped': return !question.userAnswer
+        case 'correct':
+          return question.isCorrect
+        case 'incorrect':
+          return !question.isCorrect
+        case 'skipped':
+          return !question.userAnswer
         case 'all':
-        default: return true
+        default:
+          return true
       }
     })
   }
 
   const getQuestionsGroupedByModule = () => {
     const filteredQuestions = getFilteredQuestions()
-    
+
     const grouped = {
       english1: [] as typeof filteredQuestions,
       english2: [] as typeof filteredQuestions,
       math1: [] as typeof filteredQuestions,
-      math2: [] as typeof filteredQuestions
+      math2: [] as typeof filteredQuestions,
     }
-    
-    filteredQuestions.forEach(question => {
+
+    filteredQuestions.forEach((question) => {
       grouped[question.moduleType].push(question)
     })
-    
+
     return grouped
   }
 
@@ -292,7 +327,9 @@ export default function AdminDetailedResultsPage() {
       <div className="h-full bg-gray-50">
         <div className="flex items-center justify-center h-full">
           <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center max-w-md">
-            <h3 className="text-lg font-medium text-red-900 mb-2">Error Loading Results</h3>
+            <h3 className="text-lg font-medium text-red-900 mb-2">
+              Error Loading Results
+            </h3>
             <p className="text-red-700 mb-4">{error || 'Results not found'}</p>
             <Link
               href="/admin/students"
@@ -306,7 +343,13 @@ export default function AdminDetailedResultsPage() {
     )
   }
 
-  const { attempt, detailedScore, questionAnalysis, performanceAnalytics, progressComparison } = results
+  const {
+    attempt,
+    detailedScore,
+    questionAnalysis,
+    performanceAnalytics,
+    progressComparison,
+  } = results
 
   return (
     <div className="h-full bg-gray-50">
@@ -317,7 +360,9 @@ export default function AdminDetailedResultsPage() {
             <h1 className="text-2xl font-bold text-gray-900">
               {student.full_name} - Test Results
             </h1>
-            <p className="text-gray-600">Detailed performance analysis and question breakdown</p>
+            <p className="text-gray-600">
+              Detailed performance analysis and question breakdown
+            </p>
           </div>
           <div className="flex items-center space-x-4">
             <button
@@ -340,7 +385,7 @@ export default function AdminDetailedResultsPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Separator line */}
         <div className="border-b border-gray-200"></div>
       </div>
@@ -355,8 +400,15 @@ export default function AdminDetailedResultsPage() {
               <span>🎯 Target: {student.target_score || 'Not set'}</span>
             </div>
             <div className="flex items-center space-x-6 text-sm text-gray-500">
-              <span>📅 {attempt.completed_at ? formatDate(attempt.completed_at) : 'In Progress'}</span>
-              <span>⏱️ Duration: {formatTime(performanceAnalytics.totalTimeSpent)}</span>
+              <span>
+                📅{' '}
+                {attempt.completed_at
+                  ? formatDate(attempt.completed_at)
+                  : 'In Progress'}
+              </span>
+              <span>
+                ⏱️ Duration: {formatTime(performanceAnalytics.totalTimeSpent)}
+              </span>
             </div>
           </div>
         </div>
@@ -371,14 +423,16 @@ export default function AdminDetailedResultsPage() {
               <div className="text-sm text-gray-500">Total Score</div>
               <div className="text-xs text-gray-400">400-1600 scale</div>
             </div>
-            
+
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-600 mb-2">
                 {detailedScore.evidenceBasedReading}
               </div>
-              <div className="text-sm text-gray-500">Evidence-Based Reading and Writing</div>
+              <div className="text-sm text-gray-500">
+                Evidence-Based Reading and Writing
+              </div>
             </div>
-            
+
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-600 mb-2">
                 {detailedScore.mathScore}
@@ -390,7 +444,9 @@ export default function AdminDetailedResultsPage() {
           {/* Class Comparison */}
           {classStats && (
             <div className="pt-6 border-t border-purple-200">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Class Performance</h4>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">
+                Class Performance
+              </h4>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
                 <div>
                   <div className="text-lg font-semibold text-gray-900">
@@ -411,8 +467,13 @@ export default function AdminDetailedResultsPage() {
                   <div className="text-sm text-gray-500">Class Average</div>
                 </div>
                 <div>
-                  <div className={`text-lg font-semibold ${detailedScore.totalScore >= classStats.averageScore ? 'text-purple-600' : 'text-red-600'}`}>
-                    {detailedScore.totalScore >= classStats.averageScore ? '+' : ''}{detailedScore.totalScore - classStats.averageScore}
+                  <div
+                    className={`text-lg font-semibold ${detailedScore.totalScore >= classStats.averageScore ? 'text-purple-600' : 'text-red-600'}`}
+                  >
+                    {detailedScore.totalScore >= classStats.averageScore
+                      ? '+'
+                      : ''}
+                    {detailedScore.totalScore - classStats.averageScore}
                   </div>
                   <div className="text-sm text-gray-500">vs Average</div>
                 </div>
@@ -427,7 +488,7 @@ export default function AdminDetailedResultsPage() {
             {[
               { id: 'overview', label: 'Overview', icon: '📊' },
               { id: 'questions', label: 'Questions', icon: '❓' },
-              { id: 'comparison', label: 'Comparison', icon: '📈' }
+              { id: 'comparison', label: 'Comparison', icon: '📈' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -450,36 +511,42 @@ export default function AdminDetailedResultsPage() {
           <div className="space-y-6">
             {/* Module Performance */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">📚 Module Performance</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                📚 Module Performance
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(detailedScore.rawScores).map(([module, score]) => {
-                  const moduleType = module as ModuleType
-                  const percentage = detailedScore.percentages[moduleType]
-                  const percentile = detailedScore.percentiles[moduleType]
-                  
-                  return (
-                    <div key={module} className="bg-gray-50 p-4 rounded-lg">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-medium text-gray-900">
-                          {getModuleDisplayName(moduleType)}
-                        </h4>
-                        <span className={`font-semibold ${getScoreColor(percentage)}`}>
-                          {Math.round(percentage)}%
-                        </span>
+                {Object.entries(detailedScore.rawScores).map(
+                  ([module, score]) => {
+                    const moduleType = module as ModuleType
+                    const percentage = detailedScore.percentages[moduleType]
+                    const percentile = detailedScore.percentiles[moduleType]
+
+                    return (
+                      <div key={module} className="bg-gray-50 p-4 rounded-lg">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-medium text-gray-900">
+                            {getModuleDisplayName(moduleType)}
+                          </h4>
+                          <span
+                            className={`font-semibold ${getScoreColor(percentage)}`}
+                          >
+                            {Math.round(percentage)}%
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 space-y-1">
+                          <div>Raw Score: {score}</div>
+                          <div>Percentile: {percentile}th</div>
+                        </div>
+                        <div className="mt-2 bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${percentage}%` }}
+                          ></div>
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600 space-y-1">
-                        <div>Raw Score: {score}</div>
-                        <div>Percentile: {percentile}th</div>
-                      </div>
-                      <div className="mt-2 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-purple-600 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${percentage}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  )
-                })}
+                    )
+                  }
+                )}
               </div>
             </div>
 
@@ -494,9 +561,13 @@ export default function AdminDetailedResultsPage() {
                 <div className="space-y-3">
                   <div>
                     <div className="text-2xl font-bold text-violet-600">
-                      {formatTime(Math.round(performanceAnalytics.averageTimePerQuestion))}
+                      {formatTime(
+                        Math.round(performanceAnalytics.averageTimePerQuestion)
+                      )}
                     </div>
-                    <div className="text-sm text-gray-500">Avg per question</div>
+                    <div className="text-sm text-gray-500">
+                      Avg per question
+                    </div>
                   </div>
                   <div className="text-xs text-gray-400">
                     Total: {formatTime(performanceAnalytics.totalTimeSpent)}
@@ -516,7 +587,8 @@ export default function AdminDetailedResultsPage() {
                       {Math.round(performanceAnalytics.accuracyRate)}%
                     </div>
                     <div className="text-sm text-gray-500">
-                      {performanceAnalytics.correctAnswers} of {performanceAnalytics.totalQuestions}
+                      {performanceAnalytics.correctAnswers} of{' '}
+                      {performanceAnalytics.totalQuestions}
                     </div>
                   </div>
                 </div>
@@ -529,14 +601,16 @@ export default function AdminDetailedResultsPage() {
                   By Difficulty
                 </h4>
                 <div className="space-y-2 text-sm">
-                  {Object.entries(performanceAnalytics.difficultyBreakdown).map(([difficulty, stats]) => (
-                    <div key={difficulty} className="flex justify-between">
-                      <span className="capitalize">{difficulty}:</span>
-                      <span className={getScoreColor(stats.percentage)}>
-                        {Math.round(stats.percentage)}%
-                      </span>
-                    </div>
-                  ))}
+                  {Object.entries(performanceAnalytics.difficultyBreakdown).map(
+                    ([difficulty, stats]) => (
+                      <div key={difficulty} className="flex justify-between">
+                        <span className="capitalize">{difficulty}:</span>
+                        <span className={getScoreColor(stats.percentage)}>
+                          {Math.round(stats.percentage)}%
+                        </span>
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
             </div>
@@ -551,13 +625,18 @@ export default function AdminDetailedResultsPage() {
                 {performanceAnalytics.strengthAreas.length > 0 ? (
                   <div className="space-y-2">
                     {performanceAnalytics.strengthAreas.map((area, index) => (
-                      <div key={index} className="bg-purple-50 text-purple-800 px-3 py-2 rounded text-sm">
+                      <div
+                        key={index}
+                        className="bg-purple-50 text-purple-800 px-3 py-2 rounded text-sm"
+                      >
                         {area}
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm">No strength areas identified (80%+ accuracy needed)</p>
+                  <p className="text-gray-500 text-sm">
+                    No strength areas identified (80%+ accuracy needed)
+                  </p>
                 )}
               </div>
 
@@ -569,13 +648,18 @@ export default function AdminDetailedResultsPage() {
                 {performanceAnalytics.weaknessAreas.length > 0 ? (
                   <div className="space-y-2">
                     {performanceAnalytics.weaknessAreas.map((area, index) => (
-                      <div key={index} className="bg-red-50 text-red-800 px-3 py-2 rounded text-sm">
+                      <div
+                        key={index}
+                        className="bg-red-50 text-red-800 px-3 py-2 rounded text-sm"
+                      >
                         {area}
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm">Great job! No major weak areas identified</p>
+                  <p className="text-gray-500 text-sm">
+                    Great job! No major weak areas identified
+                  </p>
                 )}
               </div>
             </div>
@@ -586,7 +670,9 @@ export default function AdminDetailedResultsPage() {
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100">
             <div className="p-6 border-b border-purple-200">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">❓ Question Analysis</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  ❓ Question Analysis
+                </h3>
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-purple-600">Filter:</span>
                   <select
@@ -602,170 +688,225 @@ export default function AdminDetailedResultsPage() {
                 </div>
               </div>
               <p className="text-purple-600/70">
-                Detailed analysis of each question with correct answers always shown (Admin View)
+                Detailed analysis of each question with correct answers always
+                shown (Admin View)
               </p>
             </div>
-            
+
             <div className="p-6 space-y-8">
-              {Object.entries(getQuestionsGroupedByModule()).map(([moduleType, questions]) => {
-                if (questions.length === 0) return null
-                
-                return (
-                  <div key={moduleType} className="border-b border-purple-200 pb-6 last:border-b-0">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                      <span className="w-3 h-3 bg-purple-500 rounded-full mr-2"></span>
-                      {getModuleDisplayName(moduleType as ModuleType)}
-                      <span className="ml-2 text-sm font-normal text-purple-600/70">
-                        ({questions.length} question{questions.length !== 1 ? 's' : ''})
-                      </span>
-                    </h4>
-                    
-                    <div className="space-y-4">
-                      {questions.map((question, index) => (
-                        <div 
-                          key={question.questionId} 
-                          className="border rounded-xl p-6 border-purple-200 bg-white/50 backdrop-blur-sm"
-                        >
-                          <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center space-x-4">
+              {Object.entries(getQuestionsGroupedByModule()).map(
+                ([moduleType, questions]) => {
+                  if (questions.length === 0) return null
+
+                  return (
+                    <div
+                      key={moduleType}
+                      className="border-b border-purple-200 pb-6 last:border-b-0"
+                    >
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <span className="w-3 h-3 bg-purple-500 rounded-full mr-2"></span>
+                        {getModuleDisplayName(moduleType as ModuleType)}
+                        <span className="ml-2 text-sm font-normal text-purple-600/70">
+                          ({questions.length} question
+                          {questions.length !== 1 ? 's' : ''})
+                        </span>
+                      </h4>
+
+                      <div className="space-y-4">
+                        {questions.map((question, index) => (
+                          <div
+                            key={question.questionId}
+                            className="border rounded-xl p-6 border-purple-200 bg-white/50 backdrop-blur-sm"
+                          >
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="flex items-center space-x-4">
+                                <div className="flex-shrink-0">
+                                  <div
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
+                                      question.isCorrect
+                                        ? 'bg-purple-500'
+                                        : 'bg-red-500'
+                                    }`}
+                                  >
+                                    {question.isCorrect ? '✓' : '✗'}
+                                  </div>
+                                </div>
+                                <span className="px-2 py-1 bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 rounded text-sm font-medium">
+                                  {getModuleDisplayName(
+                                    moduleType as ModuleType
+                                  ).replace('Module ', 'M')}{' '}
+                                  - Q{question.questionNumber}
+                                </span>
+                                <span
+                                  className={`px-2 py-1 rounded text-sm font-medium ${getDifficultyColor(question.difficulty)}`}
+                                >
+                                  {question.difficulty}
+                                </span>
+                                <span className="text-sm text-gray-500">
+                                  Time: {formatTime(question.timeSpent)}
+                                </span>
+                              </div>
+
                               <div className="flex-shrink-0">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
-                                  question.isCorrect ? 'bg-purple-500' : 'bg-red-500'
-                                }`}>
-                                  {question.isCorrect ? '✓' : '✗'}
+                                <button
+                                  onClick={() => openRegradeModal(question)}
+                                  disabled={regrading === question.userAnswerId}
+                                  className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                                    question.isCorrect
+                                      ? 'bg-red-100 text-red-700 hover:bg-red-200 disabled:bg-red-50'
+                                      : 'bg-purple-100 text-purple-700 hover:bg-purple-200 disabled:bg-purple-50'
+                                  }`}
+                                >
+                                  {regrading === question.userAnswerId
+                                    ? 'Regrading...'
+                                    : question.isCorrect
+                                      ? 'Mark Incorrect'
+                                      : 'Mark Correct'}
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Question Content */}
+                            <div className="mb-4">
+                              <h3 className="font-medium text-gray-900 mb-2">
+                                Question Text:
+                              </h3>
+                              <div className="p-3 bg-gray-50 rounded-md">
+                                <div className="text-gray-900 leading-relaxed whitespace-pre-wrap">
+                                  {question.questionText}
+                                </div>
+
+                                {question.questionImageUrl && (
+                                  <div className="mt-3">
+                                    <img
+                                      src={question.questionImageUrl}
+                                      alt="Question image"
+                                      className="max-w-full h-auto rounded border"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Options for Multiple Choice */}
+                            {question.options && (
+                              <div className="mb-4">
+                                <h3 className="font-medium text-gray-900 mb-2">
+                                  Answer Options:
+                                </h3>
+                                <div className="space-y-2">
+                                  {Object.entries(question.options).map(
+                                    ([key, value]) => (
+                                      <div
+                                        key={key}
+                                        className="flex items-start space-x-2"
+                                      >
+                                        <span
+                                          className={`font-medium w-6 ${
+                                            question.correctAnswer === key
+                                              ? 'text-purple-600'
+                                              : 'text-gray-700'
+                                          }`}
+                                        >
+                                          {key}.
+                                        </span>
+                                        <div
+                                          className={`flex-1 p-2 rounded ${
+                                            question.userAnswer === key
+                                              ? question.isCorrect
+                                                ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                                                : 'bg-red-100 text-red-800 border border-red-200'
+                                              : question.correctAnswer === key
+                                                ? 'bg-purple-100 text-purple-800 border border-purple-200 font-medium'
+                                                : 'bg-gray-50 text-gray-900 border border-gray-200'
+                                          }`}
+                                        >
+                                          {typeof value === 'string'
+                                            ? value
+                                            : typeof value === 'object' &&
+                                                value !== null
+                                              ? (value as any).text ||
+                                                JSON.stringify(value)
+                                              : String(value)}
+                                        </div>
+                                      </div>
+                                    )
+                                  )}
                                 </div>
                               </div>
-                              <span className="px-2 py-1 bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 rounded text-sm font-medium">
-                                {getModuleDisplayName(moduleType as ModuleType).replace('Module ', 'M')} - Q{question.questionNumber}
-                              </span>
-                              <span className={`px-2 py-1 rounded text-sm font-medium ${getDifficultyColor(question.difficulty)}`}>
-                                {question.difficulty}
-                              </span>
-                              <span className="text-sm text-gray-500">
-                                Time: {formatTime(question.timeSpent)}
-                              </span>
-                            </div>
-                            
-                            <div className="flex-shrink-0">
-                              <button
-                                onClick={() => openRegradeModal(question)}
-                                disabled={regrading === question.userAnswerId}
-                                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-                                  question.isCorrect
-                                    ? 'bg-red-100 text-red-700 hover:bg-red-200 disabled:bg-red-50'
-                                    : 'bg-purple-100 text-purple-700 hover:bg-purple-200 disabled:bg-purple-50'
-                                }`}
-                              >
-                                {regrading === question.userAnswerId ? (
-                                  'Regrading...'
-                                ) : (
-                                  question.isCorrect ? 'Mark Incorrect' : 'Mark Correct'
-                                )}
-                              </button>
-                            </div>
-                          </div>
+                            )}
 
-                          {/* Question Content */}
-                          <div className="mb-4">
-                            <h3 className="font-medium text-gray-900 mb-2">Question Text:</h3>
-                            <div className="p-3 bg-gray-50 rounded-md">
-                              <div className="text-gray-900 leading-relaxed whitespace-pre-wrap">
-                                {question.questionText}
+                            {/* Answer Summary */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-4">
+                              <div>
+                                <div className="text-gray-600 font-medium mb-1">
+                                  Student Answer:
+                                </div>
+                                <div
+                                  className={`px-2 py-1 rounded font-medium ${
+                                    question.isCorrect
+                                      ? 'bg-purple-100 text-purple-800'
+                                      : 'bg-red-100 text-red-800'
+                                  }`}
+                                >
+                                  {question.userAnswer || 'No answer'}
+                                </div>
                               </div>
-                              
-                              {question.questionImageUrl && (
-                                <div className="mt-3">
-                                  <img 
-                                    src={question.questionImageUrl} 
-                                    alt="Question image" 
-                                    className="max-w-full h-auto rounded border"
-                                  />
+                              <div>
+                                <div className="text-gray-600 font-medium mb-1">
+                                  Correct Answer
+                                  {Array.isArray(question.correctAnswer) &&
+                                  question.correctAnswer.length > 1
+                                    ? 's'
+                                    : ''}
+                                  :
+                                </div>
+                                <div className="px-2 py-1 bg-purple-100 text-purple-800 rounded font-medium">
+                                  {Array.isArray(question.correctAnswer)
+                                    ? question.correctAnswer.join(', ')
+                                    : question.correctAnswer}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Topic Tags */}
+                            {question.topicTags &&
+                              question.topicTags.length > 0 && (
+                                <div className="mb-4">
+                                  <h3 className="font-medium text-gray-900 mb-2">
+                                    Topics:
+                                  </h3>
+                                  <div className="flex flex-wrap gap-1">
+                                    {question.topicTags.map((tag, tagIndex) => (
+                                      <span
+                                        key={tagIndex}
+                                        className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs"
+                                      >
+                                        {tag}
+                                      </span>
+                                    ))}
+                                  </div>
                                 </div>
                               )}
-                            </div>
+
+                            {/* Explanation */}
+                            {question.explanation && (
+                              <div className="p-3 bg-purple-50 rounded">
+                                <div className="text-sm font-medium text-gray-600 mb-1">
+                                  Explanation:
+                                </div>
+                                <div className="text-sm text-gray-800 leading-relaxed">
+                                  {question.explanation}
+                                </div>
+                              </div>
+                            )}
                           </div>
-
-                          {/* Options for Multiple Choice */}
-                          {question.options && (
-                            <div className="mb-4">
-                              <h3 className="font-medium text-gray-900 mb-2">Answer Options:</h3>
-                              <div className="space-y-2">
-                                {Object.entries(question.options).map(([key, value]) => (
-                                  <div key={key} className="flex items-start space-x-2">
-                                    <span className={`font-medium w-6 ${
-                                      question.correctAnswer === key ? 'text-purple-600' : 'text-gray-700'
-                                    }`}>
-                                      {key}.
-                                    </span>
-                                    <div className={`flex-1 p-2 rounded ${
-                                      question.userAnswer === key 
-                                        ? (question.isCorrect ? 'bg-purple-100 text-purple-800 border border-purple-200' : 'bg-red-100 text-red-800 border border-red-200')
-                                        : question.correctAnswer === key 
-                                          ? 'bg-purple-100 text-purple-800 border border-purple-200 font-medium' 
-                                          : 'bg-gray-50 text-gray-900 border border-gray-200'
-                                    }`}>
-                                      {typeof value === 'string' ? value : (
-                                        typeof value === 'object' && value !== null ? 
-                                          (value as any).text || JSON.stringify(value) : 
-                                          String(value)
-                                      )}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Answer Summary */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-4">
-                            <div>
-                              <div className="text-gray-600 font-medium mb-1">Student Answer:</div>
-                              <div className={`px-2 py-1 rounded font-medium ${
-                                question.isCorrect ? 'bg-purple-100 text-purple-800' : 'bg-red-100 text-red-800'
-                              }`}>
-                                {question.userAnswer || 'No answer'}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-gray-600 font-medium mb-1">
-                                Correct Answer{Array.isArray(question.correctAnswer) && question.correctAnswer.length > 1 ? 's' : ''}:
-                              </div>
-                              <div className="px-2 py-1 bg-purple-100 text-purple-800 rounded font-medium">
-                                {Array.isArray(question.correctAnswer) 
-                                  ? question.correctAnswer.join(', ')
-                                  : question.correctAnswer
-                                }
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Topic Tags */}
-                          {question.topicTags && question.topicTags.length > 0 && (
-                            <div className="mb-4">
-                              <h3 className="font-medium text-gray-900 mb-2">Topics:</h3>
-                              <div className="flex flex-wrap gap-1">
-                                {question.topicTags.map((tag, tagIndex) => (
-                                  <span key={tagIndex} className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Explanation */}
-                          {question.explanation && (
-                            <div className="p-3 bg-purple-50 rounded">
-                              <div className="text-sm font-medium text-gray-600 mb-1">Explanation:</div>
-                              <div className="text-sm text-gray-800 leading-relaxed">{question.explanation}</div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                }
+              )}
             </div>
           </div>
         )}
@@ -775,17 +916,24 @@ export default function AdminDetailedResultsPage() {
             {/* Previous Attempts Comparison */}
             {progressComparison && (
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">📈 Progress Comparison</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  📈 Progress Comparison
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-violet-600">
                       {progressComparison.previousAttempts}
                     </div>
-                    <div className="text-sm text-gray-500">Previous Attempts</div>
+                    <div className="text-sm text-gray-500">
+                      Previous Attempts
+                    </div>
                   </div>
                   <div className="text-center">
-                    <div className={`text-2xl font-bold ${progressComparison.scoreImprovement >= 0 ? 'text-purple-600' : 'text-red-600'}`}>
-                      {progressComparison.scoreImprovement >= 0 ? '+' : ''}{progressComparison.scoreImprovement}
+                    <div
+                      className={`text-2xl font-bold ${progressComparison.scoreImprovement >= 0 ? 'text-purple-600' : 'text-red-600'}`}
+                    >
+                      {progressComparison.scoreImprovement >= 0 ? '+' : ''}
+                      {progressComparison.scoreImprovement}
                     </div>
                     <div className="text-sm text-gray-500">Score Change</div>
                   </div>
@@ -793,7 +941,9 @@ export default function AdminDetailedResultsPage() {
                     <div className="text-2xl font-bold text-purple-600">
                       {Math.round(detailedScore.percentages.overall)}%
                     </div>
-                    <div className="text-sm text-gray-500">Overall Accuracy</div>
+                    <div className="text-sm text-gray-500">
+                      Overall Accuracy
+                    </div>
                   </div>
                 </div>
               </div>
@@ -801,25 +951,39 @@ export default function AdminDetailedResultsPage() {
 
             {/* Topic Performance Comparison */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-              <h4 className="font-medium text-gray-900 mb-4">📊 Topic Performance Breakdown</h4>
+              <h4 className="font-medium text-gray-900 mb-4">
+                📊 Topic Performance Breakdown
+              </h4>
               <div className="space-y-3">
                 {performanceAnalytics.topicPerformance.map((topic, index) => (
-                  <div key={index} className="flex items-center justify-between">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex-1">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm font-medium text-gray-900">{topic.topic}</span>
-                        <span className={`text-sm font-medium ${getScoreColor(topic.percentage)}`}>
+                        <span className="text-sm font-medium text-gray-900">
+                          {topic.topic}
+                        </span>
+                        <span
+                          className={`text-sm font-medium ${getScoreColor(topic.percentage)}`}
+                        >
                           {Math.round(topic.percentage)}%
                         </span>
                       </div>
                       <div className="flex justify-between items-center text-xs text-gray-500 mb-2">
-                        <span>{topic.correct} of {topic.attempted} correct</span>
+                        <span>
+                          {topic.correct} of {topic.attempted} correct
+                        </span>
                       </div>
                       <div className="bg-gray-200 rounded-full h-2">
-                        <div 
+                        <div
                           className={`h-2 rounded-full transition-all duration-300 ${
-                            topic.percentage >= 80 ? 'bg-purple-500' :
-                            topic.percentage >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                            topic.percentage >= 80
+                              ? 'bg-purple-500'
+                              : topic.percentage >= 60
+                                ? 'bg-yellow-500'
+                                : 'bg-red-500'
                           }`}
                           style={{ width: `${topic.percentage}%` }}
                         ></div>
@@ -833,22 +997,37 @@ export default function AdminDetailedResultsPage() {
             {/* Class Comparison Detail */}
             {classStats && (
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                <h4 className="font-medium text-gray-900 mb-4">👥 Class Performance Context</h4>
+                <h4 className="font-medium text-gray-900 mb-4">
+                  👥 Class Performance Context
+                </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center p-3 bg-purple-50 rounded">
-                        <span className="text-sm font-medium">Student Score:</span>
-                        <span className="text-lg font-bold text-purple-600">{detailedScore.totalScore}</span>
+                        <span className="text-sm font-medium">
+                          Student Score:
+                        </span>
+                        <span className="text-lg font-bold text-purple-600">
+                          {detailedScore.totalScore}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center p-3 bg-orange-50 rounded">
-                        <span className="text-sm font-medium">Class Average:</span>
-                        <span className="text-lg font-bold text-orange-600">{classStats.averageScore}</span>
+                        <span className="text-sm font-medium">
+                          Class Average:
+                        </span>
+                        <span className="text-lg font-bold text-orange-600">
+                          {classStats.averageScore}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center p-3 bg-purple-50 rounded">
                         <span className="text-sm font-medium">Difference:</span>
-                        <span className={`text-lg font-bold ${detailedScore.totalScore >= classStats.averageScore ? 'text-purple-600' : 'text-red-600'}`}>
-                          {detailedScore.totalScore >= classStats.averageScore ? '+' : ''}{detailedScore.totalScore - classStats.averageScore}
+                        <span
+                          className={`text-lg font-bold ${detailedScore.totalScore >= classStats.averageScore ? 'text-purple-600' : 'text-red-600'}`}
+                        >
+                          {detailedScore.totalScore >= classStats.averageScore
+                            ? '+'
+                            : ''}
+                          {detailedScore.totalScore - classStats.averageScore}
                         </span>
                       </div>
                     </div>
@@ -857,11 +1036,15 @@ export default function AdminDetailedResultsPage() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
                         <span className="text-sm font-medium">Class Rank:</span>
-                        <span className="text-lg font-bold text-gray-700">{classStats.studentRank} / {classStats.totalStudents}</span>
+                        <span className="text-lg font-bold text-gray-700">
+                          {classStats.studentRank} / {classStats.totalStudents}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center p-3 bg-purple-50 rounded">
                         <span className="text-sm font-medium">Percentile:</span>
-                        <span className="text-lg font-bold text-purple-600">{classStats.percentile}th</span>
+                        <span className="text-lg font-bold text-purple-600">
+                          {classStats.percentile}th
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -879,22 +1062,31 @@ export default function AdminDetailedResultsPage() {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Regrade Question {regradeModal.questionNumber}
             </h3>
-            
+
             <div className="mb-4">
               <p className="text-sm text-gray-600 mb-2">
-                Current status: <span className={`font-medium ${regradeModal.currentCorrect ? 'text-purple-600' : 'text-red-600'}`}>
+                Current status:{' '}
+                <span
+                  className={`font-medium ${regradeModal.currentCorrect ? 'text-purple-600' : 'text-red-600'}`}
+                >
                   {regradeModal.currentCorrect ? 'Correct' : 'Incorrect'}
                 </span>
               </p>
               <p className="text-sm text-gray-600 mb-4">
-                New status: <span className={`font-medium ${!regradeModal.currentCorrect ? 'text-purple-600' : 'text-red-600'}`}>
+                New status:{' '}
+                <span
+                  className={`font-medium ${!regradeModal.currentCorrect ? 'text-purple-600' : 'text-red-600'}`}
+                >
                   {!regradeModal.currentCorrect ? 'Correct' : 'Incorrect'}
                 </span>
               </p>
             </div>
 
             <div className="mb-4">
-              <label htmlFor="regrade-reason" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="regrade-reason"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Reason for regrading (required):
               </label>
               <textarea

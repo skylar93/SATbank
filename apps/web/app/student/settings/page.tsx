@@ -4,20 +4,22 @@ import { useState } from 'react'
 import { useAuth } from '../../../contexts/auth-context'
 import { PracticeSettings } from '../../../components/practice/practice-settings'
 import { PracticeProgress } from '../../../components/practice/practice-progress'
-import { 
-  CogIcon, 
-  ChartBarIcon, 
+import {
+  CogIcon,
+  ChartBarIcon,
   UserIcon,
   MagnifyingGlassIcon,
   AdjustmentsHorizontalIcon,
   DocumentChartBarIcon,
   ShieldCheckIcon,
-  QuestionMarkCircleIcon
+  QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline'
 
 export default function StudentSettings() {
   const { user } = useAuth()
-  const [activeTab, setActiveTab] = useState<'practice' | 'progress' | 'account'>('practice')
+  const [activeTab, setActiveTab] = useState<
+    'practice' | 'progress' | 'account'
+  >('practice')
 
   if (!user) return null
 
@@ -28,7 +30,9 @@ export default function StudentSettings() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-            <p className="text-gray-600">Customize your practice experience and manage your account</p>
+            <p className="text-gray-600">
+              Customize your practice experience and manage your account
+            </p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
@@ -38,7 +42,7 @@ export default function StudentSettings() {
             </div>
           </div>
         </div>
-        
+
         {/* Separator line */}
         <div className="border-b border-gray-200"></div>
       </div>
@@ -52,9 +56,21 @@ export default function StudentSettings() {
               <nav className="bg-white rounded-2xl shadow-sm border border-gray-100 p-2">
                 <div className="flex space-x-2">
                   {[
-                    { id: 'practice', label: 'Practice Settings', icon: AdjustmentsHorizontalIcon },
-                    { id: 'progress', label: 'Progress & Analytics', icon: DocumentChartBarIcon },
-                    { id: 'account', label: 'Account Settings', icon: ShieldCheckIcon }
+                    {
+                      id: 'practice',
+                      label: 'Practice Settings',
+                      icon: AdjustmentsHorizontalIcon,
+                    },
+                    {
+                      id: 'progress',
+                      label: 'Progress & Analytics',
+                      icon: DocumentChartBarIcon,
+                    },
+                    {
+                      id: 'account',
+                      label: 'Account Settings',
+                      icon: ShieldCheckIcon,
+                    },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -78,40 +94,49 @@ export default function StudentSettings() {
               <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                 <div className="flex items-center space-x-2 mb-6">
                   <AdjustmentsHorizontalIcon className="w-6 h-6 text-violet-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">Practice Configuration</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Practice Configuration
+                  </h3>
                 </div>
                 <PracticeSettings />
               </div>
             )}
-            
+
             {activeTab === 'progress' && (
               <div className="space-y-6">
                 <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                   <div className="flex items-center space-x-2 mb-6">
                     <DocumentChartBarIcon className="w-6 h-6 text-violet-600" />
-                    <h2 className="text-lg font-semibold text-gray-900">Practice Analytics</h2>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      Practice Analytics
+                    </h2>
                   </div>
                   <p className="text-gray-600 mb-6">
-                    Track your practice performance and identify areas for improvement.
+                    Track your practice performance and identify areas for
+                    improvement.
                   </p>
                   <PracticeProgress showDetailedStats={true} />
                 </div>
               </div>
             )}
-            
+
             {activeTab === 'account' && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
                 <div className="p-6 border-b border-gray-100">
                   <div className="flex items-center space-x-2">
                     <ShieldCheckIcon className="w-6 h-6 text-violet-600" />
-                    <h2 className="text-lg font-semibold text-gray-900">Account Information</h2>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      Account Information
+                    </h2>
                   </div>
                 </div>
-                
+
                 <div className="p-6 space-y-8">
                   {/* Profile Information */}
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-6">Profile Information</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-6">
+                      Profile Information
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700">
@@ -121,7 +146,7 @@ export default function StudentSettings() {
                           {user.profile?.full_name || 'Not set'}
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700">
                           Email
@@ -130,16 +155,18 @@ export default function StudentSettings() {
                           {user.profile?.email || user.email}
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700">
                           Grade Level
                         </label>
                         <div className="px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-600">
-                          {user.profile?.grade_level ? `Grade ${user.profile.grade_level}` : 'Not set'}
+                          {user.profile?.grade_level
+                            ? `Grade ${user.profile.grade_level}`
+                            : 'Not set'}
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700">
                           Target Score
@@ -153,19 +180,25 @@ export default function StudentSettings() {
 
                   {/* Account Actions */}
                   <div className="pt-6 border-t border-gray-200">
-                    <h3 className="text-lg font-medium text-gray-900 mb-6">Account Actions</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-6">
+                      Account Actions
+                    </h3>
                     <div className="space-y-4">
                       <p className="text-sm text-gray-600 bg-blue-50 p-4 rounded-xl border border-blue-200">
-                        To update your profile information, please contact your administrator.
+                        To update your profile information, please contact your
+                        administrator.
                       </p>
-                      
+
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <button
                           onClick={() => {
                             // Clear all local storage practice data
                             const keys = Object.keys(localStorage)
-                            keys.forEach(key => {
-                              if (key.startsWith('practice_') || key.includes(user.id || '')) {
+                            keys.forEach((key) => {
+                              if (
+                                key.startsWith('practice_') ||
+                                key.includes(user.id || '')
+                              ) {
                                 localStorage.removeItem(key)
                               }
                             })
@@ -175,11 +208,17 @@ export default function StudentSettings() {
                         >
                           Clear Practice Data
                         </button>
-                        
+
                         <button
                           onClick={() => {
-                            if (confirm('Are you sure you want to reset all your practice settings to defaults?')) {
-                              localStorage.removeItem(`practice_preferences_${user.id}`)
+                            if (
+                              confirm(
+                                'Are you sure you want to reset all your practice settings to defaults?'
+                              )
+                            ) {
+                              localStorage.removeItem(
+                                `practice_preferences_${user.id}`
+                              )
                               window.location.reload()
                             }
                           }}
@@ -193,9 +232,12 @@ export default function StudentSettings() {
 
                   {/* Data Export */}
                   <div className="pt-6 border-t border-gray-200">
-                    <h3 className="text-lg font-medium text-gray-900 mb-6">Data Export</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-6">
+                      Data Export
+                    </h3>
                     <p className="text-sm text-gray-600 mb-4">
-                      Export your practice data and progress for external analysis.
+                      Export your practice data and progress for external
+                      analysis.
                     </p>
                     <button
                       onClick={() => {
@@ -218,9 +260,11 @@ export default function StudentSettings() {
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <div className="flex items-center space-x-2 mb-4">
                 <CogIcon className="w-5 h-5 text-violet-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Quick Settings</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Quick Settings
+                </h3>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-700">Sound Effects</span>
@@ -241,19 +285,27 @@ export default function StudentSettings() {
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <div className="flex items-center space-x-2 mb-4">
                 <UserIcon className="w-5 h-5 text-violet-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Account Summary</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Account Summary
+                </h3>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl">
-                  <span className="text-sm font-medium text-gray-900">Member Since</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    Member Since
+                  </span>
                   <span className="text-sm font-semibold text-violet-600">
                     {new Date(user.profile?.created_at || '').getFullYear()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
-                  <span className="text-sm font-medium text-gray-900">Account Type</span>
-                  <span className="text-sm font-semibold text-green-600">Student</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    Account Type
+                  </span>
+                  <span className="text-sm font-semibold text-green-600">
+                    Student
+                  </span>
                 </div>
               </div>
             </div>
@@ -266,7 +318,8 @@ export default function StudentSettings() {
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Need Help?</h3>
                 <p className="text-blue-100 text-sm mb-4">
-                  Contact our support team for assistance with your account or practice sessions.
+                  Contact our support team for assistance with your account or
+                  practice sessions.
                 </p>
                 <button className="bg-white text-blue-600 font-semibold py-2 px-6 rounded-lg hover:bg-blue-50 transition-colors">
                   Contact Support

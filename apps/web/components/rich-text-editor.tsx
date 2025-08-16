@@ -1,7 +1,22 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Bold, Italic, Underline, Search, Replace, Superscript, Subscript, Undo, Redo, AlignCenter, Table, AlignLeft, AlignRight, Image } from 'lucide-react'
+import {
+  Bold,
+  Italic,
+  Underline,
+  Search,
+  Replace,
+  Superscript,
+  Subscript,
+  Undo,
+  Redo,
+  AlignCenter,
+  Table,
+  AlignLeft,
+  AlignRight,
+  Image,
+} from 'lucide-react'
 import { InlineMath, BlockMath } from 'react-katex'
 import { ImageUpload } from './image-upload'
 
@@ -19,12 +34,12 @@ interface RichTextEditorProps {
 export function RichTextEditor({
   value,
   onChange,
-  placeholder = "Enter text...",
+  placeholder = 'Enter text...',
   rows = 6,
-  className = "",
+  className = '',
   showPreview = false,
   compact = false,
-  tableData
+  tableData,
 }: RichTextEditorProps) {
   const [selectedText, setSelectedText] = useState('')
   const [showFindReplace, setShowFindReplace] = useState(false)
@@ -39,8 +54,11 @@ export function RichTextEditor({
   const [tableRows, setTableRows] = useState(2)
   const [tableCols, setTableCols] = useState(2)
   const [showVisualTableEditor, setShowVisualTableEditor] = useState(false)
-  const [editableTableData, setEditableTableData] = useState<{headers: string[], rows: string[][]} | null>(null)
-  
+  const [editableTableData, setEditableTableData] = useState<{
+    headers: string[]
+    rows: string[][]
+  } | null>(null)
+
   // Undo/Redo functionality
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(0)
@@ -76,7 +94,8 @@ export function RichTextEditor({
 
   useEffect(() => {
     if (findText) {
-      const matches = value.toLowerCase().split(findText.toLowerCase()).length - 1
+      const matches =
+        value.toLowerCase().split(findText.toLowerCase()).length - 1
       setTotalMatches(matches)
       setCurrentMatch(matches > 0 ? 1 : 0)
     } else {
@@ -90,7 +109,7 @@ export function RichTextEditor({
     if (tableData && tableData.headers && tableData.rows) {
       setEditableTableData({
         headers: [...tableData.headers],
-        rows: tableData.rows.map((row: string[]) => [...row])
+        rows: tableData.rows.map((row: string[]) => [...row]),
       })
     } else {
       setEditableTableData(null)
@@ -120,7 +139,7 @@ export function RichTextEditor({
       // Remove any history after current index (if we were in the middle of history)
       const newHistory = history.slice(0, historyIndex + 1)
       newHistory.push(value)
-      
+
       // Keep history reasonable size
       if (newHistory.length > 50) {
         newHistory.shift()
@@ -128,18 +147,17 @@ export function RichTextEditor({
       } else {
         setHistoryIndex(newHistory.length - 1)
       }
-      
+
       setHistory(newHistory)
       setLastValue(value)
     }
   }, [value])
 
-
   const handleUndo = useCallback(() => {
     if (historyIndex > 0 && history.length > 0) {
       const newIndex = historyIndex - 1
       const undoValue = history[newIndex]
-      
+
       setIsUndoRedo(true)
       setHistoryIndex(newIndex)
       onChange(undoValue)
@@ -150,7 +168,7 @@ export function RichTextEditor({
     if (historyIndex < history.length - 1) {
       const newIndex = historyIndex + 1
       const redoValue = history[newIndex]
-      
+
       setIsUndoRedo(true)
       setHistoryIndex(newIndex)
       onChange(redoValue)
@@ -164,7 +182,10 @@ export function RichTextEditor({
         if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
           e.preventDefault()
           handleUndo()
-        } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        } else if (
+          (e.ctrlKey || e.metaKey) &&
+          (e.key === 'y' || (e.key === 'z' && e.shiftKey))
+        ) {
           e.preventDefault()
           handleRedo()
         }
@@ -190,8 +211,13 @@ export function RichTextEditor({
     const start = textareaRef.current.selectionStart
     const end = textareaRef.current.selectionEnd
     const selectedText = value.substring(start, end)
-    
-    const newText = value.substring(0, start) + prefix + selectedText + suffix + value.substring(end)
+
+    const newText =
+      value.substring(0, start) +
+      prefix +
+      selectedText +
+      suffix +
+      value.substring(end)
     onChange(newText)
 
     // Restore cursor position
@@ -210,7 +236,7 @@ export function RichTextEditor({
 
     const start = textareaRef.current.selectionStart
     const end = textareaRef.current.selectionEnd
-    
+
     const mathText = `$${latexExpression}$`
     const newText = value.substring(0, start) + mathText + value.substring(end)
     onChange(newText)
@@ -240,16 +266,25 @@ export function RichTextEditor({
 
     const start = textareaRef.current.selectionStart
     const end = textareaRef.current.selectionEnd
-    
+
     // Create table in markdown-like syntax that can be parsed
-    const headers = Array(cols).fill('Header').map((h, i) => `${h} ${i + 1}`).join(' | ')
+    const headers = Array(cols)
+      .fill('Header')
+      .map((h, i) => `${h} ${i + 1}`)
+      .join(' | ')
     const separator = Array(cols).fill('---').join(' | ')
-    const tableRows = Array(rows).fill(null).map((_, rowIndex) => 
-      Array(cols).fill('Cell').map((c, colIndex) => `${c} ${rowIndex + 1}-${colIndex + 1}`).join(' | ')
-    ).join('\n')
-    
+    const tableRows = Array(rows)
+      .fill(null)
+      .map((_, rowIndex) =>
+        Array(cols)
+          .fill('Cell')
+          .map((c, colIndex) => `${c} ${rowIndex + 1}-${colIndex + 1}`)
+          .join(' | ')
+      )
+      .join('\n')
+
     const tableText = `\n{{table}}\n${headers}\n${separator}\n${tableRows}\n{{/table}}\n`
-    
+
     const newText = value.substring(0, start) + tableText + value.substring(end)
     onChange(newText)
 
@@ -265,13 +300,16 @@ export function RichTextEditor({
   }
 
   // Update table in text
-  const updateTableInText = (tableData: {headers: string[], rows: string[][]}) => {
+  const updateTableInText = (tableData: {
+    headers: string[]
+    rows: string[][]
+  }) => {
     const headers = tableData.headers.join(' | ')
     const separator = Array(tableData.headers.length).fill('---').join(' | ')
-    const rows = tableData.rows.map(row => row.join(' | ')).join('\n')
-    
+    const rows = tableData.rows.map((row) => row.join(' | ')).join('\n')
+
     const newTableText = `{{table}}\n${headers}\n${separator}\n${rows}\n{{/table}}`
-    
+
     // Replace existing table in text
     const tableRegex = /{{table}}[\s\S]*?{{\/table}}/
     const newText = value.replace(tableRegex, newTableText)
@@ -284,7 +322,7 @@ export function RichTextEditor({
       const newRow = Array(editableTableData.headers.length).fill('')
       const updatedData = {
         ...editableTableData,
-        rows: [...editableTableData.rows, newRow]
+        rows: [...editableTableData.rows, newRow],
       }
       setEditableTableData(updatedData)
       updateTableInText(updatedData)
@@ -295,7 +333,7 @@ export function RichTextEditor({
     if (editableTableData && editableTableData.rows.length > 1) {
       const updatedData = {
         ...editableTableData,
-        rows: editableTableData.rows.filter((_, i) => i !== rowIndex)
+        rows: editableTableData.rows.filter((_, i) => i !== rowIndex),
       }
       setEditableTableData(updatedData)
       updateTableInText(updatedData)
@@ -306,7 +344,7 @@ export function RichTextEditor({
     if (editableTableData) {
       const updatedData = {
         headers: [...editableTableData.headers, 'New Header'],
-        rows: editableTableData.rows.map(row => [...row, ''])
+        rows: editableTableData.rows.map((row) => [...row, '']),
       }
       setEditableTableData(updatedData)
       updateTableInText(updatedData)
@@ -317,14 +355,21 @@ export function RichTextEditor({
     if (editableTableData && editableTableData.headers.length > 1) {
       const updatedData = {
         headers: editableTableData.headers.filter((_, i) => i !== colIndex),
-        rows: editableTableData.rows.map(row => row.filter((_, i) => i !== colIndex))
+        rows: editableTableData.rows.map((row) =>
+          row.filter((_, i) => i !== colIndex)
+        ),
       }
       setEditableTableData(updatedData)
       updateTableInText(updatedData)
     }
   }
 
-  const updateTableCell = (rowIndex: number, colIndex: number, newValue: string, isHeader = false) => {
+  const updateTableCell = (
+    rowIndex: number,
+    colIndex: number,
+    newValue: string,
+    isHeader = false
+  ) => {
     if (editableTableData) {
       const updatedData = { ...editableTableData }
       if (isHeader) {
@@ -371,9 +416,10 @@ export function RichTextEditor({
     const selectedText = value.substring(start, end)
 
     if (selectedText.toLowerCase() === findText.toLowerCase()) {
-      const newText = value.substring(0, start) + replaceText + value.substring(end)
+      const newText =
+        value.substring(0, start) + replaceText + value.substring(end)
       onChange(newText)
-      
+
       // Move to next occurrence
       setTimeout(() => handleFind('next'), 0)
     }
@@ -381,19 +427,22 @@ export function RichTextEditor({
 
   const handleReplaceAll = () => {
     if (!findText) return
-    
-    const regex = new RegExp(findText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi')
+
+    const regex = new RegExp(
+      findText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+      'gi'
+    )
     const newText = value.replace(regex, replaceText)
     onChange(newText)
     setShowFindReplace(false)
   }
 
   const renderPreview = (text: string, tableData?: any) => {
-    if (!text) return text;
-    
-    const parts = [];
-    let lastIndex = 0;
-    
+    if (!text) return text
+
+    const parts = []
+    let lastIndex = 0
+
     // If we have table_data, render it first
     if (tableData && tableData.headers && tableData.rows) {
       parts.push(
@@ -402,7 +451,10 @@ export function RichTextEditor({
             <thead>
               <tr className="bg-gray-50">
                 {tableData.headers.map((header: string, i: number) => (
-                  <th key={i} className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900">
+                  <th
+                    key={i}
+                    className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900"
+                  >
                     {header}
                   </th>
                 ))}
@@ -412,7 +464,10 @@ export function RichTextEditor({
               {tableData.rows.map((row: string[], i: number) => (
                 <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   {row.map((cell: string, j: number) => (
-                    <td key={j} className="border border-gray-300 px-4 py-2 text-gray-900">
+                    <td
+                      key={j}
+                      className="border border-gray-300 px-4 py-2 text-gray-900"
+                    >
                       {cell}
                     </td>
                   ))}
@@ -421,44 +476,48 @@ export function RichTextEditor({
             </tbody>
           </table>
         </div>
-      );
+      )
     }
-    
+
     // Combined regex for tables, positioned images, regular images, math expressions, formatting, line breaks, dashes, long blanks, and center alignment
-    const combinedRegex = /({{table}}[\s\S]*?{{\/table}}|{{img-(left|center|right)}}!\[(.*?)\]\((.*?)\){{\/img-(left|center|right)}}|!\[(.*?)\]\((.*?)\)|_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|::(.*?)::|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g;
-    let match: RegExpExecArray | null;
-    
+    const combinedRegex =
+      /({{table}}[\s\S]*?{{\/table}}|{{img-(left|center|right)}}!\[(.*?)\]\((.*?)\){{\/img-(left|center|right)}}|!\[(.*?)\]\((.*?)\)|_{5,}|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|::(.*?)::|\*\*(.*?)\*\*|\*(.*?)\*|__([^_]*?)__|_([^_]*?)_|\^\^(.*?)\^\^|\~\~(.*?)\~\~|---|--|\\n|\n)/g
+    let match: RegExpExecArray | null
+
     while ((match = combinedRegex.exec(text)) !== null) {
       // Add text before current match
       if (match.index > lastIndex) {
-        const textBefore = text.substring(lastIndex, match.index);
+        const textBefore = text.substring(lastIndex, match.index)
         if (textBefore) {
-          parts.push(
-            <span key={`text-${lastIndex}`}>
-              {textBefore}
-            </span>
-          );
+          parts.push(<span key={`text-${lastIndex}`}>{textBefore}</span>)
         }
       }
-      
-      const matchedContent = match[1];
-      
+
+      const matchedContent = match[1]
+
       // Handle tables
       if (matchedContent.startsWith('{{table}}')) {
-        const tableContent = matchedContent.replace(/{{table}}|{{\/table}}/g, '').trim();
-        const lines = tableContent.split('\n').filter(line => line.trim());
-        
+        const tableContent = matchedContent
+          .replace(/{{table}}|{{\/table}}/g, '')
+          .trim()
+        const lines = tableContent.split('\n').filter((line) => line.trim())
+
         if (lines.length >= 3) {
-          const headers = lines[0].split('|').map(h => h.trim());
-          const rows = lines.slice(2).map(line => line.split('|').map(cell => cell.trim()));
-          
+          const headers = lines[0].split('|').map((h) => h.trim())
+          const rows = lines
+            .slice(2)
+            .map((line) => line.split('|').map((cell) => cell.trim()))
+
           parts.push(
             <div key={`table-${match.index}`} className="my-4 overflow-x-auto">
               <table className="w-full border-collapse border border-gray-300 bg-white">
                 <thead>
                   <tr className="bg-gray-50">
                     {headers.map((header, i) => (
-                      <th key={i} className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900">
+                      <th
+                        key={i}
+                        className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900"
+                      >
                         {header}
                       </th>
                     ))}
@@ -466,9 +525,15 @@ export function RichTextEditor({
                 </thead>
                 <tbody>
                   {rows.map((row, i) => (
-                    <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <tr
+                      key={i}
+                      className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                    >
                       {row.map((cell, j) => (
-                        <td key={j} className="border border-gray-300 px-4 py-2 text-gray-900">
+                        <td
+                          key={j}
+                          className="border border-gray-300 px-4 py-2 text-gray-900"
+                        >
                           {cell}
                         </td>
                       ))}
@@ -477,68 +542,75 @@ export function RichTextEditor({
                 </tbody>
               </table>
             </div>
-          );
+          )
         }
       }
       // Handle positioned images
       else if (match[2] && match[3] && match[4]) {
-        const position = match[2];
-        const alt = match[3];
-        const url = match[4];
-        
-        const alignmentClass = position === 'left' ? 'text-left' : 
-                              position === 'right' ? 'text-right' : 'text-center';
-        
+        const position = match[2]
+        const alt = match[3]
+        const url = match[4]
+
+        const alignmentClass =
+          position === 'left'
+            ? 'text-left'
+            : position === 'right'
+              ? 'text-right'
+              : 'text-center'
+
         parts.push(
-          <div key={`positioned-image-${match.index}`} className={`my-4 ${alignmentClass}`}>
-            <img 
-              src={url} 
+          <div
+            key={`positioned-image-${match.index}`}
+            className={`my-4 ${alignmentClass}`}
+          >
+            <img
+              src={url}
               alt={alt}
               className="max-w-full h-auto border border-gray-200 rounded inline-block"
               onError={(e) => {
-                console.error('Image failed to load:', url);
-                e.currentTarget.style.display = 'none';
+                console.error('Image failed to load:', url)
+                e.currentTarget.style.display = 'none'
               }}
             />
           </div>
-        );
+        )
       }
       // Handle regular markdown images ![alt](url)
       else if (match[6] !== undefined && match[7] !== undefined) {
-        const imageUrl = match[7];
-        const imageAlt = match[6];
+        const imageUrl = match[7]
+        const imageAlt = match[6]
         parts.push(
           <div key={`image-${match.index}`} className="my-4 text-center">
-            <img 
-              src={imageUrl} 
+            <img
+              src={imageUrl}
               alt={imageAlt}
               className="max-w-full h-auto border border-gray-200 rounded inline-block"
               onError={(e) => {
-                console.error('Image failed to load:', imageUrl);
-                e.currentTarget.style.display = 'none';
+                console.error('Image failed to load:', imageUrl)
+                e.currentTarget.style.display = 'none'
               }}
             />
           </div>
-        );
+        )
       }
       // Handle long blanks (5 or more underscores) - MUST BE FIRST
       else if (matchedContent.match(/_{5,}/)) {
-        const blankLength = matchedContent.length;
+        const blankLength = matchedContent.length
         parts.push(
-          <span 
-            key={`blank-${match.index}`} 
-            style={{ 
+          <span
+            key={`blank-${match.index}`}
+            style={{
               display: 'inline-block',
               width: `${Math.max(blankLength * 0.8, 3)}em`,
               minWidth: '3em',
               borderBottom: '1px solid #374151',
               height: '1.2em',
-              marginBottom: '1px'
+              marginBottom: '1px',
             }}
           >
             &nbsp;
           </span>
-        );
+        )
       }
       // Handle center alignment ::text::
       else if (match[8] !== undefined) {
@@ -546,32 +618,35 @@ export function RichTextEditor({
           <div key={`center-${match.index}`} className="text-center my-2">
             {renderPreview(match[8])}
           </div>
-        );
+        )
       }
       // Handle math expressions
       else if (matchedContent.startsWith('$')) {
-        const isBlock = matchedContent.startsWith('$$');
-        const cleanMath = matchedContent.replace(/^\$+|\$+$/g, '').trim();
-        
+        const isBlock = matchedContent.startsWith('$$')
+        const cleanMath = matchedContent.replace(/^\$+|\$+$/g, '').trim()
+
         try {
           if (isBlock) {
             parts.push(
               <div key={`math-${match.index}`} className="my-2">
                 <BlockMath math={cleanMath} />
               </div>
-            );
+            )
           } else {
             parts.push(
               <InlineMath key={`math-${match.index}`} math={cleanMath} />
-            );
+            )
           }
         } catch (error) {
-          console.error('KaTeX render error:', error);
+          console.error('KaTeX render error:', error)
           parts.push(
-            <span key={`fallback-${match.index}`} className="bg-red-100 px-1 rounded text-red-800">
+            <span
+              key={`fallback-${match.index}`}
+              className="bg-red-100 px-1 rounded text-red-800"
+            >
               ${cleanMath}$
             </span>
-          );
+          )
         }
       }
       // Handle bold formatting **text**
@@ -580,7 +655,7 @@ export function RichTextEditor({
           <strong key={`bold-${match.index}`} className="font-bold">
             {match[9]}
           </strong>
-        );
+        )
       }
       // Handle italic formatting *text*
       else if (match[10] !== undefined) {
@@ -588,7 +663,7 @@ export function RichTextEditor({
           <em key={`italic-${match.index}`} className="italic">
             {match[10]}
           </em>
-        );
+        )
       }
       // Handle underline formatting __text__
       else if (match[11] !== undefined) {
@@ -596,7 +671,7 @@ export function RichTextEditor({
           <span key={`underline-${match.index}`} className="underline">
             {match[11]}
           </span>
-        );
+        )
       }
       // Handle italic formatting _text_
       else if (match[12] !== undefined) {
@@ -604,7 +679,7 @@ export function RichTextEditor({
           <em key={`italic2-${match.index}`} className="italic">
             {match[12]}
           </em>
-        );
+        )
       }
       // Handle superscript formatting ^^text^^
       else if (match[13] !== undefined) {
@@ -612,7 +687,7 @@ export function RichTextEditor({
           <sup key={`superscript-${match.index}`} className="text-sm">
             {match[13]}
           </sup>
-        );
+        )
       }
       // Handle subscript formatting ~~text~~
       else if (match[14] !== undefined) {
@@ -620,7 +695,7 @@ export function RichTextEditor({
           <sub key={`subscript-${match.index}`} className="text-sm">
             {match[14]}
           </sub>
-        );
+        )
       }
       // Handle dashes --- and --
       else if (matchedContent === '---' || matchedContent === '--') {
@@ -628,42 +703,38 @@ export function RichTextEditor({
           <span key={`dash-${match.index}`} className="mx-1">
             —
           </span>
-        );
+        )
       }
       // Handle line breaks \n and literal \n
       else if (matchedContent === '\n' || matchedContent === '\\n') {
-        parts.push(
-          <br key={`br-${match.index}`} />
-        );
+        parts.push(<br key={`br-${match.index}`} />)
       }
-      
-      lastIndex = match.index + match[0].length;
+
+      lastIndex = match.index + match[0].length
     }
-    
+
     // Add remaining text
     if (lastIndex < text.length) {
-      const remainingText = text.substring(lastIndex);
+      const remainingText = text.substring(lastIndex)
       if (remainingText) {
-        parts.push(
-          <span key={`text-${lastIndex}`}>
-            {remainingText}
-          </span>
-        );
+        parts.push(<span key={`text-${lastIndex}`}>{remainingText}</span>)
       }
     }
-    
+
     // If no formatting was found, return the original text
     if (parts.length === 0) {
-      return text;
+      return text
     }
-    
-    return <>{parts}</>;
-  };
+
+    return <>{parts}</>
+  }
 
   return (
     <div className={`space-y-2 ${className}`}>
       {/* Formatting Toolbar */}
-      <div className={`flex flex-wrap items-center gap-2 ${compact ? 'p-2' : 'p-3'} bg-gray-50 border border-gray-300 rounded-t-md`}>
+      <div
+        className={`flex flex-wrap items-center gap-2 ${compact ? 'p-2' : 'p-3'} bg-gray-50 border border-gray-300 rounded-t-md`}
+      >
         {/* Undo/Redo */}
         <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
           <button
@@ -963,7 +1034,6 @@ export function RichTextEditor({
         </div>
       )}
 
-
       {/* Editor/Preview Area */}
       {previewMode && showPreview ? (
         <div className="p-3 border border-gray-300 rounded-b-md bg-white min-h-[150px]">
@@ -983,125 +1053,159 @@ export function RichTextEditor({
             className={`w-full p-3 border border-gray-300 rounded-b-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${className}`}
           />
           {/* Visual Table Editor */}
-          {editableTableData && editableTableData.headers && editableTableData.rows && (
-            <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-sm font-medium text-gray-700">Table Editor:</div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowVisualTableEditor(!showVisualTableEditor)}
-                    className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                  >
-                    {showVisualTableEditor ? 'Hide Editor' : 'Edit Table'}
-                  </button>
-                  {showVisualTableEditor && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={addTableRow}
-                        className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                      >
-                        + Row
-                      </button>
-                      <button
-                        type="button"
-                        onClick={addTableColumn}
-                        className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                      >
-                        + Col
-                      </button>
-                    </>
-                  )}
+          {editableTableData &&
+            editableTableData.headers &&
+            editableTableData.rows && (
+              <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-sm font-medium text-gray-700">
+                    Table Editor:
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowVisualTableEditor(!showVisualTableEditor)
+                      }
+                      className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                    >
+                      {showVisualTableEditor ? 'Hide Editor' : 'Edit Table'}
+                    </button>
+                    {showVisualTableEditor && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={addTableRow}
+                          className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                        >
+                          + Row
+                        </button>
+                        <button
+                          type="button"
+                          onClick={addTableColumn}
+                          className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                        >
+                          + Col
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-              
-              <div className="overflow-x-auto">
-                {showVisualTableEditor ? (
-                  <table className="w-full border-collapse border border-gray-300 bg-white">
-                    <thead>
-                      <tr className="bg-blue-50">
-                        {editableTableData.headers.map((header, i) => (
-                          <th key={i} className="border border-gray-300 p-1 relative group">
-                            <input
-                              type="text"
-                              value={header}
-                              onChange={(e) => updateTableCell(-1, i, e.target.value, true)}
-                              className="w-full px-2 py-1 text-sm font-semibold text-gray-900 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
-                              placeholder={`Header ${i + 1}`}
-                            />
-                            {editableTableData.headers.length > 1 && (
-                              <button
-                                type="button"
-                                onClick={() => removeTableColumn(i)}
-                                className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                                title="Remove column"
-                              >
-                                ×
-                              </button>
-                            )}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {editableTableData.rows.map((row, rowIndex) => (
-                        <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                          {row.map((cell, colIndex) => (
-                            <td key={colIndex} className="border border-gray-300 p-1 relative group">
+
+                <div className="overflow-x-auto">
+                  {showVisualTableEditor ? (
+                    <table className="w-full border-collapse border border-gray-300 bg-white">
+                      <thead>
+                        <tr className="bg-blue-50">
+                          {editableTableData.headers.map((header, i) => (
+                            <th
+                              key={i}
+                              className="border border-gray-300 p-1 relative group"
+                            >
                               <input
                                 type="text"
-                                value={cell}
-                                onChange={(e) => updateTableCell(rowIndex, colIndex, e.target.value)}
-                                className="w-full px-2 py-1 text-sm text-gray-900 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
-                                placeholder={`Cell ${rowIndex + 1}-${colIndex + 1}`}
+                                value={header}
+                                onChange={(e) =>
+                                  updateTableCell(-1, i, e.target.value, true)
+                                }
+                                className="w-full px-2 py-1 text-sm font-semibold text-gray-900 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
+                                placeholder={`Header ${i + 1}`}
                               />
-                              {colIndex === 0 && editableTableData.rows.length > 1 && (
+                              {editableTableData.headers.length > 1 && (
                                 <button
                                   type="button"
-                                  onClick={() => removeTableRow(rowIndex)}
-                                  className="absolute -top-1 -left-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                                  title="Remove row"
+                                  onClick={() => removeTableColumn(i)}
+                                  className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                  title="Remove column"
                                 >
                                   ×
                                 </button>
                               )}
-                            </td>
+                            </th>
                           ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <table className="w-full border-collapse border border-gray-300 bg-white">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        {editableTableData.headers.map((header, i) => (
-                          <th key={i} className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900">
-                            {header}
-                          </th>
+                      </thead>
+                      <tbody>
+                        {editableTableData.rows.map((row, rowIndex) => (
+                          <tr
+                            key={rowIndex}
+                            className={
+                              rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                            }
+                          >
+                            {row.map((cell, colIndex) => (
+                              <td
+                                key={colIndex}
+                                className="border border-gray-300 p-1 relative group"
+                              >
+                                <input
+                                  type="text"
+                                  value={cell}
+                                  onChange={(e) =>
+                                    updateTableCell(
+                                      rowIndex,
+                                      colIndex,
+                                      e.target.value
+                                    )
+                                  }
+                                  className="w-full px-2 py-1 text-sm text-gray-900 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
+                                  placeholder={`Cell ${rowIndex + 1}-${colIndex + 1}`}
+                                />
+                                {colIndex === 0 &&
+                                  editableTableData.rows.length > 1 && (
+                                    <button
+                                      type="button"
+                                      onClick={() => removeTableRow(rowIndex)}
+                                      className="absolute -top-1 -left-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                      title="Remove row"
+                                    >
+                                      ×
+                                    </button>
+                                  )}
+                              </td>
+                            ))}
+                          </tr>
                         ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {editableTableData.rows.map((row, i) => (
-                        <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                          {row.map((cell, j) => (
-                            <td key={j} className="border border-gray-300 px-4 py-2 text-gray-900">
-                              {cell}
-                            </td>
+                      </tbody>
+                    </table>
+                  ) : (
+                    <table className="w-full border-collapse border border-gray-300 bg-white">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          {editableTableData.headers.map((header, i) => (
+                            <th
+                              key={i}
+                              className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900"
+                            >
+                              {header}
+                            </th>
                           ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
+                      </thead>
+                      <tbody>
+                        {editableTableData.rows.map((row, i) => (
+                          <tr
+                            key={i}
+                            className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                          >
+                            {row.map((cell, j) => (
+                              <td
+                                key={j}
+                                className="border border-gray-300 px-4 py-2 text-gray-900"
+                              >
+                                {cell}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       )}
-
     </div>
   )
 }

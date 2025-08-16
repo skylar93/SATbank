@@ -4,7 +4,10 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../contexts/auth-context'
-import { AnalyticsService, type ComprehensiveResults } from '../../../../lib/analytics-service'
+import {
+  AnalyticsService,
+  type ComprehensiveResults,
+} from '../../../../lib/analytics-service'
 import { ExportService } from '../../../../lib/export-service'
 import { createClient } from '@supabase/supabase-js'
 
@@ -45,11 +48,14 @@ export default function StudentDetailPage() {
   const { user } = useAuth()
   const [student, setStudent] = useState<StudentProfile | null>(null)
   const [attempts, setAttempts] = useState<TestAttemptSummary[]>([])
-  const [selectedAttempt, setSelectedAttempt] = useState<ComprehensiveResults | null>(null)
+  const [selectedAttempt, setSelectedAttempt] =
+    useState<ComprehensiveResults | null>(null)
   const [loading, setLoading] = useState(true)
   const [detailsLoading, setDetailsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'overview' | 'attempts' | 'progress'>('overview')
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'attempts' | 'progress'
+  >('overview')
 
   const studentId = params.studentId as string
 
@@ -77,19 +83,20 @@ export default function StudentDetailPage() {
       // Load all test attempts with exam info
       const { data: attemptsData, error: attemptsError } = await supabase
         .from('test_attempts')
-        .select(`
+        .select(
+          `
           *,
           exam:exams (
             id,
             title
           )
-        `)
+        `
+        )
         .eq('user_id', studentId)
         .order('created_at', { ascending: false })
 
       if (attemptsError) throw attemptsError
       setAttempts(attemptsData || [])
-
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -111,10 +118,10 @@ export default function StudentDetailPage() {
 
   const exportStudentData = async () => {
     if (!student) return
-    
+
     try {
       const csvContent = ExportService.exportAdminDataToCSV(
-        attempts.map(attempt => ({
+        attempts.map((attempt) => ({
           student_name: student.full_name,
           email: student.email,
           grade_level: student.grade_level,
@@ -122,13 +129,13 @@ export default function StudentDetailPage() {
           ...attempt,
           user_profiles: {
             full_name: student.full_name,
-            email: student.email
-          }
+            email: student.email,
+          },
         }))
       )
-      
+
       ExportService.downloadCSV(
-        csvContent, 
+        csvContent,
         `student-${student.full_name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.csv`
       )
     } catch (err: any) {
@@ -142,16 +149,24 @@ export default function StudentDetailPage() {
   }
 
   const calculateStats = () => {
-    const completedAttempts = attempts.filter(a => a.status === 'completed')
-    const scores = completedAttempts.map(a => getDisplayScore(a)).filter(Boolean)
-    
+    const completedAttempts = attempts.filter((a) => a.status === 'completed')
+    const scores = completedAttempts
+      .map((a) => getDisplayScore(a))
+      .filter(Boolean)
+
     return {
       totalAttempts: attempts.length,
       completedAttempts: completedAttempts.length,
-      averageScore: scores.length > 0 ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length) : 0,
+      averageScore:
+        scores.length > 0
+          ? Math.round(
+              scores.reduce((sum, score) => sum + score, 0) / scores.length
+            )
+          : 0,
       bestScore: scores.length > 0 ? Math.max(...scores) : 0,
       latestScore: scores.length > 0 ? scores[0] : 0,
-      improvement: scores.length >= 2 ? scores[0] - scores[scores.length - 1] : 0
+      improvement:
+        scores.length >= 2 ? scores[0] - scores[scores.length - 1] : 0,
     }
   }
 
@@ -161,7 +176,7 @@ export default function StudentDetailPage() {
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
@@ -174,10 +189,14 @@ export default function StudentDetailPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-purple-100 text-purple-800'
-      case 'in_progress': return 'bg-blue-100 text-blue-800'
-      case 'expired': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'completed':
+        return 'bg-purple-100 text-purple-800'
+      case 'in_progress':
+        return 'bg-blue-100 text-blue-800'
+      case 'expired':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
@@ -199,7 +218,9 @@ export default function StudentDetailPage() {
       <div className="h-full bg-gray-50">
         <div className="flex items-center justify-center h-full">
           <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center max-w-md">
-            <h3 className="text-lg font-medium text-red-900 mb-2">Error Loading Student</h3>
+            <h3 className="text-lg font-medium text-red-900 mb-2">
+              Error Loading Student
+            </h3>
             <p className="text-red-700 mb-4">{error || 'Student not found'}</p>
             <Link
               href="/admin/students"
@@ -224,7 +245,9 @@ export default function StudentDetailPage() {
             <h1 className="text-2xl font-bold text-gray-900">
               {student.full_name}
             </h1>
-            <p className="text-gray-600">Student performance overview and test history</p>
+            <p className="text-gray-600">
+              Student performance overview and test history
+            </p>
           </div>
           <div className="flex items-center space-x-4">
             <button
@@ -246,7 +269,7 @@ export default function StudentDetailPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Separator line */}
         <div className="border-b border-gray-200"></div>
       </div>
@@ -269,32 +292,45 @@ export default function StudentDetailPage() {
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-5">
-            <div className="text-2xl font-bold text-gray-700 mb-1">{stats.totalAttempts}</div>
+            <div className="text-2xl font-bold text-gray-700 mb-1">
+              {stats.totalAttempts}
+            </div>
             <div className="text-sm text-gray-500">Total Attempts</div>
           </div>
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-5">
-            <div className="text-2xl font-bold text-purple-600 mb-1">{stats.completedAttempts}</div>
+            <div className="text-2xl font-bold text-purple-600 mb-1">
+              {stats.completedAttempts}
+            </div>
             <div className="text-sm text-gray-500">Completed</div>
           </div>
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-5">
-            <div className={`text-2xl font-bold mb-1 ${getScoreColor(stats.latestScore)}`}>
+            <div
+              className={`text-2xl font-bold mb-1 ${getScoreColor(stats.latestScore)}`}
+            >
               {stats.latestScore || 'N/A'}
             </div>
             <div className="text-sm text-gray-500">Latest Score</div>
           </div>
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-5">
-            <div className={`text-2xl font-bold mb-1 ${getScoreColor(stats.bestScore)}`}>
+            <div
+              className={`text-2xl font-bold mb-1 ${getScoreColor(stats.bestScore)}`}
+            >
               {stats.bestScore || 'N/A'}
             </div>
             <div className="text-sm text-gray-500">Best Score</div>
           </div>
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-5">
-            <div className="text-2xl font-bold text-gray-700 mb-1">{stats.averageScore || 'N/A'}</div>
+            <div className="text-2xl font-bold text-gray-700 mb-1">
+              {stats.averageScore || 'N/A'}
+            </div>
             <div className="text-sm text-gray-500">Average Score</div>
           </div>
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-5">
-            <div className={`text-2xl font-bold mb-1 ${stats.improvement >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-              {stats.improvement > 0 ? '+' : ''}{stats.improvement || 'N/A'}
+            <div
+              className={`text-2xl font-bold mb-1 ${stats.improvement >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
+            >
+              {stats.improvement > 0 ? '+' : ''}
+              {stats.improvement || 'N/A'}
             </div>
             <div className="text-sm text-gray-500">Improvement</div>
           </div>
@@ -306,7 +342,7 @@ export default function StudentDetailPage() {
             {[
               { id: 'overview', label: 'Overview' },
               { id: 'attempts', label: 'Test Attempts' },
-              { id: 'progress', label: 'Progress Tracking' }
+              { id: 'progress', label: 'Progress Tracking' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -328,83 +364,135 @@ export default function StudentDetailPage() {
           <div className="space-y-6">
             {/* Recent Performance */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Recent Performance</h3>
-              {attempts.filter(a => a.status === 'completed').slice(0, 3).map((attempt, index) => {
-                const displayScore = getDisplayScore(attempt)
-                return (
-                  <div key={attempt.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {attempt.exam?.title || 'SAT Mock Exam'} - {formatDate(attempt.completed_at)}
+              <h3 className="text-xl font-bold text-gray-900 mb-6">
+                Recent Performance
+              </h3>
+              {attempts
+                .filter((a) => a.status === 'completed')
+                .slice(0, 3)
+                .map((attempt, index) => {
+                  const displayScore = getDisplayScore(attempt)
+                  return (
+                    <div
+                      key={attempt.id}
+                      className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0"
+                    >
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          {attempt.exam?.title || 'SAT Mock Exam'} -{' '}
+                          {formatDate(attempt.completed_at)}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          Duration:{' '}
+                          {attempt.created_at
+                            ? Math.round(
+                                (new Date(attempt.completed_at).getTime() -
+                                  new Date(attempt.created_at).getTime()) /
+                                  (1000 * 60)
+                              )
+                            : 'N/A'}{' '}
+                          minutes
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-500">
-                        Duration: {attempt.created_at ? Math.round((new Date(attempt.completed_at).getTime() - new Date(attempt.created_at).getTime()) / (1000 * 60)) : 'N/A'} minutes
+                      <div className="text-right">
+                        <div
+                          className={`text-lg font-bold ${getScoreColor(displayScore)}`}
+                        >
+                          {displayScore}
+                        </div>
+                        <button
+                          onClick={() => loadAttemptDetails(attempt.id)}
+                          className="text-sm text-purple-600 hover:text-purple-700"
+                          disabled={detailsLoading}
+                        >
+                          View Details
+                        </button>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className={`text-lg font-bold ${getScoreColor(displayScore)}`}>
-                        {displayScore}
-                      </div>
-                      <button
-                        onClick={() => loadAttemptDetails(attempt.id)}
-                        className="text-sm text-purple-600 hover:text-purple-700"
-                        disabled={detailsLoading}
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
-              {attempts.filter(a => a.status === 'completed').length === 0 && (
-                <p className="text-gray-500 text-center py-4">No completed tests yet</p>
+                  )
+                })}
+              {attempts.filter((a) => a.status === 'completed').length ===
+                0 && (
+                <p className="text-gray-500 text-center py-4">
+                  No completed tests yet
+                </p>
               )}
             </div>
 
             {/* Performance Summary */}
             {selectedAttempt && (
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Latest Test Analysis</h3>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                  Latest Test Analysis
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-3">Module Scores</h4>
+                    <h4 className="font-medium text-gray-900 mb-3">
+                      Module Scores
+                    </h4>
                     <div className="space-y-2">
-                      {Object.entries(selectedAttempt.detailedScore.rawScores).map(([module, score]) => (
+                      {Object.entries(
+                        selectedAttempt.detailedScore.rawScores
+                      ).map(([module, score]) => (
                         <div key={module} className="flex justify-between">
                           <span className="text-sm text-gray-600 capitalize">
                             {module.replace(/(\d)/g, ' $1')}:
                           </span>
                           <span className="text-sm font-medium text-gray-900">
-                            {score} ({Math.round(selectedAttempt.detailedScore.percentages[module as keyof typeof selectedAttempt.detailedScore.percentages])}%)
+                            {score} (
+                            {Math.round(
+                              selectedAttempt.detailedScore.percentages[
+                                module as keyof typeof selectedAttempt.detailedScore.percentages
+                              ]
+                            )}
+                            %)
                           </span>
                         </div>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-3">Strengths & Weaknesses</h4>
+                    <h4 className="font-medium text-gray-900 mb-3">
+                      Strengths & Weaknesses
+                    </h4>
                     <div className="space-y-3">
-                      {selectedAttempt.performanceAnalytics.strengthAreas.length > 0 && (
+                      {selectedAttempt.performanceAnalytics.strengthAreas
+                        .length > 0 && (
                         <div>
-                          <div className="text-sm text-gray-600 mb-1">Strengths:</div>
+                          <div className="text-sm text-gray-600 mb-1">
+                            Strengths:
+                          </div>
                           <div className="flex flex-wrap gap-1">
-                            {selectedAttempt.performanceAnalytics.strengthAreas.slice(0, 3).map((area, idx) => (
-                              <span key={idx} className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded text-xs">
-                                {area}
-                              </span>
-                            ))}
+                            {selectedAttempt.performanceAnalytics.strengthAreas
+                              .slice(0, 3)
+                              .map((area, idx) => (
+                                <span
+                                  key={idx}
+                                  className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded text-xs"
+                                >
+                                  {area}
+                                </span>
+                              ))}
                           </div>
                         </div>
                       )}
-                      {selectedAttempt.performanceAnalytics.weaknessAreas.length > 0 && (
+                      {selectedAttempt.performanceAnalytics.weaknessAreas
+                        .length > 0 && (
                         <div>
-                          <div className="text-sm text-gray-600 mb-1">Areas for improvement:</div>
+                          <div className="text-sm text-gray-600 mb-1">
+                            Areas for improvement:
+                          </div>
                           <div className="flex flex-wrap gap-1">
-                            {selectedAttempt.performanceAnalytics.weaknessAreas.slice(0, 3).map((area, idx) => (
-                              <span key={idx} className="bg-red-50 text-red-700 px-2 py-1 rounded text-xs">
-                                {area}
-                              </span>
-                            ))}
+                            {selectedAttempt.performanceAnalytics.weaknessAreas
+                              .slice(0, 3)
+                              .map((area, idx) => (
+                                <span
+                                  key={idx}
+                                  className="bg-red-50 text-red-700 px-2 py-1 rounded text-xs"
+                                >
+                                  {area}
+                                </span>
+                              ))}
                           </div>
                         </div>
                       )}
@@ -419,10 +507,14 @@ export default function StudentDetailPage() {
         {activeTab === 'attempts' && (
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100">
             <div className="p-6 border-b border-purple-200">
-              <h3 className="text-lg font-semibold text-slate-800">All Test Attempts</h3>
-              <p className="text-slate-600 mt-1">Complete history of student test attempts</p>
+              <h3 className="text-lg font-semibold text-slate-800">
+                All Test Attempts
+              </h3>
+              <p className="text-slate-600 mt-1">
+                Complete history of student test attempts
+              </p>
             </div>
-            
+
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -456,16 +548,22 @@ export default function StudentDetailPage() {
                           {attempt.exam?.title || 'SAT Mock Exam'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {attempt.completed_at ? formatDate(attempt.completed_at) : 'In Progress'}
+                          {attempt.completed_at
+                            ? formatDate(attempt.completed_at)
+                            : 'In Progress'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-3 py-2 text-xs font-semibold rounded-full ${getStatusColor(attempt.status)}`}>
+                          <span
+                            className={`inline-flex px-3 py-2 text-xs font-semibold rounded-full ${getStatusColor(attempt.status)}`}
+                          >
                             {attempt.status.replace('_', ' ')}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {attempt.status === 'completed' ? (
-                            <div className={`text-sm font-medium ${getScoreColor(displayScore)}`}>
+                            <div
+                              className={`text-sm font-medium ${getScoreColor(displayScore)}`}
+                            >
                               {displayScore}
                             </div>
                           ) : (
@@ -473,11 +571,16 @@ export default function StudentDetailPage() {
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {attempt.module_scores && Object.keys(attempt.module_scores).length > 0 ? (
+                          {attempt.module_scores &&
+                          Object.keys(attempt.module_scores).length > 0 ? (
                             <div className="text-xs">
-                              {Object.entries(attempt.module_scores).map(([module, score]) => (
-                                <div key={module}>{module}: {String(score)}</div>
-                              ))}
+                              {Object.entries(attempt.module_scores).map(
+                                ([module, score]) => (
+                                  <div key={module}>
+                                    {module}: {String(score)}
+                                  </div>
+                                )
+                              )}
                             </div>
                           ) : (
                             'N/A'
@@ -512,17 +615,24 @@ export default function StudentDetailPage() {
           <div className="space-y-6">
             {/* Score Progression Chart (Simplified) */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4">Score Progression</h3>
+              <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                Score Progression
+              </h3>
               <div className="space-y-4">
                 {attempts
-                  .filter(a => a.status === 'completed')
+                  .filter((a) => a.status === 'completed')
                   .reverse()
                   .map((attempt, index, array) => {
                     const displayScore = getDisplayScore(attempt)
-                    const prevDisplayScore = index > 0 ? getDisplayScore(array[index - 1]) : 0
-                    const improvement = index > 0 ? displayScore - prevDisplayScore : 0
+                    const prevDisplayScore =
+                      index > 0 ? getDisplayScore(array[index - 1]) : 0
+                    const improvement =
+                      index > 0 ? displayScore - prevDisplayScore : 0
                     return (
-                      <div key={attempt.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
+                      <div
+                        key={attempt.id}
+                        className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100"
+                      >
                         <div>
                           <div className="text-sm font-medium text-slate-800">
                             {attempt.exam?.title || `Test #${index + 1}`}
@@ -532,12 +642,17 @@ export default function StudentDetailPage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className={`text-lg font-bold ${getScoreColor(displayScore)}`}>
+                          <div
+                            className={`text-lg font-bold ${getScoreColor(displayScore)}`}
+                          >
                             {displayScore}
                           </div>
                           {improvement !== 0 && (
-                            <div className={`text-xs font-medium px-2 py-1 rounded ${improvement > 0 ? 'text-emerald-700 bg-emerald-100' : 'text-red-700 bg-red-100'}`}>
-                              {improvement > 0 ? '+' : ''}{improvement}
+                            <div
+                              className={`text-xs font-medium px-2 py-1 rounded ${improvement > 0 ? 'text-emerald-700 bg-emerald-100' : 'text-red-700 bg-red-100'}`}
+                            >
+                              {improvement > 0 ? '+' : ''}
+                              {improvement}
                             </div>
                           )}
                         </div>
@@ -545,36 +660,46 @@ export default function StudentDetailPage() {
                     )
                   })}
               </div>
-              {attempts.filter(a => a.status === 'completed').length === 0 && (
-                <p className="text-gray-500 text-center py-4">No completed tests to show progression</p>
+              {attempts.filter((a) => a.status === 'completed').length ===
+                0 && (
+                <p className="text-gray-500 text-center py-4">
+                  No completed tests to show progression
+                </p>
               )}
             </div>
 
             {/* Goal Tracking */}
             {student.target_score && (
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Goal Progress</h3>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                  Goal Progress
+                </h3>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">Target Score:</span>
-                  <span className="text-sm font-medium text-gray-900">{student.target_score}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {student.target_score}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-sm text-gray-600">Current Best:</span>
-                  <span className={`text-sm font-medium ${getScoreColor(stats.bestScore)}`}>
+                  <span
+                    className={`text-sm font-medium ${getScoreColor(stats.bestScore)}`}
+                  >
                     {stats.bestScore || 0}
                   </span>
                 </div>
                 <div className="bg-slate-200 rounded-full h-4 overflow-hidden">
-                  <div 
+                  <div
                     className="bg-blue-500 h-4 rounded-full transition-all duration-500"
-                    style={{ 
-                      width: `${Math.min((stats.bestScore / student.target_score) * 100, 100)}%` 
+                    style={{
+                      width: `${Math.min((stats.bestScore / student.target_score) * 100, 100)}%`,
                     }}
                   ></div>
                 </div>
                 <div className="mt-2 text-center">
                   <span className="text-sm text-gray-600">
-                    {Math.round((stats.bestScore / student.target_score) * 100)}% of target achieved
+                    {Math.round((stats.bestScore / student.target_score) * 100)}
+                    % of target achieved
                   </span>
                 </div>
               </div>

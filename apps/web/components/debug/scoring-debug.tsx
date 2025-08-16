@@ -49,13 +49,15 @@ export function ScoringDebug() {
       // Load most recent completed attempt to see scoring details
       const { data: attemptData, error: attemptError } = await supabase
         .from('test_attempts')
-        .select(`
+        .select(
+          `
           *,
           user_answers (
             *,
             questions (module_type, points)
           )
-        `)
+        `
+        )
         .eq('status', 'completed')
         .order('completed_at', { ascending: false })
         .limit(1)
@@ -96,8 +98,12 @@ export function ScoringDebug() {
       english: englishCorrect,
       math: mathCorrect,
       total: totalQuestions,
-      englishTotal: attempt.user_answers.filter((a: any) => a.questions?.module_type.startsWith('english')).length,
-      mathTotal: attempt.user_answers.filter((a: any) => a.questions?.module_type.startsWith('math')).length
+      englishTotal: attempt.user_answers.filter((a: any) =>
+        a.questions?.module_type.startsWith('english')
+      ).length,
+      mathTotal: attempt.user_answers.filter((a: any) =>
+        a.questions?.module_type.startsWith('math')
+      ).length,
     }
   }
 
@@ -109,20 +115,30 @@ export function ScoringDebug() {
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900">Scoring System Debug</h3>
-      
+      <h3 className="text-lg font-semibold text-gray-900">
+        Scoring System Debug
+      </h3>
+
       {/* Scoring Curves */}
       <div>
-        <h4 className="font-medium text-gray-800 mb-3">Available Scoring Curves</h4>
+        <h4 className="font-medium text-gray-800 mb-3">
+          Available Scoring Curves
+        </h4>
         <div className="space-y-2">
-          {curves.map(curve => (
+          {curves.map((curve) => (
             <div key={curve.id} className="text-sm bg-gray-50 p-3 rounded">
-              <div className="font-medium">#{curve.id}: {curve.curve_name}</div>
-              <div className="text-gray-600">
-                Raw score range: {Math.min(...curve.curve_data.map(d => d.raw))} - {Math.max(...curve.curve_data.map(d => d.raw))}
+              <div className="font-medium">
+                #{curve.id}: {curve.curve_name}
               </div>
               <div className="text-gray-600">
-                Scaled range: {Math.min(...curve.curve_data.map(d => d.lower))} - {Math.max(...curve.curve_data.map(d => d.upper))}
+                Raw score range:{' '}
+                {Math.min(...curve.curve_data.map((d) => d.raw))} -{' '}
+                {Math.max(...curve.curve_data.map((d) => d.raw))}
+              </div>
+              <div className="text-gray-600">
+                Scaled range:{' '}
+                {Math.min(...curve.curve_data.map((d) => d.lower))} -{' '}
+                {Math.max(...curve.curve_data.map((d) => d.upper))}
               </div>
             </div>
           ))}
@@ -131,9 +147,11 @@ export function ScoringDebug() {
 
       {/* Exam Configuration */}
       <div>
-        <h4 className="font-medium text-gray-800 mb-3">Exam Scoring Configuration</h4>
+        <h4 className="font-medium text-gray-800 mb-3">
+          Exam Scoring Configuration
+        </h4>
         <div className="space-y-2">
-          {exams.map(exam => (
+          {exams.map((exam) => (
             <div key={exam.id} className="text-sm bg-gray-50 p-3 rounded">
               <div className="font-medium">{exam.title}</div>
               <div className="text-gray-600">
@@ -150,31 +168,63 @@ export function ScoringDebug() {
       {/* Recent Attempt Analysis */}
       {recentAttempt && scores && (
         <div>
-          <h4 className="font-medium text-gray-800 mb-3">Most Recent Attempt Analysis</h4>
+          <h4 className="font-medium text-gray-800 mb-3">
+            Most Recent Attempt Analysis
+          </h4>
           <div className="bg-yellow-50 border border-yellow-200 p-4 rounded">
             <div className="text-sm space-y-2">
-              <div><strong>Attempt ID:</strong> {recentAttempt.id}</div>
-              <div><strong>Final Scores:</strong> {JSON.stringify(recentAttempt.final_scores)}</div>
-              <div><strong>Raw Scores:</strong></div>
+              <div>
+                <strong>Attempt ID:</strong> {recentAttempt.id}
+              </div>
+              <div>
+                <strong>Final Scores:</strong>{' '}
+                {JSON.stringify(recentAttempt.final_scores)}
+              </div>
+              <div>
+                <strong>Raw Scores:</strong>
+              </div>
               <ul className="ml-4 space-y-1">
-                <li>English: {scores.english}/{scores.englishTotal} correct</li>
-                <li>Math: {scores.math}/{scores.mathTotal} correct (틀린 개수: {scores.mathTotal - scores.math})</li>
+                <li>
+                  English: {scores.english}/{scores.englishTotal} correct
+                </li>
+                <li>
+                  Math: {scores.math}/{scores.mathTotal} correct (틀린 개수:{' '}
+                  {scores.mathTotal - scores.math})
+                </li>
                 <li>Total Questions: {scores.total}</li>
               </ul>
-              
+
               {/* Show curve mapping for current scores */}
               <div className="mt-4">
                 <strong>Expected Scaled Scores:</strong>
-                {curves.map(curve => {
-                  const englishPoint = curve.curve_data.find(d => d.raw === scores.english)
-                  const mathPoint = curve.curve_data.find(d => d.raw === scores.math)
-                  
+                {curves.map((curve) => {
+                  const englishPoint = curve.curve_data.find(
+                    (d) => d.raw === scores.english
+                  )
+                  const mathPoint = curve.curve_data.find(
+                    (d) => d.raw === scores.math
+                  )
+
                   if (englishPoint || mathPoint) {
                     return (
                       <div key={curve.id} className="ml-4 text-xs">
                         <div>{curve.curve_name}:</div>
-                        {englishPoint && <div>- English raw {scores.english} → {Math.round((englishPoint.lower + englishPoint.upper) / 2)}</div>}
-                        {mathPoint && <div>- Math raw {scores.math} → {Math.round((mathPoint.lower + mathPoint.upper) / 2)}</div>}
+                        {englishPoint && (
+                          <div>
+                            - English raw {scores.english} →{' '}
+                            {Math.round(
+                              (englishPoint.lower + englishPoint.upper) / 2
+                            )}
+                          </div>
+                        )}
+                        {mathPoint && (
+                          <div>
+                            - Math raw {scores.math} →{' '}
+                            {Math.round(
+                              (mathPoint.lower + mathPoint.upper) / 2
+                            )}
+                          </div>
+                        )}
                       </div>
                     )
                   }

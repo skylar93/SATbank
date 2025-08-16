@@ -42,10 +42,12 @@ export default function AdminStudentsPage() {
     gradeLevel: 'all',
     scoreRange: 'all',
     sortBy: 'name',
-    sortOrder: 'asc'
+    sortOrder: 'asc',
   })
   const [exporting, setExporting] = useState(false)
-  const [updatingAnswerVisibility, setUpdatingAnswerVisibility] = useState<string | null>(null)
+  const [updatingAnswerVisibility, setUpdatingAnswerVisibility] = useState<
+    string | null
+  >(null)
 
   useEffect(() => {
     if (user) {
@@ -62,7 +64,9 @@ export default function AdminStudentsPage() {
       // Get all students
       const { data: studentsData, error: studentsError } = await supabase
         .from('user_profiles')
-        .select('id, full_name, email, grade_level, target_score, show_correct_answers, created_at')
+        .select(
+          'id, full_name, email, grade_level, target_score, show_correct_answers, created_at'
+        )
         .eq('role', 'student')
         .order('full_name')
 
@@ -78,19 +82,28 @@ export default function AdminStudentsPage() {
 
           if (attemptsError) throw attemptsError
 
-          const completedAttempts = attempts?.filter(a => a.status === 'completed') || []
+          const completedAttempts =
+            attempts?.filter((a) => a.status === 'completed') || []
           const totalAttempts = attempts?.length || 0
-          
+
           // Helper function to get the display score (prefer final_scores.overall, fallback to total_score)
           const getDisplayScore = (attempt: any): number => {
             return attempt.final_scores?.overall || attempt.total_score || 0
           }
-          
-          const averageScore = completedAttempts.length > 0
-            ? Math.round(completedAttempts.reduce((sum, a) => sum + getDisplayScore(a), 0) / completedAttempts.length)
-            : 0
-          const latestAttempt = completedAttempts.sort((a, b) => 
-            new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime()
+
+          const averageScore =
+            completedAttempts.length > 0
+              ? Math.round(
+                  completedAttempts.reduce(
+                    (sum, a) => sum + getDisplayScore(a),
+                    0
+                  ) / completedAttempts.length
+                )
+              : 0
+          const latestAttempt = completedAttempts.sort(
+            (a, b) =>
+              new Date(b.completed_at).getTime() -
+              new Date(a.completed_at).getTime()
           )[0]
 
           return {
@@ -99,10 +112,12 @@ export default function AdminStudentsPage() {
               total: totalAttempts,
               completed: completedAttempts.length,
               average_score: averageScore,
-              latest_score: latestAttempt ? getDisplayScore(latestAttempt) : null,
+              latest_score: latestAttempt
+                ? getDisplayScore(latestAttempt)
+                : null,
               latest_date: latestAttempt?.completed_at || null,
-              latest_attempt_id: latestAttempt?.id || null
-            }
+              latest_attempt_id: latestAttempt?.id || null,
+            },
           }
         })
       )
@@ -120,29 +135,35 @@ export default function AdminStudentsPage() {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(student =>
-        student.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.email.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (student) =>
+          student.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          student.email.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
     // Apply grade level filter
     if (filters.gradeLevel !== 'all') {
-      filtered = filtered.filter(student => 
-        student.grade_level === parseInt(filters.gradeLevel)
+      filtered = filtered.filter(
+        (student) => student.grade_level === parseInt(filters.gradeLevel)
       )
     }
 
     // Apply score range filter
     if (filters.scoreRange !== 'all') {
-      filtered = filtered.filter(student => {
+      filtered = filtered.filter((student) => {
         const score = student.attempts.latest_score || 0
         switch (filters.scoreRange) {
-          case 'high': return score >= 1200
-          case 'medium': return score >= 800 && score < 1200
-          case 'low': return score > 0 && score < 800
-          case 'no-tests': return student.attempts.completed === 0
-          default: return true
+          case 'high':
+            return score >= 1200
+          case 'medium':
+            return score >= 800 && score < 1200
+          case 'low':
+            return score > 0 && score < 800
+          case 'no-tests':
+            return student.attempts.completed === 0
+          default:
+            return true
         }
       })
     }
@@ -150,20 +171,25 @@ export default function AdminStudentsPage() {
     // Apply sorting
     filtered.sort((a, b) => {
       let comparison = 0
-      
+
       switch (filters.sortBy) {
         case 'name':
           comparison = a.full_name.localeCompare(b.full_name)
           break
         case 'score':
-          comparison = (a.attempts.latest_score || 0) - (b.attempts.latest_score || 0)
+          comparison =
+            (a.attempts.latest_score || 0) - (b.attempts.latest_score || 0)
           break
         case 'attempts':
           comparison = a.attempts.completed - b.attempts.completed
           break
         case 'date':
-          const dateA = a.attempts.latest_date ? new Date(a.attempts.latest_date).getTime() : 0
-          const dateB = b.attempts.latest_date ? new Date(b.attempts.latest_date).getTime() : 0
+          const dateA = a.attempts.latest_date
+            ? new Date(a.attempts.latest_date).getTime()
+            : 0
+          const dateB = b.attempts.latest_date
+            ? new Date(b.attempts.latest_date).getTime()
+            : 0
           comparison = dateA - dateB
           break
       }
@@ -187,24 +213,29 @@ export default function AdminStudentsPage() {
             .eq('status', 'completed')
             .order('completed_at', { ascending: false })
 
-          return attempts?.map(attempt => ({
-            student_name: student.full_name,
-            email: student.email,
-            grade_level: student.grade_level,
-            target_score: student.target_score,
-            test_date: attempt.completed_at,
-            total_score: attempt.total_score,
-            module_scores: attempt.module_scores,
-            started_at: attempt.started_at,
-            completed_at: attempt.completed_at,
-            status: attempt.status
-          })) || []
+          return (
+            attempts?.map((attempt) => ({
+              student_name: student.full_name,
+              email: student.email,
+              grade_level: student.grade_level,
+              target_score: student.target_score,
+              test_date: attempt.completed_at,
+              total_score: attempt.total_score,
+              module_scores: attempt.module_scores,
+              started_at: attempt.started_at,
+              completed_at: attempt.completed_at,
+              status: attempt.status,
+            })) || []
+          )
         })
       )
 
       const flattenedData = exportData.flat()
       const csvContent = ExportService.exportAdminDataToCSV(flattenedData)
-      ExportService.downloadCSV(csvContent, `students-performance-${new Date().toISOString().split('T')[0]}.csv`)
+      ExportService.downloadCSV(
+        csvContent,
+        `students-performance-${new Date().toISOString().split('T')[0]}.csv`
+      )
     } catch (err: any) {
       setError(`Export failed: ${err.message}`)
     } finally {
@@ -212,7 +243,10 @@ export default function AdminStudentsPage() {
     }
   }
 
-  const handleToggleAnswerVisibility = async (studentId: string, newValue: boolean) => {
+  const handleToggleAnswerVisibility = async (
+    studentId: string,
+    newValue: boolean
+  ) => {
     setUpdatingAnswerVisibility(studentId)
     try {
       const { error } = await supabase
@@ -223,9 +257,9 @@ export default function AdminStudentsPage() {
       if (error) throw error
 
       // Update local state
-      setStudents(prev => 
-        prev.map(student => 
-          student.id === studentId 
+      setStudents((prev) =>
+        prev.map((student) =>
+          student.id === studentId
             ? { ...student, show_correct_answers: newValue }
             : student
         )
@@ -244,7 +278,7 @@ export default function AdminStudentsPage() {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     })
   }
 
@@ -272,8 +306,12 @@ export default function AdminStudentsPage() {
       <div className="bg-white px-6 py-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Student Management</h1>
-            <p className="text-gray-600">Monitor individual student performance and progress</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Student Management
+            </h1>
+            <p className="text-gray-600">
+              Monitor individual student performance and progress
+            </p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex space-x-3">
@@ -298,7 +336,7 @@ export default function AdminStudentsPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Separator line */}
         <div className="border-b border-gray-200"></div>
       </div>
@@ -341,7 +379,9 @@ export default function AdminStudentsPage() {
                   </label>
                   <select
                     value={filters.gradeLevel}
-                    onChange={(e) => setFilters({...filters, gradeLevel: e.target.value})}
+                    onChange={(e) =>
+                      setFilters({ ...filters, gradeLevel: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="all">All Grades</option>
@@ -359,7 +399,9 @@ export default function AdminStudentsPage() {
                   </label>
                   <select
                     value={filters.scoreRange}
-                    onChange={(e) => setFilters({...filters, scoreRange: e.target.value})}
+                    onChange={(e) =>
+                      setFilters({ ...filters, scoreRange: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="all">All Students</option>
@@ -378,7 +420,12 @@ export default function AdminStudentsPage() {
                   <div className="flex">
                     <select
                       value={filters.sortBy}
-                      onChange={(e) => setFilters({...filters, sortBy: e.target.value as any})}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          sortBy: e.target.value as any,
+                        })
+                      }
                       className="flex-1 px-3 py-2 border border-purple-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                       <option value="name">Name</option>
@@ -387,7 +434,13 @@ export default function AdminStudentsPage() {
                       <option value="date">Last Test</option>
                     </select>
                     <button
-                      onClick={() => setFilters({...filters, sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc'})}
+                      onClick={() =>
+                        setFilters({
+                          ...filters,
+                          sortOrder:
+                            filters.sortOrder === 'asc' ? 'desc' : 'asc',
+                        })
+                      }
                       className="px-3 py-2 bg-purple-100 border border-l-0 border-purple-300 rounded-r-md hover:bg-purple-200 transition-colors"
                       title={`Sort ${filters.sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
                     >
@@ -401,18 +454,26 @@ export default function AdminStudentsPage() {
             {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
-                <div className="text-2xl font-bold text-purple-500">{filteredStudents.length}</div>
+                <div className="text-2xl font-bold text-purple-500">
+                  {filteredStudents.length}
+                </div>
                 <div className="text-sm text-gray-600">Students Shown</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
                 <div className="text-2xl font-bold text-violet-500">
-                  {filteredStudents.filter(s => s.attempts.completed > 0).length}
+                  {
+                    filteredStudents.filter((s) => s.attempts.completed > 0)
+                      .length
+                  }
                 </div>
                 <div className="text-sm text-gray-600">Have Taken Tests</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
                 <div className="text-2xl font-bold text-blue-500">
-                  {filteredStudents.reduce((sum, s) => sum + s.attempts.completed, 0)}
+                  {filteredStudents.reduce(
+                    (sum, s) => sum + s.attempts.completed,
+                    0
+                  )}
                 </div>
                 <div className="text-sm text-gray-600">Total Completions</div>
               </div>
@@ -420,9 +481,16 @@ export default function AdminStudentsPage() {
                 <div className="text-2xl font-bold text-amber-500">
                   {Math.round(
                     filteredStudents
-                      .filter(s => s.attempts.latest_score)
-                      .reduce((sum, s) => sum + (s.attempts.latest_score || 0), 0) /
-                    Math.max(filteredStudents.filter(s => s.attempts.latest_score).length, 1)
+                      .filter((s) => s.attempts.latest_score)
+                      .reduce(
+                        (sum, s) => sum + (s.attempts.latest_score || 0),
+                        0
+                      ) /
+                      Math.max(
+                        filteredStudents.filter((s) => s.attempts.latest_score)
+                          .length,
+                        1
+                      )
                   )}
                 </div>
                 <div className="text-sm text-gray-600">Average Score</div>
@@ -463,7 +531,10 @@ export default function AdminStudentsPage() {
                   </thead>
                   <tbody className="bg-white divide-y divide-purple-100">
                     {filteredStudents.map((student) => (
-                      <tr key={student.id} className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200">
+                      <tr
+                        key={student.id}
+                        className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200"
+                      >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
                             <div className="text-sm font-medium text-gray-900">
@@ -481,7 +552,9 @@ export default function AdminStudentsPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className={`text-sm font-medium ${getScoreColor(student.attempts.latest_score)}`}>
+                          <div
+                            className={`text-sm font-medium ${getScoreColor(student.attempts.latest_score)}`}
+                          >
                             {student.attempts.latest_score || 'No tests'}
                           </div>
                           {student.attempts.latest_score && (
@@ -491,17 +564,19 @@ export default function AdminStudentsPage() {
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            student.attempts.latest_score
-                              ? student.attempts.latest_score >= 1200
-                                ? 'bg-purple-100 text-purple-800'
-                                : student.attempts.latest_score >= 1000
-                                ? 'bg-blue-100 text-blue-800'
-                                : student.attempts.latest_score >= 800
-                                ? 'bg-amber-100 text-amber-800'
-                                : 'bg-slate-100 text-slate-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
+                          <span
+                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              student.attempts.latest_score
+                                ? student.attempts.latest_score >= 1200
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : student.attempts.latest_score >= 1000
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : student.attempts.latest_score >= 800
+                                      ? 'bg-amber-100 text-amber-800'
+                                      : 'bg-slate-100 text-slate-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}
+                          >
                             {getPerformanceLevel(student.attempts.latest_score)}
                           </span>
                         </td>
@@ -519,12 +594,19 @@ export default function AdminStudentsPage() {
                             <input
                               type="checkbox"
                               checked={student.show_correct_answers}
-                              onChange={(e) => handleToggleAnswerVisibility(student.id, e.target.checked)}
+                              onChange={(e) =>
+                                handleToggleAnswerVisibility(
+                                  student.id,
+                                  e.target.checked
+                                )
+                              }
                               disabled={updatingAnswerVisibility === student.id}
                               className="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out disabled:opacity-50"
                             />
                             <span className="ml-2 text-sm text-gray-700">
-                              {student.show_correct_answers ? 'Enabled' : 'Disabled'}
+                              {student.show_correct_answers
+                                ? 'Enabled'
+                                : 'Disabled'}
                             </span>
                           </label>
                         </td>
@@ -535,14 +617,15 @@ export default function AdminStudentsPage() {
                           >
                             View Details
                           </Link>
-                          {student.attempts.latest_score && student.attempts.latest_attempt_id && (
-                            <Link
-                              href={`/admin/results/${student.attempts.latest_attempt_id}`}
-                              className="text-violet-600 hover:text-violet-700 font-medium"
-                            >
-                              Latest Results
-                            </Link>
-                          )}
+                          {student.attempts.latest_score &&
+                            student.attempts.latest_attempt_id && (
+                              <Link
+                                href={`/admin/results/${student.attempts.latest_attempt_id}`}
+                                className="text-violet-600 hover:text-violet-700 font-medium"
+                              >
+                                Latest Results
+                              </Link>
+                            )}
                         </td>
                       </tr>
                     ))}
@@ -552,7 +635,9 @@ export default function AdminStudentsPage() {
 
               {filteredStudents.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-gray-600">No students found matching your criteria</p>
+                  <p className="text-gray-600">
+                    No students found matching your criteria
+                  </p>
                 </div>
               )}
             </div>

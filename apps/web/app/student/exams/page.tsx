@@ -6,16 +6,16 @@ import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
 import { ExamService, type Exam } from '../../../lib/exam-service'
 import { StatsCard } from '../../../components/modern-charts'
-import { 
-  AcademicCapIcon, 
-  ClockIcon, 
+import {
+  AcademicCapIcon,
+  ClockIcon,
   DocumentTextIcon,
   ExclamationTriangleIcon,
   PlayIcon,
   QuestionMarkCircleIcon,
   CheckCircleIcon,
   BoltIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
 
 export default function StudentExamsPage() {
@@ -34,7 +34,7 @@ export default function StudentExamsPage() {
   const loadExams = async () => {
     try {
       if (!user?.id) return
-      
+
       // Get all available exams (assigned + mock exams)
       const availableExams = await ExamService.getAvailableExams(user.id)
       setExams(availableExams)
@@ -46,12 +46,21 @@ export default function StudentExamsPage() {
   }
 
   const formatTimeLimit = (timeLimits: any) => {
-    const total = timeLimits.english1 + timeLimits.english2 + timeLimits.math1 + timeLimits.math2
+    const total =
+      timeLimits.english1 +
+      timeLimits.english2 +
+      timeLimits.math1 +
+      timeLimits.math2
     return `${total} minutes total`
   }
 
   const getTotalTime = (timeLimits: any) => {
-    return timeLimits.english1 + timeLimits.english2 + timeLimits.math1 + timeLimits.math2
+    return (
+      timeLimits.english1 +
+      timeLimits.english2 +
+      timeLimits.math1 +
+      timeLimits.math2
+    )
   }
 
   if (loading) {
@@ -60,7 +69,9 @@ export default function StudentExamsPage() {
         <div className="bg-white px-6 py-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Assigned Exams</h1>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Assigned Exams
+              </h1>
               <p className="text-gray-600">Loading your assigned exams...</p>
             </div>
             <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
@@ -90,7 +101,9 @@ export default function StudentExamsPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Assigned Exams</h1>
-            <p className="text-gray-600">Take the exams that have been assigned to you</p>
+            <p className="text-gray-600">
+              Take the exams that have been assigned to you
+            </p>
           </div>
           <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
             <span className="text-white font-semibold">
@@ -98,7 +111,7 @@ export default function StudentExamsPage() {
             </span>
           </div>
         </div>
-        
+
         {/* Separator line */}
         <div className="border-b border-gray-200"></div>
       </div>
@@ -118,9 +131,12 @@ export default function StudentExamsPage() {
             <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <AcademicCapIcon className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Assigned Exams</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              No Assigned Exams
+            </h3>
             <p className="text-gray-600 mb-6">
-              You don't have any assigned exams at the moment. Please wait for your administrator to assign exams to you.
+              You don't have any assigned exams at the moment. Please wait for
+              your administrator to assign exams to you.
             </p>
             <Link
               href="/student/dashboard"
@@ -131,14 +147,16 @@ export default function StudentExamsPage() {
           </div>
         ) : (
           <>
-
             {/* Featured Exam Card */}
             {exams.length > 0 && (
               <div className="bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl shadow-lg p-8 text-white mb-8">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">Ready to Start?</h3>
-                    <p className="text-violet-100 mb-6">Take your SAT practice test and track your progress toward your target score.</p>
+                    <p className="text-violet-100 mb-6">
+                      Take your SAT practice test and track your progress toward
+                      your target score.
+                    </p>
                     <Link
                       href={`/student/exam/${exams[0].id}`}
                       className="inline-flex items-center bg-white text-violet-600 font-semibold px-6 py-3 rounded-xl hover:bg-violet-50 transition-all duration-200 shadow-lg"
@@ -160,16 +178,23 @@ export default function StudentExamsPage() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
               <div className="p-6 border-b border-gray-100">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Your Assigned Exams</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Your Assigned Exams
+                  </h3>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-500">{exams.length} exams available</span>
+                    <span className="text-sm text-gray-500">
+                      {exams.length} exams available
+                    </span>
                   </div>
                 </div>
               </div>
               <div className="p-6">
                 <div className="space-y-6">
                   {exams.map((exam) => (
-                    <div key={exam.id} className="border border-gray-200 rounded-xl p-6 hover:border-violet-300 transition-colors group">
+                    <div
+                      key={exam.id}
+                      className="border border-gray-200 rounded-xl p-6 hover:border-violet-300 transition-colors group"
+                    >
                       <div className="flex items-start justify-between mb-6">
                         <div className="flex items-center space-x-4">
                           <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform">
@@ -180,11 +205,12 @@ export default function StudentExamsPage() {
                               {exam.title}
                             </h4>
                             <p className="text-gray-600">
-                              {exam.description || 'Complete SAT practice test with all modules'}
+                              {exam.description ||
+                                'Complete SAT practice test with all modules'}
                             </p>
                           </div>
                         </div>
-                        
+
                         <div className="flex flex-col items-end space-y-2">
                           {exam.is_mock_exam && (
                             <span className="bg-gradient-to-r from-violet-100 to-purple-100 text-violet-800 px-3 py-1 rounded-full text-sm font-medium">
@@ -204,29 +230,45 @@ export default function StudentExamsPage() {
                           <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center mx-auto mb-2">
                             <DocumentTextIcon className="w-4 h-4 text-white" />
                           </div>
-                          <div className="text-lg font-semibold text-gray-900">English 1</div>
-                          <div className="text-sm text-gray-600">{exam.time_limits.english1} min</div>
+                          <div className="text-lg font-semibold text-gray-900">
+                            English 1
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {exam.time_limits.english1} min
+                          </div>
                         </div>
                         <div className="bg-gradient-to-r from-violet-50 to-violet-100 p-4 rounded-xl text-center hover:from-violet-100 hover:to-violet-200 transition-colors">
                           <div className="w-8 h-8 bg-violet-500 rounded-lg flex items-center justify-center mx-auto mb-2">
                             <DocumentTextIcon className="w-4 h-4 text-white" />
                           </div>
-                          <div className="text-lg font-semibold text-gray-900">English 2</div>
-                          <div className="text-sm text-gray-600">{exam.time_limits.english2} min</div>
+                          <div className="text-lg font-semibold text-gray-900">
+                            English 2
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {exam.time_limits.english2} min
+                          </div>
                         </div>
                         <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-xl text-center hover:from-purple-100 hover:to-purple-200 transition-colors">
                           <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-2">
                             <BoltIcon className="w-4 h-4 text-white" />
                           </div>
-                          <div className="text-lg font-semibold text-gray-900">Math 1</div>
-                          <div className="text-sm text-gray-600">{exam.time_limits.math1} min</div>
+                          <div className="text-lg font-semibold text-gray-900">
+                            Math 1
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {exam.time_limits.math1} min
+                          </div>
                         </div>
                         <div className="bg-gradient-to-r from-pink-50 to-pink-100 p-4 rounded-xl text-center hover:from-pink-100 hover:to-pink-200 transition-colors">
                           <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center mx-auto mb-2">
                             <BoltIcon className="w-4 h-4 text-white" />
                           </div>
-                          <div className="text-lg font-semibold text-gray-900">Math 2</div>
-                          <div className="text-sm text-gray-600">{exam.time_limits.math2} min</div>
+                          <div className="text-lg font-semibold text-gray-900">
+                            Math 2
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {exam.time_limits.math2} min
+                          </div>
                         </div>
                       </div>
 
@@ -246,7 +288,7 @@ export default function StudentExamsPage() {
                             </span>
                           </div>
                         </div>
-                        
+
                         <Link
                           href={`/student/exam/${exam.id}`}
                           className="inline-flex items-center bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
@@ -267,35 +309,49 @@ export default function StudentExamsPage() {
                 <div className="w-10 h-10 bg-violet-500 rounded-xl flex items-center justify-center">
                   <ExclamationTriangleIcon className="w-5 h-5 text-white" />
                 </div>
-                <h4 className="text-lg font-semibold text-violet-800">Important Reminders</h4>
+                <h4 className="text-lg font-semibold text-violet-800">
+                  Important Reminders
+                </h4>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
                     <CheckCircleIcon className="w-5 h-5 text-violet-600" />
-                    <span className="text-violet-700 text-sm">Ensure stable internet connection</span>
+                    <span className="text-violet-700 text-sm">
+                      Ensure stable internet connection
+                    </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <CheckCircleIcon className="w-5 h-5 text-violet-600" />
-                    <span className="text-violet-700 text-sm">Set aside uninterrupted time</span>
+                    <span className="text-violet-700 text-sm">
+                      Set aside uninterrupted time
+                    </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <CheckCircleIcon className="w-5 h-5 text-violet-600" />
-                    <span className="text-violet-700 text-sm">Have scratch paper ready</span>
+                    <span className="text-violet-700 text-sm">
+                      Have scratch paper ready
+                    </span>
                   </div>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
                     <CheckCircleIcon className="w-5 h-5 text-violet-600" />
-                    <span className="text-violet-700 text-sm">Cannot pause or go back</span>
+                    <span className="text-violet-700 text-sm">
+                      Cannot pause or go back
+                    </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <CheckCircleIcon className="w-5 h-5 text-violet-600" />
-                    <span className="text-violet-700 text-sm">Auto-submit when time expires</span>
+                    <span className="text-violet-700 text-sm">
+                      Auto-submit when time expires
+                    </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <CheckCircleIcon className="w-5 h-5 text-violet-600" />
-                    <span className="text-violet-700 text-sm">Use approved calculator</span>
+                    <span className="text-violet-700 text-sm">
+                      Use approved calculator
+                    </span>
                   </div>
                 </div>
               </div>

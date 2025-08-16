@@ -27,7 +27,11 @@ interface QuestionListProps {
   onRefresh: () => void
 }
 
-export function QuestionList({ questions, loading, onRefresh }: QuestionListProps) {
+export function QuestionList({
+  questions,
+  loading,
+  onRefresh,
+}: QuestionListProps) {
   const router = useRouter()
   const { user } = useAuth()
   const supabase = createClient()
@@ -35,14 +39,17 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
   const [creatingPractice, setCreatingPractice] = useState<string | null>(null)
 
   const renderTable = (tableData: any, isAnswerChoice = false) => {
-    const { headers, rows } = tableData;
+    const { headers, rows } = tableData
     return (
       <div className={`overflow-x-auto ${isAnswerChoice ? 'text-sm' : ''}`}>
         <table className="min-w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gray-50">
               {headers.map((header: string, index: number) => (
-                <th key={index} className="border border-gray-300 px-2 py-1 text-left font-medium">
+                <th
+                  key={index}
+                  className="border border-gray-300 px-2 py-1 text-left font-medium"
+                >
                   {header}
                 </th>
               ))}
@@ -50,9 +57,15 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
           </thead>
           <tbody>
             {rows.map((row: string[], rowIndex: number) => (
-              <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+              <tr
+                key={rowIndex}
+                className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+              >
                 {row.map((cell: string, cellIndex: number) => (
-                  <td key={cellIndex} className="border border-gray-300 px-2 py-1">
+                  <td
+                    key={cellIndex}
+                    className="border border-gray-300 px-2 py-1"
+                  >
                     {cell}
                   </td>
                 ))}
@@ -61,37 +74,45 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
           </tbody>
         </table>
       </div>
-    );
-  };
+    )
+  }
 
   const renderOptionContent = (value: any) => {
     // If value is an object (table data), handle it specially
     if (typeof value === 'object' && value !== null) {
       // Check if it's direct table data format: {headers: [...], rows: [...]}
       if (value.headers && value.rows) {
-        return renderTable(value, true);
+        return renderTable(value, true)
       }
-      
+
       // Check if it's nested table data format: {table_data: {headers: [...], rows: [...]}}
-      if (value.table_data && value.table_data.headers && value.table_data.rows) {
-        return renderTable(value.table_data, true);
+      if (
+        value.table_data &&
+        value.table_data.headers &&
+        value.table_data.rows
+      ) {
+        return renderTable(value.table_data, true)
       }
-      
+
       // If it's an object but not table data, try to display it meaningfully
       if (Array.isArray(value)) {
-        return value.join(', ');
+        return value.join(', ')
       }
-      
+
       // For other objects, try to extract meaningful content
       if (value.content || value.text || value.value) {
-        return renderTextWithFormattingAndMath(value.content || value.text || value.value);
+        return renderTextWithFormattingAndMath(
+          value.content || value.text || value.value
+        )
       }
-      
+
       // If it has imageUrl and text properties (common option format)
       if (value.imageUrl || value.text) {
         return (
           <div className="space-y-1">
-            {value.text && <div>{renderTextWithFormattingAndMath(value.text)}</div>}
+            {value.text && (
+              <div>{renderTextWithFormattingAndMath(value.text)}</div>
+            )}
             {value.imageUrl && (
               <img
                 src={value.imageUrl}
@@ -100,36 +121,42 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
               />
             )}
           </div>
-        );
+        )
       }
-      
+
       // As a last resort, show object keys or a descriptive message
-      const keys = Object.keys(value);
+      const keys = Object.keys(value)
       if (keys.length > 0) {
-        return `[Complex content: ${keys.join(', ')}]`;
+        return `[Complex content: ${keys.join(', ')}]`
       }
-      
-      return '[Empty object]';
+
+      return '[Empty object]'
     }
-    
+
     // Try to parse as JSON to check if it's table data
     if (typeof value === 'string') {
       try {
-        const parsed = JSON.parse(value);
-        
+        const parsed = JSON.parse(value)
+
         // Check for table data formats
-        if (parsed.table_data && parsed.table_data.headers && parsed.table_data.rows) {
-          return renderTable(parsed.table_data, true);
+        if (
+          parsed.table_data &&
+          parsed.table_data.headers &&
+          parsed.table_data.rows
+        ) {
+          return renderTable(parsed.table_data, true)
         }
         if (parsed.headers && parsed.rows) {
-          return renderTable(parsed, true);
+          return renderTable(parsed, true)
         }
-        
+
         // Check for option format with text/imageUrl
         if (parsed.text || parsed.imageUrl) {
           return (
             <div className="space-y-1">
-              {parsed.text && <div>{renderTextWithFormattingAndMath(parsed.text)}</div>}
+              {parsed.text && (
+                <div>{renderTextWithFormattingAndMath(parsed.text)}</div>
+              )}
               {parsed.imageUrl && (
                 <img
                   src={parsed.imageUrl}
@@ -138,61 +165,78 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
                 />
               )}
             </div>
-          );
+          )
         }
-        
+
         // If parsed but not recognized format, fall back to string rendering
         if (typeof parsed === 'string') {
-          return renderTextWithFormattingAndMath(parsed);
+          return renderTextWithFormattingAndMath(parsed)
         }
-        
+
         // For other parsed objects, show a meaningful representation
-        return `[Parsed object: ${Object.keys(parsed).join(', ')}]`;
-        
+        return `[Parsed object: ${Object.keys(parsed).join(', ')}]`
       } catch (e) {
         // Not JSON, continue with regular text rendering
       }
     }
-    
+
     // Regular text rendering
-    return renderTextWithFormattingAndMath(value as string);
-  };
+    return renderTextWithFormattingAndMath(value as string)
+  }
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'bg-green-100 text-green-800'
-      case 'medium': return 'bg-yellow-100 text-yellow-800'
-      case 'hard': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'easy':
+        return 'bg-green-100 text-green-800'
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'hard':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getModuleColor = (module: string) => {
     switch (module) {
-      case 'english1': return 'bg-blue-100 text-blue-800'
-      case 'english2': return 'bg-indigo-100 text-indigo-800'
-      case 'math1': return 'bg-purple-100 text-purple-800'
-      case 'math2': return 'bg-pink-100 text-pink-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'english1':
+        return 'bg-blue-100 text-blue-800'
+      case 'english2':
+        return 'bg-indigo-100 text-indigo-800'
+      case 'math1':
+        return 'bg-purple-100 text-purple-800'
+      case 'math2':
+        return 'bg-pink-100 text-pink-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const formatModuleName = (module: string) => {
     switch (module) {
-      case 'english1': return 'English 1'
-      case 'english2': return 'English 2'
-      case 'math1': return 'Math 1'
-      case 'math2': return 'Math 2'
-      default: return module
+      case 'english1':
+        return 'English 1'
+      case 'english2':
+        return 'English 2'
+      case 'math1':
+        return 'Math 1'
+      case 'math2':
+        return 'Math 2'
+      default:
+        return module
     }
   }
 
   const formatQuestionType = (type: string) => {
     switch (type) {
-      case 'multiple_choice': return 'Multiple Choice'
-      case 'grid_in': return 'Grid-in'
-      case 'essay': return 'Essay'
-      default: return type
+      case 'multiple_choice':
+        return 'Multiple Choice'
+      case 'grid_in':
+        return 'Grid-in'
+      case 'essay':
+        return 'Essay'
+      default:
+        return type
     }
   }
 
@@ -207,7 +251,7 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
     try {
       // Use the auth context user ID (now synchronized with Supabase session)
       let attempt
-      
+
       const { data, error } = await supabase
         .from('test_attempts')
         .insert({
@@ -216,23 +260,27 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
           status: 'not_started',
           is_practice_mode: true,
           current_module: question.module_type,
-          current_question_number: 1
+          current_question_number: 1,
         })
         .select()
         .single()
 
       if (error) {
         console.log('Direct insert failed, trying emergency function:', error)
-        
-        const { data: emergencyResult, error: emergencyError } = await supabase
-          .rpc('create_practice_session', {
+
+        const { data: emergencyResult, error: emergencyError } =
+          await supabase.rpc('create_practice_session', {
             target_user_id: user.id,
             module_name: question.module_type,
-            is_single_question: true
+            is_single_question: true,
           })
 
         if (emergencyError || !emergencyResult?.[0]?.success) {
-          throw new Error(emergencyError?.message || emergencyResult?.[0]?.error_message || 'Failed to create single question practice session')
+          throw new Error(
+            emergencyError?.message ||
+              emergencyResult?.[0]?.error_message ||
+              'Failed to create single question practice session'
+          )
         }
 
         // Get the created attempt
@@ -256,15 +304,17 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
           shuffleQuestions: false,
           showExplanations: true,
           timeLimit: 0,
-          isSingleQuestion: true
-        }
+          isSingleQuestion: true,
+        },
       }
-      
-      localStorage.setItem(`practice_${attempt.id}`, JSON.stringify(practiceData))
+
+      localStorage.setItem(
+        `practice_${attempt.id}`,
+        JSON.stringify(practiceData)
+      )
 
       // Navigate to practice session
       router.push(`/student/practice/${attempt.id}`)
-      
     } catch (error) {
       console.error('Error creating single question practice:', error)
       alert('Failed to start practice. Please try again.')
@@ -295,11 +345,23 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
       <div className="bg-white rounded-lg shadow">
         <div className="p-6 text-center">
           <div className="text-gray-400 mb-4">
-            <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <svg
+              className="mx-auto h-12 w-12"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No questions found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No questions found
+          </h3>
           <p className="text-gray-500 mb-4">
             Try adjusting your filters to see more questions.
           </p>
@@ -334,17 +396,24 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
             <div
               key={question.id}
               className={`border border-gray-200 rounded-lg p-4 transition-colors ${
-                question.is_incorrect ? 'border-red-200 bg-red-50' : 'hover:bg-gray-50'
+                question.is_incorrect
+                  ? 'border-red-200 bg-red-50'
+                  : 'hover:bg-gray-50'
               }`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   {/* Question Header */}
                   <div className="flex items-center space-x-2 mb-2">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getModuleColor(question.module_type)}`}>
-                      {formatModuleName(question.module_type)} #{question.question_number}
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getModuleColor(question.module_type)}`}
+                    >
+                      {formatModuleName(question.module_type)} #
+                      {question.question_number}
                     </span>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getDifficultyColor(question.difficulty_level)}`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getDifficultyColor(question.difficulty_level)}`}
+                    >
                       {question.difficulty_level}
                     </span>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
@@ -359,17 +428,19 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
 
                   {/* Question Preview */}
                   <p className="text-gray-900 text-sm mb-2">
-                    {question.question_text.length > 150 
+                    {question.question_text.length > 150
                       ? `${question.question_text.substring(0, 150)}...`
-                      : question.question_text
-                    }
+                      : question.question_text}
                   </p>
 
                   {/* Topics */}
                   {question.topic_tags && question.topic_tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-2">
                       {question.topic_tags.map((tag, index) => (
-                        <span key={index} className="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-50 text-blue-700">
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-50 text-blue-700"
+                        >
                           {tag}
                         </span>
                       ))}
@@ -389,7 +460,9 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
                     disabled={creatingPractice === question.id}
                     className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
                   >
-                    {creatingPractice === question.id ? 'Starting...' : 'Practice'}
+                    {creatingPractice === question.id
+                      ? 'Starting...'
+                      : 'Practice'}
                   </button>
                 </div>
               </div>
@@ -400,40 +473,56 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
                   <div className="space-y-4">
                     {/* Full Question */}
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Question:</h4>
-                      <p className="text-gray-700 whitespace-pre-wrap">{question.question_text}</p>
+                      <h4 className="font-medium text-gray-900 mb-2">
+                        Question:
+                      </h4>
+                      <p className="text-gray-700 whitespace-pre-wrap">
+                        {question.question_text}
+                      </p>
                     </div>
 
                     {/* Options (for multiple choice) */}
-                    {question.question_type === 'multiple_choice' && question.options && (
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Options:</h4>
-                        <div className="space-y-1">
-                          {Object.entries(question.options).map(([key, value]) => (
-                            <div
-                              key={key}
-                              className={`p-2 rounded ${
-                                key === question.correct_answer
-                                  ? 'bg-green-100 border border-green-300'
-                                  : 'bg-gray-50'
-                              }`}
-                            >
-                              <span className="font-medium">{key}.</span> {renderOptionContent(value)}
-                              {key === question.correct_answer && (
-                                <span className="ml-2 text-green-600 font-medium">(Correct)</span>
-                              )}
-                            </div>
-                          ))}
+                    {question.question_type === 'multiple_choice' &&
+                      question.options && (
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-2">
+                            Options:
+                          </h4>
+                          <div className="space-y-1">
+                            {Object.entries(question.options).map(
+                              ([key, value]) => (
+                                <div
+                                  key={key}
+                                  className={`p-2 rounded ${
+                                    key === question.correct_answer
+                                      ? 'bg-green-100 border border-green-300'
+                                      : 'bg-gray-50'
+                                  }`}
+                                >
+                                  <span className="font-medium">{key}.</span>{' '}
+                                  {renderOptionContent(value)}
+                                  {key === question.correct_answer && (
+                                    <span className="ml-2 text-green-600 font-medium">
+                                      (Correct)
+                                    </span>
+                                  )}
+                                </div>
+                              )
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {/* Grid-in answer */}
                     {question.question_type === 'grid_in' && (
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Correct Answer:</h4>
+                        <h4 className="font-medium text-gray-900 mb-2">
+                          Correct Answer:
+                        </h4>
                         <div className="p-2 rounded bg-green-100 border border-green-300">
-                          <span className="font-medium">{question.correct_answer}</span>
+                          <span className="font-medium">
+                            {question.correct_answer}
+                          </span>
                         </div>
                       </div>
                     )}
@@ -441,8 +530,12 @@ export function QuestionList({ questions, loading, onRefresh }: QuestionListProp
                     {/* Explanation */}
                     {question.explanation && (
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Explanation:</h4>
-                        <p className="text-gray-700 whitespace-pre-wrap">{question.explanation}</p>
+                        <h4 className="font-medium text-gray-900 mb-2">
+                          Explanation:
+                        </h4>
+                        <p className="text-gray-700 whitespace-pre-wrap">
+                          {question.explanation}
+                        </p>
                       </div>
                     )}
                   </div>

@@ -45,7 +45,7 @@ export default function TestQuestionsPage() {
           status: 'error',
           message: 'No questions found',
           questionsData,
-          questionsError
+          questionsError,
         })
         setLoading(false)
         return
@@ -55,17 +55,22 @@ export default function TestQuestionsPage() {
       console.log('🎯 Fetching user incorrect answers...')
       const { data: incorrectAnswers, error: answersError } = await supabase!
         .from('user_answers')
-        .select(`
+        .select(
+          `
           question_id,
           is_correct,
           test_attempts!inner (
             user_id
           )
-        `)
+        `
+        )
         .eq('test_attempts.user_id', user?.id)
         .eq('is_correct', false)
 
-      console.log('Incorrect answers query result:', { incorrectAnswers, answersError })
+      console.log('Incorrect answers query result:', {
+        incorrectAnswers,
+        answersError,
+      })
 
       if (answersError) {
         console.error('Error fetching user answers:', answersError)
@@ -74,22 +79,24 @@ export default function TestQuestionsPage() {
 
       // Create a set of question IDs that were answered incorrectly
       const incorrectQuestionIds = new Set(
-        incorrectAnswers?.map(answer => answer.question_id) || []
+        incorrectAnswers?.map((answer) => answer.question_id) || []
       )
 
       // Process questions to mark incorrect ones
-      const processedQuestions = questionsData.map(q => ({
+      const processedQuestions = questionsData.map((q) => ({
         ...q,
-        is_incorrect: incorrectQuestionIds.has(q.id)
+        is_incorrect: incorrectQuestionIds.has(q.id),
       }))
 
       // Extract unique topics
       const topics = new Set<string>()
-      processedQuestions.forEach(q => {
+      processedQuestions.forEach((q) => {
         q.topic_tags?.forEach((tag: string) => topics.add(tag))
       })
 
-      console.log(`✅ Successfully loaded ${processedQuestions.length} questions with ${topics.size} unique topics`)
+      console.log(
+        `✅ Successfully loaded ${processedQuestions.length} questions with ${topics.size} unique topics`
+      )
 
       setResult({
         status: 'success',
@@ -98,15 +105,14 @@ export default function TestQuestionsPage() {
         topicsCount: topics.size,
         questions: processedQuestions,
         topics: Array.from(topics),
-        incorrectCount: incorrectQuestionIds.size
+        incorrectCount: incorrectQuestionIds.size,
       })
-
     } catch (error: any) {
       console.error('❌ Error in test:', error)
       setResult({
         status: 'error',
         message: error.message,
-        error
+        error,
       })
     } finally {
       setLoading(false)
@@ -117,8 +123,12 @@ export default function TestQuestionsPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Test Questions Page</h1>
-          <p className="text-gray-600">Please log in to test question fetching.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Test Questions Page
+          </h1>
+          <p className="text-gray-600">
+            Please log in to test question fetching.
+          </p>
         </div>
       </div>
     )
@@ -129,7 +139,9 @@ export default function TestQuestionsPage() {
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Test Questions Fetch</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Test Questions Fetch
+            </h1>
             <button
               onClick={testQuestionsFetch}
               disabled={loading}
@@ -147,9 +159,13 @@ export default function TestQuestionsPage() {
           )}
 
           {result && (
-            <div className={`p-4 rounded-lg ${
-              result.status === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
-            }`}>
+            <div
+              className={`p-4 rounded-lg ${
+                result.status === 'success'
+                  ? 'bg-green-50 border border-green-200'
+                  : 'bg-red-50 border border-red-200'
+              }`}
+            >
               <h3 className="font-medium mb-2">
                 {result.status === 'success' ? '✅ Success' : '❌ Error'}
               </h3>
@@ -158,16 +174,24 @@ export default function TestQuestionsPage() {
               {result.status === 'success' && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div className="bg-white p-3 rounded">
-                    <div className="text-2xl font-bold text-blue-600">{result.questionsCount}</div>
+                    <div className="text-2xl font-bold text-blue-600">
+                      {result.questionsCount}
+                    </div>
                     <div className="text-sm text-gray-600">Questions</div>
                   </div>
                   <div className="bg-white p-3 rounded">
-                    <div className="text-2xl font-bold text-green-600">{result.topicsCount}</div>
+                    <div className="text-2xl font-bold text-green-600">
+                      {result.topicsCount}
+                    </div>
                     <div className="text-sm text-gray-600">Topics</div>
                   </div>
                   <div className="bg-white p-3 rounded">
-                    <div className="text-2xl font-bold text-red-600">{result.incorrectCount}</div>
-                    <div className="text-sm text-gray-600">Incorrect Answers</div>
+                    <div className="text-2xl font-bold text-red-600">
+                      {result.incorrectCount}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Incorrect Answers
+                    </div>
                   </div>
                 </div>
               )}
@@ -184,20 +208,36 @@ export default function TestQuestionsPage() {
           )}
 
           <div className="mt-8 bg-gray-50 rounded-lg p-4">
-            <h3 className="font-medium text-gray-900 mb-2">Current User Info</h3>
+            <h3 className="font-medium text-gray-900 mb-2">
+              Current User Info
+            </h3>
             <pre className="text-xs overflow-auto">
-              {JSON.stringify({
-                id: user.id,
-                email: user.email,
-                profile: user.profile
-              }, null, 2)}
+              {JSON.stringify(
+                {
+                  id: user.id,
+                  email: user.email,
+                  profile: user.profile,
+                },
+                null,
+                2
+              )}
             </pre>
           </div>
 
           <div className="mt-4 text-sm text-gray-600">
-            <p><strong>Purpose:</strong> This page tests the exact same query logic used in the problem bank to help debug why questions might not be showing up.</p>
-            <p><strong>Next:</strong> If this test passes, the issue is likely in the problem bank component's rendering or state management.</p>
-            <p><strong>Check console:</strong> Detailed logs are available in the browser console.</p>
+            <p>
+              <strong>Purpose:</strong> This page tests the exact same query
+              logic used in the problem bank to help debug why questions might
+              not be showing up.
+            </p>
+            <p>
+              <strong>Next:</strong> If this test passes, the issue is likely in
+              the problem bank component's rendering or state management.
+            </p>
+            <p>
+              <strong>Check console:</strong> Detailed logs are available in the
+              browser console.
+            </p>
           </div>
         </div>
       </div>

@@ -2,19 +2,19 @@
 
 import { useState } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
-import { 
-  format, 
-  startOfMonth, 
-  endOfMonth, 
-  startOfWeek, 
-  endOfWeek, 
-  addDays, 
-  addMonths, 
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  addDays,
+  addMonths,
   subMonths,
   isSameMonth,
   isSameDay,
   isToday,
-  getDate
+  getDate,
 } from 'date-fns'
 
 interface CalendarEvent {
@@ -59,7 +59,7 @@ export function Calendar({ events = [], onDateClick }: CalendarProps) {
   }
 
   const getEventForDate = (date: Date) => {
-    return events.find(event => isSameDay(event.date, date))
+    return events.find((event) => isSameDay(event.date, date))
   }
 
   const isSelected = (date: Date) => {
@@ -91,8 +91,11 @@ export function Calendar({ events = [], onDateClick }: CalendarProps) {
 
       {/* Days of Week */}
       <div className="grid grid-cols-7 gap-1 mb-3">
-        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-          <div key={day} className="text-center text-xs font-semibold text-gray-500 py-2">
+        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+          <div
+            key={day}
+            className="text-center text-xs font-semibold text-gray-500 py-2"
+          >
             {day}
           </div>
         ))}
@@ -105,16 +108,17 @@ export function Calendar({ events = [], onDateClick }: CalendarProps) {
           const isCurrentMonth = isSameMonth(day, monthStart)
           const isTodayDate = isToday(day)
           const isSelectedDate = isSelected(day)
-          
+
           return (
             <button
               key={dayIdx}
               onClick={() => handleDateClick(day)}
               className={`
                 relative w-10 h-10 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center
-                ${!isCurrentMonth 
-                  ? 'text-gray-300 hover:text-gray-400' 
-                  : 'text-gray-700 hover:bg-gray-100'
+                ${
+                  !isCurrentMonth
+                    ? 'text-gray-300 hover:text-gray-400'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }
                 ${isTodayDate && isCurrentMonth ? 'bg-violet-600 text-white font-bold' : ''}
                 ${isSelectedDate && !isTodayDate ? 'bg-violet-100 text-violet-700' : ''}
@@ -123,11 +127,15 @@ export function Calendar({ events = [], onDateClick }: CalendarProps) {
             >
               {getDate(day)}
               {event && (
-                <div className={`absolute bottom-0.5 right-0.5 w-1.5 h-1.5 rounded-full ${
-                  event.type === 'visit' ? 'bg-green-500' :
-                  event.type === 'strike' ? 'bg-red-500' :
-                  'bg-blue-500'
-                }`} />
+                <div
+                  className={`absolute bottom-0.5 right-0.5 w-1.5 h-1.5 rounded-full ${
+                    event.type === 'visit'
+                      ? 'bg-green-500'
+                      : event.type === 'strike'
+                        ? 'bg-red-500'
+                        : 'bg-blue-500'
+                  }`}
+                />
               )}
             </button>
           )
@@ -138,9 +146,11 @@ export function Calendar({ events = [], onDateClick }: CalendarProps) {
       <div className="border-t border-gray-100 pt-4">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-sm font-semibold text-gray-900">Your tasks</h4>
-          <button className="text-xs text-gray-500 hover:text-gray-700">Set hours & timeframes</button>
+          <button className="text-xs text-gray-500 hover:text-gray-700">
+            Set hours & timeframes
+          </button>
         </div>
-        
+
         <div className="space-y-3">
           {/* Task 1 */}
           <div className="flex items-center space-x-3">
@@ -151,7 +161,9 @@ export function Calendar({ events = [], onDateClick }: CalendarProps) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-900">Practice</span>
+                <span className="text-sm font-medium text-gray-900">
+                  Practice
+                </span>
                 <span className="text-xs text-gray-500">20</span>
               </div>
               <p className="text-xs text-gray-500 mt-0.5">Math Practice</p>
@@ -167,7 +179,9 @@ export function Calendar({ events = [], onDateClick }: CalendarProps) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-900">Reading</span>
+                <span className="text-sm font-medium text-gray-900">
+                  Reading
+                </span>
                 <span className="text-xs text-gray-500">20</span>
               </div>
               <p className="text-xs text-gray-500 mt-0.5">Reading Practice</p>
@@ -183,7 +197,9 @@ export function Calendar({ events = [], onDateClick }: CalendarProps) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-900">Writing</span>
+                <span className="text-sm font-medium text-gray-900">
+                  Writing
+                </span>
                 <span className="text-xs text-gray-500">20</span>
               </div>
               <p className="text-xs text-gray-500 mt-0.5">Writing Practice</p>

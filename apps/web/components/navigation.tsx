@@ -21,10 +21,15 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center min-w-0 flex-1">
-            <Link href={isAdmin ? '/admin/dashboard' : '/student/dashboard'} className="flex-shrink-0">
-              <h1 className="text-lg md:text-xl font-bold text-blue-600">SAT Practice</h1>
+            <Link
+              href={isAdmin ? '/admin/dashboard' : '/student/dashboard'}
+              className="flex-shrink-0"
+            >
+              <h1 className="text-lg md:text-xl font-bold text-blue-600">
+                SAT Practice
+              </h1>
             </Link>
-            
+
             <div className="ml-4 md:ml-10 flex items-baseline space-x-2 md:space-x-4 overflow-x-auto">
               {isAdmin ? (
                 <>

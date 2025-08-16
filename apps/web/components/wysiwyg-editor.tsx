@@ -15,15 +15,16 @@ interface WysiwygEditorProps {
 export function WysiwygEditor({
   value,
   onChange,
-  placeholder = "Enter text...",
+  placeholder = 'Enter text...',
   height = 150,
-  className = "",
-  compact = false
+  className = '',
+  compact = false,
 }: WysiwygEditorProps) {
   return (
     <div className={className}>
       <div className="text-xs text-gray-600 mb-1">
-        Markdown Mode: **bold** *italic* __underline__ ^^superscript^^ ~~subscript~~
+        Markdown Mode: **bold** *italic* __underline__ ^^superscript^^
+        ~~subscript~~
       </div>
       <textarea
         value={value}

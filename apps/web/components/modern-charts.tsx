@@ -15,9 +15,13 @@ interface ScoreProgressProps {
 
 export function ModernScoreProgress({ data }: ScoreProgressProps) {
   const { labels, datasets } = data
-  
+
   // Handle empty or invalid data
-  if (!datasets || datasets.length === 0 || datasets.every(d => !d.data || d.data.length === 0)) {
+  if (
+    !datasets ||
+    datasets.length === 0 ||
+    datasets.every((d) => !d.data || d.data.length === 0)
+  ) {
     return (
       <div className="h-80 flex items-center justify-center">
         <div className="text-center text-gray-500">
@@ -26,8 +30,10 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
       </div>
     )
   }
-  
-  const allDataPoints = datasets.flatMap(d => d.data).filter(v => typeof v === 'number' && !isNaN(v))
+
+  const allDataPoints = datasets
+    .flatMap((d) => d.data)
+    .filter((v) => typeof v === 'number' && !isNaN(v))
   if (allDataPoints.length === 0) {
     return (
       <div className="h-80 flex items-center justify-center">
@@ -37,11 +43,11 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
       </div>
     )
   }
-  
+
   const maxValue = Math.max(...allDataPoints)
   const minValue = Math.min(...allDataPoints)
   const range = maxValue - minValue || 1
-  
+
   const svgWidth = 400
   const svgHeight = 250
   const padding = 40
@@ -49,12 +55,18 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
   const chartHeight = svgHeight - padding * 2
 
   const getPath = (dataPoints: number[]) => {
-    const points = dataPoints.map((value, index) => {
-      const x = dataPoints.length === 1 ? svgWidth / 2 : padding + (index / (dataPoints.length - 1)) * chartWidth
-      const y = padding + chartHeight - ((value - minValue) / range) * chartHeight
-      return `${x},${y}`
-    }).join(' ')
-    
+    const points = dataPoints
+      .map((value, index) => {
+        const x =
+          dataPoints.length === 1
+            ? svgWidth / 2
+            : padding + (index / (dataPoints.length - 1)) * chartWidth
+        const y =
+          padding + chartHeight - ((value - minValue) / range) * chartHeight
+        return `${x},${y}`
+      })
+      .join(' ')
+
     return `M ${points.split(' ').join(' L ')}`
   }
 
@@ -63,8 +75,11 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
     if (dataPoints.length === 1) {
       // For single data point, create a simple circle area
       const x = svgWidth / 2
-      const y = padding + chartHeight - ((dataPoints[0] - minValue) / range) * chartHeight
-      return `M ${x-10} ${y} A 10 10 0 1 1 ${x+10} ${y} A 10 10 0 1 1 ${x-10} ${y} Z`
+      const y =
+        padding +
+        chartHeight -
+        ((dataPoints[0] - minValue) / range) * chartHeight
+      return `M ${x - 10} ${y} A 10 10 0 1 1 ${x + 10} ${y} A 10 10 0 1 1 ${x - 10} ${y} Z`
     }
     const bottomPath = `L ${padding + chartWidth} ${padding + chartHeight} L ${padding} ${padding + chartHeight} Z`
     return topPath + bottomPath
@@ -75,14 +90,28 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
       <svg width={svgWidth} height={svgHeight} className="overflow-visible">
         <defs>
           {datasets.map((dataset, index) => (
-            <linearGradient key={index} id={`gradient-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor={dataset.borderColor} stopOpacity="0.2" />
-              <stop offset="100%" stopColor={dataset.borderColor} stopOpacity="0.05" />
+            <linearGradient
+              key={index}
+              id={`gradient-${index}`}
+              x1="0%"
+              y1="0%"
+              x2="0%"
+              y2="100%"
+            >
+              <stop
+                offset="0%"
+                stopColor={dataset.borderColor}
+                stopOpacity="0.2"
+              />
+              <stop
+                offset="100%"
+                stopColor={dataset.borderColor}
+                stopOpacity="0.05"
+              />
             </linearGradient>
           ))}
         </defs>
-        
-        
+
         {/* Data lines and areas */}
         {datasets.map((dataset, index) => (
           <g key={index}>
@@ -102,8 +131,15 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
             />
             {/* Points */}
             {dataset.data.map((value, pointIndex) => {
-              const x = dataset.data.length === 1 ? svgWidth / 2 : padding + (pointIndex / (dataset.data.length - 1)) * chartWidth
-              const y = padding + chartHeight - ((value - minValue) / range) * chartHeight
+              const x =
+                dataset.data.length === 1
+                  ? svgWidth / 2
+                  : padding +
+                    (pointIndex / (dataset.data.length - 1)) * chartWidth
+              const y =
+                padding +
+                chartHeight -
+                ((value - minValue) / range) * chartHeight
               return (
                 <circle
                   key={pointIndex}
@@ -118,10 +154,13 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
             })}
           </g>
         ))}
-        
+
         {/* X-axis labels */}
         {labels.map((label, index) => {
-          const x = labels.length === 1 ? svgWidth / 2 : padding + (index / (labels.length - 1)) * chartWidth
+          const x =
+            labels.length === 1
+              ? svgWidth / 2
+              : padding + (index / (labels.length - 1)) * chartWidth
           return (
             <text
               key={index}
@@ -135,7 +174,7 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
             </text>
           )
         })}
-        
+
         {/* Y-axis labels */}
         {Array.from({ length: 5 }, (_, i) => {
           const value = minValue + (i / 4) * range
@@ -154,16 +193,18 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
           )
         })}
       </svg>
-      
+
       {/* Legend */}
       <div className="ml-6 space-y-2">
         {datasets.map((dataset, index) => (
           <div key={index} className="flex items-center space-x-2">
-            <div 
-              className="w-3 h-3 rounded-full" 
+            <div
+              className="w-3 h-3 rounded-full"
               style={{ backgroundColor: dataset.borderColor }}
             />
-            <span className="text-sm font-medium text-gray-600">{dataset.label}</span>
+            <span className="text-sm font-medium text-gray-600">
+              {dataset.label}
+            </span>
           </div>
         ))}
       </div>
@@ -182,20 +223,32 @@ interface StatsCardProps {
   }
 }
 
-export function StatsCard({ title, value, change, changeType, miniChart }: StatsCardProps) {
+export function StatsCard({
+  title,
+  value,
+  change,
+  changeType,
+  miniChart,
+}: StatsCardProps) {
   const getChangeColor = () => {
     switch (changeType) {
-      case 'positive': return 'text-green-600'
-      case 'negative': return 'text-red-600'
-      default: return 'text-gray-500'
+      case 'positive':
+        return 'text-green-600'
+      case 'negative':
+        return 'text-red-600'
+      default:
+        return 'text-gray-500'
     }
   }
 
   const getChangeIcon = () => {
     switch (changeType) {
-      case 'positive': return '↗'
-      case 'negative': return '↘'
-      default: return '→'
+      case 'positive':
+        return '↗'
+      case 'negative':
+        return '↘'
+      default:
+        return '→'
     }
   }
 
@@ -206,7 +259,9 @@ export function StatsCard({ title, value, change, changeType, miniChart }: Stats
           <h3 className="text-sm font-medium text-gray-600 mb-1">{title}</h3>
           <p className="text-2xl font-bold text-gray-900">{value}</p>
           <div className={`flex items-center mt-2 ${getChangeColor()}`}>
-            <span className="text-sm font-medium">{getChangeIcon()} {change}</span>
+            <span className="text-sm font-medium">
+              {getChangeIcon()} {change}
+            </span>
           </div>
         </div>
         {miniChart && (
@@ -226,10 +281,8 @@ interface MiniLineChartProps {
 
 function MiniLineChart({ data, color }: MiniLineChartProps) {
   // Filter out invalid data and ensure we have valid numbers
-  const validData = data.filter(value => 
-    typeof value === 'number' && 
-    !isNaN(value) && 
-    isFinite(value)
+  const validData = data.filter(
+    (value) => typeof value === 'number' && !isNaN(value) && isFinite(value)
   )
 
   // Create a unique gradient ID to avoid conflicts
@@ -240,7 +293,15 @@ function MiniLineChart({ data, color }: MiniLineChartProps) {
     // No valid data - render empty chart
     return (
       <svg width="64" height="48" className="overflow-visible">
-        <line x1="4" y1="24" x2="60" y2="24" stroke={color} strokeWidth="1" opacity="0.3" />
+        <line
+          x1="4"
+          y1="24"
+          x2="60"
+          y2="24"
+          stroke={color}
+          strokeWidth="1"
+          opacity="0.3"
+        />
       </svg>
     )
   }
@@ -260,17 +321,19 @@ function MiniLineChart({ data, color }: MiniLineChartProps) {
   const range = max - min || 1
   const padding = 4 // Add padding to prevent clipping
 
-  const points = validData.map((value, index) => {
-    const x = padding + (index / (validData.length - 1)) * (64 - padding * 2)
-    const y = padding + (1 - (value - min) / range) * (48 - padding * 2)
-    
-    // Double-check for NaN values
-    if (isNaN(x) || isNaN(y)) {
-      return `${padding},24` // fallback to left center
-    }
-    
-    return `${x},${y}`
-  }).join(' ')
+  const points = validData
+    .map((value, index) => {
+      const x = padding + (index / (validData.length - 1)) * (64 - padding * 2)
+      const y = padding + (1 - (value - min) / range) * (48 - padding * 2)
+
+      // Double-check for NaN values
+      if (isNaN(x) || isNaN(y)) {
+        return `${padding},24` // fallback to left center
+      }
+
+      return `${x},${y}`
+    })
+    .join(' ')
 
   return (
     <svg width="64" height="48" className="overflow-visible">
@@ -294,17 +357,10 @@ function MiniLineChart({ data, color }: MiniLineChartProps) {
       />
       {/* Add dots for each data point */}
       {validData.map((value, index) => {
-        const x = padding + (index / (validData.length - 1)) * (64 - padding * 2)
+        const x =
+          padding + (index / (validData.length - 1)) * (64 - padding * 2)
         const y = padding + (1 - (value - min) / range) * (48 - padding * 2)
-        return (
-          <circle
-            key={index}
-            cx={x}
-            cy={y}
-            r="1.5"
-            fill={color}
-          />
-        )
+        return <circle key={index} cx={x} cy={y} r="1.5" fill={color} />
       })}
     </svg>
   )

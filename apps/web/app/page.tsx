@@ -41,7 +41,11 @@ export default function Home() {
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-950">
       <div className="absolute inset-0">
         <div className="absolute inset-0 pointer-events-none">
-          <svg className="w-full h-full text-slate-950 dark:text-white" viewBox="0 0 696 316" fill="none">
+          <svg
+            className="w-full h-full text-slate-950 dark:text-white"
+            viewBox="0 0 696 316"
+            fill="none"
+          >
             <title>Background Paths</title>
             {Array.from({ length: 36 }, (_, i) => ({
               id: i,
@@ -63,7 +67,7 @@ export default function Home() {
                 transition={{
                   duration: 20 + Math.random() * 10,
                   repeat: Number.POSITIVE_INFINITY,
-                  ease: "linear",
+                  ease: 'linear',
                 }}
               />
             ))}
@@ -79,16 +83,16 @@ export default function Home() {
           className="max-w-4xl mx-auto"
         >
           <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold mb-8 tracking-tighter">
-            {"SAT Excellence".split(" ").map((word, wordIndex) => (
+            {'SAT Excellence'.split(' ').map((word, wordIndex) => (
               <span key={wordIndex} className="inline-block mr-4 last:mr-0">
-                {word.split("").map((letter, letterIndex) => (
+                {word.split('').map((letter, letterIndex) => (
                   <motion.span
                     key={`${wordIndex}-${letterIndex}`}
                     initial={{ y: 100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{
                       delay: wordIndex * 0.1 + letterIndex * 0.03,
-                      type: "spring",
+                      type: 'spring',
                       stiffness: 150,
                       damping: 25,
                     }}
@@ -102,15 +106,15 @@ export default function Home() {
               </span>
             ))}
           </h1>
-          
-          <motion.p 
+
+          <motion.p
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 1 }}
             className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto"
           >
-            Master the SAT with full-length mock exams, targeted practice questions, 
-            and detailed performance analytics designed for success.
+            Master the SAT with full-length mock exams, targeted practice
+            questions, and detailed performance analytics designed for success.
           </motion.p>
 
           <motion.div
@@ -133,12 +137,13 @@ export default function Home() {
                               group-hover:-translate-y-0.5 border border-blue-200/50 dark:border-blue-700/50
                               hover:shadow-md dark:hover:shadow-blue-800/30"
                 >
-                  <span className="opacity-90 group-hover:opacity-100 transition-opacity">Sign In</span>
+                  <span className="opacity-90 group-hover:opacity-100 transition-opacity">
+                    Sign In
+                  </span>
                 </Button>
               </Link>
             </div>
           </motion.div>
-
         </motion.div>
       </div>
     </div>

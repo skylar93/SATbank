@@ -12,8 +12,15 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [sessionTest, setSessionTest] = useState('')
-  
-  const { signIn, user, loading: authLoading, error: authError, isAdmin, isStudent } = useAuth()
+
+  const {
+    signIn,
+    user,
+    loading: authLoading,
+    error: authError,
+    isAdmin,
+    isStudent,
+  } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,13 +28,15 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-
     try {
       await signIn(email, password)
-      
+
       // Test session immediately after login
       setTimeout(async () => {
-        const { data: { session }, error } = await supabase.auth.getSession()
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession()
         if (session) {
           setSessionTest(`✅ Session found: ${session.user.email}`)
           // Backup redirect if useEffect doesn't work
@@ -35,10 +44,12 @@ export default function LoginPage() {
             window.location.href = '/student/dashboard'
           }, 2000)
         } else {
-          setSessionTest(`❌ No session found after login: ${error?.message || 'Unknown error'}`)
+          setSessionTest(
+            `❌ No session found after login: ${error?.message || 'Unknown error'}`
+          )
         }
       }, 1000)
-      
+
       // Don't set loading to false here, let AuthContext handle it
       // This prevents the form from becoming interactive again before redirect
     } catch (err: any) {
@@ -50,10 +61,12 @@ export default function LoginPage() {
   // Manual redirect after successful auth
   React.useEffect(() => {
     if (user && !authLoading) {
-      
       // Force redirect regardless of role detection issues
-      const redirectPath = user.profile?.role === 'admin' ? '/admin/dashboard' : '/student/dashboard'
-      
+      const redirectPath =
+        user.profile?.role === 'admin'
+          ? '/admin/dashboard'
+          : '/student/dashboard'
+
       // Use window.location for more reliable redirect
       window.location.href = redirectPath
     }
@@ -70,7 +83,7 @@ export default function LoginPage() {
             Access your SAT mock exams and practice tests
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -112,9 +125,10 @@ export default function LoginPage() {
           )}
 
           {authError && (
-            <div className="text-red-600 text-sm text-center">Auth Error: {authError}</div>
+            <div className="text-red-600 text-sm text-center">
+              Auth Error: {authError}
+            </div>
           )}
-
 
           <div>
             <button
@@ -125,7 +139,6 @@ export default function LoginPage() {
               {loading || authLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
-
         </form>
       </div>
     </div>

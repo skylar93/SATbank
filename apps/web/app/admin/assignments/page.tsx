@@ -3,13 +3,13 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../../contexts/auth-context'
 import { supabase } from '../../../lib/supabase'
-import { 
-  PlusIcon, 
-  MagnifyingGlassIcon, 
-  UserIcon, 
+import {
+  PlusIcon,
+  MagnifyingGlassIcon,
+  UserIcon,
   AcademicCapIcon,
   CalendarIcon,
-  XMarkIcon
+  XMarkIcon,
 } from '@heroicons/react/24/outline'
 
 interface Exam {
@@ -50,10 +50,11 @@ export default function AdminAssignmentsPage() {
   const [dueDate, setDueDate] = useState('')
   const [showResults, setShowResults] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  
+
   // Edit assignment states
   const [showEditModal, setShowEditModal] = useState(false)
-  const [editingAssignment, setEditingAssignment] = useState<ExamAssignment | null>(null)
+  const [editingAssignment, setEditingAssignment] =
+    useState<ExamAssignment | null>(null)
   const [editDueDate, setEditDueDate] = useState('')
   const [editShowResults, setEditShowResults] = useState(true)
 
@@ -67,30 +68,26 @@ export default function AdminAssignmentsPage() {
     try {
       // First test raw access without RLS constraints for debugging
       console.log('Testing raw database access...')
-      
+
       const testExams = await supabase
         .from('exams')
         .select('*', { count: 'exact' })
-      
-      const testProfiles = await supabase  
+
+      const testProfiles = await supabase
         .from('user_profiles')
         .select('*', { count: 'exact' })
-        
+
       console.log('Raw exams query result:', testExams)
       console.log('Raw profiles query result:', testProfiles)
 
       // Load exams and students first
       const [examsData, studentsData] = await Promise.all([
-        supabase
-          .from('exams')
-          .select('*')
-          .eq('is_active', true)
-          .order('title'),
+        supabase.from('exams').select('*').eq('is_active', true).order('title'),
         supabase
           .from('user_profiles')
           .select('*')
           .eq('role', 'student')
-          .order('full_name')
+          .order('full_name'),
       ])
 
       if (examsData.error) throw examsData.error
@@ -103,29 +100,37 @@ export default function AdminAssignmentsPage() {
         .eq('is_active', true)
         .order('assigned_at', { ascending: false })
 
-      let assignmentsData: { data: ExamAssignment[], error: any } = { data: [], error: assignmentError }
-      
+      let assignmentsData: { data: ExamAssignment[]; error: any } = {
+        data: [],
+        error: assignmentError,
+      }
+
       if (!assignmentError && rawAssignments) {
         // Map assignments with exam and student data
-        const enrichedAssignments = rawAssignments.map(assignment => {
-          const exam = examsData.data?.find(e => e.id === assignment.exam_id)
-          const student = studentsData.data?.find(s => s.id === assignment.student_id)
-          
+        const enrichedAssignments = rawAssignments.map((assignment) => {
+          const exam = examsData.data?.find((e) => e.id === assignment.exam_id)
+          const student = studentsData.data?.find(
+            (s) => s.id === assignment.student_id
+          )
+
           return {
             ...assignment,
             exams: exam,
-            user_profiles: student
+            user_profiles: student,
           }
         })
-        
-        assignmentsData = { data: enrichedAssignments as ExamAssignment[], error: null }
+
+        assignmentsData = {
+          data: enrichedAssignments as ExamAssignment[],
+          error: null,
+        }
       }
 
       console.log('=== DEBUGGING ASSIGNMENT DATA ===')
       console.log('Loaded exams:', examsData.data)
       console.log('Loaded students:', studentsData.data)
       console.log('Assignments error:', assignmentsData.error)
-      console.log('Exams error:', examsData.error) 
+      console.log('Exams error:', examsData.error)
       console.log('Students error:', studentsData.error)
       console.log('Exams count:', examsData.data?.length || 0)
       console.log('Students count:', studentsData.data?.length || 0)
@@ -155,9 +160,12 @@ export default function AdminAssignmentsPage() {
           .eq('exam_id', examId)
           .in('student_id', selectedStudents)
 
-        const existingStudentIds = existingAssignments?.map(a => a.student_id) || []
-        const newStudentIds = selectedStudents.filter(id => !existingStudentIds.includes(id))
-        
+        const existingStudentIds =
+          existingAssignments?.map((a) => a.student_id) || []
+        const newStudentIds = selectedStudents.filter(
+          (id) => !existingStudentIds.includes(id)
+        )
+
         if (existingStudentIds.length > 0) {
           // Update existing assignments
           const { error: updateError } = await supabase
@@ -167,7 +175,7 @@ export default function AdminAssignmentsPage() {
               due_date: dueDate || null,
               show_results: showResults,
               is_active: true,
-              assigned_at: new Date().toISOString()
+              assigned_at: new Date().toISOString(),
             })
             .eq('exam_id', examId)
             .in('student_id', existingStudentIds)
@@ -178,13 +186,13 @@ export default function AdminAssignmentsPage() {
 
         if (newStudentIds.length > 0) {
           // Create new assignments
-          const newAssignments = newStudentIds.map(studentId => ({
+          const newAssignments = newStudentIds.map((studentId) => ({
             exam_id: examId,
             student_id: studentId,
             assigned_by: user?.id,
             due_date: dueDate || null,
             show_results: showResults,
-            is_active: true
+            is_active: true,
           }))
 
           const { error: insertError } = await supabase
@@ -195,8 +203,10 @@ export default function AdminAssignmentsPage() {
           totalCreated += newStudentIds.length
         }
       }
-      
-      alert(`Assignment completed! Updated: ${totalUpdated}, Created: ${totalCreated}`)
+
+      alert(
+        `Assignment completed! Updated: ${totalUpdated}, Created: ${totalCreated}`
+      )
 
       setShowAssignModal(false)
       setSelectedExams([])
@@ -228,7 +238,11 @@ export default function AdminAssignmentsPage() {
 
   const handleEditAssignment = (assignment: ExamAssignment) => {
     setEditingAssignment(assignment)
-    setEditDueDate(assignment.due_date ? new Date(assignment.due_date).toISOString().split('T')[0] : '')
+    setEditDueDate(
+      assignment.due_date
+        ? new Date(assignment.due_date).toISOString().split('T')[0]
+        : ''
+    )
     setEditShowResults(assignment.show_results)
     setShowEditModal(true)
   }
@@ -243,7 +257,7 @@ export default function AdminAssignmentsPage() {
           due_date: editDueDate || null,
           show_results: editShowResults,
           assigned_by: user?.id,
-          assigned_at: new Date().toISOString()
+          assigned_at: new Date().toISOString(),
         })
         .eq('id', editingAssignment.id)
 
@@ -261,10 +275,15 @@ export default function AdminAssignmentsPage() {
     }
   }
 
-  const filteredAssignments = assignments.filter(assignment =>
-    assignment.user_profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.user_profiles?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.exams?.title?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAssignments = assignments.filter(
+    (assignment) =>
+      assignment.user_profiles?.full_name
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      assignment.user_profiles?.email
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      assignment.exams?.title?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   if (!user) return null
@@ -275,7 +294,9 @@ export default function AdminAssignmentsPage() {
       <div className="bg-white px-6 py-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Exam Assignments</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Exam Assignments
+            </h1>
             <p className="text-gray-600">Assign specific exams to students</p>
           </div>
           <div className="flex items-center space-x-4">
@@ -293,13 +314,12 @@ export default function AdminAssignmentsPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Separator line */}
         <div className="border-b border-gray-200"></div>
       </div>
 
       <div className="p-6">
-
         {/* Search */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-6">
           <div className="relative">
@@ -321,108 +341,115 @@ export default function AdminAssignmentsPage() {
           </div>
         ) : (
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 overflow-hidden">
-              <table className="min-w-full divide-y divide-purple-200">
-                <thead className="bg-gradient-to-r from-purple-50 to-pink-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
-                      Student
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
-                      Exam
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
-                      Assigned
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
-                      Due Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
-                      Show Results
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-purple-100">
-                  {filteredAssignments.map((assignment) => (
-                    <tr key={assignment.id} className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <UserIcon className="w-8 h-8 text-purple-400 mr-3" />
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {assignment.user_profiles?.full_name}
-                            </div>
-                            <div className="text-sm text-gray-600">
-                              {assignment.user_profiles?.email}
-                            </div>
+            <table className="min-w-full divide-y divide-purple-200">
+              <thead className="bg-gradient-to-r from-purple-50 to-pink-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
+                    Student
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
+                    Exam
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
+                    Assigned
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
+                    Due Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
+                    Show Results
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-purple-100">
+                {filteredAssignments.map((assignment) => (
+                  <tr
+                    key={assignment.id}
+                    className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <UserIcon className="w-8 h-8 text-purple-400 mr-3" />
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {assignment.user_profiles?.full_name}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {assignment.user_profiles?.email}
                           </div>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <AcademicCapIcon className="w-5 h-5 text-purple-500 mr-2" />
-                          <div className="text-sm text-gray-900">
-                            {assignment.exams?.title}
-                          </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <AcademicCapIcon className="w-5 h-5 text-purple-500 mr-2" />
+                        <div className="text-sm text-gray-900">
+                          {assignment.exams?.title}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {new Date(assignment.assigned_at).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {assignment.due_date ? (
-                          <div className="flex items-center">
-                            <CalendarIcon className="w-4 h-4 mr-1" />
-                            {new Date(assignment.due_date).toLocaleDateString()}
-                          </div>
-                        ) : (
-                          'No due date'
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          assignment.show_results 
-                            ? 'bg-purple-100 text-purple-800' 
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {new Date(assignment.assigned_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {assignment.due_date ? (
+                        <div className="flex items-center">
+                          <CalendarIcon className="w-4 h-4 mr-1" />
+                          {new Date(assignment.due_date).toLocaleDateString()}
+                        </div>
+                      ) : (
+                        'No due date'
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          assignment.show_results
+                            ? 'bg-purple-100 text-purple-800'
                             : 'bg-red-100 text-red-800'
-                        }`}>
-                          {assignment.show_results ? 'Visible' : 'Hidden'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          assignment.is_active 
-                            ? 'bg-purple-100 text-purple-800' 
+                        }`}
+                      >
+                        {assignment.show_results ? 'Visible' : 'Hidden'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          assignment.is_active
+                            ? 'bg-purple-100 text-purple-800'
                             : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {assignment.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-3">
-                          <button
-                            onClick={() => handleEditAssignment(assignment)}
-                            className="text-purple-600 hover:text-purple-800 font-medium"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteAssignment(assignment.id)}
-                            className="text-red-600 hover:text-red-700 font-medium"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              
+                        }`}
+                      >
+                        {assignment.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex space-x-3">
+                        <button
+                          onClick={() => handleEditAssignment(assignment)}
+                          className="text-purple-600 hover:text-purple-800 font-medium"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAssignment(assignment.id)}
+                          className="text-red-600 hover:text-red-700 font-medium"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
             {filteredAssignments.length === 0 && (
               <div className="text-center py-12">
                 <AcademicCapIcon className="w-12 h-12 text-purple-400 mx-auto mb-4" />
@@ -437,7 +464,9 @@ export default function AdminAssignmentsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Create Assignment</h2>
+              <h2 className="text-xl font-bold text-gray-900">
+                Create Assignment
+              </h2>
               <button
                 onClick={() => setShowAssignModal(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -457,11 +486,16 @@ export default function AdminAssignmentsPage() {
                     <div className="p-4 text-center text-gray-500">
                       <AcademicCapIcon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
                       <p className="text-sm">No exams found</p>
-                      <p className="text-xs text-gray-400 mt-1">Please create an exam first</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Please create an exam first
+                      </p>
                     </div>
                   ) : (
                     exams.map((exam) => (
-                      <label key={exam.id} className="flex items-center p-3 hover:bg-gray-50 cursor-pointer">
+                      <label
+                        key={exam.id}
+                        className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
+                      >
                         <input
                           type="checkbox"
                           checked={selectedExams.includes(exam.id)}
@@ -469,7 +503,9 @@ export default function AdminAssignmentsPage() {
                             if (e.target.checked) {
                               setSelectedExams([...selectedExams, exam.id])
                             } else {
-                              setSelectedExams(selectedExams.filter(id => id !== exam.id))
+                              setSelectedExams(
+                                selectedExams.filter((id) => id !== exam.id)
+                              )
                             }
                           }}
                           className="mr-3 text-purple-600 focus:ring-purple-500"
@@ -498,19 +534,31 @@ export default function AdminAssignmentsPage() {
                     <div className="p-4 text-center text-gray-500">
                       <UserIcon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
                       <p className="text-sm">No students found</p>
-                      <p className="text-xs text-gray-400 mt-1">Students need to register first</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Students need to register first
+                      </p>
                     </div>
                   ) : (
                     students.map((student) => (
-                      <label key={student.id} className="flex items-center p-3 hover:bg-gray-50 cursor-pointer">
+                      <label
+                        key={student.id}
+                        className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
+                      >
                         <input
                           type="checkbox"
                           checked={selectedStudents.includes(student.id)}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              setSelectedStudents([...selectedStudents, student.id])
+                              setSelectedStudents([
+                                ...selectedStudents,
+                                student.id,
+                              ])
                             } else {
-                              setSelectedStudents(selectedStudents.filter(id => id !== student.id))
+                              setSelectedStudents(
+                                selectedStudents.filter(
+                                  (id) => id !== student.id
+                                )
+                              )
                             }
                           }}
                           className="mr-3 text-purple-600 focus:ring-purple-500"
@@ -556,7 +604,9 @@ export default function AdminAssignmentsPage() {
                       onChange={() => setShowResults(true)}
                       className="mr-2 text-purple-600 focus:ring-purple-500"
                     />
-                    <span className="text-sm text-gray-900">Show results to students</span>
+                    <span className="text-sm text-gray-900">
+                      Show results to students
+                    </span>
                   </label>
                   <label className="flex items-center">
                     <input
@@ -566,11 +616,14 @@ export default function AdminAssignmentsPage() {
                       onChange={() => setShowResults(false)}
                       className="mr-2 text-purple-600 focus:ring-purple-500"
                     />
-                    <span className="text-sm text-gray-900">Hide results from students</span>
+                    <span className="text-sm text-gray-900">
+                      Hide results from students
+                    </span>
                   </label>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  When hidden, students won't see their scores or access the results section
+                  When hidden, students won't see their scores or access the
+                  results section
                 </p>
               </div>
             </div>
@@ -584,7 +637,9 @@ export default function AdminAssignmentsPage() {
               </button>
               <button
                 onClick={handleCreateAssignment}
-                disabled={selectedExams.length === 0 || selectedStudents.length === 0}
+                disabled={
+                  selectedExams.length === 0 || selectedStudents.length === 0
+                }
                 className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Create Assignment
@@ -599,7 +654,9 @@ export default function AdminAssignmentsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Edit Assignment</h2>
+              <h2 className="text-xl font-bold text-gray-900">
+                Edit Assignment
+              </h2>
               <button
                 onClick={() => setShowEditModal(false)}
                 className="text-gray-400 hover:text-gray-600"

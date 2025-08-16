@@ -1,21 +1,24 @@
 'use client'
 
-import { useEffect, useState, useRef, useCallback, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '../../../../../contexts/auth-context'
 import { useAdminPreviewState } from '../../../../../hooks/use-admin-preview-state'
 import { type Question } from '../../../../../lib/exam-service'
 import { QuestionDisplay } from '../../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../../components/exam/exam-navigation'
-import { AcademicCapIcon, BookOpenIcon, ClockIcon } from '@heroicons/react/24/outline'
-import { devLogger } from '../../../../../lib/logger'
+import {
+  AcademicCapIcon,
+  BookOpenIcon,
+  ClockIcon,
+} from '@heroicons/react/24/outline'
 
 function AdminExamPreviewContent() {
   const params = useParams()
   const router = useRouter()
   const { user, loading: authLoading, isAdmin } = useAuth()
   const examId = params.examId as string
-  
+
   const {
     examState,
     loading,
@@ -32,14 +35,14 @@ function AdminExamPreviewContent() {
     getCurrentAnswer,
     toggleMarkForReview,
     isMarkedForReview,
-    getMarkedQuestions
+    getMarkedQuestions,
   } = useAdminPreviewState()
 
   const [showStartScreen, setShowStartScreen] = useState(true)
   const [currentAnswer, setCurrentAnswer] = useState('')
   const [isUserSelecting, setIsUserSelecting] = useState(false)
   const [hasInitialized, setHasInitialized] = useState(false)
-  
+
   // Reset initialization flag when examId changes
   useEffect(() => {
     setHasInitialized(false)
@@ -55,25 +58,48 @@ function AdminExamPreviewContent() {
 
   // Initialize exam when component mounts
   useEffect(() => {
-    if (!authLoading && user && isAdmin && examId && !hasInitialized && !loading) {
+    if (
+      !authLoading &&
+      user &&
+      isAdmin &&
+      examId &&
+      !hasInitialized &&
+      !loading
+    ) {
       setHasInitialized(true)
       initializeExam(examId)
     }
-  }, [authLoading, user, isAdmin, examId, hasInitialized, loading, initializeExam, router])
+  }, [
+    authLoading,
+    user,
+    isAdmin,
+    examId,
+    hasInitialized,
+    loading,
+    initializeExam,
+    router,
+  ])
 
   // Update current answer when question changes (but not when user is actively selecting)
   useEffect(() => {
     if (examState.modules.length > 0 && !isUserSelecting) {
       const currentModule = examState.modules[examState.currentModuleIndex]
       if (currentModule) {
-        const currentQuestion = currentModule.questions[currentModule.currentQuestionIndex]
+        const currentQuestion =
+          currentModule.questions[currentModule.currentQuestionIndex]
         if (currentQuestion) {
-          const existingAnswer = currentModule.answers[currentQuestion.id]?.answer
+          const existingAnswer =
+            currentModule.answers[currentQuestion.id]?.answer
           setCurrentAnswer(existingAnswer || '')
         }
       }
     }
-  }, [examState.modules, examState.currentModuleIndex, examState.modules[examState.currentModuleIndex]?.currentQuestionIndex, isUserSelecting])
+  }, [
+    examState.modules,
+    examState.currentModuleIndex,
+    examState.modules[examState.currentModuleIndex]?.currentQuestionIndex,
+    isUserSelecting,
+  ])
 
   // Handle exam start
   const handleStartExam = async () => {
@@ -91,10 +117,10 @@ function AdminExamPreviewContent() {
   const handleAnswerChange = (answer: string) => {
     setIsUserSelecting(true)
     setCurrentAnswer(answer)
-    
+
     // Store answer locally in preview state
     setLocalAnswer(answer)
-    
+
     // Clear the flag after a short delay to allow answer loading on navigation
     setTimeout(() => setIsUserSelecting(false), 100)
   }
@@ -125,12 +151,12 @@ function AdminExamPreviewContent() {
     setIsUserSelecting(false)
     goToQuestion(questionIndex)
   }
-  
+
   // Handle admin navigation to specific module and question
   const handleGoToModule = (moduleIndex: number, questionIndex: number) => {
     saveCurrentAnswer()
     setIsUserSelecting(false)
-    
+
     goToModuleAndQuestion(moduleIndex, questionIndex)
   }
 
@@ -146,15 +172,18 @@ function AdminExamPreviewContent() {
     const handleKeyPress = (event: KeyboardEvent) => {
       // Only handle keyboard navigation when not typing in inputs
       if (examState.status !== 'in_progress') return
-      
+
       const target = event.target as HTMLElement
-      const isInputActive = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
-      
+      const isInputActive =
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+
       if (isInputActive) return
-      
+
       const currentModule = examState.modules[examState.currentModuleIndex]
       if (!currentModule) return
-      
+
       if (event.key === 'ArrowLeft') {
         event.preventDefault()
         if (currentModule.currentQuestionIndex > 0) {
@@ -162,7 +191,10 @@ function AdminExamPreviewContent() {
         }
       } else if (event.key === 'ArrowRight') {
         event.preventDefault()
-        if (currentModule.currentQuestionIndex < currentModule.questions.length - 1) {
+        if (
+          currentModule.currentQuestionIndex <
+          currentModule.questions.length - 1
+        ) {
           handleNext()
         }
       }
@@ -170,7 +202,13 @@ function AdminExamPreviewContent() {
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [examState.status, examState.modules, examState.currentModuleIndex, handleNext, handlePrevious])
+  }, [
+    examState.status,
+    examState.modules,
+    examState.currentModuleIndex,
+    handleNext,
+    handlePrevious,
+  ])
 
   // Handle module completion
   const handleSubmitModule = async () => {
@@ -188,7 +226,7 @@ function AdminExamPreviewContent() {
   const getAnsweredQuestions = () => {
     const answeredSet = new Set<number>()
     let globalIndex = 1
-    
+
     examState.modules.forEach((module) => {
       module.questions.forEach((question) => {
         if (module.answers[question.id]) {
@@ -220,10 +258,13 @@ function AdminExamPreviewContent() {
       <div className="min-h-screen bg-gray-50">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="text-red-600 text-xl mb-4">Error loading exam preview</div>
+            <div className="text-red-600 text-xl mb-4">
+              Error loading exam preview
+            </div>
             <p className="text-gray-600 mb-4">{error}</p>
             <div className="text-xs text-gray-500 mb-4">
-              Admin Preview Mode<br/>
+              Admin Preview Mode
+              <br />
               Exam ID: {examId}
             </div>
             <button
@@ -277,7 +318,7 @@ function AdminExamPreviewContent() {
                 </button>
               </div>
             </div>
-            
+
             <div className="text-center mb-8">
               <div className="w-20 h-20 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <AcademicCapIcon className="w-10 h-10 text-white" />
@@ -289,23 +330,29 @@ function AdminExamPreviewContent() {
                 {examState.exam.description}
               </p>
             </div>
-            
+
             <div className="mb-8">
               <div className="bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-2xl p-6 mb-8">
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="w-10 h-10 bg-violet-500 rounded-xl flex items-center justify-center">
                     <BookOpenIcon className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className="text-lg font-semibold text-violet-800">Admin Preview Features</h3>
+                  <h3 className="text-lg font-semibold text-violet-800">
+                    Admin Preview Features
+                  </h3>
                 </div>
                 <ul className="space-y-3 text-violet-700">
                   <li className="flex items-start space-x-3">
                     <span className="w-2 h-2 bg-violet-400 rounded-full mt-2 flex-shrink-0"></span>
-                    <span>Navigate freely between all modules and questions</span>
+                    <span>
+                      Navigate freely between all modules and questions
+                    </span>
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="w-2 h-2 bg-violet-400 rounded-full mt-2 flex-shrink-0"></span>
-                    <span>Edit questions directly in the preview interface</span>
+                    <span>
+                      Edit questions directly in the preview interface
+                    </span>
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="w-2 h-2 bg-violet-400 rounded-full mt-2 flex-shrink-0"></span>
@@ -326,21 +373,31 @@ function AdminExamPreviewContent() {
                 {examState.modules.map((module, index) => {
                   const colors = [
                     'from-indigo-50 to-indigo-100 border-indigo-200',
-                    'from-violet-50 to-violet-100 border-violet-200', 
+                    'from-violet-50 to-violet-100 border-violet-200',
                     'from-purple-50 to-purple-100 border-purple-200',
-                    'from-pink-50 to-pink-100 border-pink-200'
+                    'from-pink-50 to-pink-100 border-pink-200',
                   ]
-                  const iconColors = ['bg-indigo-500', 'bg-violet-500', 'bg-purple-500', 'bg-pink-500']
+                  const iconColors = [
+                    'bg-indigo-500',
+                    'bg-violet-500',
+                    'bg-purple-500',
+                    'bg-pink-500',
+                  ]
                   const hoverColors = [
                     'hover:from-indigo-100 hover:to-indigo-200',
                     'hover:from-violet-100 hover:to-violet-200',
-                    'hover:from-purple-100 hover:to-purple-200', 
-                    'hover:from-pink-100 hover:to-pink-200'
+                    'hover:from-purple-100 hover:to-purple-200',
+                    'hover:from-pink-100 hover:to-pink-200',
                   ]
-                  
+
                   return (
-                    <div key={module.module} className={`bg-gradient-to-r ${colors[index]} border ${hoverColors[index]} p-6 rounded-2xl text-center transition-all duration-200 hover:shadow-lg`}>
-                      <div className={`w-12 h-12 ${iconColors[index]} rounded-xl flex items-center justify-center mx-auto mb-4`}>
+                    <div
+                      key={module.module}
+                      className={`bg-gradient-to-r ${colors[index]} border ${hoverColors[index]} p-6 rounded-2xl text-center transition-all duration-200 hover:shadow-lg`}
+                    >
+                      <div
+                        className={`w-12 h-12 ${iconColors[index]} rounded-xl flex items-center justify-center mx-auto mb-4`}
+                      >
                         {module.module.includes('english') ? (
                           <BookOpenIcon className="w-6 h-6 text-white" />
                         ) : (
@@ -370,7 +427,7 @@ function AdminExamPreviewContent() {
               >
                 Start Preview
               </button>
-              
+
               <p className="text-sm text-gray-500 bg-gray-50 px-4 py-2 rounded-xl inline-block">
                 Preview mode: Navigate through questions without saving answers
               </p>
@@ -384,7 +441,7 @@ function AdminExamPreviewContent() {
   // Main exam interface
   const currentModule = examState.modules[examState.currentModuleIndex]
   const currentQuestion = getCurrentQuestion()
-  
+
   if (!currentModule || !currentQuestion) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -393,12 +450,21 @@ function AdminExamPreviewContent() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-gray-600 mb-4">Loading question...</p>
             <div className="text-xs text-gray-500 mb-4 max-w-md">
-              Debug info:<br/>
-              Modules: {examState.modules.length}<br/>
-              Current Module Index: {examState.currentModuleIndex}<br/>
-              Current Module: {currentModule ? `${currentModule.module} (${currentModule.questions.length} questions)` : 'null'}<br/>
-              Current Question: {currentQuestion ? 'loaded' : 'null'}<br/>
-              Status: {examState.status}<br/>
+              Debug info:
+              <br />
+              Modules: {examState.modules.length}
+              <br />
+              Current Module Index: {examState.currentModuleIndex}
+              <br />
+              Current Module:{' '}
+              {currentModule
+                ? `${currentModule.module} (${currentModule.questions.length} questions)`
+                : 'null'}
+              <br />
+              Current Question: {currentQuestion ? 'loaded' : 'null'}
+              <br />
+              Status: {examState.status}
+              <br />
               Error: {error || 'none'}
             </div>
             <div className="space-y-2">
@@ -426,8 +492,10 @@ function AdminExamPreviewContent() {
     )
   }
 
-  const isLastQuestion = currentModule.currentQuestionIndex === currentModule.questions.length - 1
-  const isLastModule = examState.currentModuleIndex === examState.modules.length - 1
+  const isLastQuestion =
+    currentModule.currentQuestionIndex === currentModule.questions.length - 1
+  const isLastModule =
+    examState.currentModuleIndex === examState.modules.length - 1
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -448,7 +516,7 @@ function AdminExamPreviewContent() {
               {currentModule.module.replace(/(\d)/, ' $1').toUpperCase()}
             </span>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             <div className="bg-purple-500 text-white px-3 py-1.5 rounded-full text-xs font-medium">
               Preview Mode
@@ -501,14 +569,16 @@ function AdminExamPreviewContent() {
 
 export default function AdminExamPreviewPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading admin preview...</p>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading admin preview...</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <AdminExamPreviewContent />
     </Suspense>
   )

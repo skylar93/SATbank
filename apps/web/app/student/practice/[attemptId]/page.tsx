@@ -32,11 +32,13 @@ export default function PracticeSession() {
 
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [userAnswers, setUserAnswers] = useState<Map<string, UserAnswer>>(new Map())
+  const [userAnswers, setUserAnswers] = useState<Map<string, UserAnswer>>(
+    new Map()
+  )
   const [practiceSettings, setPracticeSettings] = useState<PracticeSettings>({
     shuffleQuestions: true,
     showExplanations: true,
-    timeLimit: 0
+    timeLimit: 0,
   })
   const [loading, setLoading] = useState(true)
   const [sessionStartTime, setSessionStartTime] = useState<number>(Date.now())
@@ -58,7 +60,9 @@ export default function PracticeSession() {
       // Get practice data from localStorage
       const practiceDataStr = localStorage.getItem(`practice_${attemptId}`)
       if (!practiceDataStr) {
-        console.error('Practice session not found. Redirecting to problem bank.')
+        console.error(
+          'Practice session not found. Redirecting to problem bank.'
+        )
         router.push('/student/problem-bank')
         return
       }
@@ -78,9 +82,9 @@ export default function PracticeSession() {
       let orderedQuestions = questionsData || []
       if (practiceData.settings.shuffleQuestions) {
         // Questions are already shuffled in the practice data
-        orderedQuestions = practiceData.questions.map((id: string) => 
-          questionsData?.find(q => q.id === id)
-        ).filter(Boolean)
+        orderedQuestions = practiceData.questions
+          .map((id: string) => questionsData?.find((q) => q.id === id))
+          .filter(Boolean)
       }
 
       setQuestions(orderedQuestions)
@@ -90,7 +94,7 @@ export default function PracticeSession() {
         .from('test_attempts')
         .update({
           status: 'in_progress',
-          started_at: new Date().toISOString()
+          started_at: new Date().toISOString(),
         })
         .eq('id', attemptId)
 
@@ -98,7 +102,6 @@ export default function PracticeSession() {
 
       setSessionStartTime(Date.now())
       setQuestionStartTime(Date.now())
-
     } catch (error) {
       console.error('Error initializing practice session:', error)
       console.error('Failed to start practice session. Please try again.')
@@ -108,53 +111,62 @@ export default function PracticeSession() {
     }
   }
 
-  const handleAnswer = useCallback(async (answer: string) => {
-    const currentQuestion = questions[currentQuestionIndex]
-    if (!currentQuestion) return
+  const handleAnswer = useCallback(
+    async (answer: string) => {
+      const currentQuestion = questions[currentQuestionIndex]
+      if (!currentQuestion) return
 
-    const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000)
-    const isCorrect = answer === currentQuestion.correct_answer
+      const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000)
+      const isCorrect = answer === currentQuestion.correct_answer
 
-    // Store answer locally
-    const userAnswer: UserAnswer = {
-      question_id: currentQuestion.id,
-      user_answer: answer,
-      is_correct: isCorrect,
-      time_spent_seconds: timeSpent
-    }
+      // Store answer locally
+      const userAnswer: UserAnswer = {
+        question_id: currentQuestion.id,
+        user_answer: answer,
+        is_correct: isCorrect,
+        time_spent_seconds: timeSpent,
+      }
 
-    setUserAnswers(prev => new Map(prev.set(currentQuestion.id, userAnswer)))
+      setUserAnswers(
+        (prev) => new Map(prev.set(currentQuestion.id, userAnswer))
+      )
 
-    // Save to database
-    try {
-      const { error } = await supabase
-        .from('user_answers')
-        .upsert({
+      // Save to database
+      try {
+        const { error } = await supabase.from('user_answers').upsert({
           attempt_id: attemptId,
           question_id: currentQuestion.id,
           user_answer: answer,
           is_correct: isCorrect,
-          time_spent_seconds: timeSpent
+          time_spent_seconds: timeSpent,
         })
 
-      if (error) throw error
-    } catch (error) {
-      console.error('Error saving answer:', error)
-    }
+        if (error) throw error
+      } catch (error) {
+        console.error('Error saving answer:', error)
+      }
 
-    // Show explanation if enabled
-    if (practiceSettings.showExplanations && currentQuestion.explanation) {
-      setShowExplanation(true)
-    } else {
-      goToNextQuestion()
-    }
-  }, [currentQuestionIndex, questions, attemptId, questionStartTime, practiceSettings.showExplanations])
+      // Show explanation if enabled
+      if (practiceSettings.showExplanations && currentQuestion.explanation) {
+        setShowExplanation(true)
+      } else {
+        goToNextQuestion()
+      }
+    },
+    [
+      currentQuestionIndex,
+      questions,
+      attemptId,
+      questionStartTime,
+      practiceSettings.showExplanations,
+    ]
+  )
 
   const goToNextQuestion = useCallback(() => {
     setShowExplanation(false)
-    
+
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1)
+      setCurrentQuestionIndex((prev) => prev + 1)
       setQuestionStartTime(Date.now())
     } else {
       completePracticeSession()
@@ -164,7 +176,9 @@ export default function PracticeSession() {
   const completePracticeSession = async () => {
     try {
       const totalTimeSpent = Math.floor((Date.now() - sessionStartTime) / 1000)
-      const correctAnswers = Array.from(userAnswers.values()).filter(a => a.is_correct).length
+      const correctAnswers = Array.from(userAnswers.values()).filter(
+        (a) => a.is_correct
+      ).length
       const totalScore = Math.round((correctAnswers / questions.length) * 100)
 
       // Update attempt status
@@ -174,7 +188,7 @@ export default function PracticeSession() {
           status: 'completed',
           completed_at: new Date().toISOString(),
           total_score: totalScore,
-          time_spent: { total: totalTimeSpent }
+          time_spent: { total: totalTimeSpent },
         })
         .eq('id', attemptId)
 
@@ -184,7 +198,6 @@ export default function PracticeSession() {
 
       // Clean up localStorage
       localStorage.removeItem(`practice_${attemptId}`)
-
     } catch (error) {
       console.error('Error completing practice session:', error)
     }
@@ -197,7 +210,7 @@ export default function PracticeSession() {
 
   const goToPreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1)
+      setCurrentQuestionIndex((prev) => prev - 1)
       setQuestionStartTime(Date.now())
       setShowExplanation(false)
     }
@@ -225,9 +238,11 @@ export default function PracticeSession() {
   }
 
   if (isComplete || timeExpired) {
-    const correctAnswers = Array.from(userAnswers.values()).filter(a => a.is_correct).length
+    const correctAnswers = Array.from(userAnswers.values()).filter(
+      (a) => a.is_correct
+    ).length
     const accuracy = ((correctAnswers / questions.length) * 100).toFixed(1)
-    
+
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
@@ -236,15 +251,35 @@ export default function PracticeSession() {
             <div className="mb-6">
               {timeExpired ? (
                 <div className="text-red-600 mb-4">
-                  <svg className="mx-auto h-16 w-16 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="mx-auto h-16 w-16 mb-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <h2 className="text-2xl font-bold">Time Expired!</h2>
                 </div>
               ) : (
                 <div className="text-green-600 mb-4">
-                  <svg className="mx-auto h-16 w-16 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="mx-auto h-16 w-16 mb-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <h2 className="text-2xl font-bold">Practice Complete!</h2>
                 </div>
@@ -253,11 +288,15 @@ export default function PracticeSession() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-blue-50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-blue-600">{correctAnswers}/{questions.length}</div>
+                <div className="text-2xl font-bold text-blue-600">
+                  {correctAnswers}/{questions.length}
+                </div>
                 <div className="text-sm text-gray-600">Questions Correct</div>
               </div>
               <div className="bg-green-50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-green-600">{accuracy}%</div>
+                <div className="text-2xl font-bold text-green-600">
+                  {accuracy}%
+                </div>
                 <div className="text-sm text-gray-600">Accuracy</div>
               </div>
               <div className="bg-purple-50 rounded-lg p-4">
@@ -294,19 +333,22 @@ export default function PracticeSession() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      
+
       <div className="max-w-6xl mx-auto py-4 px-4">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Practice Session</h1>
+              <h1 className="text-xl font-bold text-gray-900">
+                Practice Session
+              </h1>
               <p className="text-sm text-gray-600">
                 Question {currentQuestionIndex + 1} of {questions.length}
-                {practiceSettings.isIncorrectReview && ' • Reviewing Incorrect Answers'}
+                {practiceSettings.isIncorrectReview &&
+                  ' • Reviewing Incorrect Answers'}
               </p>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               {practiceSettings.timeLimit > 0 && (
                 <ExamTimer
@@ -315,7 +357,12 @@ export default function PracticeSession() {
                 />
               )}
               <div className="text-sm text-gray-600">
-                Score: {Array.from(userAnswers.values()).filter(a => a.is_correct).length}/{userAnswers.size}
+                Score:{' '}
+                {
+                  Array.from(userAnswers.values()).filter((a) => a.is_correct)
+                    .length
+                }
+                /{userAnswers.size}
               </div>
             </div>
           </div>
@@ -325,7 +372,9 @@ export default function PracticeSession() {
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                style={{
+                  width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`,
+                }}
               ></div>
             </div>
           </div>
@@ -339,8 +388,10 @@ export default function PracticeSession() {
               <div className="grid grid-cols-5 lg:grid-cols-1 gap-2">
                 {questions.map((_, index) => {
                   const hasAnswer = userAnswers.has(questions[index]?.id || '')
-                  const isCorrect = userAnswers.get(questions[index]?.id || '')?.is_correct
-                  
+                  const isCorrect = userAnswers.get(
+                    questions[index]?.id || ''
+                  )?.is_correct
+
                   return (
                     <button
                       key={index}
@@ -349,10 +400,10 @@ export default function PracticeSession() {
                         index === currentQuestionIndex
                           ? 'bg-blue-600 text-white'
                           : hasAnswer
-                          ? isCorrect
-                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                            : 'bg-red-100 text-red-800 hover:bg-red-200'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? isCorrect
+                              ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                              : 'bg-red-100 text-red-800 hover:bg-red-200'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
                       {index + 1}
@@ -370,27 +421,45 @@ export default function PracticeSession() {
                 {showExplanation && currentQuestion.explanation ? (
                   <div className="p-6">
                     <div className="mb-4">
-                      <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                        currentAnswer?.is_correct ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
-                        {currentAnswer?.is_correct ? '✓ Correct!' : '✗ Incorrect'}
+                      <div
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                          currentAnswer?.is_correct
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {currentAnswer?.is_correct
+                          ? '✓ Correct!'
+                          : '✗ Incorrect'}
                       </div>
                     </div>
 
                     <div className="space-y-4">
                       <div>
-                        <h3 className="font-medium text-gray-900 mb-2">Your Answer:</h3>
-                        <p className="text-gray-700">{currentAnswer?.user_answer}</p>
+                        <h3 className="font-medium text-gray-900 mb-2">
+                          Your Answer:
+                        </h3>
+                        <p className="text-gray-700">
+                          {currentAnswer?.user_answer}
+                        </p>
                       </div>
 
                       <div>
-                        <h3 className="font-medium text-gray-900 mb-2">Correct Answer:</h3>
-                        <p className="text-green-700 font-medium">{currentQuestion.correct_answer}</p>
+                        <h3 className="font-medium text-gray-900 mb-2">
+                          Correct Answer:
+                        </h3>
+                        <p className="text-green-700 font-medium">
+                          {currentQuestion.correct_answer}
+                        </p>
                       </div>
 
                       <div>
-                        <h3 className="font-medium text-gray-900 mb-2">Explanation:</h3>
-                        <p className="text-gray-700 whitespace-pre-wrap">{currentQuestion.explanation}</p>
+                        <h3 className="font-medium text-gray-900 mb-2">
+                          Explanation:
+                        </h3>
+                        <p className="text-gray-700 whitespace-pre-wrap">
+                          {currentQuestion.explanation}
+                        </p>
                       </div>
                     </div>
 
@@ -406,7 +475,9 @@ export default function PracticeSession() {
                         onClick={goToNextQuestion}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors"
                       >
-                        {currentQuestionIndex === questions.length - 1 ? 'Finish Practice' : 'Next Question →'}
+                        {currentQuestionIndex === questions.length - 1
+                          ? 'Finish Practice'
+                          : 'Next Question →'}
                       </button>
                     </div>
                   </div>

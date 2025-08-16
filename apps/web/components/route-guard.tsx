@@ -29,7 +29,9 @@ export function RouteGuard({ children }: RouteGuardProps) {
 
     // If authenticated but on login/signup, redirect to appropriate dashboard
     if (user && (pathname === '/login' || pathname === '/signup')) {
-      console.log('🛡️ RouteGuard: Authenticated user on auth page, redirecting...')
+      console.log(
+        '🛡️ RouteGuard: Authenticated user on auth page, redirecting...'
+      )
       if (isAdmin) {
         router.push('/admin/dashboard')
       } else if (isStudent) {
@@ -48,10 +50,11 @@ export function RouteGuard({ children }: RouteGuardProps) {
     // Student route protection - but allow admins to preview exams
     if (user && pathname.startsWith('/student') && !isStudent) {
       // Allow admins to access exam routes in preview mode
-      const isExamPreview = pathname.startsWith('/student/exam/') && 
-                           new URL(window.location.href).searchParams.get('preview') === 'true' && 
-                           isAdmin
-      
+      const isExamPreview =
+        pathname.startsWith('/student/exam/') &&
+        new URL(window.location.href).searchParams.get('preview') === 'true' &&
+        isAdmin
+
       if (!isExamPreview) {
         console.log('🛡️ RouteGuard: Non-student trying to access student route')
         router.push('/admin/dashboard')
@@ -60,7 +63,6 @@ export function RouteGuard({ children }: RouteGuardProps) {
         console.log('🛡️ RouteGuard: Allowing admin exam preview')
       }
     }
-
   }, [user, loading, isAdmin, isStudent, pathname, router])
 
   // Show loading while checking authentication

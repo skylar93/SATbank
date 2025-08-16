@@ -13,7 +13,7 @@ export default function SignupPage() {
   const [targetScore, setTargetScore] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  
+
   const { signUp } = useAuth()
   const router = useRouter()
 
@@ -49,11 +49,14 @@ export default function SignupPage() {
             Start your SAT preparation journey
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="fullName"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Full Name
               </label>
               <input
@@ -69,7 +72,10 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email Address
               </label>
               <input
@@ -86,7 +92,10 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <input
@@ -104,7 +113,10 @@ export default function SignupPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="gradeLevel" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="gradeLevel"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Grade Level
                 </label>
                 <select
@@ -123,7 +135,10 @@ export default function SignupPage() {
               </div>
 
               <div>
-                <label htmlFor="targetScore" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="targetScore"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Target Score
                 </label>
                 <input
@@ -158,7 +173,10 @@ export default function SignupPage() {
           <div className="text-center">
             <span className="text-sm text-gray-600">
               Already have an account?{' '}
-              <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+              <Link
+                href="/login"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
                 Sign in
               </Link>
             </span>
