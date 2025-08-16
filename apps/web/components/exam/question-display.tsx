@@ -401,7 +401,6 @@ export function QuestionDisplay({
     
     // Prevent multiple simultaneous saves
     if (saving) {
-      console.log('🔄 Save already in progress, skipping...')
       return
     }
     
@@ -409,19 +408,9 @@ export function QuestionDisplay({
     let success = false
     
     try {
-      console.log('🔄 Attempting to save question:', {
-        questionId: question.id,
-        updates: {
-          question_text: editForm.question_text,
-          options: editForm.options,
-          correct_answer: editForm.correct_answer,
-          explanation: editForm.explanation
-        }
-      })
 
       // Check authentication session
       const { data: { session } } = await supabase.auth.getSession()
-      console.log('🔍 Current session:', session ? 'Authenticated' : 'Not authenticated')
 
       if (!session) {
         throw new Error('No authentication session found')
@@ -434,7 +423,6 @@ export function QuestionDisplay({
         .eq('id', question.id)
         .single()
       
-      console.log('🔍 Read test:', { readTest: !!readTest, readError })
 
       if (readError) {
         throw new Error(`Read test failed: ${readError.message}`)
@@ -469,7 +457,6 @@ export function QuestionDisplay({
         .update(updateData)
         .eq('id', question.id)
 
-      console.log('🔍 Supabase response:', { data, error })
 
       if (error) {
         console.error('❌ Supabase error details:', {
@@ -481,7 +468,6 @@ export function QuestionDisplay({
         throw new Error(`Database error: ${error.message}`)
       }
 
-      console.log('✅ Question updated successfully:', data)
 
       // Update the local question object
       const updatedQuestion = {
@@ -503,14 +489,12 @@ export function QuestionDisplay({
       
       setIsEditing(false)
       success = true
-      console.log('✅ Question saved successfully!')
       
     } catch (error) {
       console.error('❌ Unexpected error saving question:', error)
       console.error(`❌ Failed to save question: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
       setSaving(false)
-      console.log('🔄 Save process completed, success:', success)
     }
   }
 

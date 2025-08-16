@@ -5,6 +5,7 @@ import { ExamService, type Question, type Exam, type TestAttempt, type ModuleTyp
 import { useAuth } from '../contexts/auth-context'
 import { checkAnswer } from '../lib/answer-checker'
 import { supabase } from '../lib/supabase'
+import { devLogger } from '../lib/logger'
 
 interface ExamAnswer {
   questionId: string
@@ -46,34 +47,26 @@ export function useAdminPreviewState() {
 
   // Initialize exam with questions for admin preview
   const initializeExam = useCallback(async (examId: string) => {
-    console.log('Admin Preview: Starting initialization for exam:', examId)
     setLoading(true)
     setError(null)
 
     try {
       // Get exam details
-      console.log('Admin Preview: Fetching exam details...')
       const exam = await ExamService.getExam(examId)
       if (!exam) {
-        console.error('Admin Preview: Exam not found')
         throw new Error('Exam not found')
       }
-      console.log('Admin Preview: Exam found:', exam.title)
 
       // Load questions for all modules
       const moduleStates: ModuleState[] = []
-      console.log('Admin Preview: Loading questions for all modules...')
       
       for (const moduleType of MODULE_ORDER) {
-        console.log(`Admin Preview: Fetching questions for module: ${moduleType}`)
         const questions = await ExamService.getQuestions(examId, moduleType)
         const timeLimit = exam.time_limits[moduleType] || 60
 
-        console.log(`Admin Preview: Module ${moduleType} loaded ${questions.length} questions`)
-
         // Skip modules with no questions (don't add them to the array)
         if (questions.length === 0) {
-          console.warn(`Admin Preview: Skipping module ${moduleType} - no questions found`)
+          devLogger.warn(`Admin Preview: Skipping module ${moduleType} - no questions found`)
           continue
         }
 
@@ -88,24 +81,19 @@ export function useAdminPreviewState() {
         })
       }
 
-      console.log('Admin Preview: Final module states:', moduleStates.length, 'modules loaded')
-
       // Ensure we have at least one module with questions
       if (moduleStates.length === 0) {
-        console.error('Admin Preview: No modules with questions found!')
         throw new Error('No questions found for any module in this exam')
       }
 
-      console.log('Admin Preview: Setting exam state...')
       setExamState({
         exam,
         modules: moduleStates,
         currentModuleIndex: 0,
         status: 'in_progress'
       })
-      console.log('Admin Preview: Exam state set successfully')
     } catch (err: any) {
-      console.error('Admin Preview: Error occurred:', err)
+      devLogger.error('Admin Preview: Error occurred:', err)
       setError(err.message)
     } finally {
       setLoading(false)
@@ -264,7 +252,6 @@ export function useAdminPreviewState() {
               questions: newQuestions
             }
             
-            console.log('📝 Question updated in admin preview state:', updatedQuestion.id)
             break
           }
         }
@@ -279,22 +266,13 @@ export function useAdminPreviewState() {
 
   // Move to next module (admin preview)
   const nextModule = useCallback(() => {
-    console.log('Admin Preview: nextModule called:', {
-      currentModuleIndex: examState.currentModuleIndex,
-      totalModules: examState.modules.length
-    })
-    
     const nextModuleIndex = examState.currentModuleIndex + 1
-    console.log('Admin Preview: Attempting to advance to module index:', nextModuleIndex)
     
     if (nextModuleIndex >= examState.modules.length) {
       // Complete preview
-      console.log('Admin Preview: Reached end of modules')
       setExamState(prev => ({ ...prev, status: 'completed' }))
       return
     }
-
-    console.log('Admin Preview: Advancing to module index:', nextModuleIndex)
     
     setExamState(prev => {
       const newModules = [...prev.modules]
@@ -304,14 +282,12 @@ export function useAdminPreviewState() {
         completed: true
       }
 
-      console.log('Admin Preview: Updating state to module index:', nextModuleIndex)
       return {
         ...prev,
         modules: newModules,
         currentModuleIndex: nextModuleIndex
       }
     })
-    console.log('Admin Preview: State updated successfully')
   }, [examState])
 
   // Get current question

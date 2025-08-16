@@ -8,6 +8,7 @@ import { type Question } from '../../../../../lib/exam-service'
 import { QuestionDisplay } from '../../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../../components/exam/exam-navigation'
 import { AcademicCapIcon, BookOpenIcon, ClockIcon } from '@heroicons/react/24/outline'
+import { devLogger } from '../../../../../lib/logger'
 
 function AdminExamPreviewContent() {
   const params = useParams()
@@ -41,14 +42,12 @@ function AdminExamPreviewContent() {
   
   // Reset initialization flag when examId changes
   useEffect(() => {
-    console.log('Admin Preview: ExamId changed, resetting initialization flag:', { examId, hasInitialized })
     setHasInitialized(false)
   }, [examId])
 
   // Security check - only allow admin users
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
-      console.log('❌ Admin Preview: Access denied - redirecting to admin panel')
       router.push('/admin/exams')
       return
     }
@@ -56,18 +55,7 @@ function AdminExamPreviewContent() {
 
   // Initialize exam when component mounts
   useEffect(() => {
-    console.log('Admin Preview: Checking initialization conditions', {
-      authLoading,
-      user: !!user,
-      isAdmin,
-      examId,
-      hasInitialized,
-      loading,
-      shouldInitialize: !authLoading && user && isAdmin && examId && !hasInitialized && !loading
-    })
-    
     if (!authLoading && user && isAdmin && examId && !hasInitialized && !loading) {
-      console.log('🚀 Admin Preview: Starting exam initialization')
       setHasInitialized(true)
       initializeExam(examId)
     }
@@ -122,7 +110,6 @@ function AdminExamPreviewContent() {
   const handleQuestionUpdate = (updatedQuestion: Question) => {
     // Update the question in the cached exam state so it persists during navigation
     updateQuestionInState(updatedQuestion)
-    console.log('✅ Admin Preview: Question updated in database and state:', updatedQuestion.id)
   }
 
   // Handle previous question
@@ -144,7 +131,6 @@ function AdminExamPreviewContent() {
     saveCurrentAnswer()
     setIsUserSelecting(false)
     
-    console.log('Admin Preview: Navigation to module:', moduleIndex, 'question:', questionIndex)
     goToModuleAndQuestion(moduleIndex, questionIndex)
   }
 
@@ -194,7 +180,6 @@ function AdminExamPreviewContent() {
 
   // Handle exam completion
   const handleSubmitExam = async () => {
-    console.log('📝 Admin Preview: Exam preview completed')
     saveCurrentAnswer()
     router.push('/admin/exams')
   }
@@ -231,7 +216,6 @@ function AdminExamPreviewContent() {
 
   // Error state
   if (error) {
-    console.log('🚨 Admin Preview: ERROR DETECTED:', error)
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="flex items-center justify-center min-h-screen">
@@ -243,10 +227,7 @@ function AdminExamPreviewContent() {
               Exam ID: {examId}
             </div>
             <button
-              onClick={() => {
-                console.log('🔄 Admin Preview: Redirecting from error state to admin panel')
-                router.push('/admin/exams')
-              }}
+              onClick={() => router.push('/admin/exams')}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
             >
               Return to Admin Panel
@@ -423,7 +404,6 @@ function AdminExamPreviewContent() {
             <div className="space-y-2">
               <button
                 onClick={() => {
-                  console.log('Admin Preview: Retry clicked, resetting...')
                   setHasInitialized(false)
                   if (examState.exam?.id) {
                     initializeExam(examState.exam.id)

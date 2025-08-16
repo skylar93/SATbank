@@ -63,16 +63,11 @@ export function ExamNavigation({
   }
 
   const handleClick = () => {
-    console.log('🔄 Navigation click:', { isLastQuestion, isLastModule })
-    
     if (isLastQuestion && isLastModule) {
-      console.log("Calling onSubmitExam")
       onSubmitExam()
     } else if (isLastQuestion) {
-      console.log("Calling onSubmitModule")
       onSubmitModule()
     } else {
-      console.log("Calling onNext")
       onNext()
     }
   }
