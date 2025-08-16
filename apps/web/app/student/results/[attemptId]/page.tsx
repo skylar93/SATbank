@@ -140,8 +140,8 @@ export default function DetailedResultsPage() {
   }
 
   const getScoreColor = (percentage: number) => {
-    if (percentage >= 80) return 'text-green-600'
-    if (percentage >= 70) return 'text-blue-600'
+    if (percentage >= 80) return 'text-purple-600'
+    if (percentage >= 70) return 'text-violet-600'
     if (percentage >= 60) return 'text-yellow-600'
     return 'text-red-600'
   }
@@ -149,7 +149,7 @@ export default function DetailedResultsPage() {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy':
-        return 'bg-green-100 text-green-800'
+        return 'bg-purple-100 text-purple-800'
       case 'medium':
         return 'bg-yellow-100 text-yellow-800'
       case 'hard':
@@ -164,7 +164,7 @@ export default function DetailedResultsPage() {
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-6xl mx-auto py-8 px-4">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading detailed results...</p>
           </div>
         </div>
@@ -189,7 +189,7 @@ export default function DetailedResultsPage() {
             </p>
             <Link
               href="/student/results"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              className="inline-block bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
               Back to Results
             </Link>
@@ -210,7 +210,7 @@ export default function DetailedResultsPage() {
             <p className="text-red-700 mb-4">{error || 'Results not found'}</p>
             <Link
               href="/student/results"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              className="inline-block bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
               Back to Results
             </Link>
@@ -262,7 +262,7 @@ export default function DetailedResultsPage() {
         </div>
 
         {/* Score Overview Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-4xl font-bold text-gray-900 mb-2">
@@ -273,7 +273,7 @@ export default function DetailedResultsPage() {
             </div>
 
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600 mb-2">
+              <div className="text-2xl font-bold text-purple-600 mb-2">
                 {detailedScore.evidenceBasedReading}
               </div>
               <div className="text-sm text-gray-500">
@@ -282,7 +282,7 @@ export default function DetailedResultsPage() {
             </div>
 
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600 mb-2">
+              <div className="text-2xl font-bold text-purple-600 mb-2">
                 {detailedScore.mathScore}
               </div>
               <div className="text-sm text-gray-500">Math</div>
@@ -308,7 +308,7 @@ export default function DetailedResultsPage() {
                   <div className="text-sm text-gray-500">Score Change</div>
                 </div>
                 <div>
-                  <div className="text-lg font-semibold text-blue-600">
+                  <div className="text-lg font-semibold text-purple-600">
                     {Math.round(detailedScore.percentages.overall)}%
                   </div>
                   <div className="text-sm text-gray-500">Overall Accuracy</div>
@@ -319,8 +319,8 @@ export default function DetailedResultsPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="border-b border-gray-200 mb-6">
-          <nav className="-mb-px flex space-x-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-2 mb-6">
+          <nav className="flex space-x-2">
             {[
               { id: 'overview', label: 'Overview' },
               { id: 'questions', label: 'Question Analysis' },
@@ -329,13 +329,13 @@ export default function DetailedResultsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                className={`py-3 px-6 rounded-xl font-medium text-sm transition-all duration-200 ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
                 }`}
               >
-                {tab.label}
+                <span>{tab.label}</span>
               </button>
             ))}
           </nav>
@@ -345,9 +345,9 @@ export default function DetailedResultsPage() {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Module Breakdown */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Module Performance
+                📚 Module Performance
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Object.entries(detailedScore.rawScores).map(
@@ -374,7 +374,7 @@ export default function DetailedResultsPage() {
                         </div>
                         <div className="mt-2 bg-gray-200 rounded-full h-2">
                           <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            className="bg-purple-600 h-2 rounded-full transition-all duration-300"
                             style={{ width: `${percentage}%` }}
                           ></div>
                         </div>
@@ -387,37 +387,50 @@ export default function DetailedResultsPage() {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h4 className="font-medium text-gray-900 mb-2">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+                <h4 className="font-medium text-gray-900 mb-4 flex items-center">
+                  <span className="mr-2">⏱️</span>
                   Time Management
                 </h4>
-                <div className="text-2xl font-bold text-blue-600 mb-1">
-                  {formatTime(
-                    Math.round(performanceAnalytics.averageTimePerQuestion)
-                  )}
-                </div>
-                <div className="text-sm text-gray-500">Avg per question</div>
-                <div className="text-xs text-gray-400 mt-1">
-                  Total: {formatTime(performanceAnalytics.totalTimeSpent)}
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h4 className="font-medium text-gray-900 mb-2">Accuracy</h4>
-                <div className="text-2xl font-bold text-green-600 mb-1">
-                  {Math.round(performanceAnalytics.accuracyRate)}%
-                </div>
-                <div className="text-sm text-gray-500">
-                  {performanceAnalytics.correctAnswers} of{' '}
-                  {performanceAnalytics.totalQuestions}
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-2xl font-bold text-violet-600">
+                      {formatTime(
+                        Math.round(performanceAnalytics.averageTimePerQuestion)
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-500">Avg per question</div>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Total: {formatTime(performanceAnalytics.totalTimeSpent)}
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h4 className="font-medium text-gray-900 mb-2">
-                  Difficulty Performance
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+                <h4 className="font-medium text-gray-900 mb-4 flex items-center">
+                  <span className="mr-2">🎯</span>
+                  Accuracy
                 </h4>
-                <div className="space-y-1 text-sm">
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-2xl font-bold text-purple-600">
+                      {Math.round(performanceAnalytics.accuracyRate)}%
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {performanceAnalytics.correctAnswers} of{' '}
+                      {performanceAnalytics.totalQuestions}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+                <h4 className="font-medium text-gray-900 mb-4 flex items-center">
+                  <span className="mr-2">📈</span>
+                  By Difficulty
+                </h4>
+                <div className="space-y-2 text-sm">
                   {Object.entries(performanceAnalytics.difficultyBreakdown).map(
                     ([difficulty, stats]) => (
                       <div key={difficulty} className="flex justify-between">
@@ -435,10 +448,10 @@ export default function DetailedResultsPage() {
         )}
 
         {activeTab === 'questions' && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100">
+            <div className="p-6 border-b border-purple-200">
               <h3 className="text-lg font-semibold text-gray-900">
-                Question-by-Question Analysis
+                ❓ Question-by-Question Analysis
               </h3>
               <p className="text-gray-600 mt-1">
                 {showCorrectAnswers
@@ -458,15 +471,24 @@ export default function DetailedResultsPage() {
               )}
             </div>
 
-            <div className="divide-y divide-gray-200">
+            <div className="p-6 space-y-4">
               {questionAnalysis.map((question, index) => (
-                <div key={question.questionId} className="p-6">
+                <div
+                  key={question.questionId}
+                  className={`border rounded-xl p-6 backdrop-blur-sm transition-all duration-300 ${
+                    question.isCorrect
+                      ? 'border-purple-200 bg-white/50 hover:bg-purple-50/30'
+                      : 'border-red-200 bg-red-50/20 hover:bg-red-50/40'
+                  }`}
+                >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0">
                         <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
-                            question.isCorrect ? 'bg-green-500' : 'bg-red-500'
+                          className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium transition-all duration-300 ${
+                            question.isCorrect
+                              ? 'bg-purple-500 shadow-purple-200 shadow-lg'
+                              : 'bg-red-500 shadow-red-200 shadow-lg'
                           }`}
                         >
                           {question.isCorrect ? '✓' : '✗'}
@@ -497,7 +519,7 @@ export default function DetailedResultsPage() {
                     <div>
                       <div className="text-gray-600">Your Answer:</div>
                       <div
-                        className={`font-medium ${question.isCorrect ? 'text-green-600' : 'text-red-600'}`}
+                        className={`font-medium ${question.isCorrect ? 'text-purple-600' : 'text-red-600'}`}
                       >
                         {question.userAnswer || 'No answer'}
                       </div>
@@ -512,7 +534,7 @@ export default function DetailedResultsPage() {
                             : ''}
                           :
                         </div>
-                        <div className="font-medium text-green-600">
+                        <div className="font-medium text-purple-600">
                           {Array.isArray(question.correctAnswer)
                             ? question.correctAnswer.join(', ')
                             : question.correctAnswer}
@@ -528,7 +550,7 @@ export default function DetailedResultsPage() {
                         {question.topicTags.map((tag, tagIndex) => (
                           <span
                             key={tagIndex}
-                            className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs"
+                            className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs"
                           >
                             {tag}
                           </span>
@@ -538,7 +560,7 @@ export default function DetailedResultsPage() {
                   )}
 
                   {showCorrectAnswers && question.explanation && (
-                    <div className="mt-3 p-3 bg-gray-50 rounded">
+                    <div className="mt-3 p-3 bg-purple-50 rounded">
                       <div className="text-sm text-gray-600 mb-1">
                         Explanation:
                       </div>
@@ -557,17 +579,17 @@ export default function DetailedResultsPage() {
           <div className="space-y-6">
             {/* Strengths and Weaknesses */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <h4 className="font-medium text-gray-900 mb-4 flex items-center">
-                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  Strength Areas
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                  ✅ Strength Areas
                 </h4>
                 {performanceAnalytics.strengthAreas.length > 0 ? (
                   <div className="space-y-2">
                     {performanceAnalytics.strengthAreas.map((area, index) => (
                       <div
                         key={index}
-                        className="bg-green-50 text-green-800 px-3 py-2 rounded text-sm"
+                        className="bg-purple-50 text-purple-800 px-3 py-2 rounded text-sm"
                       >
                         {area}
                       </div>
@@ -580,10 +602,10 @@ export default function DetailedResultsPage() {
                 )}
               </div>
 
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <h4 className="font-medium text-gray-900 mb-4 flex items-center">
                   <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                  Areas for Improvement
+                  ⚠️ Areas for Improvement
                 </h4>
                 {performanceAnalytics.weaknessAreas.length > 0 ? (
                   <div className="space-y-2">
@@ -605,9 +627,9 @@ export default function DetailedResultsPage() {
             </div>
 
             {/* Topic Performance */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
               <h4 className="font-medium text-gray-900 mb-4">
-                Topic Performance Breakdown
+                📊 Topic Performance Breakdown
               </h4>
               <div className="space-y-3">
                 {performanceAnalytics.topicPerformance.map((topic, index) => (
@@ -635,7 +657,7 @@ export default function DetailedResultsPage() {
                         <div
                           className={`h-2 rounded-full transition-all duration-300 ${
                             topic.percentage >= 80
-                              ? 'bg-green-500'
+                              ? 'bg-purple-500'
                               : topic.percentage >= 60
                                 ? 'bg-yellow-500'
                                 : 'bg-red-500'
@@ -655,7 +677,7 @@ export default function DetailedResultsPage() {
         <div className="mt-8 flex justify-center space-x-4">
           <Link
             href="/student/exams"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
           >
             Take Another Exam
           </Link>
