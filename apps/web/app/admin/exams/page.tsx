@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import { supabase } from '@/lib/supabase'
-import { ScoringCurve } from '@/lib/types'
 import Link from 'next/link'
 
 interface ExamWithCurves {
@@ -61,8 +60,14 @@ export default function ExamsListPage() {
           created_at: exam.created_at,
           english_scoring_curve_id: exam.english_scoring_curve_id,
           math_scoring_curve_id: exam.math_scoring_curve_id,
-          english_curve_name: (exam.english_curve as { curve_name: string } | null)?.curve_name || null,
-          math_curve_name: (exam.math_curve as { curve_name: string } | null)?.curve_name || null,
+          english_curve_name:
+            (Array.isArray(exam.english_curve)
+              ? exam.english_curve[0]?.curve_name
+              : (exam.english_curve as any)?.curve_name) || null,
+          math_curve_name:
+            (Array.isArray(exam.math_curve)
+              ? exam.math_curve[0]?.curve_name
+              : (exam.math_curve as any)?.curve_name) || null,
         })) || []
 
       setExams(transformedData)

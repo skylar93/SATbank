@@ -378,7 +378,7 @@ const parseCorrectAnswers = (question: Question): string[] => {
       }
     } catch (error) {
       // If parsing fails, treat as single answer
-      return [answers]
+      return [String(answers || '')]
     }
   }
 

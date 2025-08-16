@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if the attempt is completed
-    if (userAnswer.test_attempts?.status !== 'completed') {
+    if ((userAnswer.test_attempts as any)?.status !== 'completed') {
       return NextResponse.json(
         {
           error: 'Can only regrade completed attempts',
