@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../contexts/auth-context'
-import { Navigation } from '../../../../components/navigation'
 import { AnalyticsService, type ComprehensiveResults } from '../../../../lib/analytics-service'
 import { ExportService } from '../../../../lib/export-service'
 import { ModuleType, ExamService } from '../../../../lib/exam-service'
@@ -277,9 +276,8 @@ export default function AdminDetailedResultsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <div className="max-w-6xl mx-auto py-8 px-4">
+      <div className="h-full bg-gray-50">
+        <div className="flex items-center justify-center h-full">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading student results...</p>
@@ -291,10 +289,9 @@ export default function AdminDetailedResultsPage() {
 
   if (error || !results || !student) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <div className="max-w-6xl mx-auto py-8 px-4">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
+      <div className="h-full bg-gray-50">
+        <div className="flex items-center justify-center h-full">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center max-w-md">
             <h3 className="text-lg font-medium text-red-900 mb-2">Error Loading Results</h3>
             <p className="text-red-700 mb-4">{error || 'Results not found'}</p>
             <Link
@@ -312,47 +309,60 @@ export default function AdminDetailedResultsPage() {
   const { attempt, detailedScore, questionAnalysis, performanceAnalytics, progressComparison } = results
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <div className="max-w-6xl mx-auto py-8 px-4">
-        {/* Header Section - Student Context */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {student.full_name} - Test Results
-              </h1>
-              <div className="flex items-center space-x-6 text-sm text-gray-600">
-                <span>📧 {student.email}</span>
-                <span>🎓 Grade: {student.grade_level || 'Not specified'}</span>
-                <span>🎯 Target: {student.target_score || 'Not set'}</span>
-              </div>
-              <div className="flex items-center space-x-6 text-sm text-gray-500 mt-2">
-                <span>📅 {attempt.completed_at ? formatDate(attempt.completed_at) : 'In Progress'}</span>
-                <span>⏱️ Duration: {formatTime(performanceAnalytics.totalTimeSpent)}</span>
-              </div>
+    <div className="h-full bg-gray-50">
+      {/* Top Header Section */}
+      <div className="bg-white px-6 py-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {student.full_name} - Test Results
+            </h1>
+            <p className="text-gray-600">Detailed performance analysis and question breakdown</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={handleExport}
+              disabled={exporting}
+              className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              {exporting ? 'Exporting...' : 'Export Results'}
+            </button>
+            <Link
+              href="/admin/students"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              ← Back to Students
+            </Link>
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {user?.profile?.full_name?.charAt(0) || 'A'}
+              </span>
             </div>
-            <div className="flex space-x-3">
-              <button
-                onClick={handleExport}
-                disabled={exporting}
-                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-              >
-                {exporting ? 'Exporting...' : 'Export Results'}
-              </button>
-              <Link
-                href="/admin/students"
-                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
-              >
-                ← Back to Students
-              </Link>
+          </div>
+        </div>
+        
+        {/* Separator line */}
+        <div className="border-b border-gray-200"></div>
+      </div>
+
+      <div className="p-6">
+        {/* Student Context Info */}
+        <div className="mb-6">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+            <div className="flex items-center space-x-6 text-sm text-gray-600 mb-3">
+              <span>📧 {student.email}</span>
+              <span>🎓 Grade: {student.grade_level || 'Not specified'}</span>
+              <span>🎯 Target: {student.target_score || 'Not set'}</span>
+            </div>
+            <div className="flex items-center space-x-6 text-sm text-gray-500">
+              <span>📅 {attempt.completed_at ? formatDate(attempt.completed_at) : 'In Progress'}</span>
+              <span>⏱️ Duration: {formatTime(performanceAnalytics.totalTimeSpent)}</span>
             </div>
           </div>
         </div>
 
         {/* Score Overview Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="text-center">
               <div className="text-4xl font-bold text-gray-900 mb-2">
@@ -379,7 +389,7 @@ export default function AdminDetailedResultsPage() {
 
           {/* Class Comparison */}
           {classStats && (
-            <div className="pt-6 border-t border-gray-200">
+            <div className="pt-6 border-t border-purple-200">
               <h4 className="text-sm font-medium text-gray-700 mb-3">Class Performance</h4>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
                 <div>
@@ -412,8 +422,8 @@ export default function AdminDetailedResultsPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="border-b border-gray-200 mb-6">
-          <nav className="-mb-px flex space-x-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-2 mb-6">
+          <nav className="flex space-x-2">
             {[
               { id: 'overview', label: 'Overview', icon: '📊' },
               { id: 'questions', label: 'Questions', icon: '❓' },
@@ -422,10 +432,10 @@ export default function AdminDetailedResultsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                className={`py-3 px-6 rounded-xl font-medium text-sm transition-all duration-200 flex items-center space-x-2 ${
                   activeTab === tab.id
-                    ? 'border-purple-500 text-purple-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
                 }`}
               >
                 <span>{tab.icon}</span>
@@ -439,7 +449,7 @@ export default function AdminDetailedResultsPage() {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Module Performance */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">📚 Module Performance</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Object.entries(detailedScore.rawScores).map(([module, score]) => {
@@ -476,7 +486,7 @@ export default function AdminDetailedResultsPage() {
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Time Management */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <h4 className="font-medium text-gray-900 mb-4 flex items-center">
                   <span className="mr-2">⏱️</span>
                   Time Management
@@ -495,7 +505,7 @@ export default function AdminDetailedResultsPage() {
               </div>
 
               {/* Accuracy */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <h4 className="font-medium text-gray-900 mb-4 flex items-center">
                   <span className="mr-2">🎯</span>
                   Accuracy
@@ -513,7 +523,7 @@ export default function AdminDetailedResultsPage() {
               </div>
 
               {/* Difficulty Performance */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <h4 className="font-medium text-gray-900 mb-4 flex items-center">
                   <span className="mr-2">📈</span>
                   By Difficulty
@@ -533,7 +543,7 @@ export default function AdminDetailedResultsPage() {
 
             {/* Strengths and Weaknesses */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <h4 className="font-medium text-gray-900 mb-4 flex items-center">
                   <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
                   ✅ Strength Areas
@@ -551,7 +561,7 @@ export default function AdminDetailedResultsPage() {
                 )}
               </div>
 
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <h4 className="font-medium text-gray-900 mb-4 flex items-center">
                   <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                   ⚠️ Areas for Improvement
@@ -764,7 +774,7 @@ export default function AdminDetailedResultsPage() {
           <div className="space-y-6">
             {/* Previous Attempts Comparison */}
             {progressComparison && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">📈 Progress Comparison</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="text-center">
@@ -790,7 +800,7 @@ export default function AdminDetailedResultsPage() {
             )}
 
             {/* Topic Performance Comparison */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
               <h4 className="font-medium text-gray-900 mb-4">📊 Topic Performance Breakdown</h4>
               <div className="space-y-3">
                 {performanceAnalytics.topicPerformance.map((topic, index) => (
@@ -822,7 +832,7 @@ export default function AdminDetailedResultsPage() {
 
             {/* Class Comparison Detail */}
             {classStats && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <h4 className="font-medium text-gray-900 mb-4">👥 Class Performance Context</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>

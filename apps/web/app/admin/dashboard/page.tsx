@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
 import { AnalyticsService } from '../../../lib/analytics-service'
-import { ProgressChart } from '../../../components/charts/progress-chart'
-import { StatsCard } from '../../../components/modern-charts'
+import { ProgressChart, SubjectPerformanceChart, WeeklyActivityChart, CircularProgress } from '../../../components/charts'
+import { ModernScoreProgress, StatsCard } from '../../../components/modern-charts'
 import { supabase } from '../../../lib/supabase'
 import { 
   ChartBarIcon, 
@@ -336,14 +336,25 @@ export default function AdminDashboard() {
                 {/* Analytics Charts */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                   <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
-                    <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">Test Completions (Last 7 Days)</h3>
+                    <div className="flex items-center justify-between mb-4 md:mb-6">
+                      <h3 className="text-base md:text-lg font-semibold text-gray-900">Test Completions (Last 7 Days)</h3>
+                      <div className="flex items-center space-x-2">
+                        <button className="px-3 py-1 text-sm bg-emerald-100 text-emerald-600 rounded-lg">This Week</button>
+                        <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Last Week</button>
+                      </div>
+                    </div>
                     <div className="w-full overflow-hidden">
-                      <ProgressChart
-                        data={stats.weeklyTrend}
-                        title=""
-                        type="line"
-                        color="#10B981"
-                        height={250}
+                      <ModernScoreProgress 
+                        data={{
+                          labels: stats.weeklyTrend.map(item => item.label),
+                          datasets: [{
+                            label: 'Completions',
+                            data: stats.weeklyTrend.map(item => item.value),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true
+                          }]
+                        }}
                       />
                     </div>
                   </div>
@@ -351,15 +362,57 @@ export default function AdminDashboard() {
                   <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
                     <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">Score Distribution</h3>
                     <div className="w-full overflow-hidden">
-                      <ProgressChart
-                        data={stats.scoreDistribution}
-                        title=""
-                        type="bar"
-                        color="#3B82F6"
-                        height={250}
-                      />
+                      <div className="space-y-4">
+                        {stats.scoreDistribution.map((item, index) => {
+                          const total = stats.scoreDistribution.reduce((sum, dist) => sum + dist.value, 0)
+                          const percentage = total > 0 ? (item.value / total) * 100 : 0
+                          const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444']
+                          return (
+                            <div key={index} className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className={`w-3 h-3 rounded-full`} style={{backgroundColor: colors[index]}}></div>
+                                <span className="text-sm text-gray-700">{item.label}</span>
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <div className="w-24 bg-gray-200 rounded-full h-2">
+                                  <div 
+                                    className="h-2 rounded-full" 
+                                    style={{
+                                      width: `${percentage}%`,
+                                      backgroundColor: colors[index]
+                                    }}
+                                  ></div>
+                                </div>
+                                <span className="text-sm font-semibold w-8">{item.value}</span>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
                     </div>
                   </div>
+                </div>
+
+                {/* Weekly System Activity */}
+                <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
+                  <div className="flex items-center justify-between mb-4 md:mb-6">
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900">Weekly System Activity</h3>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-500">This Week</span>
+                      <select className="text-sm border border-gray-300 rounded-lg px-2 py-1">
+                        <option>This Week</option>
+                        <option>Last Week</option>
+                        <option>This Month</option>
+                      </select>
+                    </div>
+                  </div>
+                  <WeeklyActivityChart 
+                    data={{
+                      days: stats.weeklyTrend.map(item => item.label),
+                      studyTime: stats.weeklyTrend.map(item => item.value * 30), // Approximate study time
+                      practiceTests: stats.weeklyTrend.map(item => item.value)
+                    }}
+                  />
                 </div>
 
                 {/* Quick Actions */}
@@ -417,18 +470,28 @@ export default function AdminDashboard() {
                     <button className="text-sm text-gray-500 hover:text-gray-700">Refresh</button>
                   </div>
                   
+                  <div className="flex justify-center mb-6">
+                    <CircularProgress 
+                      percentage={stats.averageScore ? Math.round((stats.averageScore / 1600) * 100) : 0} 
+                      size={120} 
+                    />
+                  </div>
+
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Today's Tests</span>
-                      <span className="font-semibold text-gray-900">{stats.completedToday}</span>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                      <span className="text-sm text-gray-700">Today's Tests</span>
+                      <span className="ml-auto text-sm font-semibold">{stats.completedToday}</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Active Students</span>
-                      <span className="font-semibold text-gray-900">{stats.totalStudents}</span>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                      <span className="text-sm text-gray-700">Active Students</span>
+                      <span className="ml-auto text-sm font-semibold">{stats.totalStudents}</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Avg Score</span>
-                      <span className="font-semibold text-gray-900">{stats.averageScore}</span>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                      <span className="text-sm text-gray-700">Avg Score</span>
+                      <span className="ml-auto text-sm font-semibold">{stats.averageScore}</span>
                     </div>
                   </div>
                 </div>

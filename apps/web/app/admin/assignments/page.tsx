@@ -324,25 +324,25 @@ export default function AdminAssignmentsPage() {
               <table className="min-w-full divide-y divide-purple-200">
                 <thead className="bg-gradient-to-r from-purple-50 to-pink-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                       Student
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                       Exam
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                       Assigned
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                       Due Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                       Show Results
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -354,10 +354,10 @@ export default function AdminAssignmentsPage() {
                         <div className="flex items-center">
                           <UserIcon className="w-8 h-8 text-purple-400 mr-3" />
                           <div>
-                            <div className="text-sm font-medium text-purple-900">
+                            <div className="text-sm font-medium text-gray-900">
                               {assignment.user_profiles?.full_name}
                             </div>
-                            <div className="text-sm text-purple-600/70">
+                            <div className="text-sm text-gray-600">
                               {assignment.user_profiles?.email}
                             </div>
                           </div>
@@ -366,15 +366,15 @@ export default function AdminAssignmentsPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <AcademicCapIcon className="w-5 h-5 text-purple-500 mr-2" />
-                          <div className="text-sm text-purple-900">
+                          <div className="text-sm text-gray-900">
                             {assignment.exams?.title}
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-600/70">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {new Date(assignment.assigned_at).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-600/70">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {assignment.due_date ? (
                           <div className="flex items-center">
                             <CalendarIcon className="w-4 h-4 mr-1" />

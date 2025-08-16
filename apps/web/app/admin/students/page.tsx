@@ -322,7 +322,7 @@ export default function AdminStudentsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {/* Search */}
                 <div className="lg:col-span-2">
-                  <label className="block text-sm font-medium text-purple-600 mb-2">
+                  <label className="block text-sm font-medium text-gray-800 mb-2">
                     Search Students
                   </label>
                   <input
@@ -336,7 +336,7 @@ export default function AdminStudentsPage() {
 
                 {/* Grade Level Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-purple-600 mb-2">
+                  <label className="block text-sm font-medium text-gray-800 mb-2">
                     Grade Level
                   </label>
                   <select
@@ -354,7 +354,7 @@ export default function AdminStudentsPage() {
 
                 {/* Score Range Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-purple-600 mb-2">
+                  <label className="block text-sm font-medium text-gray-800 mb-2">
                     Performance
                   </label>
                   <select
@@ -372,7 +372,7 @@ export default function AdminStudentsPage() {
 
                 {/* Sort Options */}
                 <div>
-                  <label className="block text-sm font-medium text-purple-600 mb-2">
+                  <label className="block text-sm font-medium text-gray-800 mb-2">
                     Sort By
                   </label>
                   <div className="flex">
@@ -402,19 +402,19 @@ export default function AdminStudentsPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
                 <div className="text-2xl font-bold text-purple-500">{filteredStudents.length}</div>
-                <div className="text-sm text-purple-600/70">Students Shown</div>
+                <div className="text-sm text-gray-600">Students Shown</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
                 <div className="text-2xl font-bold text-violet-500">
                   {filteredStudents.filter(s => s.attempts.completed > 0).length}
                 </div>
-                <div className="text-sm text-purple-600/70">Have Taken Tests</div>
+                <div className="text-sm text-gray-600">Have Taken Tests</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
                 <div className="text-2xl font-bold text-blue-500">
                   {filteredStudents.reduce((sum, s) => sum + s.attempts.completed, 0)}
                 </div>
-                <div className="text-sm text-purple-600/70">Total Completions</div>
+                <div className="text-sm text-gray-600">Total Completions</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-4">
                 <div className="text-2xl font-bold text-amber-500">
@@ -425,7 +425,7 @@ export default function AdminStudentsPage() {
                     Math.max(filteredStudents.filter(s => s.attempts.latest_score).length, 1)
                   )}
                 </div>
-                <div className="text-sm text-purple-600/70">Average Score</div>
+                <div className="text-sm text-gray-600">Average Score</div>
               </div>
             </div>
 
@@ -435,28 +435,28 @@ export default function AdminStudentsPage() {
                 <table className="min-w-full divide-y divide-purple-200">
                   <thead className="bg-gradient-to-r from-purple-50 to-pink-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                         Student
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                         Grade & Target
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                         Latest Score
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                         Performance
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                         Tests Taken
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                         Last Activity
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                         Answer Visibility
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -466,17 +466,17 @@ export default function AdminStudentsPage() {
                       <tr key={student.id} className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
-                            <div className="text-sm font-medium text-purple-900">
+                            <div className="text-sm font-medium text-gray-900">
                               {student.full_name}
                             </div>
-                            <div className="text-sm text-purple-600/70">
+                            <div className="text-sm text-gray-600">
                               {student.email}
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           <div>Grade {student.grade_level || 'N/A'}</div>
-                          <div className="text-purple-600/70">
+                          <div className="text-gray-600">
                             Target: {student.target_score || 'None'}
                           </div>
                         </td>
@@ -485,7 +485,7 @@ export default function AdminStudentsPage() {
                             {student.attempts.latest_score || 'No tests'}
                           </div>
                           {student.attempts.latest_score && (
-                            <div className="text-xs text-purple-600/70">
+                            <div className="text-xs text-gray-600">
                               Avg: {student.attempts.average_score}
                             </div>
                           )}
@@ -505,13 +505,13 @@ export default function AdminStudentsPage() {
                             {getPerformanceLevel(student.attempts.latest_score)}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           <div>{student.attempts.completed} completed</div>
-                          <div className="text-purple-600/70">
+                          <div className="text-gray-600">
                             {student.attempts.total} total
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-600/70">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                           {formatDate(student.attempts.latest_date)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -523,7 +523,7 @@ export default function AdminStudentsPage() {
                               disabled={updatingAnswerVisibility === student.id}
                               className="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out disabled:opacity-50"
                             />
-                            <span className="ml-2 text-sm text-purple-700">
+                            <span className="ml-2 text-sm text-gray-700">
                               {student.show_correct_answers ? 'Enabled' : 'Disabled'}
                             </span>
                           </label>
@@ -552,7 +552,7 @@ export default function AdminStudentsPage() {
 
               {filteredStudents.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-purple-600/70">No students found matching your criteria</p>
+                  <p className="text-gray-600">No students found matching your criteria</p>
                 </div>
               )}
             </div>

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../contexts/auth-context'
-import { Navigation } from '../../../../components/navigation'
 import { AnalyticsService, type ComprehensiveResults } from '../../../../lib/analytics-service'
 import { ExportService } from '../../../../lib/export-service'
 import { createClient } from '@supabase/supabase-js'
@@ -184,11 +183,10 @@ export default function StudentDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <div className="max-w-6xl mx-auto py-8 px-4">
+      <div className="h-full bg-gray-50">
+        <div className="flex items-center justify-center h-full">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading student data...</p>
           </div>
         </div>
@@ -198,15 +196,14 @@ export default function StudentDetailPage() {
 
   if (error || !student) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <div className="max-w-6xl mx-auto py-8 px-4">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
+      <div className="h-full bg-gray-50">
+        <div className="flex items-center justify-center h-full">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center max-w-md">
             <h3 className="text-lg font-medium text-red-900 mb-2">Error Loading Student</h3>
             <p className="text-red-700 mb-4">{error || 'Student not found'}</p>
             <Link
               href="/admin/students"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              className="inline-block bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
               Back to Students
             </Link>
@@ -219,79 +216,92 @@ export default function StudentDetailPage() {
   const stats = calculateStats()
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Navigation />
-      
-      <div className="max-w-6xl mx-auto py-8 px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-lg border border-slate-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-slate-800 mb-2">
-                  {student.full_name}
-                </h1>
-                <p className="text-slate-600 text-lg mb-3">{student.email}</p>
-                <div className="flex items-center space-x-6 text-sm text-slate-500">
-                  <span>Grade: {student.grade_level || 'Not specified'}</span>
-                  <span>Target Score: {student.target_score || 'Not set'}</span>
-                  <span>Member since: {formatDate(student.created_at)}</span>
-                </div>
-              </div>
-              <div className="flex space-x-3">
-                <button
-                  onClick={exportStudentData}
-                  className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                >
-                  Export Data
-                </button>
-                <Link
-                  href="/admin/students"
-                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-medium transition-colors"
-                >
-                  ← Back to Students
-                </Link>
-              </div>
+    <div className="h-full bg-gray-50">
+      {/* Top Header Section */}
+      <div className="bg-white px-6 py-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {student.full_name}
+            </h1>
+            <p className="text-gray-600">Student performance overview and test history</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={exportStudentData}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              Export Data
+            </button>
+            <Link
+              href="/admin/students"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              ← Back to Students
+            </Link>
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {user?.profile?.full_name?.charAt(0) || 'A'}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Separator line */}
+        <div className="border-b border-gray-200"></div>
+      </div>
+
+      <div className="p-6">
+        {/* Student Info */}
+        <div className="mb-6">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+            <div className="flex items-center space-x-6 text-sm text-gray-600 mb-3">
+              <span>📧 {student.email}</span>
+              <span>🎓 Grade: {student.grade_level || 'Not specified'}</span>
+              <span>🎯 Target Score: {student.target_score || 'Not set'}</span>
+            </div>
+            <div className="text-sm text-gray-500">
+              <span>Member since: {formatDate(student.created_at)}</span>
             </div>
           </div>
         </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8">
-          <div className="bg-white p-5 rounded-lg shadow-lg border border-slate-200">
-            <div className="text-2xl font-bold text-slate-700 mb-1">{stats.totalAttempts}</div>
-            <div className="text-sm text-slate-500">Total Attempts</div>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-5">
+            <div className="text-2xl font-bold text-gray-700 mb-1">{stats.totalAttempts}</div>
+            <div className="text-sm text-gray-500">Total Attempts</div>
           </div>
-          <div className="bg-white p-5 rounded-lg shadow-lg border border-slate-200">
-            <div className="text-2xl font-bold text-blue-600 mb-1">{stats.completedAttempts}</div>
-            <div className="text-sm text-slate-500">Completed</div>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-5">
+            <div className="text-2xl font-bold text-purple-600 mb-1">{stats.completedAttempts}</div>
+            <div className="text-sm text-gray-500">Completed</div>
           </div>
-          <div className="bg-white p-5 rounded-lg shadow-lg border border-slate-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-5">
             <div className={`text-2xl font-bold mb-1 ${getScoreColor(stats.latestScore)}`}>
               {stats.latestScore || 'N/A'}
             </div>
-            <div className="text-sm text-slate-500">Latest Score</div>
+            <div className="text-sm text-gray-500">Latest Score</div>
           </div>
-          <div className="bg-white p-5 rounded-lg shadow-lg border border-slate-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-5">
             <div className={`text-2xl font-bold mb-1 ${getScoreColor(stats.bestScore)}`}>
               {stats.bestScore || 'N/A'}
             </div>
-            <div className="text-sm text-slate-500">Best Score</div>
+            <div className="text-sm text-gray-500">Best Score</div>
           </div>
-          <div className="bg-white p-5 rounded-lg shadow-lg border border-slate-200">
-            <div className="text-2xl font-bold text-slate-700 mb-1">{stats.averageScore || 'N/A'}</div>
-            <div className="text-sm text-slate-500">Average Score</div>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-5">
+            <div className="text-2xl font-bold text-gray-700 mb-1">{stats.averageScore || 'N/A'}</div>
+            <div className="text-sm text-gray-500">Average Score</div>
           </div>
-          <div className="bg-white p-5 rounded-lg shadow-lg border border-slate-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-5">
             <div className={`text-2xl font-bold mb-1 ${stats.improvement >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
               {stats.improvement > 0 ? '+' : ''}{stats.improvement || 'N/A'}
             </div>
-            <div className="text-sm text-slate-500">Improvement</div>
+            <div className="text-sm text-gray-500">Improvement</div>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="bg-white rounded-2xl shadow-lg p-2 mb-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-2 mb-8">
           <nav className="flex space-x-2">
             {[
               { id: 'overview', label: 'Overview' },
@@ -317,7 +327,7 @@ export default function StudentDetailPage() {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Recent Performance */}
-            <div className="bg-white rounded-2xl shadow-lg p-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-8">
               <h3 className="text-xl font-bold text-gray-900 mb-6">Recent Performance</h3>
               {attempts.filter(a => a.status === 'completed').slice(0, 3).map((attempt, index) => {
                 const displayScore = getDisplayScore(attempt)
@@ -353,7 +363,7 @@ export default function StudentDetailPage() {
 
             {/* Performance Summary */}
             {selectedAttempt && (
-              <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Latest Test Analysis</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -407,8 +417,8 @@ export default function StudentDetailPage() {
         )}
 
         {activeTab === 'attempts' && (
-          <div className="bg-white rounded-lg shadow-lg border border-slate-200">
-            <div className="p-6 border-b border-slate-100">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100">
+            <div className="p-6 border-b border-purple-200">
               <h3 className="text-lg font-semibold text-slate-800">All Test Attempts</h3>
               <p className="text-slate-600 mt-1">Complete history of student test attempts</p>
             </div>
@@ -501,7 +511,7 @@ export default function StudentDetailPage() {
         {activeTab === 'progress' && (
           <div className="space-y-6">
             {/* Score Progression Chart (Simplified) */}
-            <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
               <h3 className="text-lg font-semibold text-slate-800 mb-4">Score Progression</h3>
               <div className="space-y-4">
                 {attempts
@@ -542,7 +552,7 @@ export default function StudentDetailPage() {
 
             {/* Goal Tracking */}
             {student.target_score && (
-              <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Goal Progress</h3>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">Target Score:</span>

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Bold, Italic, Underline, Search, Replace, Superscript, Subscript, Undo, Redo, AlignCenter, Table, AlignLeft, AlignRight, Image } from 'lucide-react'
 import { InlineMath, BlockMath } from 'react-katex'
+import { ImageUpload } from './image-upload'
 
 interface RichTextEditorProps {
   value: string
@@ -222,6 +223,12 @@ export function RichTextEditor({
         textareaRef.current.focus()
       }
     }, 0)
+  }
+
+  const handleImageUploadSuccess = (imageUrl: string) => {
+    const imageMarkdown = `![Image](${imageUrl})`
+    insertFormat(imageMarkdown)
+    setShowImageUpload(false)
   }
 
   const insertFraction = (latexFraction: string) => {
@@ -904,52 +911,10 @@ export function RichTextEditor({
 
       {/* Image Upload Panel */}
       {showImageUpload && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded">
-          <div className="flex flex-wrap gap-3 items-center">
-            <div className="flex items-center gap-2 flex-1">
-              <label className="text-sm font-medium">Image URL:</label>
-              <input
-                type="url"
-                placeholder="https://example.com/image.jpg"
-                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    const input = e.target as HTMLInputElement
-                    if (input.value.trim()) {
-                      insertFormat(`![Image](${input.value.trim()})`)
-                      input.value = ''
-                      setShowImageUpload(false)
-                    }
-                  }
-                }}
-              />
-            </div>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={(e) => {
-                  const input = e.currentTarget.previousElementSibling?.querySelector('input') as HTMLInputElement
-                  if (input?.value.trim()) {
-                    insertFormat(`![Image](${input.value.trim()})`)
-                    input.value = ''
-                    setShowImageUpload(false)
-                  }
-                }}
-                className="px-3 py-1 text-sm bg-green-500 text-white hover:bg-green-600 rounded"
-              >
-                Insert Image
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowImageUpload(false)}
-                className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <ImageUpload
+          onUploadSuccess={handleImageUploadSuccess}
+          onCancel={() => setShowImageUpload(false)}
+        />
       )}
 
       {/* Table Editor Panel */}
