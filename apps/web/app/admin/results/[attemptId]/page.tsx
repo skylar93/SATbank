@@ -495,20 +495,19 @@ export default function AdminDetailedResultsPage() {
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-2 mb-6">
           <nav className="flex space-x-2">
             {[
-              { id: 'overview', label: 'Overview', icon: '📊' },
-              { id: 'questions', label: 'Questions', icon: '❓' },
-              { id: 'comparison', label: 'Comparison', icon: '📈' },
+              { id: 'overview', label: 'Overview' },
+              { id: 'questions', label: 'Questions' },
+              { id: 'comparison', label: 'Comparison' },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`py-3 px-6 rounded-xl font-medium text-sm transition-all duration-200 flex items-center space-x-2 ${
+                className={`py-3 px-6 rounded-xl font-medium text-sm transition-all duration-200 ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'
                     : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
                 }`}
               >
-                <span>{tab.icon}</span>
                 <span>{tab.label}</span>
               </button>
             ))}
@@ -683,20 +682,20 @@ export default function AdminDetailedResultsPage() {
                   ❓ Question Analysis
                 </h3>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-purple-600">Filter:</span>
+                  <span className="text-sm text-black">Filter:</span>
                   <select
                     value={questionFilter}
                     onChange={(e) => setQuestionFilter(e.target.value as any)}
                     className="px-3 py-1 border border-purple-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="all">All Questions</option>
-                    <option value="incorrect">❌ Incorrect Only</option>
-                    <option value="correct">✅ Correct Only</option>
-                    <option value="skipped">⚪ Skipped Only</option>
+                    <option value="incorrect">Incorrect Only</option>
+                    <option value="correct">Correct Only</option>
+                    <option value="skipped">Skipped Only</option>
                   </select>
                 </div>
               </div>
-              <p className="text-purple-600/70">
+              <p className="text-black">
                 Detailed analysis of each question with correct answers always
                 shown (Admin View)
               </p>
