@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { ExamService, type Question, type Exam, type TestAttempt, type ModuleType } from '../lib/exam-service'
-import { checkAnswer } from '../lib/answer-checker'
+import { checkAnswer, normalizeCorrectAnswers } from '../lib/answer-checker'
 import { supabase } from '../lib/supabase'
 
 interface ExamAnswer {
@@ -253,10 +253,13 @@ export const useExamStore = create<ExamState>((set, get) => ({
       for (const [questionId, examAnswer] of Object.entries(currentModule.answers)) {
         const question = currentModule.questions.find(q => q.id === questionId)
         if (question && examAnswer.answer) {
-          // Use correct_answers for grid_in questions, correct_answer for multiple_choice
-          const correctAnswers = question.question_type === 'grid_in' 
+          // Use normalizeCorrectAnswers to handle both grid_in and multiple_choice questions
+          const rawCorrectAnswers = question.question_type === 'grid_in' 
             ? question.correct_answers || [question.correct_answer]
             : question.correct_answer
+          
+          // Normalize the correct answers to handle double-encoded JSON
+          const normalizedCorrectAnswers = normalizeCorrectAnswers(rawCorrectAnswers)
           
           // ================== DIAGNOSTIC LOG START ==================
           console.log(`
@@ -273,13 +276,13 @@ export const useExamStore = create<ExamState>((set, get) => ({
             - Correct Answers (array): ${JSON.stringify(question.correct_answers)}
             - Correct Answers Type:  ${typeof question.correct_answers}
             
-            - Final correctAnswers passed to checkAnswer: ${JSON.stringify(correctAnswers)}
-            - Final correctAnswers Type: ${typeof correctAnswers}
+            - Raw correctAnswers: ${JSON.stringify(rawCorrectAnswers)}
+            - Normalized correctAnswers: ${JSON.stringify(normalizedCorrectAnswers)}
             ----------------------------------------------------
           `)
           // =================== DIAGNOSTIC LOG END ===================
           
-          const isCorrect = checkAnswer(examAnswer.answer, correctAnswers)
+          const isCorrect = checkAnswer(examAnswer.answer, normalizedCorrectAnswers)
           console.log(`[RESULT] Comparison result for Question ID ${question.id}: ${isCorrect}`)
           
           await ExamService.submitAnswer({

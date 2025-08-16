@@ -66,14 +66,18 @@ export class ScoringService {
    * @param useServiceRole - Whether to use service role client (default: false)
    * @returns Promise<FinalScores> - The calculated scaled scores
    */
-  static async calculateFinalScores(attemptId: string, useServiceRole: boolean = false): Promise<FinalScores> {
+  static async calculateFinalScores(
+    attemptId: string,
+    useServiceRole: boolean = false
+  ): Promise<FinalScores> {
     // Use service role client if requested (for admin operations)
-    const client = useServiceRole ? 
-      createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        { auth: { autoRefreshToken: false, persistSession: false } }
-      ) : supabase
+    const client = useServiceRole
+      ? createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!,
+          { auth: { autoRefreshToken: false, persistSession: false } }
+        )
+      : supabase
     // Step 1: Get the exam_id for the given attemptId
     const { data: attemptData, error: attemptError } = await client
       .from('test_attempts')

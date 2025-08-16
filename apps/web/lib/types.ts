@@ -5,7 +5,7 @@ export type {
   Question,
   TestAttempt,
   UserAnswer,
-  CreateTestAttempt
+  CreateTestAttempt,
 } from './exam-service'
 
 // Import for use in interfaces below
@@ -175,5 +175,7 @@ export interface SearchFilters {
 }
 
 // Export utility type for event handlers
-export type EventHandler<T = void> = (event?: React.MouseEvent | React.FormEvent) => T | Promise<T>
+export type EventHandler<T = void> = (
+  event?: React.MouseEvent | React.FormEvent
+) => T | Promise<T>
 export type ChangeHandler<T = string> = (value: T) => void

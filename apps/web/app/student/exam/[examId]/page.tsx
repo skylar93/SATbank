@@ -475,9 +475,7 @@ function ExamPageContent() {
                 <ul className="text-sm text-blue-800 space-y-1">
                   <li>
                     • Status:{' '}
-                    {existingAttempt.status
-                      .replace('_', ' ')
-                      .toUpperCase()}
+                    {existingAttempt.status.replace('_', ' ').toUpperCase()}
                   </li>
                   <li>
                     • Current Module:{' '}
@@ -488,9 +486,7 @@ function ExamPageContent() {
                   {existingAttempt.started_at && (
                     <li>
                       • Started:{' '}
-                      {new Date(
-                        existingAttempt.started_at
-                      ).toLocaleString()}
+                      {new Date(existingAttempt.started_at).toLocaleString()}
                     </li>
                   )}
                 </ul>
@@ -788,8 +784,7 @@ function ExamPageContent() {
 
   const isLastQuestion =
     currentModule.currentQuestionIndex === currentModule.questions.length - 1
-  const isLastModule =
-    currentModuleIndex === modules.length - 1
+  const isLastModule = currentModuleIndex === modules.length - 1
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -816,9 +811,7 @@ function ExamPageContent() {
               initialTimeSeconds={currentModule.timeRemaining}
               onTimeExpired={handleTimeExpired}
               onTimeUpdate={updateTimer}
-              isPaused={
-                status !== 'in_progress' || showTimeExpiredModal
-              }
+              isPaused={status !== 'in_progress' || showTimeExpiredModal}
             />
           </div>
         </div>
@@ -832,9 +825,7 @@ function ExamPageContent() {
           totalQuestions={currentModule.questions.length}
           userAnswer={currentAnswer}
           onAnswerChange={handleAnswerChange}
-          disabled={
-            status !== 'in_progress' || timeExpiredRef.current
-          }
+          disabled={status !== 'in_progress' || timeExpiredRef.current}
           isAdminPreview={false}
           isMarkedForReview={isMarkedForReview()}
           onToggleMarkForReview={() => toggleMarkForReview()}

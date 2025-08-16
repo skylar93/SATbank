@@ -445,7 +445,9 @@ export default function StudentDashboard() {
       <div className="bg-white px-4 md:px-6 py-4 md:py-6">
         <div className="flex items-center justify-between mb-4 md:mb-6">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900">Dashboard</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+              Dashboard
+            </h1>
             <p className="text-sm md:text-base text-gray-600">
               Hello {user.profile?.full_name?.split(' ')[0]}, welcome back
             </p>

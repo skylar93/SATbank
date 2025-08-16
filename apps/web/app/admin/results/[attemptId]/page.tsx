@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../contexts/auth-context'
 import {
@@ -9,8 +9,7 @@ import {
   type ComprehensiveResults,
 } from '../../../../lib/analytics-service'
 import { ExportService } from '../../../../lib/export-service'
-import { ModuleType, ExamService } from '../../../../lib/exam-service'
-import { ScoringService } from '../../../../lib/scoring-service'
+import { ModuleType } from '../../../../lib/exam-service'
 import { supabase } from '../../../../lib/supabase'
 
 interface StudentProfile {
@@ -31,7 +30,6 @@ interface ClassStats {
 
 export default function AdminDetailedResultsPage() {
   const params = useParams()
-  const router = useRouter()
   const { user } = useAuth()
   const [results, setResults] = useState<ComprehensiveResults | null>(null)
   const [student, setStudent] = useState<StudentProfile | null>(null)
@@ -168,23 +166,27 @@ export default function AdminDetailedResultsPage() {
     setRegrading(regradeModal.userAnswerId)
     try {
       console.log('Starting regrade for question:', regradeModal.questionNumber)
-      
+
       // Get access token from Supabase
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
 
       const requestBody = {
         userAnswerId: regradeModal.userAnswerId,
         newIsCorrect: !regradeModal.currentCorrect,
         reason: regradeReason.trim(),
       }
-      
+
       console.log('Sending regrade request with body:', requestBody)
-      
+
       const response = await fetch('/api/admin/regrade-question', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {}),
+          ...(session?.access_token
+            ? { Authorization: `Bearer ${session.access_token}` }
+            : {}),
         },
         credentials: 'include', // Include cookies for authentication
         body: JSON.stringify(requestBody),
@@ -200,6 +202,13 @@ export default function AdminDetailedResultsPage() {
 
       const result = await response.json()
       console.log('Regrade successful:', result)
+
+      // Clear cache and force reload to get fresh data
+      setResults(null)
+      setClassStats(null)
+
+      // Wait a moment for database replication
+      await new Promise((resolve) => setTimeout(resolve, 500))
 
       // Reload results to show updated scores
       await loadResults()
@@ -218,7 +227,7 @@ export default function AdminDetailedResultsPage() {
   const openRegradeModal = (question: any) => {
     console.log('Opening regrade modal for question:', question)
     console.log('Question userAnswerId:', question.userAnswerId)
-    
+
     setRegradeModal({
       questionId: question.questionId,
       userAnswerId: question.userAnswerId,
@@ -716,16 +725,20 @@ export default function AdminDetailedResultsPage() {
                         {questions.map((question, index) => (
                           <div
                             key={question.questionId}
-                            className="border rounded-xl p-6 border-purple-200 bg-white/50 backdrop-blur-sm"
+                            className={`border rounded-xl p-6 backdrop-blur-sm transition-all duration-300 ${
+                              question.isCorrect
+                                ? 'border-purple-200 bg-white/50 hover:bg-purple-50/30'
+                                : 'border-red-200 bg-red-50/20 hover:bg-red-50/40'
+                            }`}
                           >
                             <div className="flex items-start justify-between mb-4">
                               <div className="flex items-center space-x-4">
                                 <div className="flex-shrink-0">
                                   <div
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium transition-all duration-300 ${
                                       question.isCorrect
-                                        ? 'bg-purple-500'
-                                        : 'bg-red-500'
+                                        ? 'bg-purple-500 shadow-purple-200 shadow-lg'
+                                        : 'bg-red-500 shadow-red-200 shadow-lg'
                                     }`}
                                   >
                                     {question.isCorrect ? '✓' : '✗'}
@@ -750,7 +763,10 @@ export default function AdminDetailedResultsPage() {
                               <div className="flex-shrink-0">
                                 <button
                                   onClick={() => openRegradeModal(question)}
-                                  disabled={regrading === question.userAnswerId}
+                                  disabled={
+                                    regrading === question.userAnswerId ||
+                                    !results
+                                  }
                                   className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
                                     question.isCorrect
                                       ? 'bg-red-100 text-red-700 hover:bg-red-200 disabled:bg-red-50'
@@ -759,9 +775,11 @@ export default function AdminDetailedResultsPage() {
                                 >
                                   {regrading === question.userAnswerId
                                     ? 'Regrading...'
-                                    : question.isCorrect
-                                      ? 'Mark Incorrect'
-                                      : 'Mark Correct'}
+                                    : !results
+                                      ? 'Loading...'
+                                      : question.isCorrect
+                                        ? 'Mark Incorrect'
+                                        : 'Mark Correct'}
                                 </button>
                               </div>
                             </div>

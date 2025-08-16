@@ -31,11 +31,43 @@ export function checkAnswer(
  */
 export function normalizeCorrectAnswers(correctAnswer: any): string[] {
   if (typeof correctAnswer === 'string') {
+    // Try to parse if it looks like JSON
+    try {
+      const parsed = JSON.parse(correctAnswer)
+      if (Array.isArray(parsed)) {
+        return parsed.filter((answer) => typeof answer === 'string')
+      }
+    } catch {
+      // If parsing fails, treat as single string answer
+      return [correctAnswer]
+    }
     return [correctAnswer]
   }
 
   if (Array.isArray(correctAnswer)) {
-    return correctAnswer.filter((answer) => typeof answer === 'string')
+    // Handle double-encoded JSON arrays like ["[\"8\"]"]
+    const result: string[] = []
+    for (const item of correctAnswer) {
+      if (typeof item === 'string') {
+        // Try to parse if it looks like JSON
+        try {
+          const parsed = JSON.parse(item)
+          if (Array.isArray(parsed)) {
+            result.push(
+              ...parsed.filter((answer) => typeof answer === 'string')
+            )
+          } else if (typeof parsed === 'string') {
+            result.push(parsed)
+          } else {
+            result.push(item)
+          }
+        } catch {
+          // If parsing fails, treat as regular string
+          result.push(item)
+        }
+      }
+    }
+    return result
   }
 
   // Handle JSON string case

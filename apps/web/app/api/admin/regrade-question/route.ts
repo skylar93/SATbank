@@ -14,9 +14,12 @@ export async function POST(request: NextRequest) {
   console.log('🚀 REGRADE API CALLED!')
   try {
     const cookieStore = cookies()
-    console.log('Available cookies:', cookieStore.getAll().map(c => c.name))
+    console.log(
+      'Available cookies:',
+      cookieStore.getAll().map((c) => c.name)
+    )
     console.log('Authorization header:', request.headers.get('authorization'))
-    
+
     const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
     // Try to get access token from header if cookies don't work
@@ -36,7 +39,14 @@ export async function POST(request: NextRequest) {
       authError = result.error
     }
 
-    console.log('Auth check - User:', user?.id, 'Email:', user?.email, 'Error:', authError?.message)
+    console.log(
+      'Auth check - User:',
+      user?.id,
+      'Email:',
+      user?.email,
+      'Error:',
+      authError?.message
+    )
 
     if (authError || !user) {
       console.log('No user or auth error:', authError?.message)
@@ -47,15 +57,15 @@ export async function POST(request: NextRequest) {
     console.log('User metadata:', user.user_metadata)
     console.log('App metadata:', user.app_metadata)
     console.log('User email:', user.email)
-    
+
     // Special case for admin@admin.sat - hardcode admin role
     let userRole = user.user_metadata?.role || user.app_metadata?.role
-    
+
     if (user.email === 'admin@admin.sat') {
       userRole = 'admin'
       console.log('Hardcoded admin role for admin@admin.sat')
     }
-    
+
     if (!userRole) {
       // Fallback to user_profiles table
       const { data: profile, error: profileError } = await supabase
@@ -63,9 +73,9 @@ export async function POST(request: NextRequest) {
         .select('role')
         .eq('id', user.id)
         .maybeSingle() // Use maybeSingle instead of single to handle RLS issues
-      
+
       userRole = profile?.role
-      
+
       console.log(
         'Profile fallback - Profile:',
         profile,
@@ -106,14 +116,14 @@ export async function POST(request: NextRequest) {
 
     // Get the user answer with attempt info
     console.log('Looking for user answer with ID:', userAnswerId)
-    
+
     // Temporarily use service role to bypass RLS for debugging
     const supabaseService = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       { auth: { autoRefreshToken: false, persistSession: false } }
     )
-    
+
     const { data: userAnswer, error: answerError } = await supabaseService
       .from('user_answers')
       .select(
@@ -137,7 +147,12 @@ export async function POST(request: NextRequest) {
     console.log('User answer query result:', { userAnswer, answerError })
 
     if (answerError || !userAnswer) {
-      console.log('User answer not found - Error:', answerError?.message, 'Data:', userAnswer)
+      console.log(
+        'User answer not found - Error:',
+        answerError?.message,
+        'Data:',
+        userAnswer
+      )
       return NextResponse.json(
         { error: 'User answer not found' },
         { status: 404 }
@@ -166,8 +181,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Update the user answer
-    const { error: updateError } = await supabase
+    // Update the user answer using service role to ensure it gets updated
+    const { error: updateError } = await supabaseService
       .from('user_answers')
       .update({ is_correct: newIsCorrect })
       .eq('id', userAnswerId)
@@ -176,16 +191,18 @@ export async function POST(request: NextRequest) {
       throw new Error(`Failed to update user answer: ${updateError.message}`)
     }
 
-    // Log the regrade action
-    const { error: logError } = await supabase.from('regrade_history').insert({
-      user_answer_id: userAnswerId,
-      attempt_id: userAnswer.attempt_id,
-      admin_id: user.id,
-      old_is_correct: oldIsCorrect,
-      new_is_correct: newIsCorrect,
-      reason: reason.trim(),
-      regraded_at: new Date().toISOString(),
-    })
+    // Log the regrade action using service role
+    const { error: logError } = await supabaseService
+      .from('regrade_history')
+      .insert({
+        user_answer_id: userAnswerId,
+        attempt_id: userAnswer.attempt_id,
+        admin_id: user.id,
+        old_is_correct: oldIsCorrect,
+        new_is_correct: newIsCorrect,
+        reason: reason.trim(),
+        regraded_at: new Date().toISOString(),
+      })
 
     if (logError) {
       console.error('Failed to log regrade action:', logError)
@@ -199,8 +216,8 @@ export async function POST(request: NextRequest) {
         true // Use service role for admin operations
       )
 
-      // Update the test attempt with new scores
-      const { error: scoreUpdateError } = await supabase
+      // Update the test attempt with new scores using service role
+      const { error: scoreUpdateError } = await supabaseService
         .from('test_attempts')
         .update({
           total_score: newScores.overall,
@@ -227,8 +244,8 @@ export async function POST(request: NextRequest) {
         newScores,
       })
     } catch (scoringError: any) {
-      // If scoring fails, revert the user answer change
-      await supabase
+      // If scoring fails, revert the user answer change using service role
+      await supabaseService
         .from('user_answers')
         .update({ is_correct: oldIsCorrect })
         .eq('id', userAnswerId)
