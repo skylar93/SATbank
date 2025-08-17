@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { QuestionDisplay } from '../../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../../components/exam/exam-navigation'
@@ -98,6 +98,38 @@ export default function ReviewPageClient({
   const questionIndexInModule = currentModuleQuestions.findIndex(q => q.id === currentQuestion.id)
   const currentQuestionInModule = questionIndexInModule + 1
   const totalQuestionsInModule = currentModuleQuestions.length
+
+  // Add keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only handle arrow keys and ignore if user is typing in an input field
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement ||
+        event.target instanceof HTMLSelectElement
+      ) {
+        return
+      }
+
+      switch (event.key) {
+        case 'ArrowLeft':
+          event.preventDefault()
+          if (currentQuestionIndex > 0) {
+            previousQuestion()
+          }
+          break
+        case 'ArrowRight':
+          event.preventDefault()
+          if (currentQuestionIndex < totalQuestions - 1) {
+            nextQuestion()
+          }
+          break
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [currentQuestionIndex, totalQuestions, nextQuestion, previousQuestion])
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
