@@ -195,6 +195,7 @@ export default function ReviewPageClient({
             showExplanation={showCorrectAnswers}
             disabled={true} // All inputs disabled in review mode
             isAdminPreview={false}
+            isCorrect={isCorrect}
           />
         </div>
 

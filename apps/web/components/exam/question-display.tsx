@@ -312,6 +312,7 @@ interface QuestionDisplayProps {
   onQuestionUpdate?: (updatedQuestion: Question) => void
   isMarkedForReview?: boolean
   onToggleMarkForReview?: () => void
+  isCorrect?: boolean
 }
 
 // Helper function to parse correct answers for grid-in questions
@@ -398,6 +399,7 @@ export function QuestionDisplay({
   onQuestionUpdate,
   isMarkedForReview = false,
   onToggleMarkForReview,
+  isCorrect,
 }: QuestionDisplayProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [localQuestion, setLocalQuestion] = useState(question)
@@ -964,21 +966,20 @@ export function QuestionDisplay({
                 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
                 ${
                   userAnswer === key
-                    ? 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200'
+                    ? showExplanation || disabled
+                      ? isCorrect !== undefined
+                        ? isCorrect
+                          ? 'bg-green-50 border-2 border-green-500 ring-1 ring-green-200'
+                          : 'bg-red-50 border-2 border-red-500 ring-1 ring-red-200'
+                        : 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200'
+                      : 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200'
                     : disabled
                       ? 'bg-gray-50 border-2 border-gray-200'
                       : 'bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }
                 ${
-                  showExplanation && localQuestion.correct_answer === key
+                  showExplanation && localQuestion.correct_answer === key && userAnswer !== key
                     ? 'bg-green-50 border-green-500'
-                    : ''
-                }
-                ${
-                  showExplanation &&
-                  userAnswer === key &&
-                  localQuestion.correct_answer !== key
-                    ? 'bg-red-50 border-red-500'
                     : ''
                 }
               `}
@@ -1098,7 +1099,11 @@ export function QuestionDisplay({
               onChange={(e) => onAnswerChange(e.target.value)}
               className={`w-full p-3 text-lg font-mono border-2 rounded-lg ${
                 disabled || showExplanation
-                  ? 'border-gray-300 bg-gray-50 cursor-not-allowed'
+                  ? isCorrect !== undefined
+                    ? isCorrect
+                      ? 'border-green-500 bg-green-50 cursor-not-allowed ring-1 ring-green-200'
+                      : 'border-red-500 bg-red-50 cursor-not-allowed ring-1 ring-red-200'
+                    : 'border-gray-300 bg-gray-50 cursor-not-allowed'
                   : 'border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200'
               }`}
               placeholder="Enter your answer"
@@ -1516,12 +1521,6 @@ export function QuestionDisplay({
         {/* Answer Status */}
         {userAnswer && !showExplanation && (
           <div className="mt-6 space-y-3">
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-800">
-                <strong>Selected:</strong> {userAnswer}
-              </p>
-            </div>
-
             {/* Admin Preview: Check Answer Button */}
             {isAdminPreview && (
               <div className="space-y-3">
