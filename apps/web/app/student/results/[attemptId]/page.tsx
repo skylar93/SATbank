@@ -385,6 +385,31 @@ export default function DetailedResultsPage() {
               </div>
             </div>
 
+            {/* Review Your Answers Section */}
+            <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-2xl shadow-lg border border-purple-200 p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-violet-500 rounded-xl flex items-center justify-center">
+                    <span className="text-white text-xl">📖</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                      Review Your Answers in Exam View
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      Revisit each question exactly as you saw it during the exam, with your answers and explanations
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href={`/student/results/${attemptId}/review`}
+                  className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  Start Review →
+                </Link>
+              </div>
+            </div>
+
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
@@ -676,8 +701,14 @@ export default function DetailedResultsPage() {
         {/* Actions */}
         <div className="mt-8 flex justify-center space-x-4">
           <Link
+            href={`/student/results/${attemptId}/review`}
+            className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg"
+          >
+            📖 Review Answers
+          </Link>
+          <Link
             href="/student/exams"
-            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
           >
             Take Another Exam
           </Link>

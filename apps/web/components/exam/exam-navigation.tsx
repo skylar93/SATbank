@@ -32,6 +32,8 @@ interface ExamNavigationProps {
   currentModuleIndex?: number
   onGoToModule?: (moduleIndex: number, questionIndex: number) => void
   isCompact?: boolean
+  correctQuestions?: Set<number>
+  incorrectQuestions?: Set<number>
 }
 
 export function ExamNavigation({
@@ -54,6 +56,8 @@ export function ExamNavigation({
   currentModuleIndex = 0,
   onGoToModule,
   isCompact = false,
+  correctQuestions = new Set(),
+  incorrectQuestions = new Set(),
 }: ExamNavigationProps) {
   const getModuleName = (module: ModuleType) => {
     const moduleNames = {
@@ -131,6 +135,8 @@ export function ExamNavigation({
                           1
                         const isAnswered =
                           answeredQuestions.has(globalQuestionIndex)
+                        const isCorrect = correctQuestions.has(globalQuestionIndex)
+                        const isIncorrect = incorrectQuestions.has(globalQuestionIndex)
 
                         return (
                           <button
@@ -142,11 +148,13 @@ export function ExamNavigation({
                             className={`w-5 h-5 text-xs rounded-md font-medium transition-all duration-200 ${
                               isCurrent
                                 ? 'bg-purple-600 text-white shadow-sm'
-                                : isAnswered
+                                : isCorrect
                                   ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                  : isIncorrect
+                                    ? 'bg-red-50 text-red-700 hover:bg-red-100'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             } disabled:opacity-50`}
-                            title={`Question ${qIndex + 1}`}
+                            title={`Question ${qIndex + 1}${isCorrect ? ' - Correct' : isIncorrect ? ' - Incorrect' : ''}`}
                           >
                             {qIndex + 1}
                           </button>
@@ -219,6 +227,8 @@ export function ExamNavigation({
                         1
                       const isAnswered =
                         answeredQuestions.has(globalQuestionIndex)
+                      const isCorrect = correctQuestions.has(globalQuestionIndex)
+                      const isIncorrect = incorrectQuestions.has(globalQuestionIndex)
                       const isMarked = markedQuestions.some(
                         (mq) =>
                           mq.index === qIndex &&
@@ -238,11 +248,14 @@ export function ExamNavigation({
                             ${
                               isCurrent
                                 ? 'bg-purple-600 text-white border-2 border-purple-500'
-                                : isAnswered
+                                : isCorrect
                                   ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100'
-                                  : 'bg-white/80 text-purple-600 border border-purple-200 hover:bg-white hover:border-purple-300'
+                                  : isIncorrect
+                                    ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
+                                    : 'bg-white/80 text-purple-600 border border-purple-200 hover:bg-white hover:border-purple-300'
                             }
                           `}
+                          title={`Question ${questionNum}${isCorrect ? ' - Correct' : isIncorrect ? ' - Incorrect' : ''}`}
                         >
                           {questionNum}
                           {isMarked && (
@@ -307,7 +320,9 @@ export function ExamNavigation({
         <div className="flex flex-wrap gap-2">
           {Array.from({ length: totalQuestions }, (_, index) => {
             const questionNum = index + 1
-            const isAnswered = answeredQuestions.has(questionNum)
+            const isCorrect = correctQuestions.has(questionNum)
+            const isIncorrect = incorrectQuestions.has(questionNum)
+            const isAnswered = isCorrect || isIncorrect
             const isCurrent = questionNum === currentQuestion
             const isMarked = markedQuestions.some((mq) => mq.index === index)
 
@@ -322,9 +337,11 @@ export function ExamNavigation({
                   ${
                     isCurrent
                       ? 'bg-blue-600 text-white border-2 border-blue-600'
-                      : isAnswered
+                      : isCorrect
                         ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
-                        : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
+                        : isIncorrect
+                          ? 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'
+                          : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
                   }
                 `}
               >
