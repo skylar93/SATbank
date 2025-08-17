@@ -20,6 +20,8 @@ import {
   PlayIcon,
   ArrowTrendingUpIcon,
   CalendarIcon,
+  DocumentTextIcon,
+  BoltIcon,
 } from '@heroicons/react/24/outline'
 
 export default function StudentResultsPage() {
@@ -514,28 +516,28 @@ export default function StudentResultsPage() {
                   </h3>
                 </div>
                 <div className="p-6">
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {attempts.map((attempt) => (
                       <div
                         key={attempt.id}
-                        className="border border-gray-200 rounded-xl p-6 hover:border-violet-300 transition-colors"
+                        className="border border-gray-200 rounded-xl p-6 hover:border-violet-300 transition-colors group"
                       >
-                        <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-start justify-between mb-6">
                           <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl flex items-center justify-center">
-                              <AcademicCapIcon className="w-6 h-6 text-white" />
+                            <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                              <AcademicCapIcon className="w-8 h-8 text-white" />
                             </div>
                             <div>
-                              <h4 className="text-lg font-semibold text-gray-900">
+                              <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                 {attempt.exam?.title || 'SAT Practice Test'}
                               </h4>
-                              <p className="text-sm text-gray-500">
+                              <p className="text-gray-600">
                                 ID: {attempt.id.slice(0, 8)}...
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center space-x-3">
+                          <div className="flex flex-col items-end space-y-2">
                             <span
                               className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(attempt.status)}`}
                             >
@@ -571,22 +573,28 @@ export default function StudentResultsPage() {
                             finalScores.math
                           ) {
                             return (
-                              <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-xl text-center">
-                                  <div className="text-sm font-medium text-gray-900 mb-1">
+                              <div className="grid grid-cols-2 gap-4 mb-6">
+                                <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 p-4 rounded-xl text-center hover:from-indigo-100 hover:to-indigo-200 transition-colors">
+                                  <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                    <DocumentTextIcon className="w-4 h-4 text-white" />
+                                  </div>
+                                  <div className="text-lg font-semibold text-gray-900">
                                     ENGLISH
                                   </div>
-                                  <div className="text-lg font-bold text-blue-600">
+                                  <div className="text-xl font-bold text-indigo-600">
                                     {canShowResults
                                       ? finalScores.english
                                       : '***'}
                                   </div>
                                 </div>
-                                <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-xl text-center">
-                                  <div className="text-sm font-medium text-gray-900 mb-1">
+                                <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-xl text-center hover:from-purple-100 hover:to-purple-200 transition-colors">
+                                  <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                    <BoltIcon className="w-4 h-4 text-white" />
+                                  </div>
+                                  <div className="text-lg font-semibold text-gray-900">
                                     MATH
                                   </div>
-                                  <div className="text-lg font-bold text-green-600">
+                                  <div className="text-xl font-bold text-purple-600">
                                     {canShowResults ? finalScores.math : '***'}
                                   </div>
                                 </div>
@@ -596,24 +604,41 @@ export default function StudentResultsPage() {
 
                           // Fallback to old module_scores format
                           if (moduleScores) {
+                            const moduleColors = {
+                              english1: { bg: 'from-indigo-50 to-indigo-100', icon: 'bg-indigo-500', text: 'text-indigo-600', hover: 'hover:from-indigo-100 hover:to-indigo-200' },
+                              english2: { bg: 'from-violet-50 to-violet-100', icon: 'bg-violet-500', text: 'text-violet-600', hover: 'hover:from-violet-100 hover:to-violet-200' },
+                              math1: { bg: 'from-purple-50 to-purple-100', icon: 'bg-purple-500', text: 'text-purple-600', hover: 'hover:from-purple-100 hover:to-purple-200' },
+                              math2: { bg: 'from-pink-50 to-pink-100', icon: 'bg-pink-500', text: 'text-pink-600', hover: 'hover:from-pink-100 hover:to-pink-200' }
+                            }
                             return (
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                                 {Object.entries(moduleScores).map(
-                                  ([module, score]) => (
-                                    <div
-                                      key={module}
-                                      className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-xl text-center"
-                                    >
-                                      <div className="text-sm font-medium text-gray-900 mb-1">
-                                        {module
-                                          .replace(/(\d)/, ' $1')
-                                          .toUpperCase()}
+                                  ([module, score]) => {
+                                    const colorScheme = moduleColors[module as keyof typeof moduleColors] || moduleColors.english1
+                                    const isEnglish = module.includes('english')
+                                    return (
+                                      <div
+                                        key={module}
+                                        className={`bg-gradient-to-r ${colorScheme.bg} p-4 rounded-xl text-center ${colorScheme.hover} transition-colors`}
+                                      >
+                                        <div className={`w-8 h-8 ${colorScheme.icon} rounded-lg flex items-center justify-center mx-auto mb-2`}>
+                                          {isEnglish ? (
+                                            <DocumentTextIcon className="w-4 h-4 text-white" />
+                                          ) : (
+                                            <BoltIcon className="w-4 h-4 text-white" />
+                                          )}
+                                        </div>
+                                        <div className="text-lg font-semibold text-gray-900">
+                                          {module
+                                            .replace(/(\d)/, ' $1')
+                                            .toUpperCase()}
+                                        </div>
+                                        <div className={`text-xl font-bold ${colorScheme.text}`}>
+                                          {canShowResults ? score || 0 : '***'}
+                                        </div>
                                       </div>
-                                      <div className="text-xl font-bold text-gray-700">
-                                        {canShowResults ? score || 0 : '***'}
-                                      </div>
-                                    </div>
-                                  )
+                                    )
+                                  }
                                 )}
                               </div>
                             )

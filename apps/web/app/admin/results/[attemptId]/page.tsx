@@ -396,6 +396,12 @@ export default function AdminDetailedResultsPage() {
             </p>
           </div>
           <div className="flex items-center space-x-4">
+            <Link
+              href={`/admin/results/${attemptId}/review`}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              📝 View in Exam Mode
+            </Link>
             <button
               onClick={handleExport}
               disabled={exporting}

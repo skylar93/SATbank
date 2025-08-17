@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { QuestionDisplay } from '../../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../../components/exam/exam-navigation'
 import { useExamReviewState } from '../../../../../hooks/use-exam-review-state'
+import { supabase } from '../../../../../lib/supabase'
 import type { Question, TestAttempt, UserAnswer, Exam } from '../../../../../lib/exam-service'
 
 interface ReviewData {
@@ -18,12 +19,14 @@ interface ReviewPageClientProps {
   reviewData: ReviewData
   showCorrectAnswers: boolean
   attemptId: string
+  isAdminView?: boolean
 }
 
 export default function ReviewPageClient({
   reviewData,
   showCorrectAnswers,
   attemptId,
+  isAdminView = false,
 }: ReviewPageClientProps) {
   const {
     currentQuestionIndex,
@@ -40,6 +43,60 @@ export default function ReviewPageClient({
     getCurrentModuleIndex,
     allQuestionsOrdered,
   } = useExamReviewState(reviewData)
+
+  // Admin regrade functionality
+  const [regrading, setRegrading] = useState(false)
+  const [regradeError, setRegradeError] = useState<string | null>(null)
+
+  // Handle regrade question
+  const handleRegrade = async () => {
+    if (!isAdminView || !currentQuestion || !userAnswer) return
+
+    const currentUserAnswer = reviewData.userAnswers.find(
+      ua => ua.question_id === currentQuestion.id
+    )
+
+    if (!currentUserAnswer) return
+
+    setRegrading(true)
+    setRegradeError(null)
+
+    try {
+      // Get fresh session
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session?.access_token) {
+        throw new Error('Authentication failed. Please refresh the page and try again.')
+      }
+
+      const response = await fetch('/api/admin/regrade-question', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          userAnswerId: currentUserAnswer.id,
+          newIsCorrect: !isCorrect,
+          reason: `Manual regrade via exam review interface - marking as ${!isCorrect ? 'correct' : 'incorrect'}`,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to regrade question')
+      }
+
+      // Force a page reload to get fresh data
+      window.location.reload()
+    } catch (err: any) {
+      console.error('Regrade error:', err)
+      setRegradeError(err.message)
+    } finally {
+      setRegrading(false)
+    }
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -138,9 +195,9 @@ export default function ReviewPageClient({
         <div className="mx-auto">
           <div className="flex items-center">
             <Link
-              href={`/student/results/${attemptId}`}
+              href={isAdminView ? `/admin/results/${attemptId}` : `/student/results/${attemptId}`}
               className="inline-flex items-center justify-center w-10 h-10 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors mr-4"
-              title="Back to Results"
+              title={isAdminView ? "Back to Analysis" : "Back to Results"}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -149,7 +206,7 @@ export default function ReviewPageClient({
             
             <div>
               <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                Exam Review
+                {isAdminView ? 'Admin Exam Review' : 'Exam Review'}
               </h1>
               <p className="text-gray-600">
                 {reviewData.exam.title}
@@ -213,6 +270,13 @@ export default function ReviewPageClient({
         {/* Review-specific Footer */}
         <div className="bg-white/80 backdrop-blur-sm border-t border-purple-100 px-6 py-4">
           <div className="mx-auto">
+            {/* Admin Regrade Error Display */}
+            {isAdminView && regradeError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-700">{regradeError}</p>
+              </div>
+            )}
+
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-6">
                 <div className="text-sm text-gray-600">
@@ -233,6 +297,26 @@ export default function ReviewPageClient({
                       {userAnswer}
                     </span>
                   </div>
+                )}
+
+                {/* Admin Regrade Button */}
+                {isAdminView && userAnswer && (
+                  <button
+                    onClick={handleRegrade}
+                    disabled={regrading}
+                    className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                      isCorrect
+                        ? 'bg-red-100 text-red-700 hover:bg-red-200 disabled:bg-red-50'
+                        : 'bg-green-100 text-green-700 hover:bg-green-200 disabled:bg-green-50'
+                    } disabled:cursor-not-allowed`}
+                  >
+                    {regrading 
+                      ? 'Regrading...' 
+                      : isCorrect 
+                        ? 'Mark as Incorrect' 
+                        : 'Mark as Correct'
+                    }
+                  </button>
                 )}
               </div>
 
