@@ -126,7 +126,7 @@ export function ExamNavigation({
                     <div className="flex flex-wrap gap-1 max-w-xs">
                       {module.questions.map((_, qIndex) => {
                         const isCurrent =
-                          isCurrentModule && qIndex + 1 === currentQuestion
+                          isCurrentModule && qIndex === module.currentQuestionIndex
                         const globalQuestionIndex =
                           allModules
                             .slice(0, moduleIndex)
@@ -218,7 +218,7 @@ export function ExamNavigation({
                     {module.questions.map((_, qIndex) => {
                       const questionNum = qIndex + 1
                       const isCurrent =
-                        isCurrentModule && questionNum === currentQuestion
+                        isCurrentModule && qIndex === module.currentQuestionIndex
                       const globalQuestionIndex =
                         allModules
                           .slice(0, moduleIndex)

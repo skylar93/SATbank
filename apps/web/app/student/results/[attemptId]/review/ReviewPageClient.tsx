@@ -135,42 +135,29 @@ export default function ReviewPageClient({
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-purple-100 px-6 py-4 shadow-lg">
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                📖 Exam Review Mode
+                Exam Review
               </h1>
               <p className="text-gray-600">
-                {reviewData.exam.title} - Review your answers in exam format
+                {reviewData.exam.title}
               </p>
               <div className="text-sm text-gray-500 mt-1">
                 Completed: {formatDate(reviewData.attempt.completed_at || reviewData.attempt.created_at)}
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
-              {/* Legend */}
-              <div className="flex items-center space-x-4 text-sm">
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-green-500 rounded-full mr-1"></div>
-                  <span className="text-gray-600">Correct</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-red-500 rounded-full mr-1"></div>
-                  <span className="text-gray-600">Incorrect</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-gray-400 rounded-full mr-1"></div>
-                  <span className="text-gray-600">Unanswered</span>
-                </div>
-              </div>
-
+            <div className="flex items-center">
               <Link
                 href={`/student/results/${attemptId}`}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                className="inline-flex items-center justify-center w-10 h-10 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                title="Back to Results"
               >
-                ← Back to Results
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
               </Link>
             </div>
           </div>
@@ -227,7 +214,7 @@ export default function ReviewPageClient({
 
         {/* Review-specific Footer */}
         <div className="bg-white/80 backdrop-blur-sm border-t border-purple-100 px-6 py-4">
-          <div className="max-w-7xl mx-auto">
+          <div className="mx-auto">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-6">
                 <div className="text-sm text-gray-600">
