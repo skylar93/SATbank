@@ -314,21 +314,6 @@ export default function AdminStudentsPage() {
             </p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex space-x-3">
-              <button
-                onClick={handleExportAll}
-                disabled={exporting}
-                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-              >
-                {exporting ? 'Exporting...' : 'Export Data'}
-              </button>
-              <Link
-                href="/admin/dashboard"
-                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
-              >
-                ← Dashboard
-              </Link>
-            </div>
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">
                 {user.profile?.full_name?.charAt(0) || 'A'}
@@ -507,13 +492,7 @@ export default function AdminStudentsPage() {
                         Student
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
-                        Grade & Target
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                         Latest Score
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
-                        Performance
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                         Tests Taken
@@ -545,12 +524,6 @@ export default function AdminStudentsPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div>Grade {student.grade_level || 'N/A'}</div>
-                          <div className="text-gray-600">
-                            Target: {student.target_score || 'None'}
-                          </div>
-                        </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div
                             className={`text-sm font-medium ${getScoreColor(student.attempts.latest_score)}`}
@@ -562,23 +535,6 @@ export default function AdminStudentsPage() {
                               Avg: {student.attempts.average_score}
                             </div>
                           )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              student.attempts.latest_score
-                                ? student.attempts.latest_score >= 1200
-                                  ? 'bg-purple-100 text-purple-800'
-                                  : student.attempts.latest_score >= 1000
-                                    ? 'bg-blue-100 text-blue-800'
-                                    : student.attempts.latest_score >= 800
-                                      ? 'bg-amber-100 text-amber-800'
-                                      : 'bg-slate-100 text-slate-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }`}
-                          >
-                            {getPerformanceLevel(student.attempts.latest_score)}
-                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           <div>{student.attempts.completed} completed</div>
@@ -613,17 +569,19 @@ export default function AdminStudentsPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                           <Link
                             href={`/admin/students/${student.id}`}
-                            className="text-purple-600 hover:text-purple-800 font-medium"
+                            className="text-purple-600 hover:text-purple-800 p-2 rounded hover:bg-purple-50"
+                            title="View Details"
                           >
-                            View Details
+                            👤
                           </Link>
                           {student.attempts.latest_score &&
                             student.attempts.latest_attempt_id && (
                               <Link
                                 href={`/admin/results/${student.attempts.latest_attempt_id}`}
-                                className="text-violet-600 hover:text-violet-700 font-medium"
+                                className="text-violet-600 hover:text-violet-700 p-2 rounded hover:bg-violet-50"
+                                title="Latest Results"
                               >
-                                Latest Results
+                                📊
                               </Link>
                             )}
                         </td>
