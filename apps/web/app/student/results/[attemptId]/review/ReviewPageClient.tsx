@@ -136,7 +136,17 @@ export default function ReviewPageClient({
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-purple-100 px-6 py-4 shadow-lg">
         <div className="mx-auto">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Link
+              href={`/student/results/${attemptId}`}
+              className="inline-flex items-center justify-center w-10 h-10 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors mr-4"
+              title="Back to Results"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </Link>
+            
             <div>
               <h1 className="text-2xl font-bold text-gray-900 mb-1">
                 Exam Review
@@ -147,18 +157,6 @@ export default function ReviewPageClient({
               <div className="text-sm text-gray-500 mt-1">
                 Completed: {formatDate(reviewData.attempt.completed_at || reviewData.attempt.created_at)}
               </div>
-            </div>
-            
-            <div className="flex items-center">
-              <Link
-                href={`/student/results/${attemptId}`}
-                className="inline-flex items-center justify-center w-10 h-10 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                title="Back to Results"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </Link>
             </div>
           </div>
         </div>

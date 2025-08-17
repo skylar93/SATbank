@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
-import { ExamService, type TestAttempt } from '../../../lib/exam-service'
+import { ExamService, type TestAttempt, type Exam } from '../../../lib/exam-service'
 import {
   StatsCard,
   ModernScoreProgress,
@@ -24,7 +24,7 @@ import {
 
 export default function StudentResultsPage() {
   const { user } = useAuth()
-  const [attempts, setAttempts] = useState<TestAttempt[]>([])
+  const [attempts, setAttempts] = useState<(TestAttempt & { exam?: Exam })[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deletingAttempts, setDeletingAttempts] = useState<Set<string>>(
@@ -61,7 +61,7 @@ export default function StudentResultsPage() {
           attemptsByExam.get(attempt.exam_id)!.push(attempt)
         })
 
-        const consolidatedAttempts: TestAttempt[] = []
+        const consolidatedAttempts: (TestAttempt & { exam?: Exam })[] = []
 
         attemptsByExam.forEach((attempts, examId) => {
           // Separate completed and in_progress attempts
@@ -104,7 +104,7 @@ export default function StudentResultsPage() {
     }
   }
 
-  const checkResultVisibility = async (attempts: TestAttempt[]) => {
+  const checkResultVisibility = async (attempts: (TestAttempt & { exam?: Exam })[]) => {
     if (!user) return
 
     const visibilityMap = new Map<string, boolean>()
@@ -527,7 +527,7 @@ export default function StudentResultsPage() {
                             </div>
                             <div>
                               <h4 className="text-lg font-semibold text-gray-900">
-                                SAT Practice Test
+                                {attempt.exam?.title || 'SAT Practice Test'}
                               </h4>
                               <p className="text-sm text-gray-500">
                                 ID: {attempt.id.slice(0, 8)}...

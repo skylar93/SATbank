@@ -253,14 +253,17 @@ export class ExamService {
     return data
   }
 
-  // Get user's test attempts
+  // Get user's test attempts with exam details
   static async getUserAttempts(
     userId: string,
     examId?: string
-  ): Promise<TestAttempt[]> {
+  ): Promise<(TestAttempt & { exam?: Exam })[]> {
     let query = supabase
       .from('test_attempts')
-      .select('*')
+      .select(`
+        *,
+        exam:exams(*)
+      `)
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
