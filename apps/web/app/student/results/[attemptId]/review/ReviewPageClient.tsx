@@ -52,10 +52,10 @@ export default function ReviewPageClient({
 
   const getModuleDisplayName = (moduleType: string) => {
     const names = {
-      english1: 'Reading and Writing',
-      english2: 'Writing and Language',
-      math1: 'Math (No Calculator)',
-      math2: 'Math (Calculator)',
+      english1: 'English Module 1',
+      english2: 'English Module 2',
+      math1: 'Math Module 1',
+      math2: 'Math Module 2',
     }
     return names[moduleType as keyof typeof names] || moduleType
   }
@@ -105,6 +105,13 @@ export default function ReviewPageClient({
 
   // Get all modules for navigation
   const allModules = getAllModules()
+
+  // Calculate current question number within the module
+  const currentModuleIndex = getCurrentModuleIndex()
+  const currentModuleQuestions = getModuleQuestions(currentModule)
+  const questionIndexInModule = currentModuleQuestions.findIndex(q => q.id === currentQuestion.id)
+  const currentQuestionInModule = questionIndexInModule + 1
+  const totalQuestionsInModule = currentModuleQuestions.length
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -188,14 +195,15 @@ export default function ReviewPageClient({
         <div className="flex-1">
           <QuestionDisplay
             question={currentQuestion}
-            questionNumber={currentQuestionIndex + 1}
-            totalQuestions={totalQuestions}
+            questionNumber={currentQuestionInModule}
+            totalQuestions={totalQuestionsInModule}
             userAnswer={userAnswer || undefined}
             onAnswerChange={() => {}} // No-op in review mode
             showExplanation={showCorrectAnswers}
             disabled={true} // All inputs disabled in review mode
             isAdminPreview={false}
             isCorrect={isCorrect}
+            moduleDisplayName={getModuleDisplayName(currentModule)}
           />
         </div>
 
@@ -227,7 +235,7 @@ export default function ReviewPageClient({
 
               <div className="flex items-center space-x-3">
                 <div className="text-sm text-gray-500">
-                  Question {currentQuestionIndex + 1} of {totalQuestions} • {getModuleDisplayName(currentModule)}
+                  {getModuleDisplayName(currentModule)}: {currentQuestionInModule} of {totalQuestionsInModule}
                 </div>
                 
                 <div className="flex space-x-2">

@@ -313,6 +313,7 @@ interface QuestionDisplayProps {
   isMarkedForReview?: boolean
   onToggleMarkForReview?: () => void
   isCorrect?: boolean
+  moduleDisplayName?: string
 }
 
 // Helper function to parse correct answers for grid-in questions
@@ -400,6 +401,7 @@ export function QuestionDisplay({
   isMarkedForReview = false,
   onToggleMarkForReview,
   isCorrect,
+  moduleDisplayName,
 }: QuestionDisplayProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [localQuestion, setLocalQuestion] = useState(question)
@@ -1145,9 +1147,9 @@ export function QuestionDisplay({
           <div className="flex items-center justify-between mb-2">
             <h2
               className="text-lg font-semibold text-gray-900 truncate"
-              title={`Question ${questionNumber} of ${totalQuestions}`}
+              title={moduleDisplayName ? `${moduleDisplayName}: ${questionNumber} of ${totalQuestions}` : `Question ${questionNumber} of ${totalQuestions}`}
             >
-              Question {questionNumber} of {totalQuestions}
+              {moduleDisplayName ? `${moduleDisplayName}: ${questionNumber} of ${totalQuestions}` : `Question ${questionNumber} of ${totalQuestions}`}
             </h2>
             <div className="flex items-center space-x-2">
               {!isAdminPreview && !showExplanation && onToggleMarkForReview && (
