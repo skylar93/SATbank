@@ -38,6 +38,7 @@ export default function ReviewPageClient({
     getModuleQuestions,
     getAllModules,
     getCurrentModuleIndex,
+    allQuestionsOrdered,
   } = useExamReviewState(reviewData)
 
   const formatDate = (dateString: string) => {
@@ -60,13 +61,14 @@ export default function ReviewPageClient({
     return names[moduleType as keyof typeof names] || moduleType
   }
 
-  // Get question status for navigation display
+  // Get question status for navigation display using the exact same ordering as the hook
   const { correctQuestions, incorrectQuestions, answeredQuestions } = useMemo(() => {
     const correct = new Set<number>()
     const incorrect = new Set<number>()
     const answered = new Set<number>()
     
-    reviewData.questions.forEach((question, index) => {
+    // Use the exact same ordered questions array as the hook to ensure perfect consistency
+    allQuestionsOrdered.forEach((question, index) => {
       const userAnswer = reviewData.userAnswers.find(ua => ua.question_id === question.id)
       const questionNumber = index + 1
       
@@ -85,7 +87,7 @@ export default function ReviewPageClient({
     })
     
     return { correctQuestions: correct, incorrectQuestions: incorrect, answeredQuestions: answered }
-  }, [reviewData.questions, reviewData.userAnswers])
+  }, [allQuestionsOrdered, reviewData.userAnswers])
 
   // Get all modules for navigation
   const allModules = getAllModules()

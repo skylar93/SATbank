@@ -261,6 +261,31 @@ export default function DetailedResultsPage() {
           </div>
         </div>
 
+        {/* Review Your Answers Section */}
+        <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-2xl shadow-lg border border-purple-200 p-6 mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-violet-500 rounded-xl flex items-center justify-center">
+                <span className="text-white text-xl">📖</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                  Review Your Answers in Exam View
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Revisit each question exactly as you saw it during the exam, with your answers and explanations
+                </p>
+              </div>
+            </div>
+            <Link
+              href={`/student/results/${attemptId}/review`}
+              className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              Start Review →
+            </Link>
+          </div>
+        </div>
+
         {/* Score Overview Card */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -324,7 +349,7 @@ export default function DetailedResultsPage() {
             {[
               { id: 'overview', label: 'Overview' },
               { id: 'questions', label: 'Question Analysis' },
-              { id: 'analytics', label: 'Performance Analytics' },
+              // { id: 'analytics', label: 'Performance Analytics' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -385,90 +410,6 @@ export default function DetailedResultsPage() {
               </div>
             </div>
 
-            {/* Review Your Answers Section */}
-            <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-2xl shadow-lg border border-purple-200 p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-violet-500 rounded-xl flex items-center justify-center">
-                    <span className="text-white text-xl">📖</span>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      Review Your Answers in Exam View
-                    </h3>
-                    <p className="text-gray-600 text-sm">
-                      Revisit each question exactly as you saw it during the exam, with your answers and explanations
-                    </p>
-                  </div>
-                </div>
-                <Link
-                  href={`/student/results/${attemptId}/review`}
-                  className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  Start Review →
-                </Link>
-              </div>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                <h4 className="font-medium text-gray-900 mb-4 flex items-center">
-                  <span className="mr-2">⏱️</span>
-                  Time Management
-                </h4>
-                <div className="space-y-3">
-                  <div>
-                    <div className="text-2xl font-bold text-violet-600">
-                      {formatTime(
-                        Math.round(performanceAnalytics.averageTimePerQuestion)
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-500">Avg per question</div>
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    Total: {formatTime(performanceAnalytics.totalTimeSpent)}
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                <h4 className="font-medium text-gray-900 mb-4 flex items-center">
-                  <span className="mr-2">🎯</span>
-                  Accuracy
-                </h4>
-                <div className="space-y-3">
-                  <div>
-                    <div className="text-2xl font-bold text-purple-600">
-                      {Math.round(performanceAnalytics.accuracyRate)}%
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {performanceAnalytics.correctAnswers} of{' '}
-                      {performanceAnalytics.totalQuestions}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                <h4 className="font-medium text-gray-900 mb-4 flex items-center">
-                  <span className="mr-2">📈</span>
-                  By Difficulty
-                </h4>
-                <div className="space-y-2 text-sm">
-                  {Object.entries(performanceAnalytics.difficultyBreakdown).map(
-                    ([difficulty, stats]) => (
-                      <div key={difficulty} className="flex justify-between">
-                        <span className="capitalize">{difficulty}:</span>
-                        <span className={getScoreColor(stats.percentage)}>
-                          {Math.round(stats.percentage)}%
-                        </span>
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
@@ -600,9 +541,9 @@ export default function DetailedResultsPage() {
           </div>
         )}
 
-        {activeTab === 'analytics' && (
+        {/* {activeTab === 'analytics' && (
           <div className="space-y-6">
-            {/* Strengths and Weaknesses */}
+            // Strengths and Weaknesses
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                 <h4 className="font-medium text-gray-900 mb-4 flex items-center">
@@ -651,7 +592,7 @@ export default function DetailedResultsPage() {
               </div>
             </div>
 
-            {/* Topic Performance */}
+            // Topic Performance
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
               <h4 className="font-medium text-gray-900 mb-4">
                 📊 Topic Performance Breakdown
@@ -696,7 +637,7 @@ export default function DetailedResultsPage() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Actions */}
         <div className="mt-8 flex justify-center space-x-4">
