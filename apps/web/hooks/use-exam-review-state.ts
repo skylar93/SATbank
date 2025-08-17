@@ -71,27 +71,17 @@ export function useExamReviewState(reviewData: ReviewData) {
     return answer?.user_answer || null
   }, [currentQuestion, reviewData.userAnswers])
 
-  // Check if current answer is correct
+  // Check if current answer is correct - use the authoritative is_correct value from database
   const isCorrect = useMemo(() => {
-    if (!currentQuestion || !userAnswer) return false
-
-    // Handle different question types
-    if (currentQuestion.question_type === 'grid_in') {
-      // For grid-in questions, check against correct_answers array
-      const correctAnswers = currentQuestion.correct_answers || [currentQuestion.correct_answer]
-      const userAnswerTrimmed = userAnswer.trim().toUpperCase()
-      
-      return correctAnswers.some((correctAnswer) => {
-        if (Array.isArray(correctAnswer)) {
-          return correctAnswer.some((ca) => String(ca).trim().toUpperCase() === userAnswerTrimmed)
-        }
-        return String(correctAnswer).trim().toUpperCase() === userAnswerTrimmed
-      })
-    } else {
-      // For multiple choice questions
-      return userAnswer.trim().toUpperCase() === String(currentQuestion.correct_answer).trim().toUpperCase()
-    }
-  }, [currentQuestion, userAnswer])
+    if (!currentQuestion) return false
+    
+    const answer = reviewData.userAnswers.find(
+      (ua) => ua.question_id === currentQuestion.id
+    )
+    
+    // Use the definitive is_correct value from the database (includes admin regrades)
+    return answer?.is_correct ?? false
+  }, [currentQuestion, reviewData.userAnswers])
 
   // Navigation functions
   const nextQuestion = () => {
@@ -166,20 +156,8 @@ export function useExamReviewState(reviewData: ReviewData) {
       return { hasAnswer: false, isCorrect: false, userAnswer: null }
     }
 
-    let isQuestionCorrect = false
-    if (question.question_type === 'grid_in') {
-      const correctAnswers = question.correct_answers || [question.correct_answer]
-      const userAnswerTrimmed = userAnswerValue.trim().toUpperCase()
-      
-      isQuestionCorrect = correctAnswers.some((correctAnswer) => {
-        if (Array.isArray(correctAnswer)) {
-          return correctAnswer.some((ca) => String(ca).trim().toUpperCase() === userAnswerTrimmed)
-        }
-        return String(correctAnswer).trim().toUpperCase() === userAnswerTrimmed
-      })
-    } else {
-      isQuestionCorrect = userAnswerValue.trim().toUpperCase() === String(question.correct_answer).trim().toUpperCase()
-    }
+    // Use the definitive is_correct value from the database (includes admin regrades)
+    const isQuestionCorrect = answer?.is_correct ?? false
 
     return { hasAnswer: true, isCorrect: isQuestionCorrect, userAnswer: userAnswerValue }
   }

@@ -50,7 +50,12 @@ export async function POST(request: NextRequest) {
 
     if (authError || !user) {
       console.log('No user or auth error:', authError?.message)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      console.log('Request headers:', Object.fromEntries(request.headers.entries()))
+      return NextResponse.json({ 
+        error: 'Unauthorized', 
+        details: authError?.message || 'No user found',
+        timestamp: new Date().toISOString()
+      }, { status: 401 })
     }
 
     // Check admin role using user metadata

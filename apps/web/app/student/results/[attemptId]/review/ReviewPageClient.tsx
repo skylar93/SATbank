@@ -73,24 +73,8 @@ export default function ReviewPageClient({
       if (userAnswer?.user_answer) {
         answered.add(questionNumber)
         
-        // Check if answer is correct
-        let isCorrect = false
-        
-        if (question.question_type === 'grid_in') {
-          // For grid-in questions, check against correct_answers array
-          const correctAnswers = question.correct_answers || [question.correct_answer]
-          const userAnswerTrimmed = userAnswer.user_answer.trim().toUpperCase()
-          
-          isCorrect = correctAnswers.some((correctAnswer) => {
-            if (Array.isArray(correctAnswer)) {
-              return correctAnswer.some((ca) => String(ca).trim().toUpperCase() === userAnswerTrimmed)
-            }
-            return String(correctAnswer).trim().toUpperCase() === userAnswerTrimmed
-          })
-        } else {
-          // For multiple choice questions
-          isCorrect = userAnswer.user_answer.trim().toUpperCase() === String(question.correct_answer).trim().toUpperCase()
-        }
+        // Use the definitive is_correct value from the database (includes admin regrades)
+        const isCorrect = userAnswer.is_correct ?? false
         
         if (isCorrect) {
           correct.add(questionNumber)

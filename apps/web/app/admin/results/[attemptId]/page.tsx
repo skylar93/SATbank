@@ -167,10 +167,34 @@ export default function AdminDetailedResultsPage() {
     try {
       console.log('Starting regrade for question:', regradeModal.questionNumber)
 
-      // Get access token from Supabase
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
+      // Get fresh session and handle token refresh if needed
+      let session = null
+      try {
+        const {
+          data: { session: currentSession },
+        } = await supabase.auth.getSession()
+        
+        // If no session or token is expired, try to refresh
+        if (!currentSession || !currentSession.access_token) {
+          console.log('No session or expired token, attempting refresh...')
+          const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession()
+          if (refreshError) {
+            console.error('Failed to refresh session:', refreshError)
+            throw new Error('Authentication failed. Please refresh the page and try again.')
+          }
+          session = refreshData.session
+        } else {
+          session = currentSession
+        }
+        
+        if (!session?.access_token) {
+          throw new Error('No valid session found. Please refresh the page and try again.')
+        }
+      } catch (authError) {
+        console.error('Authentication error:', authError)
+        setError('Authentication failed. Please refresh the page and try again.')
+        return
+      }
 
       const requestBody = {
         userAnswerId: regradeModal.userAnswerId,
@@ -184,9 +208,7 @@ export default function AdminDetailedResultsPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(session?.access_token
-            ? { Authorization: `Bearer ${session.access_token}` }
-            : {}),
+          Authorization: `Bearer ${session.access_token}`,
         },
         credentials: 'include', // Include cookies for authentication
         body: JSON.stringify(requestBody),
