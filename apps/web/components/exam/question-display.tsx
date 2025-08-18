@@ -960,29 +960,38 @@ export function QuestionDisplay({
 
       return (
         <div className="space-y-3">
-          {Object.entries(localQuestion.options || {}).map(([key, value]) => (
+          {Object.entries(localQuestion.options || {}).map(([key, value]) => {
+            // Normalize comparison - ensure both are strings and trim whitespace
+            const normalizedCorrectAnswer = String(localQuestion.correct_answer || '').trim().toUpperCase()
+            const normalizedKey = String(key).trim().toUpperCase()
+            const normalizedUserAnswer = String(userAnswer || '').trim().toUpperCase()
+            
+            const isCorrectAnswer = normalizedCorrectAnswer === normalizedKey
+            const isUserAnswer = normalizedUserAnswer === normalizedKey
+            
+            return (
             <label
               key={key}
               className={`
                 flex items-start p-3 rounded-lg transition-all
                 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
                 ${
-                  userAnswer === key
-                    ? showExplanation || disabled
-                      ? isCorrect !== undefined
-                        ? isCorrect
-                          ? 'bg-green-50 border-2 border-green-500 ring-1 ring-green-200'
-                          : 'bg-red-50 border-2 border-red-500 ring-1 ring-red-200'
+                  // Priority 1: If this is the correct answer and student got it wrong, show green styling
+                  showExplanation && isCorrectAnswer && !isUserAnswer
+                    ? 'bg-green-100 border-2 border-green-500 ring-2 ring-green-300 shadow-md'
+                    : // Priority 2: If this is the student's answer
+                      isUserAnswer
+                      ? showExplanation || disabled
+                        ? isCorrect !== undefined
+                          ? isCorrect
+                            ? 'bg-green-50 border-2 border-green-500 ring-1 ring-green-200'
+                            : 'bg-red-50 border-2 border-red-500 ring-1 ring-red-200'
+                          : 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200'
                         : 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200'
-                      : 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200'
-                    : disabled
-                      ? 'bg-gray-50 border-2 border-gray-200'
-                      : 'bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                }
-                ${
-                  showExplanation && localQuestion.correct_answer === key && userAnswer !== key
-                    ? 'bg-green-50 border-green-500'
-                    : ''
+                      : // Priority 3: Default styling
+                        disabled
+                        ? 'bg-gray-50 border-2 border-gray-200'
+                        : 'bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }
               `}
             >
@@ -990,7 +999,7 @@ export function QuestionDisplay({
                 type="radio"
                 name={`question-${question.id}`}
                 value={key}
-                checked={userAnswer === key}
+                checked={isUserAnswer}
                 onChange={(e) => onAnswerChange(e.target.value)}
                 className="mt-1 mr-3 text-blue-600 focus:ring-blue-500"
                 disabled={showExplanation || disabled}
@@ -1000,18 +1009,39 @@ export function QuestionDisplay({
                   <span className="font-semibold text-gray-700 mr-2">
                     {key}.
                   </span>
-                  {showExplanation && localQuestion.correct_answer === key && (
-                    <span className="text-green-600 text-sm font-medium">
-                      ✓ Correct Answer
-                    </span>
+                  {showExplanation && (
+                    <>
+                      {isCorrectAnswer && (
+                        <span className={`text-sm font-bold ${
+                          !isUserAnswer 
+                            ? 'text-green-700 bg-green-100 px-2 py-1 rounded-full border border-green-300' 
+                            : 'text-green-600 font-medium'
+                        }`}>
+                          ✓ Correct Answer
+                        </span>
+                      )}
+                      {isUserAnswer && (
+                        <span className={`text-sm font-medium ${
+                          isCorrect !== undefined 
+                            ? isCorrect 
+                              ? 'text-green-600' 
+                              : 'text-red-600'
+                            : isCorrectAnswer
+                              ? 'text-green-600'
+                              : 'text-red-600'
+                        }`}>
+                          {isCorrect !== undefined 
+                            ? isCorrect 
+                              ? '✓ Your Answer (Correct)' 
+                              : '✗ Your Answer (Incorrect)'
+                            : isCorrectAnswer
+                              ? '✓ Your Answer (Correct)'
+                              : '✗ Your Answer (Incorrect)'
+                          }
+                        </span>
+                      )}
+                    </>
                   )}
-                  {showExplanation &&
-                    userAnswer === key &&
-                    localQuestion.correct_answer !== key && (
-                      <span className="text-red-600 text-sm font-medium">
-                        ✗ Your Answer
-                      </span>
-                    )}
                 </div>
                 <div className="text-gray-900 leading-relaxed">
                   {(() => {
@@ -1079,7 +1109,8 @@ export function QuestionDisplay({
                 </div>
               </div>
             </label>
-          ))}
+            )
+          })}
         </div>
       )
     }
@@ -1114,9 +1145,15 @@ export function QuestionDisplay({
           </div>
           {showExplanation && (
             <div className="space-y-3">
-              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-800">
-                  <strong>
+              <div className={`p-4 border rounded-lg ${
+                isCorrect !== false 
+                  ? 'bg-green-50 border-green-200' 
+                  : 'bg-green-100 border-2 border-green-500 ring-1 ring-green-200'
+              }`}>
+                <p className={`text-sm ${
+                  isCorrect !== false ? 'text-green-800' : 'text-green-900 font-bold'
+                }`}>
+                  <strong className={isCorrect === false ? 'text-green-800' : ''}>
                     Correct Answer
                     {(() => {
                       if (localQuestion.question_type === 'grid_in') {
@@ -1127,9 +1164,11 @@ export function QuestionDisplay({
                     })()}
                     :
                   </strong>{' '}
-                  {localQuestion.question_type === 'grid_in'
-                    ? parseCorrectAnswers(localQuestion).join(', ')
-                    : localQuestion.correct_answer}
+                  <span className={isCorrect === false ? 'bg-green-200 px-2 py-1 rounded font-bold' : ''}>
+                    {localQuestion.question_type === 'grid_in'
+                      ? parseCorrectAnswers(localQuestion).join(', ')
+                      : localQuestion.correct_answer}
+                  </span>
                 </p>
               </div>
               {userAnswer && (
@@ -1147,13 +1186,7 @@ export function QuestionDisplay({
                         : 'text-red-800'
                       : 'text-gray-800'
                   }`}>
-                    <strong>Your Answer:</strong>{' '}
                     {userAnswer}
-                    {isCorrect !== undefined && (
-                      <span className="ml-2">
-                        {isCorrect ? '✓ Correct' : '✗ Incorrect'}
-                      </span>
-                    )}
                   </p>
                 </div>
               )}

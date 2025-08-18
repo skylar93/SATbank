@@ -5,6 +5,11 @@ import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
 import { ExportService } from '../../../lib/export-service'
 import { supabase } from '../../../lib/supabase'
+import {
+  MagnifyingGlassIcon,
+  ChartBarIcon,
+  DocumentArrowDownIcon,
+} from '@heroicons/react/24/outline'
 
 interface SystemAnalytics {
   totalStudents: number
@@ -73,10 +78,8 @@ export default function AdminReportsPage() {
   const [dateRange, setDateRange] = useState<
     'week' | 'month' | 'quarter' | 'year'
   >('month')
-  const [activeReport, setActiveReport] = useState<
-    'student_list' | 'overview' | 'performance' | 'trends' | 'topics'
-  >('student_list')
   const [exporting, setExporting] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     if (user) {
@@ -411,15 +414,23 @@ export default function AdminReportsPage() {
         
         const profile = profileMap.get(attempt.user_id)
 
+        // Calculate total score from final_scores if total_score is missing or 0
+        const englishScore = attempt.final_scores?.english || 0
+        const mathScore = attempt.final_scores?.math || 0
+        const calculatedTotal = englishScore + mathScore
+        const totalScore = attempt.total_score && attempt.total_score > 0 
+          ? attempt.total_score 
+          : calculatedTotal
+
         return {
           id: attempt.id,
           user_id: attempt.user_id,
           student_name: profile?.full_name || 'Unknown',
           student_email: profile?.email || 'Unknown',
-          total_score: attempt.total_score || 0,
+          total_score: totalScore,
           completed_at: attempt.completed_at,
-          english_score: attempt.final_scores?.english || 0,
-          math_score: attempt.final_scores?.math || 0,
+          english_score: englishScore,
+          math_score: mathScore,
           duration_minutes: durationMinutes
         }
       }) || []
@@ -431,6 +442,16 @@ export default function AdminReportsPage() {
   }
 
   const formatPercentage = (value: number) => `${Math.round(value)}%`
+
+  const filteredStudentAttempts = studentAttempts.filter(
+    (attempt) =>
+      attempt.student_name
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      attempt.student_email
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase())
+  )
 
   if (!user) return null
 
@@ -462,15 +483,17 @@ export default function AdminReportsPage() {
               <button
                 onClick={() => exportReport('summary')}
                 disabled={exporting || !analytics}
-                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-4 py-2 rounded-lg font-medium flex items-center transition-colors"
               >
+                <DocumentArrowDownIcon className="w-5 h-5 mr-2" />
                 Export Summary
               </button>
               <button
                 onClick={() => exportReport('detailed')}
                 disabled={exporting || !analytics}
-                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-4 py-2 rounded-lg font-medium flex items-center transition-colors"
               >
+                <DocumentArrowDownIcon className="w-5 h-5 mr-2" />
                 Export Detailed
               </button>
               <Link
@@ -493,6 +516,20 @@ export default function AdminReportsPage() {
       </div>
 
       <div className="p-6">
+        {/* Search */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-6">
+          <div className="relative">
+            <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-3 text-purple-400" />
+            <input
+              type="text"
+              placeholder="Search student results..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
             <p className="text-red-800">Error loading analytics: {error}</p>
@@ -569,363 +606,165 @@ export default function AdminReportsPage() {
                 </div>
               </div>
 
-              {/* Tab Navigation */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-6">
-                <div className="border-b border-purple-200 pb-4">
-                  <nav className="-mb-px flex space-x-8">
-                    {[
-                      { id: 'student_list', label: 'Student Test Results' },
-                      { id: 'overview', label: 'Overview' },
-                      { id: 'performance', label: 'Performance Analysis' },
-                      { id: 'trends', label: 'Trends' },
-                      { id: 'topics', label: 'Topic Analysis' },
-                    ].map((tab) => (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveReport(tab.id as any)}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                          activeReport === tab.id
-                            ? 'border-purple-500 text-purple-600'
-                            : 'border-transparent text-purple-400 hover:text-purple-700 hover:border-purple-300'
-                        }`}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </nav>
+              {/* Student Test Results Section */}
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 overflow-hidden mb-6">
+                <div className="p-6 border-b border-purple-100">
+                  <div className="flex items-center">
+                    <ChartBarIcon className="w-6 h-6 text-purple-500 mr-3" />
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Student Test Results
+                    </h3>
+                  </div>
                 </div>
+                
+                {filteredStudentAttempts.length === 0 ? (
+                  <div className="text-center py-12">
+                    <ChartBarIcon className="w-12 h-12 text-purple-400 mx-auto mb-4" />
+                    <p className="text-purple-600/70">No test results found</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-purple-200">
+                      <thead className="bg-gradient-to-r from-purple-50 to-pink-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">Student</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">Total Score</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">English</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">Math</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">Duration</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">Completed</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-purple-100">
+                        {filteredStudentAttempts.map((attempt) => (
+                          <tr 
+                            key={attempt.id} 
+                            className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200 cursor-pointer"
+                            onClick={() => window.open(`/admin/results/${attempt.id}`, '_blank')}
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">{attempt.student_name}</div>
+                                <div className="text-sm text-gray-600">{attempt.student_email}</div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-lg font-bold text-purple-600">
+                                {attempt.total_score}/1600
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-lg font-semibold text-blue-600">
+                                {attempt.english_score}/800
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-lg font-semibold text-green-600">
+                                {attempt.math_score}/800
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">{attempt.duration_minutes}분</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-600">
+                                {new Date(attempt.completed_at).toLocaleDateString('ko-KR', {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <Link
+                                href={`/admin/results/${attempt.id}`}
+                                className="text-purple-600 hover:text-purple-800 font-medium"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                View Details
+                              </Link>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
 
-              {/* Tab Content */}
-              {activeReport === 'student_list' && (
+              {/* Overview Section */}
+              <div className="space-y-6">
+                {/* Score Distribution */}
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Student Test Results
+                    Score Distribution
                   </h3>
-                  
-                  {studentAttempts.length === 0 ? (
-                    <div className="text-center py-8">
-                      <p className="text-gray-600">No test results found for the selected period.</p>
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full">
-                        <thead>
-                          <tr className="border-b border-gray-200">
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Student</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Total Score</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">English</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Math</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Duration</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Completed</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {studentAttempts.map((attempt) => (
-                            <tr 
-                              key={attempt.id} 
-                              className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
-                              onClick={() => window.open(`/admin/results/${attempt.id}`, '_blank')}
-                            >
-                              <td className="py-3 px-4">
-                                <div>
-                                  <div className="font-medium text-gray-900">{attempt.student_name}</div>
-                                  <div className="text-sm text-gray-600">{attempt.student_email}</div>
-                                </div>
-                              </td>
-                              <td className="py-3 px-4">
-                                <div className="text-lg font-bold text-purple-600">
-                                  {attempt.total_score}/1600
-                                </div>
-                              </td>
-                              <td className="py-3 px-4">
-                                <div className="text-lg font-semibold text-blue-600">
-                                  {attempt.english_score}/800
-                                </div>
-                              </td>
-                              <td className="py-3 px-4">
-                                <div className="text-lg font-semibold text-green-600">
-                                  {attempt.math_score}/800
-                                </div>
-                              </td>
-                              <td className="py-3 px-4">
-                                <div className="text-gray-900">{attempt.duration_minutes}분</div>
-                              </td>
-                              <td className="py-3 px-4">
-                                <div className="text-sm text-gray-600">
-                                  {new Date(attempt.completed_at).toLocaleDateString('ko-KR', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  })}
-                                </div>
-                              </td>
-                              <td className="py-3 px-4">
-                                <Link
-                                  href={`/admin/results/${attempt.id}`}
-                                  className="inline-flex items-center px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  View Details
-                                </Link>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeReport === 'overview' && (
-                <div className="space-y-6">
-                  {/* Score Distribution */}
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Score Distribution
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div className="text-center p-4 bg-emerald-50 rounded-lg">
-                        <div className="text-2xl font-bold text-emerald-500">
-                          {analytics.scoreDistribution.excellent}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Excellent (1200+)
-                        </div>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="text-center p-4 bg-emerald-50 rounded-lg">
+                      <div className="text-2xl font-bold text-emerald-500">
+                        {analytics.scoreDistribution.excellent}
                       </div>
-                      <div className="text-center p-4 bg-purple-50 rounded-lg">
-                        <div className="text-2xl font-bold text-purple-500">
-                          {analytics.scoreDistribution.good}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Good (1000-1199)
-                        </div>
-                      </div>
-                      <div className="text-center p-4 bg-amber-50 rounded-lg">
-                        <div className="text-2xl font-bold text-amber-500">
-                          {analytics.scoreDistribution.fair}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Fair (800-999)
-                        </div>
-                      </div>
-                      <div className="text-center p-4 bg-slate-50 rounded-lg">
-                        <div className="text-2xl font-bold text-slate-500">
-                          {analytics.scoreDistribution.poor}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Needs Improvement (&lt;800)
-                        </div>
+                      <div className="text-sm text-gray-600">
+                        Excellent (1200+)
                       </div>
                     </div>
-                  </div>
-
-                  {/* Module Performance */}
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Module Performance
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      {Object.entries(analytics.modulePerformance).map(
-                        ([module, data]) => (
-                          <div
-                            key={module}
-                            className="p-4 bg-gray-50 rounded-lg"
-                          >
-                            <div className="text-lg font-bold text-gray-900">
-                              {data.avg}
-                            </div>
-                            <div className="text-sm text-gray-900 capitalize mb-1">
-                              {module.replace(/(\d)/g, ' $1')}
-                            </div>
-                            <div className="text-xs text-gray-600">
-                              {data.attempts} attempts
-                            </div>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeReport === 'performance' && (
-                <div className="space-y-6">
-                  {/* Difficulty Analysis */}
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Performance by Difficulty
-                    </h3>
-                    <div className="space-y-4">
-                      {Object.entries(analytics.difficultyAnalysis).map(
-                        ([difficulty, stats]) => (
-                          <div
-                            key={difficulty}
-                            className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                          >
-                            <div>
-                              <div className="font-medium text-gray-900 capitalize">
-                                {difficulty}
-                              </div>
-                              <div className="text-sm text-gray-600">
-                                {stats.correct} / {stats.attempted} correct
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-lg font-bold text-gray-900">
-                                {formatPercentage(stats.percentage)}
-                              </div>
-                              <div className="w-32 bg-gray-200 rounded-full h-2 mt-1">
-                                <div
-                                  className={`h-2 rounded-full ${
-                                    stats.percentage >= 80
-                                      ? 'bg-emerald-500'
-                                      : stats.percentage >= 60
-                                        ? 'bg-amber-500'
-                                        : 'bg-slate-400'
-                                  }`}
-                                  style={{ width: `${stats.percentage}%` }}
-                                ></div>
-                              </div>
-                            </div>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Time Analysis */}
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Time Analysis
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="text-center p-4 bg-purple-50 rounded-lg">
-                        <div className="text-2xl font-bold text-blue-500">
-                          {analytics.timeAnalysis.averageTestDuration}min
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Average Duration
-                        </div>
+                    <div className="text-center p-4 bg-purple-50 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-500">
+                        {analytics.scoreDistribution.good}
                       </div>
-                      <div className="text-center p-4 bg-emerald-50 rounded-lg">
-                        <div className="text-2xl font-bold text-emerald-500">
-                          {analytics.timeAnalysis.fastestCompletion}min
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Fastest Completion
-                        </div>
+                      <div className="text-sm text-gray-600">
+                        Good (1000-1199)
                       </div>
-                      <div className="text-center p-4 bg-amber-50 rounded-lg">
-                        <div className="text-2xl font-bold text-amber-500">
-                          {analytics.timeAnalysis.slowestCompletion}min
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Slowest Completion
-                        </div>
+                    </div>
+                    <div className="text-center p-4 bg-amber-50 rounded-lg">
+                      <div className="text-2xl font-bold text-amber-500">
+                        {analytics.scoreDistribution.fair}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Fair (800-999)
+                      </div>
+                    </div>
+                    <div className="text-center p-4 bg-slate-50 rounded-lg">
+                      <div className="text-2xl font-bold text-slate-500">
+                        {analytics.scoreDistribution.poor}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Needs Improvement (&lt;800)
                       </div>
                     </div>
                   </div>
                 </div>
-              )}
 
-              {activeReport === 'trends' && (
-                <div className="space-y-6">
-                  {/* Daily Trends */}
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Daily Activity (Last 7 Days)
-                    </h3>
-                    <div className="space-y-3">
-                      {analytics.trends.daily.map((day, index) => (
+                {/* Module Performance */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Module Performance
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {Object.entries(analytics.modulePerformance).map(
+                      ([module, data]) => (
                         <div
-                          key={day.date}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded"
+                          key={module}
+                          className="p-4 bg-gray-50 rounded-lg"
                         >
-                          <div>
-                            <div className="font-medium text-gray-900">
-                              {new Date(day.date).toLocaleDateString('en-US', {
-                                weekday: 'long',
-                                month: 'short',
-                                day: 'numeric',
-                              })}
-                            </div>
+                          <div className="text-lg font-bold text-gray-900">
+                            {data.avg}
                           </div>
-                          <div className="flex items-center space-x-4">
-                            <div className="text-right">
-                              <div className="text-sm font-medium text-gray-900">
-                                {day.completions} tests
-                              </div>
-                              <div className="text-xs text-gray-600">
-                                Avg: {day.avgScore || 'N/A'}
-                              </div>
-                            </div>
-                            <div className="w-20 bg-gray-200 rounded-full h-2">
-                              <div
-                                className="bg-purple-500 h-2 rounded-full"
-                                style={{
-                                  width: `${(day.completions / Math.max(...analytics.trends.daily.map((d) => d.completions), 1)) * 100}%`,
-                                }}
-                              ></div>
-                            </div>
+                          <div className="text-sm text-gray-900 capitalize mb-1">
+                            {module.replace(/(\d)/g, ' $1')}
+                          </div>
+                          <div className="text-xs text-gray-600">
+                            {data.attempts} attempts
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      )
+                    )}
                   </div>
                 </div>
-              )}
-
-              {activeReport === 'topics' && (
-                <div className="space-y-6">
-                  {/* Topic Performance */}
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Top 10 Topic Performance
-                    </h3>
-                    <div className="space-y-3">
-                      {analytics.topicPerformance.map((topic, index) => (
-                        <div
-                          key={topic.topic}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded"
-                        >
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-900">
-                              {topic.topic}
-                            </div>
-                            <div className="text-sm text-gray-600">
-                              {topic.correct} / {topic.attempted} correct
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-4">
-                            <div className="text-right">
-                              <div className="text-lg font-bold text-gray-900">
-                                {formatPercentage(topic.percentage)}
-                              </div>
-                            </div>
-                            <div className="w-24 bg-gray-200 rounded-full h-2">
-                              <div
-                                className={`h-2 rounded-full ${
-                                  topic.percentage >= 80
-                                    ? 'bg-emerald-500'
-                                    : topic.percentage >= 60
-                                      ? 'bg-amber-500'
-                                      : 'bg-slate-400'
-                                }`}
-                                style={{ width: `${topic.percentage}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
+              </div>
             </>
           )
         )}
