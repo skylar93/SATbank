@@ -52,22 +52,36 @@ interface SystemAnalytics {
   }
 }
 
+interface StudentAttempt {
+  id: string
+  user_id: string
+  student_name: string
+  student_email: string
+  total_score: number
+  completed_at: string
+  english_score: number
+  math_score: number
+  duration_minutes: number
+}
+
 export default function AdminReportsPage() {
   const { user } = useAuth()
   const [analytics, setAnalytics] = useState<SystemAnalytics | null>(null)
+  const [studentAttempts, setStudentAttempts] = useState<StudentAttempt[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dateRange, setDateRange] = useState<
     'week' | 'month' | 'quarter' | 'year'
   >('month')
   const [activeReport, setActiveReport] = useState<
-    'overview' | 'performance' | 'trends' | 'topics'
-  >('overview')
+    'student_list' | 'overview' | 'performance' | 'trends' | 'topics'
+  >('student_list')
   const [exporting, setExporting] = useState(false)
 
   useEffect(() => {
     if (user) {
       loadAnalytics()
+      loadStudentAttempts()
     }
   }, [user, dateRange])
 
@@ -165,18 +179,11 @@ export default function AdminReportsPage() {
         },
       }
 
-      // Load difficulty and topic analysis from user answers
+      // Load difficulty and topic analysis from user answers - simplified to avoid relationship issues
       const { data: answersData } = await supabase
         .from('user_answers')
-        .select(
-          `
-          *,
-          questions:question_id (difficulty_level, topic_tags),
-          test_attempts:attempt_id (completed_at)
-        `
-        )
-        .not('test_attempts.completed_at', 'is', null)
-        .gte('test_attempts.completed_at', dateFilter)
+        .select('*')
+        .in('attempt_id', completedAttempts.map(a => a.id))
 
       const difficultyStats = {
         easy: { attempted: 0, correct: 0, percentage: 0 },
@@ -367,6 +374,62 @@ export default function AdminReportsPage() {
     }
   }
 
+  const loadStudentAttempts = async () => {
+    try {
+      const dateFilter = getDateFilter()
+      
+      const { data: attemptsData, error } = await supabase
+        .from('test_attempts')
+        .select(`
+          id,
+          user_id,
+          total_score,
+          completed_at,
+          started_at,
+          final_scores
+        `)
+        .eq('status', 'completed')
+        .gte('completed_at', dateFilter)
+        .order('completed_at', { ascending: false })
+
+      if (error) throw error
+
+      // Get user profiles separately
+      const userIds = attemptsData?.map(attempt => attempt.user_id) || []
+      const { data: profilesData } = await supabase
+        .from('user_profiles')
+        .select('id, full_name, email')
+        .in('id', userIds)
+
+      // Create a map for quick profile lookup
+      const profileMap = new Map(profilesData?.map(profile => [profile.id, profile]) || [])
+
+      const formattedAttempts: StudentAttempt[] = attemptsData?.map(attempt => {
+        const startTime = new Date(attempt.started_at).getTime()
+        const endTime = new Date(attempt.completed_at).getTime()
+        const durationMinutes = Math.round((endTime - startTime) / (1000 * 60))
+        
+        const profile = profileMap.get(attempt.user_id)
+
+        return {
+          id: attempt.id,
+          user_id: attempt.user_id,
+          student_name: profile?.full_name || 'Unknown',
+          student_email: profile?.email || 'Unknown',
+          total_score: attempt.total_score || 0,
+          completed_at: attempt.completed_at,
+          english_score: attempt.final_scores?.english || 0,
+          math_score: attempt.final_scores?.math || 0,
+          duration_minutes: durationMinutes
+        }
+      }) || []
+
+      setStudentAttempts(formattedAttempts)
+    } catch (err: any) {
+      setError(err.message)
+    }
+  }
+
   const formatPercentage = (value: number) => `${Math.round(value)}%`
 
   if (!user) return null
@@ -511,6 +574,7 @@ export default function AdminReportsPage() {
                 <div className="border-b border-purple-200 pb-4">
                   <nav className="-mb-px flex space-x-8">
                     {[
+                      { id: 'student_list', label: 'Student Test Results' },
                       { id: 'overview', label: 'Overview' },
                       { id: 'performance', label: 'Performance Analysis' },
                       { id: 'trends', label: 'Trends' },
@@ -533,6 +597,90 @@ export default function AdminReportsPage() {
               </div>
 
               {/* Tab Content */}
+              {activeReport === 'student_list' && (
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Student Test Results
+                  </h3>
+                  
+                  {studentAttempts.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-gray-600">No test results found for the selected period.</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-3 px-4 font-medium text-gray-900">Student</th>
+                            <th className="text-left py-3 px-4 font-medium text-gray-900">Total Score</th>
+                            <th className="text-left py-3 px-4 font-medium text-gray-900">English</th>
+                            <th className="text-left py-3 px-4 font-medium text-gray-900">Math</th>
+                            <th className="text-left py-3 px-4 font-medium text-gray-900">Duration</th>
+                            <th className="text-left py-3 px-4 font-medium text-gray-900">Completed</th>
+                            <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {studentAttempts.map((attempt) => (
+                            <tr 
+                              key={attempt.id} 
+                              className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                              onClick={() => window.open(`/admin/results/${attempt.id}`, '_blank')}
+                            >
+                              <td className="py-3 px-4">
+                                <div>
+                                  <div className="font-medium text-gray-900">{attempt.student_name}</div>
+                                  <div className="text-sm text-gray-600">{attempt.student_email}</div>
+                                </div>
+                              </td>
+                              <td className="py-3 px-4">
+                                <div className="text-lg font-bold text-purple-600">
+                                  {attempt.total_score}/1600
+                                </div>
+                              </td>
+                              <td className="py-3 px-4">
+                                <div className="text-lg font-semibold text-blue-600">
+                                  {attempt.english_score}/800
+                                </div>
+                              </td>
+                              <td className="py-3 px-4">
+                                <div className="text-lg font-semibold text-green-600">
+                                  {attempt.math_score}/800
+                                </div>
+                              </td>
+                              <td className="py-3 px-4">
+                                <div className="text-gray-900">{attempt.duration_minutes}분</div>
+                              </td>
+                              <td className="py-3 px-4">
+                                <div className="text-sm text-gray-600">
+                                  {new Date(attempt.completed_at).toLocaleDateString('ko-KR', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </div>
+                              </td>
+                              <td className="py-3 px-4">
+                                <Link
+                                  href={`/admin/results/${attempt.id}`}
+                                  className="inline-flex items-center px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  View Details
+                                </Link>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {activeReport === 'overview' && (
                 <div className="space-y-6">
                   {/* Score Distribution */}

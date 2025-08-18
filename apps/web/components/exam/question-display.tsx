@@ -1002,14 +1002,14 @@ export function QuestionDisplay({
                   </span>
                   {showExplanation && localQuestion.correct_answer === key && (
                     <span className="text-green-600 text-sm font-medium">
-                      ✓ Correct
+                      ✓ Correct Answer
                     </span>
                   )}
                   {showExplanation &&
                     userAnswer === key &&
                     localQuestion.correct_answer !== key && (
                       <span className="text-red-600 text-sm font-medium">
-                        ✗ Incorrect
+                        ✗ Your Answer
                       </span>
                     )}
                 </div>
@@ -1113,23 +1113,50 @@ export function QuestionDisplay({
             />
           </div>
           {showExplanation && (
-            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-sm text-green-800">
-                <strong>
-                  Correct Answer
-                  {(() => {
-                    if (localQuestion.question_type === 'grid_in') {
-                      const parsedAnswers = parseCorrectAnswers(localQuestion)
-                      return parsedAnswers.length > 1 ? 's' : ''
-                    }
-                    return ''
-                  })()}
-                  :
-                </strong>{' '}
-                {localQuestion.question_type === 'grid_in'
-                  ? parseCorrectAnswers(localQuestion).join(', ')
-                  : localQuestion.correct_answer}
-              </p>
+            <div className="space-y-3">
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-800">
+                  <strong>
+                    Correct Answer
+                    {(() => {
+                      if (localQuestion.question_type === 'grid_in') {
+                        const parsedAnswers = parseCorrectAnswers(localQuestion)
+                        return parsedAnswers.length > 1 ? 's' : ''
+                      }
+                      return ''
+                    })()}
+                    :
+                  </strong>{' '}
+                  {localQuestion.question_type === 'grid_in'
+                    ? parseCorrectAnswers(localQuestion).join(', ')
+                    : localQuestion.correct_answer}
+                </p>
+              </div>
+              {userAnswer && (
+                <div className={`p-3 border rounded-lg ${
+                  isCorrect !== undefined 
+                    ? isCorrect 
+                      ? 'bg-green-50 border-green-200' 
+                      : 'bg-red-50 border-red-200'
+                    : 'bg-gray-50 border-gray-200'
+                }`}>
+                  <p className={`text-sm ${
+                    isCorrect !== undefined 
+                      ? isCorrect 
+                        ? 'text-green-800' 
+                        : 'text-red-800'
+                      : 'text-gray-800'
+                  }`}>
+                    <strong>Your Answer:</strong>{' '}
+                    {userAnswer}
+                    {isCorrect !== undefined && (
+                      <span className="ml-2">
+                        {isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                      </span>
+                    )}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
