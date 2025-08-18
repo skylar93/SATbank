@@ -9,6 +9,8 @@ import {
   MagnifyingGlassIcon,
   ChartBarIcon,
   DocumentArrowDownIcon,
+  EyeIcon,
+  PencilSquareIcon,
 } from '@heroicons/react/24/outline'
 
 interface SystemAnalytics {
@@ -462,11 +464,8 @@ export default function AdminReportsPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              System Reports & Analytics
+              Reports
             </h1>
-            <p className="text-gray-600">
-              Comprehensive performance analytics and reporting
-            </p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex space-x-3">
@@ -480,28 +479,6 @@ export default function AdminReportsPage() {
                 <option value="quarter">Last Quarter</option>
                 <option value="year">Last Year</option>
               </select>
-              <button
-                onClick={() => exportReport('summary')}
-                disabled={exporting || !analytics}
-                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-4 py-2 rounded-lg font-medium flex items-center transition-colors"
-              >
-                <DocumentArrowDownIcon className="w-5 h-5 mr-2" />
-                Export Summary
-              </button>
-              <button
-                onClick={() => exportReport('detailed')}
-                disabled={exporting || !analytics}
-                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-4 py-2 rounded-lg font-medium flex items-center transition-colors"
-              >
-                <DocumentArrowDownIcon className="w-5 h-5 mr-2" />
-                Export Detailed
-              </button>
-              <Link
-                href="/admin/dashboard"
-                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
-              >
-                ← Dashboard
-              </Link>
             </div>
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">
@@ -544,67 +521,6 @@ export default function AdminReportsPage() {
         ) : (
           analytics && (
             <>
-              {/* Key Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                  <div className="flex items-center">
-                    <div className="text-3xl font-bold text-emerald-500">
-                      {analytics.totalStudents}
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        Total Students
-                      </div>
-                      <div className="text-xs text-gray-600">
-                        Registered users
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                  <div className="flex items-center">
-                    <div className="text-3xl font-bold text-violet-500">
-                      {analytics.completedAttempts}
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        Completed Tests
-                      </div>
-                      <div className="text-xs text-gray-600">
-                        of {analytics.totalAttempts} attempts
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                  <div className="flex items-center">
-                    <div className="text-3xl font-bold text-purple-500">
-                      {analytics.averageScore}
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        Average Score
-                      </div>
-                      <div className="text-xs text-gray-600">Out of 1600</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
-                  <div className="flex items-center">
-                    <div className="text-3xl font-bold text-amber-500">
-                      {analytics.timeAnalysis.averageTestDuration}min
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        Avg Duration
-                      </div>
-                      <div className="text-xs text-gray-600">
-                        Test completion time
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
               {/* Student Test Results Section */}
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 overflow-hidden mb-6">
@@ -650,26 +566,26 @@ export default function AdminReportsPage() {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-lg font-bold text-purple-600">
+                              <div className="text-sm text-gray-900">
                                 {attempt.total_score}/1600
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-lg font-semibold text-blue-600">
+                              <div className="text-sm text-gray-900">
                                 {attempt.english_score}/800
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-lg font-semibold text-green-600">
+                              <div className="text-sm text-gray-900">
                                 {attempt.math_score}/800
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{attempt.duration_minutes}분</div>
+                              <div className="text-sm text-gray-900">{attempt.duration_minutes} min</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-600">
-                                {new Date(attempt.completed_at).toLocaleDateString('ko-KR', {
+                              <div className="text-sm text-gray-900">
+                                {new Date(attempt.completed_at).toLocaleDateString('en-US', {
                                   year: 'numeric',
                                   month: 'short',
                                   day: 'numeric',
@@ -679,13 +595,22 @@ export default function AdminReportsPage() {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <Link
-                                href={`/admin/results/${attempt.id}`}
-                                className="text-purple-600 hover:text-purple-800 font-medium"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                View Details
-                              </Link>
+                              <div className="flex space-x-3">
+                                <Link
+                                  href={`/admin/results/${attempt.id}`}
+                                  className="text-gray-600 hover:text-gray-800"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <EyeIcon className="w-5 h-5" />
+                                </Link>
+                                <Link
+                                  href={`/admin/results/${attempt.id}/review`}
+                                  className="text-gray-600 hover:text-gray-800"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <PencilSquareIcon className="w-5 h-5" />
+                                </Link>
+                              </div>
                             </td>
                           </tr>
                         ))}
