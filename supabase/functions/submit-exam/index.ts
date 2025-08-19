@@ -332,6 +332,57 @@ serve(async (req) => {
     }
     console.log('✅ Test attempt updated successfully')
 
+    // Populate mistake bank with incorrect answers
+    console.log('📚 Populating mistake bank with incorrect answers')
+    try {
+      // Get the user_id from the test attempt
+      const { data: attemptData, error: attemptFetchError } = await supabase
+        .from('test_attempts')
+        .select('user_id')
+        .eq('id', attempt_id)
+        .single()
+
+      if (attemptFetchError || !attemptData) {
+        console.error('❌ Failed to fetch attempt user_id:', attemptFetchError?.message)
+      } else {
+        // Fetch all user answers for this attempt
+        const { data: userAnswers, error: answersError } = await supabase
+          .from('user_answers')
+          .select('question_id, is_correct')
+          .eq('attempt_id', attempt_id)
+
+        if (answersError) {
+          console.error('❌ Failed to fetch user answers:', answersError.message)
+        } else if (userAnswers) {
+          // Filter for incorrect answers and prepare for mistake bank
+          const mistakes = userAnswers
+            .filter(ans => ans.is_correct === false)
+            .map(ans => ({
+              user_id: attemptData.user_id,
+              question_id: ans.question_id,
+              status: 'unmastered' as const
+            }))
+
+          if (mistakes.length > 0) {
+            console.log(`📚 Found ${mistakes.length} mistakes to add to mistake bank`)
+            const { error: mistakeError } = await supabase
+              .from('mistake_bank')
+              .upsert(mistakes, { onConflict: 'user_id, question_id' })
+
+            if (mistakeError) {
+              console.error('❌ Failed to populate mistake bank:', mistakeError.message)
+            } else {
+              console.log('✅ Mistake bank populated successfully')
+            }
+          } else {
+            console.log('📚 No mistakes found - perfect score!')
+          }
+        }
+      }
+    } catch (mistakeError) {
+      console.error('❌ Error in mistake bank population (non-critical):', mistakeError)
+    }
+
     // Return the final scores
     console.log('📤 Returning final scores to client')
     return new Response(JSON.stringify(finalScores), {

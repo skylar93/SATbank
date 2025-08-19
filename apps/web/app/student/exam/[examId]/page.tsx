@@ -8,6 +8,7 @@ import { ExamService, type Question } from '../../../../lib/exam-service'
 import { ExamTimer } from '../../../../components/exam/exam-timer'
 import { QuestionDisplay } from '../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../components/exam/exam-navigation'
+import { ReferenceSheetModal } from '../../../../components/exam/ReferenceSheetModal'
 import {
   AcademicCapIcon,
   BookOpenIcon,
@@ -798,6 +799,7 @@ function ExamPageContent() {
             >
               ← Exit Exam
             </button>
+            <ReferenceSheetModal />
             <h1 className="text-xl font-semibold text-gray-900">
               {exam.title}
             </h1>

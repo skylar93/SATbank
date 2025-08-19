@@ -7,6 +7,7 @@ import { useAdminPreviewState } from '../../../../../hooks/use-admin-preview-sta
 import { type Question } from '../../../../../lib/exam-service'
 import { QuestionDisplay } from '../../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../../components/exam/exam-navigation'
+import { ReferenceSheetModal } from '../../../../../components/exam/ReferenceSheetModal'
 import {
   AcademicCapIcon,
   BookOpenIcon,
@@ -509,6 +510,7 @@ function AdminExamPreviewContent() {
             >
               ← Exit Preview
             </button>
+            <ReferenceSheetModal />
             <h1 className="text-xl font-semibold text-gray-900">
               {examState.exam.title}
             </h1>

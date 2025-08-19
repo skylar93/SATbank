@@ -57,6 +57,12 @@ export function Navigation() {
                   >
                     Exams
                   </Link>
+                  <Link
+                    href="/admin/assignments"
+                    className="text-gray-500 hover:text-gray-700 px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium whitespace-nowrap"
+                  >
+                    Assignments
+                  </Link>
                 </>
               ) : (
                 <>
@@ -77,6 +83,12 @@ export function Navigation() {
                     className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Results
+                  </Link>
+                  <Link
+                    href="/student/mistake-notebook"
+                    className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                  >
+                    Mistake Notebook
                   </Link>
                   {/* <Link
                     href="/student/recommendations"

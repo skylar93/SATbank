@@ -307,6 +307,13 @@ export default function AdminAssignmentsPage() {
               <PlusIcon className="w-5 h-5 mr-2" />
               New Assignment
             </button>
+            <a
+              href="/admin/assignments/create-from-mistakes"
+              className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium flex items-center"
+            >
+              <AcademicCapIcon className="w-5 h-5 mr-2" />
+              From Mistakes
+            </a>
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">
                 {user.profile?.full_name?.charAt(0) || 'A'}

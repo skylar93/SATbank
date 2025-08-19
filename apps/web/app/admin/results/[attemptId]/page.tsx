@@ -160,6 +160,103 @@ export default function AdminDetailedResultsPage() {
     }
   }
 
+  const handleCreateMistakeAssignment = async () => {
+    if (!results || !student) return
+
+    try {
+      // Get all incorrect answers from this specific exam attempt
+      const incorrectQuestions = results.questionAnalysis.filter((q: any) => !q.isCorrect && q.userAnswer !== null)
+      
+      if (incorrectQuestions.length === 0) {
+        alert('This student got all questions correct! No mistakes to create an assignment from.')
+        return
+      }
+
+      const questionIds = incorrectQuestions.map((q: any) => q.questionId)
+      
+      // Get exam info from the attempt
+      const { data: examInfo, error: examInfoError } = await supabase
+        .from('exams')
+        .select('title')
+        .eq('id', results.attempt.exam_id)
+        .single()
+      
+      if (examInfoError) {
+        console.error('Error fetching exam info:', examInfoError)
+        alert('Failed to get exam information')
+        return
+      }
+      
+      // Create a custom exam with these specific mistakes
+      const examTitle = `Retake - ${examInfo.title} (${student.full_name})`
+      
+      const { data: exam, error: examError } = await supabase
+        .from('exams')
+        .insert({
+          title: examTitle,
+          description: `Custom retake assignment for ${student.full_name} - questions they got wrong from ${examInfo.title}`,
+          is_mock_exam: false,
+          is_active: true,
+          is_custom_assignment: true,
+          total_questions: questionIds.length,
+          time_limits: {
+            english1: 35 * 60,
+            english2: 35 * 60,
+            math1: 35 * 60,
+            math2: 35 * 60
+          }
+        })
+        .select()
+        .single()
+
+      if (examError) {
+        console.error('Error creating exam:', examError)
+        alert('Failed to create assignment')
+        return
+      }
+
+      // Link questions to the exam
+      const examQuestions = questionIds.map((questionId: string) => ({
+        exam_id: exam.id,
+        question_id: questionId
+      }))
+
+      const { error: linkError } = await supabase
+        .from('exam_questions')
+        .insert(examQuestions)
+
+      if (linkError) {
+        console.error('Error linking questions:', linkError)
+        alert('Failed to link questions to assignment')
+        return
+      }
+
+      // Assign to the student
+      const { error: assignmentError } = await supabase
+        .from('exam_assignments')
+        .insert({
+          exam_id: exam.id,
+          student_id: student.id,
+          assigned_by: user?.id,
+          due_date: null,
+          show_results: true,
+          is_active: true
+        })
+
+      if (assignmentError) {
+        console.error('Error creating assignment:', assignmentError)
+        alert('Failed to assign to student')
+        return
+      }
+
+      alert(`Successfully created assignment "${examTitle}" with ${questionIds.length} questions for ${student.full_name}!`)
+      
+    } catch (error) {
+      console.error('Error creating mistake assignment:', error)
+      alert('An error occurred while creating the assignment')
+    }
+  }
+
   const handleRegradeQuestion = async () => {
     if (!regradeModal || !regradeReason.trim()) return
 
@@ -409,6 +506,12 @@ export default function AdminDetailedResultsPage() {
             >
               {exporting ? 'Exporting...' : 'Export Results'}
             </button>
+            <Link
+              href={`/admin/assignments/create-from-mistakes?studentId=${student.id}&attemptId=${attemptId}`}
+              className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              📚 Create Assignment from Mistakes
+            </Link>
             <Link
               href="/admin/students"
               className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"

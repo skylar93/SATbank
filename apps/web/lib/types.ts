@@ -9,7 +9,7 @@ export type {
 } from './exam-service'
 
 // Import for use in interfaces below
-import type { ModuleType, Exam } from './exam-service'
+import type { ModuleType, Exam, Question } from './exam-service'
 
 // Admin Dashboard Types
 export interface AdminStats {
@@ -172,6 +172,21 @@ export interface SearchFilters {
   module_type: ModuleType | 'all'
   difficulty_level: 'easy' | 'medium' | 'hard' | 'all'
   question_type: 'multiple_choice' | 'grid_in' | 'essay' | 'all'
+}
+
+// Mistake Bank Types
+export interface MistakeEntry {
+  id: string
+  user_id: string
+  question_id: string
+  status: 'unmastered' | 'mastered'
+  first_mistaken_at: string
+  last_reviewed_at: string | null
+  questions?: Question
+}
+
+export interface MistakeWithQuestion extends MistakeEntry {
+  questions: Question
 }
 
 // Export utility type for event handlers
