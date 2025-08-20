@@ -10,6 +10,12 @@ interface ExamAnswer {
   answeredAt: Date
 }
 
+interface Highlight {
+  start: number
+  end: number
+  text: string
+}
+
 interface ModuleState {
   module: ModuleType
   questions: Question[]
@@ -40,6 +46,7 @@ interface ExamState {
   finalScores?: FinalScores
   loading: boolean
   error: string | null
+  highlightsByQuestion: { [questionId: string]: Highlight[] }
 
   // Actions
   initializeExam: (examId: string, userId: string) => Promise<void>
@@ -64,6 +71,8 @@ interface ExamState {
   forceCleanup: () => void
   setError: (error: string | null) => void
   setLoading: (loading: boolean) => void
+  addHighlight: (questionId: string, highlight: Highlight) => void
+  removeHighlight: (questionId: string, highlight: Highlight) => void
 }
 
 const MODULE_ORDER: ModuleType[] = ['english1', 'english2', 'math1', 'math2']
@@ -80,6 +89,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
   showConflictModal: false,
   loading: false,
   error: null,
+  highlightsByQuestion: {},
 
   // Actions
   setError: (error: string | null) => set({ error }),
@@ -174,6 +184,17 @@ export const useExamStore = create<ExamState>((set, get) => ({
         throw new Error('No questions found for any module in this exam')
       }
 
+      // Load highlights from localStorage
+      const savedHighlightsJSON = localStorage.getItem(`highlights_${attempt.id}`)
+      let savedHighlights = {}
+      if (savedHighlightsJSON) {
+        try {
+          savedHighlights = JSON.parse(savedHighlightsJSON)
+        } catch (e) {
+          console.error("Failed to parse saved highlights:", e)
+        }
+      }
+
       console.log('initializeExam: Setting exam state...')
       set({
         exam,
@@ -184,7 +205,8 @@ export const useExamStore = create<ExamState>((set, get) => ({
         startedAt: null,
         existingAttempt: null,
         showConflictModal: false,
-        loading: false
+        loading: false,
+        highlightsByQuestion: savedHighlights
       })
       console.log('initializeExam: Exam state set successfully')
     } catch (err: any) {
@@ -393,6 +415,10 @@ export const useExamStore = create<ExamState>((set, get) => ({
       }
 
       console.log('✅ Final scores received:', finalScores)
+      
+      // Clean up highlights from localStorage
+      localStorage.removeItem(`highlights_${attempt.id}`)
+      
       set({
         status: 'completed',
         finalScores // Store the server-calculated scores in state
@@ -694,6 +720,17 @@ export const useExamStore = create<ExamState>((set, get) => ({
         })
       }
 
+      // Load highlights from localStorage
+      const savedHighlightsJSON = localStorage.getItem(`highlights_${existingAttempt.id}`)
+      let savedHighlights = {}
+      if (savedHighlightsJSON) {
+        try {
+          savedHighlights = JSON.parse(savedHighlightsJSON)
+        } catch (e) {
+          console.error("Failed to parse saved highlights:", e)
+        }
+      }
+
       set({
         exam,
         attempt: existingAttempt,
@@ -703,7 +740,8 @@ export const useExamStore = create<ExamState>((set, get) => ({
         startedAt: existingAttempt.started_at ? new Date(existingAttempt.started_at) : null,
         existingAttempt: null,
         showConflictModal: false,
-        loading: false
+        loading: false,
+        highlightsByQuestion: savedHighlights
       })
     } catch (err: any) {
       console.error('continueExistingAttempt: Error:', err)
@@ -717,6 +755,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
     set({ loading: true })
     try {
+      // Clean up highlights for the existing attempt
+      localStorage.removeItem(`highlights_${existingAttempt.id}`)
+      
       // Delete existing attempt
       await ExamService.deleteTestAttempt(existingAttempt.id)
       
@@ -769,7 +810,8 @@ export const useExamStore = create<ExamState>((set, get) => ({
         startedAt: null,
         existingAttempt: null,
         showConflictModal: false,
-        loading: false
+        loading: false,
+        highlightsByQuestion: {}
       })
     } catch (err: any) {
       set({ error: err.message, loading: false })
@@ -799,7 +841,45 @@ export const useExamStore = create<ExamState>((set, get) => ({
       existingAttempt: null,
       showConflictModal: false,
       loading: false,
-      error: null
+      error: null,
+      highlightsByQuestion: {}
     })
+  },
+
+  addHighlight: (questionId: string, newHighlight: Highlight) => {
+    const { highlightsByQuestion, attempt } = get()
+    
+    const newHighlights = { ...highlightsByQuestion }
+    if (!newHighlights[questionId]) {
+      newHighlights[questionId] = []
+    }
+    
+    // Add the new highlight and sort by start position
+    newHighlights[questionId].push(newHighlight)
+    newHighlights[questionId].sort((a, b) => a.start - b.start)
+    
+    // Update React state for immediate UI re-render
+    set({ highlightsByQuestion: newHighlights })
+    
+    // Persist to localStorage
+    if (attempt?.id) {
+      localStorage.setItem(`highlights_${attempt.id}`, JSON.stringify(newHighlights))
+    }
+  },
+
+  removeHighlight: (questionId: string, highlightToRemove: Highlight) => {
+    const { highlightsByQuestion, attempt } = get()
+    
+    const newHighlights = { ...highlightsByQuestion }
+    if (newHighlights[questionId]) {
+      newHighlights[questionId] = newHighlights[questionId].filter(
+        h => h.start !== highlightToRemove.start || h.end !== highlightToRemove.end
+      )
+      set({ highlightsByQuestion: newHighlights })
+      
+      if (attempt?.id) {
+        localStorage.setItem(`highlights_${attempt.id}`, JSON.stringify(newHighlights))
+      }
+    }
   }
 }))

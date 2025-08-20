@@ -67,6 +67,7 @@ function ExamPageContent() {
     finalScores,
     loading,
     error,
+    highlightsByQuestion,
     // Actions
     initializeExam,
     startExam,
@@ -88,6 +89,8 @@ function ExamPageContent() {
     discardAndStartNew,
     closeConflictModal,
     forceCleanup,
+    addHighlight,
+    removeHighlight,
   } = useExamStore()
 
   // Create examState object for compatibility with existing code
@@ -109,6 +112,7 @@ function ExamPageContent() {
   const [showExitConfirm, setShowExitConfirm] = useState(false)
   const [showTimeExpiredModal, setShowTimeExpiredModal] = useState(false)
   const [hasInitialized, setHasInitialized] = useState(false)
+  const questionContentRef = useRef<HTMLDivElement>(null)
 
   // Reset initialization flag when examId changes
   useEffect(() => {
@@ -437,6 +441,7 @@ function ExamPageContent() {
   const handleCancelExit = () => {
     setShowExitConfirm(false)
   }
+
 
   // Get answered questions for current module
   const getAnsweredQuestions = () => {
@@ -831,6 +836,10 @@ function ExamPageContent() {
           isAdminPreview={false}
           isMarkedForReview={isMarkedForReview()}
           onToggleMarkForReview={() => toggleMarkForReview()}
+          questionContentRef={questionContentRef}
+          highlights={highlightsByQuestion[currentQuestion.id] || []}
+          onRemoveHighlight={(highlight) => removeHighlight(currentQuestion.id, highlight)}
+          onAddHighlight={(highlight) => addHighlight(currentQuestion.id, highlight)}
         />
       </div>
 

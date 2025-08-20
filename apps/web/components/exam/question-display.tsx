@@ -11,6 +11,8 @@ import { ImageUpload } from '../image-upload'
 import { HelpCircle } from 'lucide-react'
 import { TableEditor } from '../admin/TableEditor'
 import { parseTableFromMarkdown, buildTableMarkdown } from '../../lib/utils'
+import { HighlightedTextRenderer } from './HighlightedTextRenderer'
+import FloatingHighlightButton from './FloatingHighlightButton'
 
 // Shared text rendering function
 export const renderTextWithFormattingAndMath = (text: string) => {
@@ -300,6 +302,12 @@ export const renderTextWithFormattingAndMath = (text: string) => {
   return <>{parts}</>
 }
 
+interface Highlight {
+  start: number
+  end: number
+  text: string
+}
+
 interface QuestionDisplayProps {
   question: Question
   questionNumber: number
@@ -314,6 +322,10 @@ interface QuestionDisplayProps {
   onToggleMarkForReview?: () => void
   isCorrect?: boolean
   moduleDisplayName?: string
+  questionContentRef?: React.RefObject<HTMLDivElement>
+  highlights?: Highlight[]
+  onRemoveHighlight?: (highlight: Highlight) => void
+  onAddHighlight?: (highlight: Highlight) => void
 }
 
 // Helper function to parse correct answers for grid-in questions
@@ -402,6 +414,10 @@ export function QuestionDisplay({
   onToggleMarkForReview,
   isCorrect,
   moduleDisplayName,
+  questionContentRef,
+  highlights = [],
+  onRemoveHighlight,
+  onAddHighlight,
 }: QuestionDisplayProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [localQuestion, setLocalQuestion] = useState(question)
@@ -1540,8 +1556,21 @@ export function QuestionDisplay({
               </div>
             </div>
           ) : (
-            <div className="text-gray-900 leading-relaxed">
-              {renderTextWithFormattingAndMath(localQuestion.question_text)}
+            <div 
+              ref={questionContentRef}
+              className="text-gray-900 leading-relaxed relative"
+            >
+              <HighlightedTextRenderer
+                text={localQuestion.question_text}
+                highlights={highlights}
+                onRemoveHighlight={onRemoveHighlight}
+              />
+              {!isAdminPreview && questionContentRef && onAddHighlight && (
+                <FloatingHighlightButton
+                  containerRef={questionContentRef}
+                  onHighlight={onAddHighlight}
+                />
+              )}
             </div>
           )}
 

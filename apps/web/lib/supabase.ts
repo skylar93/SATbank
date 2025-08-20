@@ -4,6 +4,10 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
+console.log('🔍 Supabase environment check:')
+console.log('NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl ? 'SET' : 'MISSING')
+console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', supabaseAnonKey ? 'SET' : 'MISSING')
+
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Missing Supabase environment variables!')
   console.error(
@@ -18,7 +22,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = (() => {
   // During build time, return a mock client to prevent build failures
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('Missing Supabase environment variables, using mock client')
+    if (typeof window !== 'undefined') {
+      // Client-side: throw a clear error
+      throw new Error('supabaseKey is required. Missing environment variables: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY')
+    }
+    console.warn('Missing Supabase environment variables, using mock client for SSR')
     return createSupabaseClient(
       'https://placeholder.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2MDAwMDAwMDAsImV4cCI6MTcwMDAwMDAwMH0.mocktoken',
@@ -32,6 +40,7 @@ export const supabase = (() => {
     )
   }
 
+  console.log('✅ Creating real Supabase client with valid environment variables')
   return createSupabaseClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       autoRefreshToken: true,

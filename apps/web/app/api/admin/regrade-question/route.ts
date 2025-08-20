@@ -12,6 +12,10 @@ interface RegradeQuestionRequest {
 
 export async function POST(request: NextRequest) {
   console.log('🚀 REGRADE API CALLED!')
+  console.log('Environment variables check:')
+  console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+  console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'MISSING')
+  console.log('SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SET' : 'MISSING')
   try {
     const cookieStore = cookies()
     console.log(
@@ -122,10 +126,25 @@ export async function POST(request: NextRequest) {
     // Get the user answer with attempt info
     console.log('Looking for user answer with ID:', userAnswerId)
 
+    // Check if service role key is available
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    
+    if (!supabaseUrl || !serviceKey) {
+      console.error('Missing required environment variables for service role client')
+      return NextResponse.json(
+        { 
+          error: 'supabaseKey is required', 
+          details: 'Server configuration error: Missing environment variables' 
+        },
+        { status: 500 }
+      )
+    }
+
     // Temporarily use service role to bypass RLS for debugging
     const supabaseService = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      supabaseUrl,
+      serviceKey,
       { auth: { autoRefreshToken: false, persistSession: false } }
     )
 
