@@ -72,9 +72,20 @@ export class AuthService {
 
   // Sign out user
   static async signOut() {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
-    // Clear auth state manager cache
+    try {
+      // Clear local storage first
+      localStorage.removeItem('sb-eoyzqdsxlweygsukjnef-auth-token')
+      
+      // Then call Supabase signOut with local scope to avoid 403 errors
+      const { error } = await supabase.auth.signOut({ scope: 'local' })
+      if (error) {
+        console.warn('Supabase signOut error (ignoring):', error.message)
+      }
+    } catch (error: any) {
+      console.warn('SignOut error (continuing anyway):', error.message)
+    }
+    
+    // Always clear auth state manager cache
     authStateManager.clearState()
   }
 
