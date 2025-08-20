@@ -173,6 +173,12 @@ class AuthStateManager {
       console.log('👤 AuthStateManager: User found via getUser():', user.email)
       return await this.buildAuthUser(user)
     } catch (error: any) {
+      // AuthSessionMissingError is normal when logged out
+      if (error.message?.includes('Auth session missing')) {
+        console.log('🔓 AuthStateManager: No session (logged out)')
+        return null
+      }
+      
       console.error('❌ AuthStateManager: Error fetching user:', error)
 
       // If we have cached data and it's a network error, return cached data

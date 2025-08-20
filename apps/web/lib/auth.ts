@@ -76,10 +76,10 @@ export class AuthService {
       // Clear local storage first
       localStorage.removeItem('sb-eoyzqdsxlweygsukjnef-auth-token')
       
-      // Then call Supabase signOut with local scope to avoid 403 errors
-      const { error } = await supabase.auth.signOut({ scope: 'local' })
+      // Use global scope for complete logout across all devices
+      const { error } = await supabase.auth.signOut({ scope: 'global' })
       if (error) {
-        console.warn('Supabase signOut error (ignoring):', error.message)
+        console.warn('Supabase signOut warning (continuing):', error.message)
       }
     } catch (error: any) {
       console.warn('SignOut error (continuing anyway):', error.message)
