@@ -322,7 +322,7 @@ export function ExamNavigation({
             const questionNum = index + 1
             const isCorrect = correctQuestions.has(questionNum)
             const isIncorrect = incorrectQuestions.has(questionNum)
-            const isAnswered = isCorrect || isIncorrect
+            const isAnswered = answeredQuestions.has(questionNum) || isCorrect || isIncorrect
             const isCurrent = questionNum === currentQuestion
             const isMarked = markedQuestions.some((mq) => mq.index === index)
 
@@ -341,7 +341,9 @@ export function ExamNavigation({
                         ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
                         : isIncorrect
                           ? 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'
-                          : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
+                          : isAnswered
+                            ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
+                            : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
                   }
                 `}
               >

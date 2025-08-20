@@ -69,6 +69,7 @@ interface StudentAttempt {
   english_score: number
   math_score: number
   duration_minutes: number
+  exam_title: string
 }
 
 export default function AdminReportsPage() {
@@ -391,7 +392,8 @@ export default function AdminReportsPage() {
           total_score,
           completed_at,
           started_at,
-          final_scores
+          final_scores,
+          exam_id
         `)
         .eq('status', 'completed')
         .gte('completed_at', dateFilter)
@@ -399,15 +401,24 @@ export default function AdminReportsPage() {
 
       if (error) throw error
 
-      // Get user profiles separately
+      // Get user profiles and exam data separately
       const userIds = attemptsData?.map(attempt => attempt.user_id) || []
-      const { data: profilesData } = await supabase
-        .from('user_profiles')
-        .select('id, full_name, email')
-        .in('id', userIds)
+      const examIds = attemptsData?.map(attempt => attempt.exam_id) || []
+      
+      const [profilesResult, examsResult] = await Promise.all([
+        supabase
+          .from('user_profiles')
+          .select('id, full_name, email')
+          .in('id', userIds),
+        supabase
+          .from('exams')
+          .select('id, title')
+          .in('id', examIds)
+      ])
 
-      // Create a map for quick profile lookup
-      const profileMap = new Map(profilesData?.map(profile => [profile.id, profile]) || [])
+      // Create maps for quick lookup
+      const profileMap = new Map(profilesResult.data?.map(profile => [profile.id, profile]) || [])
+      const examMap = new Map(examsResult.data?.map(exam => [exam.id, exam]) || [])
 
       const formattedAttempts: StudentAttempt[] = attemptsData?.map(attempt => {
         const startTime = new Date(attempt.started_at).getTime()
@@ -415,6 +426,7 @@ export default function AdminReportsPage() {
         const durationMinutes = Math.round((endTime - startTime) / (1000 * 60))
         
         const profile = profileMap.get(attempt.user_id)
+        const exam = examMap.get(attempt.exam_id)
 
         // Calculate total score from final_scores if total_score is missing or 0
         const englishScore = attempt.final_scores?.english || 0
@@ -433,7 +445,8 @@ export default function AdminReportsPage() {
           completed_at: attempt.completed_at,
           english_score: englishScore,
           math_score: mathScore,
-          duration_minutes: durationMinutes
+          duration_minutes: durationMinutes,
+          exam_title: exam?.title || 'Unknown Exam'
         }
       }) || []
 
@@ -451,6 +464,9 @@ export default function AdminReportsPage() {
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
       attempt.student_email
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      attempt.exam_title
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase())
   )
@@ -544,6 +560,7 @@ export default function AdminReportsPage() {
                       <thead className="bg-gradient-to-r from-purple-50 to-pink-50">
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">Student</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">Exam</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">Total Score</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">English</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">Math</th>
@@ -564,6 +581,9 @@ export default function AdminReportsPage() {
                                 <div className="text-sm font-medium text-gray-900">{attempt.student_name}</div>
                                 <div className="text-sm text-gray-600">{attempt.student_email}</div>
                               </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">{attempt.exam_title}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-gray-900">

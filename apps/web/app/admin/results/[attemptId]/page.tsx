@@ -21,6 +21,12 @@ interface StudentProfile {
   created_at: string
 }
 
+interface ExamInfo {
+  id: string
+  title: string
+  description: string | null
+}
+
 interface ClassStats {
   totalStudents: number
   averageScore: number
@@ -33,6 +39,7 @@ export default function AdminDetailedResultsPage() {
   const { user } = useAuth()
   const [results, setResults] = useState<ComprehensiveResults | null>(null)
   const [student, setStudent] = useState<StudentProfile | null>(null)
+  const [examInfo, setExamInfo] = useState<ExamInfo | null>(null)
   const [classStats, setClassStats] = useState<ClassStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -86,8 +93,19 @@ export default function AdminDetailedResultsPage() {
       if (studentError) throw studentError
       setStudent(studentData)
 
-      // Load class statistics if this is from an assigned exam
+      // Load exam information
       if (attemptData.exam_id) {
+        const { data: examData, error: examError } = await supabase
+          .from('exams')
+          .select('id, title, description')
+          .eq('id', attemptData.exam_id)
+          .single()
+
+        if (!examError && examData) {
+          setExamInfo(examData)
+        }
+
+        // Load class statistics
         await loadClassStats(
           attemptData.exam_id,
           comprehensiveResults.detailedScore.totalScore
@@ -488,6 +506,11 @@ export default function AdminDetailedResultsPage() {
             <h1 className="text-2xl font-bold text-gray-900">
               {student.full_name} - Test Results
             </h1>
+            {examInfo && (
+              <div className="text-lg font-semibold text-purple-600 mt-1">
+                📝 {examInfo.title}
+              </div>
+            )}
             <p className="text-gray-600">
               Detailed performance analysis and question breakdown
             </p>

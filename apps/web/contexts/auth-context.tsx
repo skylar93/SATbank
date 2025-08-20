@@ -120,6 +120,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await AuthService.signOut()
       setUser(null)
+      // Redirect to login page after successful logout
+      window.location.href = '/login'
     } catch (err: any) {
       setError(err.message)
     } finally {

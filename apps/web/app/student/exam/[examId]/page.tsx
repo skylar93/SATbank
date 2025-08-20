@@ -450,7 +450,8 @@ function ExamPageContent() {
 
     const answeredSet = new Set<number>()
     currentModule.questions.forEach((question, index) => {
-      if (currentModule.answers[question.id]) {
+      const answer = currentModule.answers[question.id]
+      if (answer && answer.answer && answer.answer.trim() !== '') {
         answeredSet.add(index + 1) // Convert to 1-based indexing
       }
     })

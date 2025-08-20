@@ -5,11 +5,7 @@ import {
   TestAttempt,
   ExamService,
 } from './exam-service'
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
+import { supabase } from './supabase'
 
 export interface DetailedScore {
   totalScore: number // 400-1600
