@@ -2,9 +2,9 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
-import { QuestionFilter } from '@/components/problem-bank/question-filter'
-import type { MistakeWithQuestion } from '@/lib/types'
+import { supabase } from '../../lib/supabase'
+import { QuestionFilter } from '../problem-bank/question-filter'
+import type { MistakeWithQuestion } from '../../lib/types'
 
 interface Student {
   id: string

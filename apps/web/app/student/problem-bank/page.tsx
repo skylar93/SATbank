@@ -31,6 +31,8 @@ interface Question {
   explanation: string
   topic_tags: string[]
   is_incorrect?: boolean
+  exam_title?: string | null
+  exam_id?: string | null
 }
 
 interface FilterOptions {
@@ -110,10 +112,16 @@ export default function ProblemBank() {
         return
       }
 
-      // First, fetch all questions
+      // First, fetch all questions with exam information
       const { data: questionsData, error: questionsError } = await supabase
         .from('questions')
-        .select('*')
+        .select(`
+          *,
+          exams!questions_exam_id_fkey (
+            id,
+            title
+          )
+        `)
         .order('module_type')
         .order('question_number')
 
@@ -189,10 +197,12 @@ export default function ProblemBank() {
         incorrectAnswers?.map((answer) => answer.question_id) || []
       )
 
-      // Process questions to mark incorrect ones
+      // Process questions to mark incorrect ones and include exam information
       const processedQuestions = questionsData.map((q) => ({
         ...q,
         is_incorrect: incorrectQuestionIds.has(q.id),
+        exam_title: q.exams?.title || null,
+        exam_id: q.exams?.id || q.exam_id || null,
       }))
 
       setQuestions(processedQuestions)

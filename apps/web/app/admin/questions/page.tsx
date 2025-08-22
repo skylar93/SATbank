@@ -21,6 +21,7 @@ interface Question {
   explanation?: string
   topic_tags?: string[]
   exam_id?: string
+  exam_title?: string
 }
 
 interface Exam {
@@ -188,7 +189,13 @@ export default function ManageExamsPage() {
 
       let query = supabase
         .from('questions')
-        .select('*')
+        .select(`
+          *,
+          exams!questions_exam_id_fkey (
+            id,
+            title
+          )
+        `)
         .order('module_type', { ascending: true })
         .order('question_number', { ascending: true })
 
@@ -203,7 +210,13 @@ export default function ManageExamsPage() {
         return
       }
 
-      setQuestions(data || [])
+      // Process questions to include exam title
+      const processedQuestions = (data || []).map((q) => ({
+        ...q,
+        exam_title: q.exams?.title || null,
+      }))
+
+      setQuestions(processedQuestions)
     } catch (error) {
       if (retryCount < 2) {
         setTimeout(() => fetchQuestions(forceRefresh, retryCount + 1), 2000)
@@ -434,6 +447,9 @@ export default function ManageExamsPage() {
                         Module
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
+                        Exam
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
                         Type
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">
@@ -476,6 +492,15 @@ export default function ManageExamsPage() {
                               .replace(/(\d)/, ' $1')
                               .toUpperCase()}
                           </span>
+                        </td>
+                        <td className="px-4 py-4">
+                          {question.exam_title ? (
+                            <span className="px-2 py-1 text-xs font-medium bg-violet-100 text-violet-800 rounded">
+                              {question.exam_title}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-gray-400">No exam</span>
+                          )}
                         </td>
                         <td className="px-4 py-4">
                           <span className="text-sm text-purple-900">
@@ -543,6 +568,11 @@ export default function ManageExamsPage() {
                       <span className="px-2 py-1 bg-gray-100 text-purple-800 rounded text-sm">
                         {question.question_type.replace('_', ' ')}
                       </span>
+                      {question.exam_title && (
+                        <span className="px-2 py-1 bg-violet-100 text-violet-800 rounded text-sm">
+                          {question.exam_title}
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex space-x-2">

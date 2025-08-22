@@ -189,6 +189,11 @@ function AdminExamPreviewContent() {
         event.preventDefault()
         if (currentModule.currentQuestionIndex > 0) {
           handlePrevious()
+        } else if (examState.currentModuleIndex > 0) {
+          // Move to previous module's last question
+          const prevModuleIndex = examState.currentModuleIndex - 1
+          const prevModule = examState.modules[prevModuleIndex]
+          handleGoToModule(prevModuleIndex, prevModule.questions.length - 1)
         }
       } else if (event.key === 'ArrowRight') {
         event.preventDefault()
@@ -197,6 +202,10 @@ function AdminExamPreviewContent() {
           currentModule.questions.length - 1
         ) {
           handleNext()
+        } else if (examState.currentModuleIndex < examState.modules.length - 1) {
+          // Move to next module's first question
+          const nextModuleIndex = examState.currentModuleIndex + 1
+          handleGoToModule(nextModuleIndex, 0)
         }
       }
     }

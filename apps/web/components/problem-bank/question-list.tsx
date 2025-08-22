@@ -19,6 +19,8 @@ interface Question {
   explanation: string
   topic_tags: string[]
   is_incorrect?: boolean
+  exam_title?: string | null
+  exam_id?: string | null
 }
 
 interface QuestionListProps {
@@ -419,6 +421,11 @@ export function QuestionList({
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                       {formatQuestionType(question.question_type)}
                     </span>
+                    {question.exam_title && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-violet-100 text-violet-800">
+                        {question.exam_title}
+                      </span>
+                    )}
                     {question.is_incorrect && (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                         Previously Incorrect
