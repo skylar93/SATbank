@@ -212,15 +212,39 @@ export class ExamService {
     examId: string,
     moduleType: ModuleType
   ): Promise<Question[]> {
-    const { data, error } = await supabase
+    // First try direct questions (for regular exams)
+    const { data: directQuestions, error: directError } = await supabase
       .from('questions')
       .select('*')
       .eq('exam_id', examId)
       .eq('module_type', moduleType)
       .order('question_number', { ascending: true })
 
-    if (error) throw error
-    return data || []
+    if (directError) throw directError
+
+    // If we found direct questions, return them
+    if (directQuestions && directQuestions.length > 0) {
+      return directQuestions
+    }
+
+    // If no direct questions, try linked questions (for mistake-based assignments)
+    const { data: linkedQuestions, error: linkedError } = await supabase
+      .from('exam_questions')
+      .select(`
+        questions (*)
+      `)
+      .eq('exam_id', examId)
+      .eq('questions.module_type', moduleType)
+      .order('questions.question_number', { ascending: true })
+
+    if (linkedError) throw linkedError
+
+    // Extract questions from the linked results
+    const questions = linkedQuestions
+      ?.map((item: any) => item.questions)
+      .filter((question: Question | null) => question !== null) as Question[] || []
+
+    return questions
   }
 
   // Update a question
