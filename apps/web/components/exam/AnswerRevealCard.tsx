@@ -73,19 +73,8 @@ export function AnswerRevealCard({
       </div>
 
       {/* Answer Comparison */}
-      <div className="space-y-4 mb-6">
-        <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Your Answer:</h4>
-          <div className={`p-3 rounded-lg border ${
-            isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-          }`}>
-            <div className="text-sm">
-              {renderTextWithFormattingAndMath(getUserAnswerDisplay() || 'No answer provided')}
-            </div>
-          </div>
-        </div>
-
-        {!isCorrect && showCorrectAnswer && (
+      {!isCorrect && showCorrectAnswer && (
+        <div className="space-y-4 mb-6">
           <div>
             <h4 className="text-sm font-medium text-gray-700 mb-2">Correct Answer:</h4>
             <div className="p-3 rounded-lg border bg-green-50 border-green-200">
@@ -94,8 +83,8 @@ export function AnswerRevealCard({
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Explanation */}
       {showExplanation && question.explanation && (isCorrect || showCorrectAnswer) && (
