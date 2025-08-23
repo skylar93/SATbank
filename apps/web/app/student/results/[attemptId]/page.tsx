@@ -11,6 +11,7 @@ import {
 import { ExportService } from '../../../../lib/export-service'
 import { ModuleType, ExamService } from '../../../../lib/exam-service'
 import { supabase } from '../../../../lib/supabase'
+import { canShowAnswers, type TestAttemptWithVisibility } from '../../../../lib/answer-visibility'
 
 export default function DetailedResultsPage() {
   const params = useParams()
@@ -25,34 +26,48 @@ export default function DetailedResultsPage() {
   const [exporting, setExporting] = useState(false)
   const [showCorrectAnswers, setShowCorrectAnswers] = useState(false)
   const [canShowResults, setCanShowResults] = useState(true)
+  const [attemptData, setAttemptData] = useState<TestAttemptWithVisibility | null>(null)
 
   const attemptId = params.attemptId as string
 
   useEffect(() => {
     if (user && attemptId) {
       loadResults()
-      checkAnswerVisibility()
+      checkAnswerVisibilityWithAttempt()
       checkResultVisibility()
     }
   }, [user, attemptId])
 
-  const checkAnswerVisibility = async () => {
+  const checkAnswerVisibilityWithAttempt = async () => {
     if (!user) return
 
     try {
-      const { data: profileData, error } = await supabase
-        .from('user_profiles')
-        .select('show_correct_answers')
-        .eq('id', user.id)
+      // Get the test attempt with answer visibility fields
+      const { data: attempt, error } = await supabase
+        .from('test_attempts')
+        .select('id, answers_visible, answers_visible_after, exam_id')
+        .eq('id', attemptId)
+        .eq('user_id', user.id)
         .single()
 
       if (error) throw error
 
-      setShowCorrectAnswers(profileData?.show_correct_answers || false)
+      if (attempt) {
+        setAttemptData(attempt)
+        // Use the new visibility logic
+        const canShow = canShowAnswers(attempt)
+        setShowCorrectAnswers(canShow)
+      }
     } catch (err: any) {
       console.error('Error checking answer visibility:', err)
-      // Default to false if there's an error
-      setShowCorrectAnswers(false)
+      // Fallback to old logic if there's an error
+      const { data: profileData } = await supabase
+        .from('user_profiles')
+        .select('show_correct_answers')
+        .eq('id', user.id)
+        .single()
+      
+      setShowCorrectAnswers(profileData?.show_correct_answers || false)
     }
   }
 
@@ -429,8 +444,10 @@ export default function DetailedResultsPage() {
                   <div className="flex items-center">
                     <div className="text-yellow-600 mr-2">ℹ️</div>
                     <div className="text-sm text-yellow-800">
-                      Correct answers and explanations are not available for
-                      review. Contact your administrator for access.
+                      {attemptData?.answers_visible_after 
+                        ? `Correct answers will be available on ${new Date(attemptData.answers_visible_after).toLocaleDateString()}`
+                        : 'Correct answers and explanations are not available for review. Contact your administrator for access.'
+                      }
                     </div>
                   </div>
                 </div>

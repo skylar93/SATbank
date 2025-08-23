@@ -8,6 +8,7 @@ import { ExamService } from '../../../../../lib/exam-service'
 import { supabase } from '../../../../../lib/supabase'
 import ReviewPageClient from './ReviewPageClient'
 import type { Question, TestAttempt, UserAnswer, Exam } from '../../../../../lib/exam-service'
+import { canShowAnswers, type TestAttemptWithVisibility } from '../../../../../lib/answer-visibility'
 
 interface ReviewData {
   attempt: TestAttempt & { exams: Exam }
@@ -40,18 +41,31 @@ export default function ReviewPage() {
     if (!user) return
 
     try {
-      const { data: profileData, error } = await supabase
-        .from('user_profiles')
-        .select('show_correct_answers')
-        .eq('id', user.id)
+      // Get the test attempt with answer visibility fields
+      const { data: attempt, error } = await supabase
+        .from('test_attempts')
+        .select('id, answers_visible, answers_visible_after')
+        .eq('id', attemptId)
+        .eq('user_id', user.id)
         .single()
 
       if (error) throw error
 
-      setShowCorrectAnswers(profileData?.show_correct_answers || false)
+      if (attempt) {
+        // Use the new visibility logic
+        const canShow = canShowAnswers(attempt)
+        setShowCorrectAnswers(canShow)
+      }
     } catch (err: any) {
       console.error('Error checking answer visibility:', err)
-      setShowCorrectAnswers(false)
+      // Fallback to old logic if there's an error
+      const { data: profileData } = await supabase
+        .from('user_profiles')
+        .select('show_correct_answers')
+        .eq('id', user.id)
+        .single()
+      
+      setShowCorrectAnswers(profileData?.show_correct_answers || false)
     }
   }
 
@@ -103,7 +117,7 @@ export default function ReviewPage() {
         throw new Error('Access denied or attempt not found')
       }
 
-      // Get the test attempt with exam information
+      // Get the test attempt with exam information and answer visibility fields
       const { data: attempt, error: attemptError } = await supabase
         .from('test_attempts')
         .select(`

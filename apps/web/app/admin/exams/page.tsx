@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import AnswerReleaseModal from '@/components/admin/AnswerReleaseModal'
 
 interface ExamWithCurves {
   id: string
@@ -20,6 +21,15 @@ export default function ExamsListPage() {
   const { user, isAdmin, loading: authLoading } = useAuth()
   const [exams, setExams] = useState<ExamWithCurves[]>([])
   const [loading, setLoading] = useState(true)
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean
+    examId: string
+    examTitle: string
+  }>({
+    isOpen: false,
+    examId: '',
+    examTitle: ''
+  })
 
   useEffect(() => {
     if (user && isAdmin) {
@@ -76,6 +86,58 @@ export default function ExamsListPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleAnswerVisibilityUpdate = async (
+    visibilityOption: 'hidden' | 'immediate' | 'scheduled',
+    releaseTimestamp?: Date
+  ) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.access_token) {
+        throw new Error('No access token')
+      }
+
+      const response = await fetch('/api/functions/update-answer-visibility-for-exam', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          examId: modalState.examId,
+          visibilityOption,
+          releaseTimestamp: releaseTimestamp?.toISOString()
+        })
+      })
+
+      const result = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to update answer visibility')
+      }
+
+      alert(`Successfully updated answer visibility for ${result.updatedAttempts} attempts`)
+    } catch (error) {
+      console.error('Error updating answer visibility:', error)
+      alert('Failed to update answer visibility. Please try again.')
+    }
+  }
+
+  const openAnswerModal = (examId: string, examTitle: string) => {
+    setModalState({
+      isOpen: true,
+      examId,
+      examTitle
+    })
+  }
+
+  const closeAnswerModal = () => {
+    setModalState({
+      isOpen: false,
+      examId: '',
+      examTitle: ''
+    })
   }
 
   if (authLoading || loading) {
@@ -205,6 +267,12 @@ export default function ExamsListPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => openAnswerModal(exam.id, exam.title)}
+                            className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 rounded-full border border-orange-200 hover:from-orange-200 hover:to-red-200 transition-all duration-200 shadow-sm"
+                          >
+                            Answer Settings
+                          </button>
                           <Link
                             href={`/admin/exams/${exam.id}/settings`}
                             className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full border border-blue-200 hover:from-blue-200 hover:to-purple-200 transition-all duration-200 shadow-sm"
@@ -255,6 +323,14 @@ export default function ExamsListPage() {
           </div>
         </div>
       </div>
+
+      <AnswerReleaseModal
+        isOpen={modalState.isOpen}
+        onClose={closeAnswerModal}
+        examId={modalState.examId}
+        examTitle={modalState.examTitle}
+        onConfirm={handleAnswerVisibilityUpdate}
+      />
     </div>
   )
 }

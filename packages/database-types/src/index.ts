@@ -43,6 +43,10 @@ export interface Database {
         Args: { user_id: string }
         Returns: boolean
       }
+      should_show_answers: {
+        Args: { attempt_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       module_type: ModuleType
@@ -116,6 +120,8 @@ export interface TestAttempt {
   total_score: number
   module_scores: Record<ModuleType, number> | null
   is_practice_mode: boolean
+  answers_visible: boolean
+  answers_visible_after: string | null
   created_at: string
   updated_at: string
 }

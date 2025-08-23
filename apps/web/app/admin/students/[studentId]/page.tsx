@@ -10,6 +10,7 @@ import {
 } from '../../../../lib/analytics-service'
 import { ExportService } from '../../../../lib/export-service'
 import { supabase } from '../../../../lib/supabase'
+import StudentAttemptsList from '../../../../components/admin/StudentAttemptsList'
 
 interface StudentProfile {
   id: string
@@ -28,6 +29,8 @@ interface TestAttemptSummary {
   module_scores: any
   time_spent: any
   status: string
+  answers_visible: boolean
+  answers_visible_after: string | null
   final_scores?: {
     overall: number
     [key: string]: any
@@ -76,7 +79,7 @@ export default function StudentDetailPage() {
 
       setStudent(studentData)
 
-      // Load all test attempts with exam info
+      // Load all test attempts with exam info and answer visibility
       const { data: attemptsData, error: attemptsError } = await supabase
         .from('test_attempts')
         .select(
@@ -501,110 +504,10 @@ export default function StudentDetailPage() {
         )}
 
         {activeTab === 'attempts' && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100">
-            <div className="p-6 border-b border-purple-200">
-              <h3 className="text-lg font-semibold text-slate-800">
-                All Test Attempts
-              </h3>
-              <p className="text-slate-600 mt-1">
-                Complete history of student test attempts
-              </p>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Exam
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Score
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Module Scores
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {attempts.map((attempt) => {
-                    const displayScore = getDisplayScore(attempt)
-                    return (
-                      <tr key={attempt.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {attempt.exam?.title || 'SAT Mock Exam'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {attempt.completed_at
-                            ? formatDate(attempt.completed_at)
-                            : 'In Progress'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex px-3 py-2 text-xs font-semibold rounded-full ${getStatusColor(attempt.status)}`}
-                          >
-                            {attempt.status.replace('_', ' ')}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {attempt.status === 'completed' ? (
-                            <div
-                              className={`text-sm font-medium ${getScoreColor(displayScore)}`}
-                            >
-                              {displayScore}
-                            </div>
-                          ) : (
-                            <span className="text-sm text-gray-400">N/A</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {attempt.module_scores &&
-                          Object.keys(attempt.module_scores).length > 0 ? (
-                            <div className="text-xs">
-                              {Object.entries(attempt.module_scores).map(
-                                ([module, score]) => (
-                                  <div key={module}>
-                                    {module}: {String(score)}
-                                  </div>
-                                )
-                              )}
-                            </div>
-                          ) : (
-                            'N/A'
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          {attempt.status === 'completed' && (
-                            <Link
-                              href={`/admin/results/${attempt.id}`}
-                              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                            >
-                              View Results
-                            </Link>
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {attempts.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-500">No test attempts yet</p>
-              </div>
-            )}
-          </div>
+          <StudentAttemptsList 
+            attempts={attempts} 
+            onVisibilityUpdate={loadStudentData}
+          />
         )}
 
         {activeTab === 'progress' && (
