@@ -26,6 +26,12 @@ interface Exam {
   created_at: string
   english_scoring_curve_id: number | null
   math_scoring_curve_id: number | null
+  answer_check_mode?: string
+}
+
+interface AnswerReleaseSetting {
+  type: 'hidden' | 'immediate' | 'scheduled' | 'per_question'
+  scheduled_date?: Date
 }
 
 export default function EditExamPage() {
@@ -41,6 +47,9 @@ export default function EditExamPage() {
   const [selectedMathCurve, setSelectedMathCurve] = useState<number | null>(
     null
   )
+  const [answerReleaseSetting, setAnswerReleaseSetting] =
+    useState<AnswerReleaseSetting | null>(null)
+  const [answerCheckMode, setAnswerCheckMode] = useState<'exam_end' | 'per_question'>('exam_end')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<{
@@ -57,14 +66,25 @@ export default function EditExamPage() {
   const fetchExamAndCurves = async () => {
     setLoading(true)
     try {
-      // Fetch exam details and all scoring curves in parallel
-      const [examResponse, curvesResponse] = await Promise.all([
-        supabase.from('exams').select('*').eq('id', examId).single(),
-        supabase
-          .from('scoring_curves')
-          .select('id, curve_name, curve_data')
-          .order('curve_name'),
-      ])
+      // Fetch exam details, scoring curves, and answer visibility stats in parallel
+      const [examResponse, curvesResponse, answerStatsResponse] =
+        await Promise.all([
+          supabase.from('exams').select('*').eq('id', examId).single(),
+          supabase
+            .from('scoring_curves')
+            .select('id, curve_name, curve_data')
+            .order('curve_name'),
+          supabase
+            .from('test_attempts')
+            .select(
+              `
+              id,
+              answers_visible,
+              answers_visible_after
+            `
+            )
+            .eq('exam_id', examId),
+        ])
 
       if (examResponse.error) {
         console.error('Error fetching exam:', examResponse.error)
@@ -80,7 +100,73 @@ export default function EditExamPage() {
       setExam(examData)
       setSelectedEnglishCurve(examData.english_scoring_curve_id)
       setSelectedMathCurve(examData.math_scoring_curve_id)
+      setAnswerCheckMode(examData.answer_check_mode as 'exam_end' | 'per_question' || 'exam_end')
       setCurves(curvesResponse.data || [])
+
+      // Process answer visibility stats
+      if (answerStatsResponse.data) {
+        const attempts = answerStatsResponse.data
+        const now = new Date()
+
+        const visibleImmediately = attempts.filter(
+          (a) => a.answers_visible && !a.answers_visible_after
+        ).length
+        const visibleScheduled = attempts.filter(
+          (a) =>
+            a.answers_visible &&
+            a.answers_visible_after &&
+            new Date(a.answers_visible_after) > now
+        ).length
+        const hidden = attempts.filter((a) => !a.answers_visible).length
+        const visibleNow = attempts.filter(
+          (a) =>
+            a.answers_visible &&
+            (!a.answers_visible_after ||
+              new Date(a.answers_visible_after) <= now)
+        ).length
+
+        // Determine global status
+        let globalStatus: 'all_visible' | 'all_hidden' | 'all_scheduled' | 'mixed' | 'no_attempts' = 'mixed'
+        let scheduledDate: string | undefined
+
+        if (attempts.length === 0) {
+          globalStatus = 'no_attempts'
+        } else if (visibleNow === attempts.length) {
+          globalStatus = 'all_visible'
+        } else if (hidden === attempts.length) {
+          globalStatus = 'all_hidden'
+        } else if (visibleScheduled === attempts.length) {
+          globalStatus = 'all_scheduled'
+          const scheduledAttempt = attempts.find(a => a.answers_visible_after)
+          if (scheduledAttempt?.answers_visible_after) {
+            scheduledDate = scheduledAttempt.answers_visible_after
+          }
+        }
+
+        // Determine answer release setting from exam mode and first attempt
+        if (examData.answer_check_mode === 'per_question') {
+          setAnswerReleaseSetting({
+            type: 'per_question'
+          })
+        } else if (attempts.length > 0) {
+          const attempt = attempts[0]
+          
+          if (!attempt.answers_visible) {
+            setAnswerReleaseSetting({
+              type: 'hidden'
+            })
+          } else if (attempt.answers_visible && !attempt.answers_visible_after) {
+            setAnswerReleaseSetting({
+              type: 'immediate'
+            })
+          } else if (attempt.answers_visible && attempt.answers_visible_after) {
+            setAnswerReleaseSetting({
+              type: 'scheduled',
+              scheduled_date: new Date(attempt.answers_visible_after)
+            })
+          }
+        }
+      }
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -98,6 +184,7 @@ export default function EditExamPage() {
         .update({
           english_scoring_curve_id: selectedEnglishCurve,
           math_scoring_curve_id: selectedMathCurve,
+          answer_check_mode: answerCheckMode,
         })
         .eq('id', examId)
 
@@ -115,6 +202,7 @@ export default function EditExamPage() {
         ...exam,
         english_scoring_curve_id: selectedEnglishCurve,
         math_scoring_curve_id: selectedMathCurve,
+        answer_check_mode: answerCheckMode,
       })
 
       setToast({
@@ -174,7 +262,8 @@ export default function EditExamPage() {
 
   const hasChanges =
     selectedEnglishCurve !== exam.english_scoring_curve_id ||
-    selectedMathCurve !== exam.math_scoring_curve_id
+    selectedMathCurve !== exam.math_scoring_curve_id ||
+    answerCheckMode !== exam.answer_check_mode
 
   return (
     <div className="h-full bg-gray-50">
@@ -233,6 +322,101 @@ export default function EditExamPage() {
             )}
           </div>
         </div>
+
+        {/* Answer Check Mode */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100 p-6 mb-6">
+          <div className="px-6 py-4 -mx-6 -mt-6 mb-4 border-b border-indigo-100 bg-gradient-to-r from-indigo-500 to-blue-500">
+            <h2 className="text-lg font-semibold text-white">
+              Answer Check Mode
+            </h2>
+          </div>
+          <p className="text-indigo-600/70 mb-6">
+            Choose when students can see correct answers during the exam.
+          </p>
+          
+          <div className="space-y-4">
+            <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+              <input
+                type="radio"
+                name="answerCheckMode"
+                value="exam_end"
+                checked={answerCheckMode === 'exam_end'}
+                onChange={(e) => setAnswerCheckMode(e.target.value as 'exam_end' | 'per_question')}
+                className="mr-3 text-indigo-600"
+              />
+              <div>
+                <div className="font-medium text-gray-900">After Exam Completion</div>
+                <div className="text-sm text-gray-600">Traditional mode - students see answers only after completing the entire exam</div>
+              </div>
+            </label>
+            
+            <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+              <input
+                type="radio"
+                name="answerCheckMode"
+                value="per_question"
+                checked={answerCheckMode === 'per_question'}
+                onChange={(e) => setAnswerCheckMode(e.target.value as 'exam_end' | 'per_question')}
+                className="mr-3 text-indigo-600"
+              />
+              <div>
+                <div className="font-medium text-gray-900">After Each Question</div>
+                <div className="text-sm text-gray-600">Students see the correct answer immediately after submitting each question</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        {/* Answer Visibility Stats */}
+        {answerReleaseSetting && (
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-emerald-100 p-6 mb-6">
+            <div className="px-6 py-4 -mx-6 -mt-6 mb-4 border-b border-emerald-100 bg-gradient-to-r from-emerald-500 to-teal-500">
+              <h2 className="text-lg font-semibold text-white">
+                Answer Release Setting
+              </h2>
+            </div>
+            <div>
+              {answerReleaseSetting.type === 'immediate' && (
+                <div className="flex items-center space-x-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <span className="text-2xl">✅</span>
+                  <div>
+                    <div className="text-lg font-semibold text-green-800">Answers Visible Immediately</div>
+                    <div className="text-sm text-green-600">Students can see correct answers right after completing the exam</div>
+                  </div>
+                </div>
+              )}
+              {answerReleaseSetting.type === 'hidden' && (
+                <div className="flex items-center space-x-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <span className="text-2xl">🔒</span>
+                  <div>
+                    <div className="text-lg font-semibold text-red-800">Answers Hidden</div>
+                    <div className="text-sm text-red-600">Correct answers are hidden from all students</div>
+                  </div>
+                </div>
+              )}
+              {answerReleaseSetting.type === 'scheduled' && (
+                <div className="flex items-center space-x-3 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                  <span className="text-2xl">⏰</span>
+                  <div>
+                    <div className="text-lg font-semibold text-orange-800">Scheduled Release</div>
+                    <div className="text-sm text-orange-600">
+                      Answers will be visible on: {answerReleaseSetting.scheduled_date?.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {answerReleaseSetting.type === 'per_question' && (
+                <div className="flex items-center space-x-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <span className="text-2xl">🎯</span>
+                  <div>
+                    <div className="text-lg font-semibold text-blue-800">Per-Question Answer Checking</div>
+                    <div className="text-sm text-blue-600">Students can see correct answers immediately after submitting each question</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Scoring Assignment */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">

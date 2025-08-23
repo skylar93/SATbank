@@ -15,6 +15,10 @@ interface ExamWithCurves {
   math_scoring_curve_id: number | null
   english_curve_name: string | null
   math_curve_name: string | null
+  answer_release_setting?: {
+    type: 'hidden' | 'immediate' | 'scheduled'
+    scheduled_date?: Date
+  }
 }
 
 export default function ExamsListPage() {
@@ -28,7 +32,7 @@ export default function ExamsListPage() {
   }>({
     isOpen: false,
     examId: '',
-    examTitle: ''
+    examTitle: '',
   })
 
   useEffect(() => {
@@ -61,24 +65,66 @@ export default function ExamsListPage() {
         return
       }
 
-      // Transform the data to flatten the curve names
-      const transformedData =
-        data?.map((exam) => ({
-          id: exam.id,
-          title: exam.title,
-          description: exam.description,
-          created_at: exam.created_at,
-          english_scoring_curve_id: exam.english_scoring_curve_id,
-          math_scoring_curve_id: exam.math_scoring_curve_id,
-          english_curve_name:
-            (Array.isArray(exam.english_curve)
-              ? exam.english_curve[0]?.curve_name
-              : (exam.english_curve as any)?.curve_name) || null,
-          math_curve_name:
-            (Array.isArray(exam.math_curve)
-              ? exam.math_curve[0]?.curve_name
-              : (exam.math_curve as any)?.curve_name) || null,
-        })) || []
+      // Transform the data to flatten the curve names and fetch answer visibility stats
+      const transformedData = await Promise.all(
+        (data || []).map(async (exam) => {
+          // Fetch one attempt to determine the exam's answer release setting
+          const { data: attempts } = await supabase
+            .from('test_attempts')
+            .select('answers_visible, answers_visible_after')
+            .eq('exam_id', exam.id)
+            .limit(1)
+
+          let answerReleaseSetting
+          if (attempts && attempts.length > 0) {
+            const attempt = attempts[0]
+
+            if (!attempt.answers_visible) {
+              answerReleaseSetting = {
+                type: 'hidden' as const,
+              }
+            } else if (
+              attempt.answers_visible &&
+              !attempt.answers_visible_after
+            ) {
+              answerReleaseSetting = {
+                type: 'immediate' as const,
+              }
+            } else if (
+              attempt.answers_visible &&
+              attempt.answers_visible_after
+            ) {
+              answerReleaseSetting = {
+                type: 'scheduled' as const,
+                scheduled_date: new Date(attempt.answers_visible_after),
+              }
+            }
+          } else {
+            // Default setting when no attempts exist: Release immediately
+            answerReleaseSetting = {
+              type: 'immediate' as const,
+            }
+          }
+
+          return {
+            id: exam.id,
+            title: exam.title,
+            description: exam.description,
+            created_at: exam.created_at,
+            english_scoring_curve_id: exam.english_scoring_curve_id,
+            math_scoring_curve_id: exam.math_scoring_curve_id,
+            english_curve_name:
+              (Array.isArray(exam.english_curve)
+                ? exam.english_curve[0]?.curve_name
+                : (exam.english_curve as any)?.curve_name) || null,
+            math_curve_name:
+              (Array.isArray(exam.math_curve)
+                ? exam.math_curve[0]?.curve_name
+                : (exam.math_curve as any)?.curve_name) || null,
+            answer_release_setting: answerReleaseSetting,
+          }
+        })
+      )
 
       setExams(transformedData)
     } catch (error) {
@@ -89,35 +135,42 @@ export default function ExamsListPage() {
   }
 
   const handleAnswerVisibilityUpdate = async (
-    visibilityOption: 'hidden' | 'immediate' | 'scheduled',
+    visibilityOption: 'hidden' | 'immediate' | 'scheduled' | 'per_question',
     releaseTimestamp?: Date
   ) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (!session?.access_token) {
         throw new Error('No access token')
       }
 
-      const response = await fetch('/api/functions/update-answer-visibility-for-exam', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({
-          examId: modalState.examId,
-          visibilityOption,
-          releaseTimestamp: releaseTimestamp?.toISOString()
-        })
-      })
+      const response = await fetch(
+        '/api/functions/update-answer-visibility-for-exam',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            examId: modalState.examId,
+            visibilityOption,
+            releaseTimestamp: releaseTimestamp?.toISOString(),
+          }),
+        }
+      )
 
       const result = await response.json()
-      
+
       if (!response.ok) {
         throw new Error(result.error || 'Failed to update answer visibility')
       }
 
-      alert(`Successfully updated answer visibility for ${result.updatedAttempts} attempts`)
+      alert(
+        `Successfully updated answer visibility for ${result.updatedAttempts} attempts`
+      )
     } catch (error) {
       console.error('Error updating answer visibility:', error)
       alert('Failed to update answer visibility. Please try again.')
@@ -128,7 +181,7 @@ export default function ExamsListPage() {
     setModalState({
       isOpen: true,
       examId,
-      examTitle
+      examTitle,
     })
   }
 
@@ -136,7 +189,7 @@ export default function ExamsListPage() {
     setModalState({
       isOpen: false,
       examId: '',
-      examTitle: ''
+      examTitle: '',
     })
   }
 
@@ -218,6 +271,9 @@ export default function ExamsListPage() {
                       Math Curve
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-40">
+                      Answer Visibility
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-40">
                       Actions
                     </th>
                   </tr>
@@ -262,6 +318,41 @@ export default function ExamsListPage() {
                         ) : (
                           <span className="px-3 py-1.5 text-xs font-medium bg-gray-100 text-gray-500 rounded-full border border-gray-200">
                             Not Assigned
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        {exam.answer_release_setting ? (
+                          <div className="space-y-1">
+                            {exam.answer_release_setting.type ===
+                              'immediate' && (
+                              <span className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-full border border-green-200 shadow-sm">
+                                ✓ Answers Visible
+                              </span>
+                            )}
+                            {exam.answer_release_setting.type === 'hidden' && (
+                              <span className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-red-100 to-pink-100 text-red-700 rounded-full border border-red-200 shadow-sm">
+                                🔒 Answers Hidden
+                              </span>
+                            )}
+                            {exam.answer_release_setting.type ===
+                              'scheduled' && (
+                              <span className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-orange-100 to-yellow-100 text-orange-700 rounded-full border border-orange-200 shadow-sm">
+                                ⏰ Scheduled Release
+                              </span>
+                            )}
+
+                            {exam.answer_release_setting.type === 'scheduled' &&
+                              exam.answer_release_setting.scheduled_date && (
+                                <div className="text-xs text-gray-600">
+                                  Release:{' '}
+                                  {exam.answer_release_setting.scheduled_date.toLocaleString()}
+                                </div>
+                              )}
+                          </div>
+                        ) : (
+                          <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-500 rounded-full border border-gray-200">
+                            No Setting
                           </span>
                         )}
                       </td>

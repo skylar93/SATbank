@@ -16,7 +16,7 @@ interface AnswerReleaseModalProps {
   onClose: () => void
   examId: string
   examTitle: string
-  onConfirm: (visibilityOption: 'hidden' | 'immediate' | 'scheduled', releaseTimestamp?: Date) => Promise<void>
+  onConfirm: (visibilityOption: 'hidden' | 'immediate' | 'scheduled' | 'per_question', releaseTimestamp?: Date) => Promise<void>
 }
 
 export default function AnswerReleaseModal({
@@ -26,7 +26,7 @@ export default function AnswerReleaseModal({
   examTitle,
   onConfirm
 }: AnswerReleaseModalProps) {
-  const [visibilityOption, setVisibilityOption] = useState<'hidden' | 'immediate' | 'scheduled'>('hidden')
+  const [visibilityOption, setVisibilityOption] = useState<'hidden' | 'immediate' | 'scheduled' | 'per_question'>('hidden')
   const [releaseDate, setReleaseDate] = useState<Date>()
   const [releaseTime, setReleaseTime] = useState('12:00')
   const [isLoading, setIsLoading] = useState(false)
@@ -60,7 +60,7 @@ export default function AnswerReleaseModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] bg-white border border-gray-200 shadow-xl">
         <DialogHeader>
           <DialogTitle>Answer Release Settings</DialogTitle>
           <DialogDescription>
@@ -69,7 +69,7 @@ export default function AnswerReleaseModal({
         </DialogHeader>
 
         <div className="py-4 space-y-6">
-          <RadioGroup value={visibilityOption} onValueChange={(value: 'hidden' | 'immediate' | 'scheduled') => setVisibilityOption(value)}>
+          <RadioGroup value={visibilityOption} onValueChange={(value: 'hidden' | 'immediate' | 'scheduled' | 'per_question') => setVisibilityOption(value)}>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="hidden" id="hidden" />
               <Label htmlFor="hidden" className="font-medium">
@@ -98,6 +98,16 @@ export default function AnswerReleaseModal({
             </div>
             <p className="text-sm text-gray-600 ml-6">
               Choose a specific date and time when answers will become visible.
+            </p>
+
+            <div className="flex items-center space-x-2 mt-4">
+              <RadioGroupItem value="per_question" id="per_question" />
+              <Label htmlFor="per_question" className="font-medium">
+                Show Answers After Each Question
+              </Label>
+            </div>
+            <p className="text-sm text-gray-600 ml-6">
+              Students can see the correct answer immediately after submitting each question.
             </p>
           </RadioGroup>
 

@@ -14,6 +14,7 @@ import {
   BookOpenIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline'
+import { AnswerRevealCard } from '../../../../components/exam/AnswerRevealCard'
 
 function ExamPageContent() {
   const params = useParams()
@@ -112,6 +113,14 @@ function ExamPageContent() {
   const [showExitConfirm, setShowExitConfirm] = useState(false)
   const [showTimeExpiredModal, setShowTimeExpiredModal] = useState(false)
   const [hasInitialized, setHasInitialized] = useState(false)
+  const [answerCheckMode, setAnswerCheckMode] = useState<'exam_end' | 'per_question'>('exam_end')
+  const [showAnswerReveal, setShowAnswerReveal] = useState(false)
+  const [answerRevealData, setAnswerRevealData] = useState<{
+    question: any
+    userAnswer: string
+    isCorrect: boolean
+  } | null>(null)
+  const [shouldShowCorrectAnswer, setShouldShowCorrectAnswer] = useState(false)
   const questionContentRef = useRef<HTMLDivElement>(null)
 
   // Reset initialization flag when examId changes
@@ -126,6 +135,15 @@ function ExamPageContent() {
   const timeExpiredRef = useRef(false)
   const isAdvancingModuleRef = useRef(false)
   const isExitingRef = useRef(false)
+
+  // Get exam answer check mode
+  useEffect(() => {
+    if (examId && !authLoading) {
+      ExamService.getExamAnswerMode(examId)
+        .then(mode => setAnswerCheckMode(mode))
+        .catch(error => console.error('Error getting answer check mode:', error))
+    }
+  }, [examId, authLoading])
 
   // Initialize exam when component mounts
   useEffect(() => {
@@ -219,7 +237,7 @@ function ExamPageContent() {
   }, [status])
 
   // Handle answer change
-  const handleAnswerChange = (answer: string) => {
+  const handleAnswerChange = async (answer: string) => {
     // Prevent input if time has expired
     if (timeExpiredRef.current) {
       return
@@ -231,8 +249,47 @@ function ExamPageContent() {
     // Store answer locally only - not saved to database until module completion
     setLocalAnswer(answer)
 
+    // Clear any existing answer reveal state when answer changes
+    // This allows student to try again with different answer
+    if (showAnswerReveal) {
+      setShowAnswerReveal(false)
+      setAnswerRevealData(null)
+      setShouldShowCorrectAnswer(false)
+    }
+
+    // In per-question mode, just store the answer - don't auto-submit
+    // User will need to click "Check Answer" button to see results
+
     // Clear the flag after a short delay to allow answer loading on navigation
     setTimeout(() => setIsUserSelecting(false), 100)
+  }
+
+  // Handle checking answer in per-question mode
+  const handleCheckAnswer = async () => {
+    if (answerCheckMode === 'per_question' && attempt && currentAnswer.trim()) {
+      try {
+        const currentQuestion = getCurrentQuestion()
+        if (currentQuestion) {
+          const result = await ExamService.submitAnswerWithView({
+            attempt_id: attempt.id,
+            question_id: currentQuestion.id,
+            user_answer: currentAnswer,
+            time_spent_seconds: 0
+          })
+
+          setAnswerRevealData({
+            question: result.question,
+            userAnswer: currentAnswer,
+            isCorrect: result.isCorrect
+          })
+          // For incorrect answers on first attempt, don't show correct answer yet
+          setShouldShowCorrectAnswer(result.isCorrect)
+          setShowAnswerReveal(true)
+        }
+      } catch (error) {
+        console.error('Error submitting answer with view:', error)
+      }
+    }
   }
 
   // Save current answer locally before navigation
@@ -440,6 +497,54 @@ function ExamPageContent() {
 
   const handleCancelExit = () => {
     setShowExitConfirm(false)
+  }
+
+  // Handle answer reveal continue
+  const handleAnswerRevealContinue = () => {
+    // If this was an incorrect answer, show correct answer before continuing
+    // This happens when they click "Skip & Continue"
+    if (answerRevealData && !answerRevealData.isCorrect) {
+      setShouldShowCorrectAnswer(true)
+      // Give a moment to see the correct answer before moving on
+      setTimeout(() => {
+        proceedToNextQuestion()
+      }, 2000) // 2 second delay to show correct answer
+    } else {
+      proceedToNextQuestion()
+    }
+  }
+
+  const proceedToNextQuestion = () => {
+    setShowAnswerReveal(false)
+    setAnswerRevealData(null)
+    setShouldShowCorrectAnswer(false)
+    
+    // Move to next question
+    const currentModule = modules[currentModuleIndex]
+    if (currentModule) {
+      const currentQuestionIndex = currentModule.questions.findIndex(
+        q => q.id === getCurrentQuestion()?.id
+      )
+      
+      if (currentQuestionIndex < currentModule.questions.length - 1) {
+        nextQuestion()
+      } else {
+        // Last question in module - advance to next module or complete exam
+        if (currentModuleIndex < modules.length - 1) {
+          nextModule()
+        } else {
+          completeExam()
+        }
+      }
+    }
+  }
+
+  // Handle try again - reset answer submission state so student can try again
+  const handleTryAgain = () => {
+    setShowAnswerReveal(false)
+    setAnswerRevealData(null)
+    setShouldShowCorrectAnswer(false)
+    // Keep the current answer so they can modify it and try again
   }
 
 
@@ -841,7 +946,15 @@ function ExamPageContent() {
           highlights={highlightsByQuestion[currentQuestion.id] || []}
           onRemoveHighlight={(highlight) => removeHighlight(currentQuestion.id, highlight)}
           onAddHighlight={(highlight) => addHighlight(currentQuestion.id, highlight)}
+          showPerQuestionAnswers={answerCheckMode === 'per_question'}
+          isAnswerSubmitted={showAnswerReveal}
+          isCorrect={answerRevealData?.isCorrect}
+          onContinueAfterAnswer={handleAnswerRevealContinue}
+          onCheckAnswer={handleCheckAnswer}
+          onTryAgain={handleTryAgain}
+          showCorrectAnswer={shouldShowCorrectAnswer}
         />
+
       </div>
 
       {/* Bottom Navigation */}

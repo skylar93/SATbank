@@ -13,10 +13,11 @@ import { TableEditor } from '../admin/TableEditor'
 import { parseTableFromMarkdown, buildTableMarkdown } from '../../lib/utils'
 import { HighlightedTextRenderer } from './HighlightedTextRenderer'
 import FloatingHighlightButton from './FloatingHighlightButton'
+import { AnswerRevealCard } from './AnswerRevealCard'
 
 // Shared text rendering function
 export const renderTextWithFormattingAndMath = (text: string) => {
-  if (!text) return text
+  if (!text || typeof text !== 'string') return text
 
   // First, handle escaped dollar signs by replacing \$ with a unique placeholder
   const escapedDollarPlaceholder = '§§§DOLLAR§§§'
@@ -326,6 +327,13 @@ interface QuestionDisplayProps {
   highlights?: Highlight[]
   onRemoveHighlight?: (highlight: Highlight) => void
   onAddHighlight?: (highlight: Highlight) => void
+  showPerQuestionAnswers?: boolean
+  onAnswerSubmit?: (questionId: string, answer: string) => Promise<boolean>
+  onContinueAfterAnswer?: () => void
+  isAnswerSubmitted?: boolean
+  onCheckAnswer?: () => void
+  onTryAgain?: () => void
+  showCorrectAnswer?: boolean
 }
 
 // Helper function to parse correct answers for grid-in questions
@@ -418,6 +426,13 @@ export function QuestionDisplay({
   highlights = [],
   onRemoveHighlight,
   onAddHighlight,
+  showPerQuestionAnswers = false,
+  onAnswerSubmit,
+  onContinueAfterAnswer,
+  isAnswerSubmitted = false,
+  onCheckAnswer,
+  onTryAgain,
+  showCorrectAnswer = true,
 }: QuestionDisplayProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [localQuestion, setLocalQuestion] = useState(question)
@@ -432,7 +447,6 @@ export function QuestionDisplay({
   })
   const [saving, setSaving] = useState(false)
   const [showFormattingHelp, setShowFormattingHelp] = useState(false)
-  const [showAnswerCheck, setShowAnswerCheck] = useState(false)
 
   // Update local question when prop changes
   useEffect(() => {
@@ -448,8 +462,6 @@ export function QuestionDisplay({
       explanation: question.explanation || '',
       table_data: question.table_data || null,
     })
-    // Reset answer check when question changes
-    setShowAnswerCheck(false)
     // If you are in edit mode and the question changes, exit edit mode to prevent confusion
     setIsEditing(false)
   }, [
@@ -1018,7 +1030,7 @@ export function QuestionDisplay({
                 checked={isUserAnswer}
                 onChange={(e) => onAnswerChange(e.target.value)}
                 className="mt-1 mr-3 text-blue-600 focus:ring-blue-500"
-                disabled={showExplanation || disabled}
+                disabled={disabled || (showExplanation && !showPerQuestionAnswers)}
               />
               <div className="flex-1">
                 <div className="flex items-center mb-1">
@@ -1147,7 +1159,7 @@ export function QuestionDisplay({
               value={userAnswer || ''}
               onChange={(e) => onAnswerChange(e.target.value)}
               className={`w-full p-3 text-lg font-mono border-2 rounded-lg ${
-                disabled || showExplanation
+                disabled || (showExplanation && !showPerQuestionAnswers)
                   ? isCorrect !== undefined
                     ? isCorrect
                       ? 'border-green-500 bg-green-50 cursor-not-allowed ring-1 ring-green-200'
@@ -1156,7 +1168,7 @@ export function QuestionDisplay({
                   : 'border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200'
               }`}
               placeholder="Enter your answer"
-              disabled={showExplanation || disabled}
+              disabled={disabled || (showExplanation && !showPerQuestionAnswers)}
             />
           </div>
           {showExplanation && (
@@ -1607,126 +1619,36 @@ export function QuestionDisplay({
           </h3>
 
           {renderAnswerOptions()}
+
+          {/* Check Answer Button for per-question mode */}
+          {showPerQuestionAnswers && !isAnswerSubmitted && userAnswer && userAnswer.trim() && onCheckAnswer && (
+            <div className="mt-4">
+              <button
+                onClick={onCheckAnswer}
+                disabled={disabled}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-3 px-6 rounded-lg font-semibold text-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+              >
+                Check Answer
+              </button>
+            </div>
+          )}
+
+          {/* Answer Reveal Card for per-question mode */}
+          {showPerQuestionAnswers && isAnswerSubmitted && isCorrect !== undefined && (
+            <div className="mt-4">
+              <AnswerRevealCard
+                question={question}
+                userAnswer={userAnswer || ''}
+                isCorrect={isCorrect}
+                onContinue={onContinueAfterAnswer || (() => {})}
+                onTryAgain={onTryAgain}
+                showExplanation={true}
+                showCorrectAnswer={showCorrectAnswer}
+              />
+            </div>
+          )}
+
         </div>
-
-        {/* Answer Status */}
-        {userAnswer && !showExplanation && (
-          <div className="mt-6 space-y-3">
-            {/* Admin Preview: Check Answer Button */}
-            {isAdminPreview && (
-              <div className="space-y-3">
-                <button
-                  onClick={() => setShowAnswerCheck(!showAnswerCheck)}
-                  className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium rounded-lg transition-all duration-200 shadow-lg"
-                >
-                  {showAnswerCheck ? 'Hide Answer' : 'Check Answer'}
-                </button>
-
-                {showAnswerCheck && (
-                  <div
-                    className={`p-3 border rounded-lg ${(() => {
-                      if (!userAnswer) return 'bg-red-50 border-red-200'
-
-                      // For grid-in questions, check if user's single answer matches any of the correct answers
-                      if (localQuestion.question_type === 'grid_in') {
-                        const userAnswerTrimmed = userAnswer
-                          .trim()
-                          .toUpperCase()
-                        const correctAnswers = parseCorrectAnswers(
-                          localQuestion
-                        ).map((a) => String(a).trim().toUpperCase())
-
-                        // Check if user's answer matches any of the correct answers
-                        const hasMatch =
-                          correctAnswers.includes(userAnswerTrimmed)
-                        return hasMatch
-                          ? 'bg-green-50 border-green-200'
-                          : 'bg-red-50 border-red-200'
-                      }
-
-                      // For multiple choice, use existing logic
-                      return userAnswer?.trim().toUpperCase() ===
-                        String(localQuestion.correct_answer)
-                          .trim()
-                          .toUpperCase()
-                        ? 'bg-green-50 border-green-200'
-                        : 'bg-red-50 border-red-200'
-                    })()}`}
-                  >
-                    {(() => {
-                      if (!userAnswer) {
-                        return (
-                          <p className="text-sm text-red-800">
-                            <span className="font-medium">
-                              ❌ 답안을 입력해주세요.
-                            </span>
-                          </p>
-                        )
-                      }
-
-                      // For grid-in questions, check if user's single answer matches any of the correct answers
-                      if (localQuestion.question_type === 'grid_in') {
-                        const userAnswerTrimmed = userAnswer
-                          .trim()
-                          .toUpperCase()
-                        const correctAnswers = parseCorrectAnswers(
-                          localQuestion
-                        ).map((a) => String(a).trim().toUpperCase())
-
-                        const hasMatch =
-                          correctAnswers.includes(userAnswerTrimmed)
-
-                        if (hasMatch) {
-                          return (
-                            <p className="text-sm text-green-800 font-medium">
-                              ✅ 정답입니다!
-                            </p>
-                          )
-                        } else {
-                          return (
-                            <p className="text-sm text-red-800">
-                              <span className="font-medium">
-                                ❌ 오답입니다.
-                              </span>
-                              <br />
-                              <strong>정답:</strong>{' '}
-                              {localQuestion.question_type === 'grid_in'
-                                ? parseCorrectAnswers(localQuestion).join(', ')
-                                : localQuestion.correct_answer}
-                            </p>
-                          )
-                        }
-                      }
-
-                      // For multiple choice, use existing logic
-                      if (
-                        userAnswer?.trim().toUpperCase() ===
-                        String(localQuestion.correct_answer)
-                          .trim()
-                          .toUpperCase()
-                      ) {
-                        return (
-                          <p className="text-sm text-green-800 font-medium">
-                            ✅ 정답입니다!
-                          </p>
-                        )
-                      } else {
-                        return (
-                          <p className="text-sm text-red-800">
-                            <span className="font-medium">❌ 오답입니다.</span>
-                            <br />
-                            <strong>정답:</strong>{' '}
-                            {localQuestion.correct_answer}
-                          </p>
-                        )
-                      }
-                    })()}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Explanation (if showing results) */}
         {showExplanation && localQuestion.explanation && (
@@ -1737,6 +1659,7 @@ export function QuestionDisplay({
             </div>
           </div>
         )}
+
       </div>
     </div>
   )
