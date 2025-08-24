@@ -334,7 +334,30 @@ export default function StudentResultsPage() {
         <div className="grid grid-cols-12 gap-6">
           {/* Left Column - 9 cols */}
           <div className="col-span-12 lg:col-span-9 space-y-6">
-            {/* Recent Exam Attempts - Moved to top */}
+            {/* Keep Improving Section - Moved to top */}
+            <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <TrophyIcon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Keep Improving!</h3>
+                <p className="text-blue-100 text-sm mb-4">
+                  {attempts.length === 0
+                    ? 'Start your SAT journey today with your first practice test.'
+                    : 'Continue practicing to reach your target score.'}
+                </p>
+                <Link
+                  href="/student/exams"
+                  className="bg-white text-blue-600 font-semibold py-2 px-6 rounded-lg hover:bg-blue-50 transition-colors"
+                >
+                  {attempts.length === 0
+                    ? 'Take First Exam'
+                    : 'Take Another Exam'}
+                </Link>
+              </div>
+            </div>
+
+            {/* Recent Exam Attempts */}
             {attempts.length === 0 ? (
               <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-8 text-center border border-violet-100">
                 <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -500,10 +523,10 @@ export default function StudentResultsPage() {
                               (canShowAttemptResults(attempt) ? (
                                 <Link
                                   href={`/student/results/${attempt.id}`}
-                                  className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-violet-100 to-purple-100 text-violet-700 rounded-full border border-violet-200 hover:from-violet-200 hover:to-purple-200 transition-all duration-200 shadow-sm"
+                                  className="p-2 bg-gradient-to-r from-violet-100 to-purple-100 text-violet-700 rounded-full border border-violet-200 hover:from-violet-200 hover:to-purple-200 transition-all duration-200 shadow-sm"
+                                  title="View Details"
                                 >
-                                  <EyeIcon className="w-4 h-4 mr-1 inline" />
-                                  View Details
+                                  <EyeIcon className="w-4 h-4" />
                                 </Link>
                               ) : (
                                 <span className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 rounded-full border border-orange-200 shadow-sm">
@@ -515,26 +538,26 @@ export default function StudentResultsPage() {
                               <>
                                 <Link
                                   href={`/student/exam/${attempt.exam_id}`}
-                                  className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-full border border-green-200 hover:from-green-200 hover:to-emerald-200 transition-all duration-200 shadow-sm"
+                                  className="p-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-full border border-green-200 hover:from-green-200 hover:to-emerald-200 transition-all duration-200 shadow-sm"
+                                  title="Continue"
                                 >
-                                  <PlayIcon className="w-4 h-4 mr-1 inline" />
-                                  Continue
+                                  <PlayIcon className="w-4 h-4" />
                                 </Link>
                                 <button
                                   onClick={() => handleDeleteAttempt(attempt.id)}
                                   disabled={deletingAttempts.has(attempt.id)}
-                                  className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-200 shadow-sm ${
+                                  className={`p-2 rounded-full transition-all duration-200 shadow-sm ${
                                     deletingAttempts.has(attempt.id)
                                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
                                       : 'bg-gradient-to-r from-red-100 to-pink-100 text-red-700 border border-red-200 hover:from-red-200 hover:to-pink-200'
                                   }`}
+                                  title={deletingAttempts.has(attempt.id) ? 'Deleting...' : 'Discard'}
                                 >
                                   {deletingAttempts.has(attempt.id) ? (
-                                    <div className="w-4 h-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 mr-1 inline"></div>
+                                    <div className="w-4 h-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
                                   ) : (
-                                    <TrashIcon className="w-4 h-4 mr-1 inline" />
+                                    <TrashIcon className="w-4 h-4" />
                                   )}
-                                  {deletingAttempts.has(attempt.id) ? 'Deleting...' : 'Discard'}
                                 </button>
                               </>
                             )}
@@ -719,30 +742,6 @@ export default function StudentResultsPage() {
 
           {/* Right Column - 3 cols */}
           <div className="col-span-12 lg:col-span-3 space-y-6">
-
-
-            {/* Call to Action */}
-            <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <TrophyIcon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Keep Improving!</h3>
-                <p className="text-blue-100 text-sm mb-4">
-                  {attempts.length === 0
-                    ? 'Start your SAT journey today with your first practice test.'
-                    : 'Continue practicing to reach your target score.'}
-                </p>
-                <Link
-                  href="/student/exams"
-                  className="bg-white text-blue-600 font-semibold py-2 px-6 rounded-lg hover:bg-blue-50 transition-colors"
-                >
-                  {attempts.length === 0
-                    ? 'Take First Exam'
-                    : 'Take Another Exam'}
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
       </div>
