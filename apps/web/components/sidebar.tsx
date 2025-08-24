@@ -138,7 +138,7 @@ function SidebarContent({
   const { setIsSidebarOpen } = useSidebar()
 
   return (
-    <div className="flex flex-col w-full h-full bg-white border-r border-gray-100 shadow-sm">
+    <div className="flex flex-col w-full h-full bg-white border-r border-gray-100 shadow-sm overflow-x-visible">
       {/* Header */}
       <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
         <Link
@@ -168,7 +168,7 @@ function SidebarContent({
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto overflow-x-visible">
         {navigationItems.map((item) => {
           // Check if current path matches exactly or starts with the base path
           const isActive =
@@ -184,6 +184,7 @@ function SidebarContent({
             <Link
               key={item.name}
               href={item.href}
+              onClick={() => setIsSidebarOpen(false)}
               className={`
                 group relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200
                 ${
@@ -199,7 +200,7 @@ function SidebarContent({
               />
               {isSidebarOpen && <span>{item.name}</span>}
               {!isSidebarOpen && (
-                <div className="absolute left-14 bg-gray-900 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
+                <div className="fixed left-20 bg-gray-900 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg pointer-events-none">
                   {item.name}
                 </div>
               )}
@@ -209,7 +210,7 @@ function SidebarContent({
       </nav>
 
       {/* User section */}
-      <div className="flex-shrink-0 p-3 border-t border-gray-100">
+      <div className="flex-shrink-0 p-3 border-t border-gray-100 overflow-hidden">
         <div
           className={`flex items-center ${!isSidebarOpen ? 'justify-center' : ''}`}
         >
@@ -219,10 +220,10 @@ function SidebarContent({
             </span>
           </div>
           {isSidebarOpen && (
-            <div className="ml-3 flex-1">
+            <div className="ml-3 flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
                     {user.profile?.full_name || 'User'}
                   </p>
                   {isAdmin && (
@@ -233,7 +234,7 @@ function SidebarContent({
                 </div>
                 <button
                   onClick={handleSignOut}
-                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1 transition-colors"
+                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1 transition-colors flex-shrink-0"
                 >
                   <span className="sr-only">Sign out</span>
                   <svg

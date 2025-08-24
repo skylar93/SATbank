@@ -570,8 +570,72 @@ export default function StudentResultsPage() {
               </div>
             )}
 
+
+            {/* Score Progress Chart */}
+            {visibleCompletedAttempts.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Score Progress Over Time
+                  </h3>
+                  <div className="flex items-center space-x-2">
+                    <button className="px-3 py-1 text-sm bg-violet-100 text-violet-600 rounded-lg">
+                      All Tests
+                    </button>
+                    <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">
+                      Last 5
+                    </button>
+                  </div>
+                </div>
+                <ModernScoreProgress data={progressData} />
+              </div>
+            )}
+
+            {/* Message when results are hidden */}
+            {completedAttempts.length > 0 &&
+              visibleCompletedAttempts.length === 0 && (
+                <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
+                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-orange-500 text-2xl">🔒</span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-orange-900 mb-2">
+                    Results Currently Hidden
+                  </h3>
+                  <p className="text-orange-700">
+                    Your instructor has chosen to hide exam results for now.
+                    Results will be available when they are released.
+                  </p>
+                </div>
+              )}
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
+                <p className="text-red-800">Error loading results: {error}</p>
+              </div>
+            )}
+
+            {/* Message when results are hidden */}
+            {completedAttempts.length > 0 &&
+              visibleCompletedAttempts.length === 0 && (
+                <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
+                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-orange-500 text-2xl">🔒</span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-orange-900 mb-2">
+                    Results Currently Hidden
+                  </h3>
+                  <p className="text-orange-700">
+                    Your instructor has chosen to hide exam results for now.
+                    Results will be available when they are released.
+                  </p>
+                </div>
+              )}
+          </div>
+
+          {/* Right Column - 3 cols */}
+          <div className="col-span-12 lg:col-span-3 space-y-6">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-4">
               <StatsCard
                 title="Total Exams Taken"
                 value={attempts.length}
@@ -678,70 +742,6 @@ export default function StudentResultsPage() {
                 }}
               />
             </div>
-
-            {/* Score Progress Chart */}
-            {visibleCompletedAttempts.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-sm p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Score Progress Over Time
-                  </h3>
-                  <div className="flex items-center space-x-2">
-                    <button className="px-3 py-1 text-sm bg-violet-100 text-violet-600 rounded-lg">
-                      All Tests
-                    </button>
-                    <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">
-                      Last 5
-                    </button>
-                  </div>
-                </div>
-                <ModernScoreProgress data={progressData} />
-              </div>
-            )}
-
-            {/* Message when results are hidden */}
-            {completedAttempts.length > 0 &&
-              visibleCompletedAttempts.length === 0 && (
-                <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
-                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-orange-500 text-2xl">🔒</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-orange-900 mb-2">
-                    Results Currently Hidden
-                  </h3>
-                  <p className="text-orange-700">
-                    Your instructor has chosen to hide exam results for now.
-                    Results will be available when they are released.
-                  </p>
-                </div>
-              )}
-
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
-                <p className="text-red-800">Error loading results: {error}</p>
-              </div>
-            )}
-
-            {/* Message when results are hidden */}
-            {completedAttempts.length > 0 &&
-              visibleCompletedAttempts.length === 0 && (
-                <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
-                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-orange-500 text-2xl">🔒</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-orange-900 mb-2">
-                    Results Currently Hidden
-                  </h3>
-                  <p className="text-orange-700">
-                    Your instructor has chosen to hide exam results for now.
-                    Results will be available when they are released.
-                  </p>
-                </div>
-              )}
-          </div>
-
-          {/* Right Column - 3 cols */}
-          <div className="col-span-12 lg:col-span-3 space-y-6">
           </div>
         </div>
       </div>
