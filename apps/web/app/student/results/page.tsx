@@ -8,7 +8,6 @@ import {
   StatsCard,
   ModernScoreProgress,
 } from '../../../components/modern-charts'
-import { Calendar } from '../../../components/calendar'
 import {
   ChartBarIcon,
   TrophyIcon,
@@ -335,6 +334,219 @@ export default function StudentResultsPage() {
         <div className="grid grid-cols-12 gap-6">
           {/* Left Column - 9 cols */}
           <div className="col-span-12 lg:col-span-9 space-y-6">
+            {/* Recent Exam Attempts - Moved to top */}
+            {attempts.length === 0 ? (
+              <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-8 text-center border border-violet-100">
+                <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ChartBarIcon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No Results Yet
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  You haven't completed any practice exams yet. Take your first
+                  exam to see your results here.
+                </p>
+                <Link
+                  href="/student/exams"
+                  className="inline-flex items-center bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg"
+                >
+                  <AcademicCapIcon className="w-5 h-5 mr-2" />
+                  Take Your First Exam
+                </Link>
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+                <div className="p-6 border-b border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Recent Exam Attempts
+                  </h3>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-6">
+                    {attempts.map((attempt) => (
+                      <div
+                        key={attempt.id}
+                        className="border border-gray-200 rounded-xl p-6 hover:border-violet-300 transition-colors group"
+                      >
+                        <div className="flex items-start justify-between mb-6">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                              <AcademicCapIcon className="w-8 h-8 text-white" />
+                            </div>
+                            <div>
+                              <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                                {attempt.exam?.title || 'SAT Practice Test'}
+                              </h4>
+                              <p className="text-gray-600">
+                                ID: {attempt.id.slice(0, 8)}...
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col items-end space-y-2">
+                            <span
+                              className={`px-3 py-1.5 text-xs font-medium rounded-full border shadow-sm ${
+                                attempt.status === 'completed' 
+                                  ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 border-green-200' 
+                                  : attempt.status === 'in_progress'
+                                  ? 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 border-blue-200'
+                                  : 'bg-gradient-to-r from-red-100 to-pink-100 text-red-700 border-red-200'
+                              }`}
+                            >
+                              {attempt.status === 'completed' && '✓ COMPLETED'}
+                              {attempt.status === 'in_progress' && '⏳ IN PROGRESS'}
+                              {attempt.status === 'expired' && '⏰ EXPIRED'}
+                            </span>
+                            {attempt.status === 'completed' && (
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-violet-600">
+                                  {canShowAttemptResults(attempt)
+                                    ? getDisplayScore(attempt)
+                                    : '***'}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {canShowAttemptResults(attempt)
+                                    ? 'Total Score'
+                                    : 'Hidden'}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Module Scores */}
+                        {(() => {
+                          const canShowResults = canShowAttemptResults(attempt)
+                          const finalScores = attempt.final_scores
+                          const moduleScores = attempt.module_scores
+
+                          if (finalScores && finalScores.english && finalScores.math) {
+                            return (
+                              <div className="grid grid-cols-2 gap-4 mb-6">
+                                <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 p-4 rounded-xl text-center hover:from-indigo-100 hover:to-indigo-200 transition-colors">
+                                  <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                    <DocumentTextIcon className="w-4 h-4 text-white" />
+                                  </div>
+                                  <div className="text-lg font-semibold text-gray-900">ENGLISH</div>
+                                  <div className="text-xl font-bold text-indigo-600">
+                                    {canShowResults ? finalScores.english : '***'}
+                                  </div>
+                                </div>
+                                <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-xl text-center hover:from-purple-100 hover:to-purple-200 transition-colors">
+                                  <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                    <BoltIcon className="w-4 h-4 text-white" />
+                                  </div>
+                                  <div className="text-lg font-semibold text-gray-900">MATH</div>
+                                  <div className="text-xl font-bold text-purple-600">
+                                    {canShowResults ? finalScores.math : '***'}
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          }
+
+                          if (moduleScores) {
+                            const moduleColors = {
+                              english1: { bg: 'from-indigo-50 to-indigo-100', icon: 'bg-indigo-500', text: 'text-indigo-600', hover: 'hover:from-indigo-100 hover:to-indigo-200' },
+                              english2: { bg: 'from-violet-50 to-violet-100', icon: 'bg-violet-500', text: 'text-violet-600', hover: 'hover:from-violet-100 hover:to-violet-200' },
+                              math1: { bg: 'from-purple-50 to-purple-100', icon: 'bg-purple-500', text: 'text-purple-600', hover: 'hover:from-purple-100 hover:to-purple-200' },
+                              math2: { bg: 'from-pink-50 to-pink-100', icon: 'bg-pink-500', text: 'text-pink-600', hover: 'hover:from-pink-100 hover:to-pink-200' }
+                            }
+                            return (
+                              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                {Object.entries(moduleScores).map(([module, score]) => {
+                                  const colorScheme = moduleColors[module as keyof typeof moduleColors] || moduleColors.english1
+                                  const isEnglish = module.includes('english')
+                                  return (
+                                    <div key={module} className={`bg-gradient-to-r ${colorScheme.bg} p-4 rounded-xl text-center ${colorScheme.hover} transition-colors`}>
+                                      <div className={`w-8 h-8 ${colorScheme.icon} rounded-lg flex items-center justify-center mx-auto mb-2`}>
+                                        {isEnglish ? <DocumentTextIcon className="w-4 h-4 text-white" /> : <BoltIcon className="w-4 h-4 text-white" />}
+                                      </div>
+                                      <div className="text-lg font-semibold text-gray-900">
+                                        {module.replace(/(\d)/, ' $1').toUpperCase()}
+                                      </div>
+                                      <div className={`text-xl font-bold ${colorScheme.text}`}>
+                                        {canShowResults ? score || 0 : '***'}
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )
+                          }
+                          return null
+                        })()}
+
+                        {/* Action Row */}
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                          <div className="space-y-1 text-sm text-gray-500">
+                            {attempt.started_at && (
+                              <div className="flex items-center space-x-1">
+                                <CalendarIcon className="w-4 h-4" />
+                                <span>Started: {formatDate(attempt.started_at)}</span>
+                              </div>
+                            )}
+                            {attempt.completed_at && (
+                              <div className="flex items-center space-x-1">
+                                <ClockIcon className="w-4 h-4" />
+                                <span>Completed: {formatDate(attempt.completed_at)}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex items-center space-x-3">
+                            {attempt.status === 'completed' &&
+                              (canShowAttemptResults(attempt) ? (
+                                <Link
+                                  href={`/student/results/${attempt.id}`}
+                                  className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-violet-100 to-purple-100 text-violet-700 rounded-full border border-violet-200 hover:from-violet-200 hover:to-purple-200 transition-all duration-200 shadow-sm"
+                                >
+                                  <EyeIcon className="w-4 h-4 mr-1 inline" />
+                                  View Details
+                                </Link>
+                              ) : (
+                                <span className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 rounded-full border border-orange-200 shadow-sm">
+                                  🔒 Results Hidden
+                                </span>
+                              ))}
+
+                            {attempt.status === 'in_progress' && attempt.exam_id && (
+                              <>
+                                <Link
+                                  href={`/student/exam/${attempt.exam_id}`}
+                                  className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-full border border-green-200 hover:from-green-200 hover:to-emerald-200 transition-all duration-200 shadow-sm"
+                                >
+                                  <PlayIcon className="w-4 h-4 mr-1 inline" />
+                                  Continue
+                                </Link>
+                                <button
+                                  onClick={() => handleDeleteAttempt(attempt.id)}
+                                  disabled={deletingAttempts.has(attempt.id)}
+                                  className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-200 shadow-sm ${
+                                    deletingAttempts.has(attempt.id)
+                                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
+                                      : 'bg-gradient-to-r from-red-100 to-pink-100 text-red-700 border border-red-200 hover:from-red-200 hover:to-pink-200'
+                                  }`}
+                                >
+                                  {deletingAttempts.has(attempt.id) ? (
+                                    <div className="w-4 h-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 mr-1 inline"></div>
+                                  ) : (
+                                    <TrashIcon className="w-4 h-4 mr-1 inline" />
+                                  )}
+                                  {deletingAttempts.has(attempt.id) ? 'Deleting...' : 'Discard'}
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <StatsCard
@@ -487,306 +699,27 @@ export default function StudentResultsPage() {
               </div>
             )}
 
-            {/* Exam Results List */}
-            {attempts.length === 0 ? (
-              <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-8 text-center border border-violet-100">
-                <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <ChartBarIcon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  No Results Yet
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  You haven't completed any practice exams yet. Take your first
-                  exam to see your results here.
-                </p>
-                <Link
-                  href="/student/exams"
-                  className="inline-flex items-center bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg"
-                >
-                  <AcademicCapIcon className="w-5 h-5 mr-2" />
-                  Take Your First Exam
-                </Link>
-              </div>
-            ) : (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-                <div className="p-6 border-b border-gray-100">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Recent Exam Attempts
-                  </h3>
-                </div>
-                <div className="p-6">
-                  <div className="space-y-6">
-                    {attempts.map((attempt) => (
-                      <div
-                        key={attempt.id}
-                        className="border border-gray-200 rounded-xl p-6 hover:border-violet-300 transition-colors group"
-                      >
-                        <div className="flex items-start justify-between mb-6">
-                          <div className="flex items-center space-x-4">
-                            <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                              <AcademicCapIcon className="w-8 h-8 text-white" />
-                            </div>
-                            <div>
-                              <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                {attempt.exam?.title || 'SAT Practice Test'}
-                              </h4>
-                              <p className="text-gray-600">
-                                ID: {attempt.id.slice(0, 8)}...
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col items-end space-y-2">
-                            <span
-                              className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(attempt.status)}`}
-                            >
-                              {attempt.status.replace('_', ' ').toUpperCase()}
-                            </span>
-                            {attempt.status === 'completed' && (
-                              <div className="text-right">
-                                <div className="text-2xl font-bold text-violet-600">
-                                  {canShowAttemptResults(attempt)
-                                    ? getDisplayScore(attempt)
-                                    : '***'}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {canShowAttemptResults(attempt)
-                                    ? 'Total Score'
-                                    : 'Hidden'}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Module Scores */}
-                        {(() => {
-                          const canShowResults = canShowAttemptResults(attempt)
-                          const finalScores = attempt.final_scores
-                          const moduleScores = attempt.module_scores
-
-                          // If we have new final_scores, show English/Math breakdown
-                          if (
-                            finalScores &&
-                            finalScores.english &&
-                            finalScores.math
-                          ) {
-                            return (
-                              <div className="grid grid-cols-2 gap-4 mb-6">
-                                <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 p-4 rounded-xl text-center hover:from-indigo-100 hover:to-indigo-200 transition-colors">
-                                  <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                                    <DocumentTextIcon className="w-4 h-4 text-white" />
-                                  </div>
-                                  <div className="text-lg font-semibold text-gray-900">
-                                    ENGLISH
-                                  </div>
-                                  <div className="text-xl font-bold text-indigo-600">
-                                    {canShowResults
-                                      ? finalScores.english
-                                      : '***'}
-                                  </div>
-                                </div>
-                                <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-xl text-center hover:from-purple-100 hover:to-purple-200 transition-colors">
-                                  <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                                    <BoltIcon className="w-4 h-4 text-white" />
-                                  </div>
-                                  <div className="text-lg font-semibold text-gray-900">
-                                    MATH
-                                  </div>
-                                  <div className="text-xl font-bold text-purple-600">
-                                    {canShowResults ? finalScores.math : '***'}
-                                  </div>
-                                </div>
-                              </div>
-                            )
-                          }
-
-                          // Fallback to old module_scores format
-                          if (moduleScores) {
-                            const moduleColors = {
-                              english1: { bg: 'from-indigo-50 to-indigo-100', icon: 'bg-indigo-500', text: 'text-indigo-600', hover: 'hover:from-indigo-100 hover:to-indigo-200' },
-                              english2: { bg: 'from-violet-50 to-violet-100', icon: 'bg-violet-500', text: 'text-violet-600', hover: 'hover:from-violet-100 hover:to-violet-200' },
-                              math1: { bg: 'from-purple-50 to-purple-100', icon: 'bg-purple-500', text: 'text-purple-600', hover: 'hover:from-purple-100 hover:to-purple-200' },
-                              math2: { bg: 'from-pink-50 to-pink-100', icon: 'bg-pink-500', text: 'text-pink-600', hover: 'hover:from-pink-100 hover:to-pink-200' }
-                            }
-                            return (
-                              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                                {Object.entries(moduleScores).map(
-                                  ([module, score]) => {
-                                    const colorScheme = moduleColors[module as keyof typeof moduleColors] || moduleColors.english1
-                                    const isEnglish = module.includes('english')
-                                    return (
-                                      <div
-                                        key={module}
-                                        className={`bg-gradient-to-r ${colorScheme.bg} p-4 rounded-xl text-center ${colorScheme.hover} transition-colors`}
-                                      >
-                                        <div className={`w-8 h-8 ${colorScheme.icon} rounded-lg flex items-center justify-center mx-auto mb-2`}>
-                                          {isEnglish ? (
-                                            <DocumentTextIcon className="w-4 h-4 text-white" />
-                                          ) : (
-                                            <BoltIcon className="w-4 h-4 text-white" />
-                                          )}
-                                        </div>
-                                        <div className="text-lg font-semibold text-gray-900">
-                                          {module
-                                            .replace(/(\d)/, ' $1')
-                                            .toUpperCase()}
-                                        </div>
-                                        <div className={`text-xl font-bold ${colorScheme.text}`}>
-                                          {canShowResults ? score || 0 : '***'}
-                                        </div>
-                                      </div>
-                                    )
-                                  }
-                                )}
-                              </div>
-                            )
-                          }
-
-                          return null
-                        })()}
-
-                        {/* Action Row */}
-                        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                          <div className="space-y-1 text-sm text-gray-500">
-                            {attempt.started_at && (
-                              <div className="flex items-center space-x-1">
-                                <CalendarIcon className="w-4 h-4" />
-                                <span>
-                                  Started: {formatDate(attempt.started_at)}
-                                </span>
-                              </div>
-                            )}
-                            {attempt.completed_at && (
-                              <div className="flex items-center space-x-1">
-                                <ClockIcon className="w-4 h-4" />
-                                <span>
-                                  Completed: {formatDate(attempt.completed_at)}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="flex items-center space-x-3">
-                            {attempt.status === 'completed' &&
-                              (canShowAttemptResults(attempt) ? (
-                                <Link
-                                  href={`/student/results/${attempt.id}`}
-                                  className="inline-flex items-center px-4 py-2 bg-violet-100 hover:bg-violet-200 text-violet-700 rounded-lg font-medium transition-colors"
-                                >
-                                  <EyeIcon className="w-4 h-4 mr-2" />
-                                  View Details
-                                </Link>
-                              ) : (
-                                <div className="inline-flex items-center px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-medium">
-                                  <span className="text-orange-500 mr-2">
-                                    🔒
-                                  </span>
-                                  Results Hidden
-                                </div>
-                              ))}
-
-                            {attempt.status === 'in_progress' &&
-                              attempt.exam_id && (
-                                <>
-                                  <Link
-                                    href={`/student/exam/${attempt.exam_id}`}
-                                    className="inline-flex items-center px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg font-medium transition-colors"
-                                  >
-                                    <PlayIcon className="w-4 h-4 mr-2" />
-                                    Continue
-                                  </Link>
-                                  <button
-                                    onClick={() =>
-                                      handleDeleteAttempt(attempt.id)
-                                    }
-                                    disabled={deletingAttempts.has(attempt.id)}
-                                    className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${
-                                      deletingAttempts.has(attempt.id)
-                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                        : 'bg-red-100 hover:bg-red-200 text-red-700'
-                                    }`}
-                                  >
-                                    {deletingAttempts.has(attempt.id) ? (
-                                      <div className="w-4 h-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 mr-2"></div>
-                                    ) : (
-                                      <TrashIcon className="w-4 h-4 mr-2" />
-                                    )}
-                                    {deletingAttempts.has(attempt.id)
-                                      ? 'Deleting...'
-                                      : 'Discard'}
-                                  </button>
-                                </>
-                              )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+            {/* Message when results are hidden */}
+            {completedAttempts.length > 0 &&
+              visibleCompletedAttempts.length === 0 && (
+                <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
+                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-orange-500 text-2xl">🔒</span>
                   </div>
+                  <h3 className="text-lg font-semibold text-orange-900 mb-2">
+                    Results Currently Hidden
+                  </h3>
+                  <p className="text-orange-700">
+                    Your instructor has chosen to hide exam results for now.
+                    Results will be available when they are released.
+                  </p>
                 </div>
-              </div>
-            )}
+              )}
           </div>
 
           {/* Right Column - 3 cols */}
           <div className="col-span-12 lg:col-span-3 space-y-6">
-            {/* Calendar */}
-            <Calendar
-              events={attempts
-                .filter((a) => a.completed_at)
-                .map((attempt) => ({
-                  date: new Date(attempt.completed_at!),
-                  type: 'visit' as const,
-                }))}
-            />
 
-            {/* Performance Summary */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Performance Summary
-                </h3>
-                <ArrowTrendingUpIcon className="w-5 h-5 text-violet-600" />
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl">
-                  <span className="text-sm font-medium text-gray-900">
-                    Tests Completed
-                  </span>
-                  <span className="text-lg font-bold text-violet-600">
-                    {completedAttempts.length}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
-                  <span className="text-sm font-medium text-gray-900">
-                    Best Score
-                  </span>
-                  <span className="text-lg font-bold text-green-600">
-                    {bestScore
-                      ? bestScore
-                      : visibleCompletedAttempts.length <
-                          completedAttempts.length
-                        ? 'Hidden'
-                        : '-'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl">
-                  <span className="text-sm font-medium text-gray-900">
-                    Average Score
-                  </span>
-                  <span className="text-lg font-bold text-orange-600">
-                    {averageScore
-                      ? averageScore
-                      : visibleCompletedAttempts.length <
-                          completedAttempts.length
-                        ? 'Hidden'
-                        : '-'}
-                  </span>
-                </div>
-              </div>
-            </div>
 
             {/* Call to Action */}
             <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
