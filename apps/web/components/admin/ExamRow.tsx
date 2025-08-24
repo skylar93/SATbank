@@ -123,12 +123,6 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
         </td>
         <td className="px-6 py-4">
           <div className="flex items-center space-x-2">
-            <button
-              onClick={() => openAnswerModal(exam.id, exam.title)}
-              className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 rounded-full border border-orange-200 hover:from-orange-200 hover:to-red-200 transition-all duration-200 shadow-sm"
-            >
-              Answer Settings
-            </button>
             <Link
               href={`/admin/exams/${exam.id}/settings`}
               className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full border border-blue-200 hover:from-blue-200 hover:to-purple-200 transition-all duration-200 shadow-sm"
@@ -207,12 +201,6 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
               <div className="pt-4 border-t border-purple-100">
                 <h4 className="font-medium text-gray-800 mb-3">Quick Actions</h4>
                 <div className="flex flex-wrap gap-3">
-                  <button
-                    onClick={() => openAnswerModal(exam.id, exam.title)}
-                    className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 rounded-lg border border-orange-200 hover:from-orange-200 hover:to-red-200 transition-all duration-200 shadow-sm"
-                  >
-                    Configure Answer Settings
-                  </button>
                   <Link
                     href={`/admin/exams/${exam.id}/settings`}
                     className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-lg border border-blue-200 hover:from-blue-200 hover:to-purple-200 transition-all duration-200 shadow-sm"

@@ -79,27 +79,27 @@ export function AnswerVisibilityControl({
     switch (currentVisibility.type) {
       case 'immediate':
         return {
-          icon: <Eye className="h-3 w-3 mr-1" />,
-          text: 'Answers Visible',
-          style: 'px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-full border border-green-200 shadow-sm'
+          icon: <Eye className="h-3 w-3" />,
+          text: '',
+          style: 'px-2 py-1.5 text-xs font-medium text-green-700'
         }
       case 'hidden':
         return {
-          icon: <EyeOff className="h-3 w-3 mr-1" />,
-          text: 'Answers Hidden',
-          style: 'px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-red-100 to-pink-100 text-red-700 rounded-full border border-red-200 shadow-sm'
+          icon: <EyeOff className="h-3 w-3" />,
+          text: '',
+          style: 'px-2 py-1.5 text-xs font-medium text-red-700'
         }
       case 'scheduled':
         return {
-          icon: <Clock className="h-3 w-3 mr-1" />,
-          text: 'Scheduled Release',
-          style: 'px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-orange-100 to-yellow-100 text-orange-700 rounded-full border border-orange-200 shadow-sm'
+          icon: <Clock className="h-3 w-3" />,
+          text: '',
+          style: 'px-2 py-1.5 text-xs font-medium text-orange-700'
         }
       default:
         return {
-          icon: <EyeOff className="h-3 w-3 mr-1" />,
-          text: 'No Setting',
-          style: 'px-2 py-1 text-xs font-medium bg-gray-100 text-gray-500 rounded-full border border-gray-200'
+          icon: <EyeOff className="h-3 w-3" />,
+          text: '',
+          style: 'px-2 py-1.5 text-xs font-medium text-gray-500'
         }
     }
   }
@@ -119,7 +119,6 @@ export function AnswerVisibilityControl({
           <SelectTrigger className={`w-auto h-auto ${display.style}`}>
             <div className="flex items-center">
               {display.icon}
-              <SelectValue>{display.text}</SelectValue>
             </div>
           </SelectTrigger>
           <SelectContent>
