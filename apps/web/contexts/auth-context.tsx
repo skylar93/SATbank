@@ -18,10 +18,6 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
   // Get impersonation data from localStorage
   const getImpersonationUser = (): AuthUser | null => {
     if (typeof window === 'undefined') return null
@@ -37,13 +33,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // Initialize with null to avoid hydration issues
+  const [user, setUser] = useState<AuthUser | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
     let isInitialized = false
     
     // Simpler initialization with AuthStateManager
     const initializeAuth = async () => {
       try {
-        // Check for impersonation first
+        // Check for impersonation first - this is synchronous and fast
         const impersonationUser = getImpersonationUser()
         if (impersonationUser) {
           isInitialized = true
@@ -53,6 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return
         }
 
+        // Only fetch from auth state manager if not impersonating
         const user = await authStateManager.getCurrentUser()
         isInitialized = true
         setUser(user)
@@ -65,6 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
     
+    // Run initialization immediately
     initializeAuth()
 
     // Listen for impersonation changes via storage events

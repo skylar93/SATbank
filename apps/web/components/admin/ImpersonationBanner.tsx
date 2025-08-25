@@ -6,39 +6,51 @@ import { useState, useEffect } from 'react';
 export function ImpersonationBanner() {
   const { user } = useAuth();
   const { stopImpersonation, getImpersonationData, isImpersonating } = useImpersonation();
+  
+  // Initialize with null to avoid hydration issues
   const [impersonationData, setImpersonationData] = useState<any>(null);
+  const [isClient, setIsClient] = useState(false);
 
+  // First useEffect to handle client-side mounting
   useEffect(() => {
-    const checkImpersonationData = () => {
-      const data = getImpersonationData();
-      setImpersonationData(data);
+    setIsClient(true);
+    // Check impersonation data once client-side is ready
+    const data = getImpersonationData();
+    setImpersonationData(data);
+    
+    // Set body padding if impersonating
+    if (data) {
+      document.body.style.paddingTop = '40px';
+    } else {
+      document.body.style.paddingTop = '0px';
+    }
+  }, []); // Empty dependency array - only run once on mount
 
-      // Add padding to body when impersonating
-      if (data) {
-        document.body.style.paddingTop = '40px';
-      } else {
-        document.body.style.paddingTop = '0px';
-      }
-    };
+  // Second useEffect for storage change listener
+  useEffect(() => {
+    if (!isClient) return;
 
-    // Check initial state
-    checkImpersonationData();
-
-    // Listen for storage changes to update banner
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'impersonation_data') {
-        checkImpersonationData();
+        const data = getImpersonationData();
+        setImpersonationData(data);
+
+        // Update body padding
+        if (data) {
+          document.body.style.paddingTop = '40px';
+        } else {
+          document.body.style.paddingTop = '0px';
+        }
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
 
-    // Cleanup function
     return () => {
       document.body.style.paddingTop = '0px';
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [getImpersonationData]);  // Include dependency to re-run when hook updates
+  }, [isClient, getImpersonationData]); // Stable dependencies
 
   if (!isImpersonating() || !impersonationData) {
     return null; // Don't render anything if not in impersonation mode
