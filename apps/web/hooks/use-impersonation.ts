@@ -29,11 +29,14 @@ export function useImpersonation() {
         url: window.location.href
       }));
       
-      // Small delay to ensure React state updates are processed
-      await new Promise(resolve => setTimeout(resolve, 50));
-      
-      // Now navigate to student dashboard with impersonation state ready
-      router.push('/student/dashboard');
+      // Apply padding in a way that ensures it's present during navigation
+      requestAnimationFrame(() => {
+        document.body.style.setProperty('padding-top', '44px', 'important');
+        document.body.classList.add('impersonation-active');
+        
+        // Navigate immediately after applying styles
+        router.push('/student/dashboard');
+      });
 
     } catch (error: any) {
       console.error('Failed to start impersonation:', error);
@@ -45,6 +48,10 @@ export function useImpersonation() {
     try {
       // Clear impersonation data
       localStorage.removeItem(IMPERSONATION_DATA_KEY);
+      
+      // Remove body padding immediately
+      document.body.style.setProperty('padding-top', '0px', 'important');
+      document.body.classList.remove('impersonation-active');
       
       // Force reload to properly reset auth state and prevent infinite loading
       window.location.href = '/admin/students';

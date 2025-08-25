@@ -51,6 +51,22 @@ interface ScoreHistory {
 
 export default function StudentDashboard() {
   const { user } = useAuth()
+  
+  // Apply impersonation padding immediately on mount
+  useEffect(() => {
+    const checkImpersonation = () => {
+      if (typeof window !== 'undefined') {
+        const impersonationData = localStorage.getItem('impersonation_data');
+        if (impersonationData) {
+          document.body.style.setProperty('padding-top', '44px', 'important');
+          document.body.classList.add('impersonation-active');
+        }
+      }
+    };
+    
+    checkImpersonation();
+  }, []);
+  
   const [stats, setStats] = useState<DashboardStats>({
     examsTaken: 0,
     bestScore: null,
@@ -449,7 +465,7 @@ export default function StudentDashboard() {
               Dashboard
             </h1>
             <p className="text-sm md:text-base text-gray-600">
-              Hello {user.profile?.full_name?.split(' ')[0]}, welcome back
+              Hello {user.profile?.full_name?.split(' ')[0] || 'there'}, welcome back
             </p>
           </div>
           <div className="flex items-center space-x-4">
