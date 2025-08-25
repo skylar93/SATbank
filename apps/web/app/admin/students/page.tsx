@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
 import { ExportService } from '../../../lib/export-service'
 import { supabase } from '../../../lib/supabase'
+import { useImpersonation } from '../../../hooks/use-impersonation'
 
 interface StudentData {
   id: string
@@ -33,6 +34,7 @@ interface FilterOptions {
 
 export default function AdminStudentsPage() {
   const { user } = useAuth()
+  const { startImpersonation } = useImpersonation()
   const [students, setStudents] = useState<StudentData[]>([])
   const [filteredStudents, setFilteredStudents] = useState<StudentData[]>([])
   const [loading, setLoading] = useState(true)
@@ -584,6 +586,13 @@ export default function AdminStudentsPage() {
                                 📊
                               </Link>
                             )}
+                          <button
+                            onClick={() => startImpersonation(student.id)}
+                            title="View as this student"
+                            className="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50"
+                          >
+                            👁️
+                          </button>
                         </td>
                       </tr>
                     ))}

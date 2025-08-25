@@ -20,6 +20,7 @@ import {
   AcademicCapIcon,
   WrenchScrewdriverIcon,
   Cog6ToothIcon,
+  LanguageIcon,
 } from '@heroicons/react/24/outline'
 
 interface SidebarItem {
@@ -37,6 +38,7 @@ const studentNavigationItems: SidebarItem[] = [
     href: '/student/results',
     icon: ClipboardDocumentListIcon,
   },
+  { name: 'Vocabulary', href: '/student/vocab', icon: LanguageIcon },
   // { name: 'Study Plan', href: '/student/recommendations', icon: CalendarDaysIcon },
   // { name: 'Problem Bank', href: '/student/problem-bank', icon: BookOpenIcon },
   { name: 'Settings', href: '/student/settings', icon: CogIcon },
@@ -177,7 +179,9 @@ function SidebarContent({
               pathname.startsWith('/admin/exams/') &&
               pathname !== '/admin/questions') ||
             (item.href === '/admin/questions' &&
-              pathname === '/admin/questions')
+              pathname === '/admin/questions') ||
+            (item.href === '/student/vocab' &&
+              pathname.startsWith('/student/vocab'))
           const IconComponent = item.icon
 
           return (

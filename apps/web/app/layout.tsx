@@ -5,6 +5,7 @@ import { AuthProvider } from '../contexts/auth-context'
 import { SidebarProvider } from '../contexts/sidebar-context'
 import { RouteGuard } from '../components/route-guard'
 import { Sidebar } from '../components/sidebar'
+import { ImpersonationBanner } from '../components/admin/ImpersonationBanner'
 
 const nunito = Nunito({
   subsets: ['latin'],
@@ -27,6 +28,7 @@ export default function RootLayout({
         <AuthProvider>
           <SidebarProvider>
             <RouteGuard>
+              <ImpersonationBanner />
               <div className="flex h-screen bg-gray-50">
                 <Sidebar />
                 <div className="flex-1 overflow-auto">{children}</div>
