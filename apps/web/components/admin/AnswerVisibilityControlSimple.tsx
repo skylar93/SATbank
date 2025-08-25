@@ -81,25 +81,25 @@ export function AnswerVisibilityControl({
         return {
           icon: <Eye className="h-3 w-3" />,
           text: '',
-          style: 'px-2 py-1.5 text-xs font-medium text-green-700'
+          style: 'px-2 py-1.5 text-xs font-medium text-green-700 rounded-full border border-gray-200 bg-gray-50'
         }
       case 'hidden':
         return {
           icon: <EyeOff className="h-3 w-3" />,
           text: '',
-          style: 'px-2 py-1.5 text-xs font-medium text-red-700'
+          style: 'px-2 py-1.5 text-xs font-medium text-red-700 rounded-full border border-gray-200 bg-gray-50'
         }
       case 'scheduled':
         return {
           icon: <Clock className="h-3 w-3" />,
           text: '',
-          style: 'px-2 py-1.5 text-xs font-medium text-orange-700'
+          style: 'px-2 py-1.5 text-xs font-medium text-orange-700 rounded-full border border-gray-200 bg-gray-50'
         }
       default:
         return {
           icon: <EyeOff className="h-3 w-3" />,
           text: '',
-          style: 'px-2 py-1.5 text-xs font-medium text-gray-500'
+          style: 'px-2 py-1.5 text-xs font-medium text-gray-500 rounded-full border border-gray-200 bg-gray-50'
         }
     }
   }
