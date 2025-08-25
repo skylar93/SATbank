@@ -17,10 +17,22 @@ export function useImpersonation() {
 
       if (error) throw new Error(error.message);
 
-      // Store impersonation data in localStorage
+      // Store impersonation data in localStorage first
       localStorage.setItem(IMPERSONATION_DATA_KEY, JSON.stringify(impersonationData));
       
-      // Redirect to student dashboard with impersonation mode
+      // Dispatch a custom event to trigger immediate state updates
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: IMPERSONATION_DATA_KEY,
+        newValue: JSON.stringify(impersonationData),
+        oldValue: null,
+        storageArea: localStorage,
+        url: window.location.href
+      }));
+      
+      // Small delay to ensure React state updates are processed
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      // Now navigate to student dashboard with impersonation state ready
       router.push('/student/dashboard');
 
     } catch (error: any) {
