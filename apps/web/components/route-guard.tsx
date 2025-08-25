@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '../contexts/auth-context'
+import { useImpersonation } from '../hooks/use-impersonation'
 
 interface RouteGuardProps {
   children: React.ReactNode
@@ -10,11 +11,26 @@ interface RouteGuardProps {
 
 export function RouteGuard({ children }: RouteGuardProps) {
   const { user, loading, isAdmin, isStudent } = useAuth()
+  const { isImpersonating, getImpersonationData } = useImpersonation()
   const router = useRouter()
   const pathname = usePathname()
 
+  // Get effective role considering impersonation
+  const effectiveIsAdmin = isImpersonating() ? false : isAdmin
+  const effectiveIsStudent = isImpersonating() ? true : isStudent
+
   useEffect(() => {
     if (loading) return // Wait for auth to load
+
+    // Prevent route guard actions during impersonation transitions
+    const isTransitioning = typeof window !== 'undefined' && 
+      window.location.href.includes('/admin/students') && 
+      localStorage.getItem('impersonation_data')
+    
+    if (isTransitioning) {
+      console.log('🔄 RouteGuard: In transition, skipping route changes')
+      return
+    }
 
     // Public routes that don't require authentication
     const publicRoutes = ['/login', '/signup', '/']
@@ -32,38 +48,38 @@ export function RouteGuard({ children }: RouteGuardProps) {
       console.log(
         '🛡️ RouteGuard: Authenticated user on auth page, redirecting...'
       )
-      if (isAdmin) {
+      if (effectiveIsAdmin) {
         router.push('/admin/dashboard')
-      } else if (isStudent) {
+      } else if (effectiveIsStudent) {
         router.push('/student/dashboard')
       }
       return
     }
 
-    // Admin route protection
-    if (user && pathname.startsWith('/admin') && !isAdmin) {
+    // Admin route protection - don't redirect if impersonating
+    if (user && pathname.startsWith('/admin') && !effectiveIsAdmin && !isImpersonating()) {
       console.log('🛡️ RouteGuard: Non-admin trying to access admin route')
       router.push('/student/dashboard')
       return
     }
 
-    // Student route protection - but allow admins to preview exams
-    if (user && pathname.startsWith('/student') && !isStudent) {
-      // Allow admins to access exam routes in preview mode
+    // Student route protection - allow access if impersonating or if student
+    if (user && pathname.startsWith('/student') && !effectiveIsStudent) {
+      // Allow admins to access exam routes in preview mode (when not impersonating)
       const isExamPreview =
         pathname.startsWith('/student/exam/') &&
         new URL(window.location.href).searchParams.get('preview') === 'true' &&
         isAdmin
 
-      if (!isExamPreview) {
+      if (!isExamPreview && !isImpersonating()) {
         console.log('🛡️ RouteGuard: Non-student trying to access student route')
         router.push('/admin/dashboard')
         return
-      } else {
-        console.log('🛡️ RouteGuard: Allowing admin exam preview')
+      } else if (isExamPreview || isImpersonating()) {
+        console.log('🛡️ RouteGuard: Allowing admin exam preview or impersonation')
       }
     }
-  }, [user, loading, isAdmin, isStudent, pathname, router])
+  }, [user, loading, isAdmin, isStudent, effectiveIsAdmin, effectiveIsStudent, pathname, router, isImpersonating])
 
   // Show loading while checking authentication
   if (loading) {

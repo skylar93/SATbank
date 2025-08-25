@@ -22,12 +22,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Get impersonation data from localStorage
+  const getImpersonationUser = (): AuthUser | null => {
+    if (typeof window === 'undefined') return null
+    
+    const dataJSON = localStorage.getItem('impersonation_data')
+    if (!dataJSON) return null
+    
+    try {
+      const data = JSON.parse(dataJSON)
+      return data.target_user || null
+    } catch {
+      return null
+    }
+  }
+
   useEffect(() => {
     let isInitialized = false
     
     // Simpler initialization with AuthStateManager
     const initializeAuth = async () => {
       try {
+        // Check for impersonation first
+        const impersonationUser = getImpersonationUser()
+        if (impersonationUser) {
+          isInitialized = true
+          setUser(impersonationUser)
+          setError(null)
+          setLoading(false)
+          return
+        }
+
         const user = await authStateManager.getCurrentUser()
         isInitialized = true
         setUser(user)
@@ -42,8 +67,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     initializeAuth()
 
+    // Listen for impersonation changes via storage events
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'impersonation_data') {
+        const impersonationUser = getImpersonationUser()
+        if (impersonationUser) {
+          setUser(impersonationUser)
+        } else {
+          // Impersonation ended - don't reload, let the page handle redirection
+          // This prevents duplicate API calls and infinite loading
+          console.log('🔄 AuthProvider: Impersonation ended, waiting for navigation...')
+        }
+      }
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+
     // Subscribe to auth state changes from AuthStateManager
     const unsubscribeFromStateManager = authStateManager.subscribe(async (stateChangedUser) => {
+      // Check for impersonation first, it takes precedence
+      const impersonationUser = getImpersonationUser()
+      if (impersonationUser) {
+        setUser(impersonationUser)
+        isInitialized = true
+        setLoading(false)
+        setError(null)
+        return
+      }
       
       if (stateChangedUser === null) {
         // State manager notified of change, fetch fresh user data
@@ -71,6 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       console.log('🧹 AuthProvider: Cleanup')
+      window.removeEventListener('storage', handleStorageChange)
       unsubscribeFromStateManager()
       subscription.unsubscribe()
     }

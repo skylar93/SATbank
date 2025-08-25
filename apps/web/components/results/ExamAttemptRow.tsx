@@ -3,11 +3,6 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { TestAttempt, Exam } from '../../lib/exam-service'
-import { 
-  Collapsible, 
-  CollapsibleTrigger, 
-  CollapsibleContent 
-} from '../ui/collapsible'
 import { TableRow, TableCell } from '../ui/table'
 import {
   ChevronDownIcon,
@@ -44,19 +39,20 @@ export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProp
   const accuracy = null
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+    <>
       {/* Main Row - Always Visible */}
       <TableRow className="hover:bg-gray-50">
         <TableCell className="w-10">
-          <CollapsibleTrigger asChild>
-            <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-              {isOpen ? (
-                <ChevronDownIcon className="w-4 h-4 text-gray-600" />
-              ) : (
-                <ChevronRightIcon className="w-4 h-4 text-gray-600" />
-              )}
-            </button>
-          </CollapsibleTrigger>
+          <button 
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-1 hover:bg-gray-100 rounded transition-colors"
+          >
+            {isOpen ? (
+              <ChevronDownIcon className="w-4 h-4 text-gray-600" />
+            ) : (
+              <ChevronRightIcon className="w-4 h-4 text-gray-600" />
+            )}
+          </button>
         </TableCell>
         
         <TableCell className="font-medium">
@@ -117,7 +113,7 @@ export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProp
       </TableRow>
 
       {/* Expandable Content Row */}
-      <CollapsibleContent asChild>
+      {isOpen && (
         <TableRow className="bg-gray-50">
           <TableCell colSpan={4} className="p-6">
             <div className="space-y-4">
@@ -227,7 +223,7 @@ export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProp
             </div>
           </TableCell>
         </TableRow>
-      </CollapsibleContent>
-    </Collapsible>
+      )}
+    </>
   )
 }
