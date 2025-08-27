@@ -8,8 +8,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label'
 import { Toast } from '@/components/ui/toast'
 import { createClient } from '@/lib/supabase'
-import { Plus, BookOpen, Calendar, Edit, Trash2, Play, ArrowLeft } from 'lucide-react'
+import { Plus, BookOpen, Calendar, Edit, Trash2, Play, ArrowLeft, FileUp } from 'lucide-react'
 import Link from 'next/link'
+import { BulkAddModal } from '@/components/vocab/BulkAddModal'
 
 interface VocabSet {
   id: number
@@ -56,6 +57,9 @@ export default function VocabSetDetailPage() {
   const [quizType, setQuizType] = useState<'term_to_def' | 'def_to_term'>('term_to_def')
   const [quizFormat, setQuizFormat] = useState<'multiple_choice' | 'written_answer'>('multiple_choice')
   const [questionPool, setQuestionPool] = useState<'all' | 'unmastered' | 'not_recent'>('all')
+
+  // Bulk add state
+  const [isBulkAddModalOpen, setIsBulkAddModalOpen] = useState(false)
 
   const [toast, setToast] = useState<{
     message: string
@@ -235,6 +239,17 @@ export default function VocabSetDetailPage() {
     router.push(`/student/vocab/quiz?${queryParams.toString()}`)
   }
 
+  const handleBulkAddWords = async (words: { term: string; definition: string }[]) => {
+    try {
+      setToast({ message: `Successfully added ${words.length} words!`, type: 'success' })
+      setIsBulkAddModalOpen(false)
+      await fetchVocabSetAndEntries()
+    } catch (error) {
+      console.error('Error in bulk add handler:', error)
+      setToast({ message: 'Failed to add words', type: 'error' })
+    }
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -377,6 +392,14 @@ export default function VocabSetDetailPage() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+
+          <Button 
+            variant="outline"
+            onClick={() => setIsBulkAddModalOpen(true)}
+          >
+            <FileUp className="h-4 w-4 mr-2" />
+            Bulk Add Words
+          </Button>
 
           {entries.length > 0 && (
             <Dialog open={isQuizDialogOpen} onOpenChange={setIsQuizDialogOpen}>
@@ -667,6 +690,14 @@ export default function VocabSetDetailPage() {
             </DialogContent>
           </Dialog>
         )}
+
+        {/* Bulk Add Modal */}
+        <BulkAddModal
+          isOpen={isBulkAddModalOpen}
+          onClose={() => setIsBulkAddModalOpen(false)}
+          onAddWords={handleBulkAddWords}
+          setId={parseInt(setId)}
+        />
 
         {toast && (
           <Toast

@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { ExamService, type Question, type Exam, type TestAttempt, type ModuleType } from '../lib/exam-service'
 import { checkAnswer, normalizeCorrectAnswers } from '../lib/answer-checker'
 import { supabase } from '../lib/supabase'
+import { createTestAttempt } from '../lib/exam-actions'
 
 interface ExamAnswer {
   questionId: string
@@ -139,12 +140,35 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
       // Create new test attempt
       console.log('initializeExam: Creating new test attempt...')
-      const attempt = await ExamService.createTestAttempt({
-        user_id: userId,
-        exam_id: examId,
-        status: 'not_started',
-        current_module: 'english1'
+      
+      // Prepare headers
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      }
+      
+      // Add impersonation data to headers if present
+      const impersonationData = localStorage.getItem('impersonation_data')
+      if (impersonationData) {
+        headers['x-impersonation-data'] = impersonationData
+      }
+      
+      const response = await fetch('/api/test-attempts', {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+        body: JSON.stringify({
+          exam_id: examId,
+          status: 'not_started',
+          current_module: 'english1'
+        })
       })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create test attempt')
+      }
+
+      const attempt = await response.json()
       console.log('initializeExam: Test attempt created:', attempt.id)
 
       // Load questions for all modules
@@ -762,12 +786,25 @@ export const useExamStore = create<ExamState>((set, get) => ({
       await ExamService.deleteTestAttempt(existingAttempt.id)
       
       // Create new test attempt
-      const attempt = await ExamService.createTestAttempt({
-        user_id: userId,
-        exam_id: exam.id,
-        status: 'not_started',
-        current_module: 'english1'
+      const response = await fetch('/api/test-attempts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          exam_id: exam.id,
+          status: 'not_started',
+          current_module: 'english1'
+        })
       })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create test attempt')
+      }
+
+      const attempt = await response.json()
 
       // Load questions for all modules
       const moduleStates: ModuleState[] = []

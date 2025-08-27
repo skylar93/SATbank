@@ -52,8 +52,13 @@ export default function FloatingHighlightButton({ containerRef, onHighlight }: F
       const containerRect = containerElement.getBoundingClientRect()
       
       // Position button at the end of selection, slightly offset
+      // Prevent button from going beyond container bounds
+      const buttonX = rect.right - containerRect.left + 5
+      const containerWidth = containerElement.offsetWidth
+      const maxX = containerWidth - 60 // Button width + margin
+      
       setPosition({
-        x: rect.right - containerRect.left + 5,
+        x: Math.min(buttonX, maxX),
         y: rect.bottom - containerRect.top + 5
       })
       

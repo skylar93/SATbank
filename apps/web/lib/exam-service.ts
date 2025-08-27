@@ -267,9 +267,11 @@ export class ExamService {
 
   // Create new test attempt
   static async createTestAttempt(
-    attempt: CreateTestAttempt
+    attempt: CreateTestAttempt,
+    supabaseClient?: any
   ): Promise<TestAttempt> {
-    const { data, error } = await supabase
+    const client = supabaseClient || supabase
+    const { data, error } = await client
       .from('test_attempts')
       .insert(attempt)
       .select()

@@ -91,3 +91,24 @@ export async function updateAnswerVisibilityForAttempt(
   revalidatePath('/admin/exams');
   return { success: true };
 }
+
+export async function createTestAttempt(attempt: any) {
+  const supabase = createServerComponentClient<Database>({ cookies });
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error('Unauthorized: No user found.');
+  }
+
+  const { data, error } = await supabase
+    .from('test_attempts')
+    .insert({
+      ...attempt,
+      user_id: user.id
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}

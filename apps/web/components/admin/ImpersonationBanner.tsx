@@ -18,13 +18,10 @@ export function ImpersonationBanner() {
     const data = getImpersonationData();
     setImpersonationData(data);
     
-    // Set body padding if impersonating with higher specificity and important flag
+    // Add CSS class for impersonation styling
     if (data) {
-      document.body.style.setProperty('padding-top', '44px', 'important');
-      // Also add a CSS class for more reliable styling
       document.body.classList.add('impersonation-active');
     } else {
-      document.body.style.setProperty('padding-top', '0px', 'important');
       document.body.classList.remove('impersonation-active');
     }
   }, []); // Empty dependency array - only run once on mount
@@ -38,12 +35,10 @@ export function ImpersonationBanner() {
         const data = getImpersonationData();
         setImpersonationData(data);
 
-        // Update body padding
+        // Update CSS class for impersonation styling
         if (data) {
-          document.body.style.setProperty('padding-top', '44px', 'important');
           document.body.classList.add('impersonation-active');
         } else {
-          document.body.style.setProperty('padding-top', '0px', 'important');
           document.body.classList.remove('impersonation-active');
         }
       }
@@ -52,7 +47,6 @@ export function ImpersonationBanner() {
     window.addEventListener('storage', handleStorageChange);
 
     return () => {
-      document.body.style.setProperty('padding-top', '0px', 'important');
       document.body.classList.remove('impersonation-active');
       window.removeEventListener('storage', handleStorageChange);
     };
