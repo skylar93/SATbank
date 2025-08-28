@@ -40,7 +40,7 @@ const studentNavigationItems: SidebarItem[] = [
   },
   { name: 'Vocabulary', href: '/student/vocab', icon: LanguageIcon },
   // { name: 'Study Plan', href: '/student/recommendations', icon: CalendarDaysIcon },
-  // { name: 'Problem Bank', href: '/student/problem-bank', icon: BookOpenIcon },
+  { name: 'Mistake Notebook', href: '/student/mistake-notebook', icon: BookOpenIcon },
   { name: 'Settings', href: '/student/settings', icon: CogIcon },
 ]
 

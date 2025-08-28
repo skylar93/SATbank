@@ -4,8 +4,11 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import AnswerReleaseModal from '@/components/admin/AnswerReleaseModal'
 import { ExamRow } from './ExamRow'
+import { Button } from '@/components/ui/button'
+import { CreateExamModal } from './CreateExamModal'
 
 // Interface for the data returned by get_admin_exams_list RPC
 interface RpcExamData {
@@ -42,10 +45,12 @@ interface ExamWithCurves {
 
 export function ExamsListClient() {
   const { user, isAdmin, loading: authLoading } = useAuth()
+  const router = useRouter()
   const [exams, setExams] = useState<ExamWithCurves[]>([])
   const [loading, setLoading] = useState(true)
   const [filteredExams, setFilteredExams] = useState<ExamWithCurves[]>([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [modalState, setModalState] = useState<{
     isOpen: boolean
     examId: string
@@ -194,6 +199,11 @@ export function ExamsListClient() {
     })
   }
 
+  const handleExamCreated = (newExamId: string) => {
+    setIsCreateModalOpen(false)
+    router.push(`/admin/exams/${newExamId}/settings`)
+  }
+
   if (authLoading || loading) {
     return (
       <div className="p-6">
@@ -231,6 +241,12 @@ export function ExamsListClient() {
             <p className="text-gray-600">View and manage all available exams</p>
           </div>
           <div className="flex items-center space-x-4">
+            <Button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              ＋ New Exam
+            </Button>
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">
                 {user?.profile?.full_name?.charAt(0) || 'A'}
@@ -346,6 +362,12 @@ export function ExamsListClient() {
         examId={modalState.examId}
         examTitle={modalState.examTitle}
         onConfirm={handleAnswerVisibilityUpdate}
+      />
+
+      <CreateExamModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onExamCreated={handleExamCreated}
       />
     </div>
   )

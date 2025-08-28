@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense, useTransition } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '../../../../../contexts/auth-context'
 import { useAdminPreviewState } from '../../../../../hooks/use-admin-preview-state'
@@ -8,10 +8,13 @@ import { type Question } from '../../../../../lib/exam-service'
 import { QuestionDisplay } from '../../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../../components/exam/exam-navigation'
 import { ReferenceSheetModal } from '../../../../../components/exam/ReferenceSheetModal'
+import { addQuestionToExam } from '../../../../../lib/exam-actions'
+import { Button } from '../../../../../components/ui/button'
 import {
   AcademicCapIcon,
   BookOpenIcon,
   ClockIcon,
+  PlusIcon,
 } from '@heroicons/react/24/outline'
 
 function AdminExamPreviewContent() {
@@ -37,12 +40,14 @@ function AdminExamPreviewContent() {
     toggleMarkForReview,
     isMarkedForReview,
     getMarkedQuestions,
+    addNewQuestionToState,
   } = useAdminPreviewState()
 
   const [showStartScreen, setShowStartScreen] = useState(true)
   const [currentAnswer, setCurrentAnswer] = useState('')
   const [isUserSelecting, setIsUserSelecting] = useState(false)
   const [hasInitialized, setHasInitialized] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
   // Reset initialization flag when examId changes
   useEffect(() => {
@@ -166,6 +171,19 @@ function AdminExamPreviewContent() {
     saveCurrentAnswer()
     setIsUserSelecting(false)
     nextQuestion()
+  }
+
+  // Handle adding new question
+  const handleAddNewQuestion = () => {
+    startTransition(async () => {
+      const result = await addQuestionToExam(examId)
+      if (result.success && result.newQuestion) {
+        // Optimistically add to state and navigate to it
+        addNewQuestionToState(result.newQuestion)
+      } else {
+        alert(result.message || 'Failed to add question')
+      }
+    })
   }
 
   // Handle keyboard navigation
@@ -529,6 +547,14 @@ function AdminExamPreviewContent() {
           </div>
 
           <div className="flex items-center space-x-4">
+            <Button
+              onClick={handleAddNewQuestion}
+              disabled={isPending}
+              className="bg-green-600 hover:bg-green-700 text-white text-sm px-3 py-2 h-auto"
+            >
+              <PlusIcon className="w-4 h-4 mr-1" />
+              {isPending ? 'Adding...' : 'Add Question'}
+            </Button>
             <div className="bg-purple-500 text-white px-3 py-1.5 rounded-full text-xs font-medium">
               Preview Mode
             </div>

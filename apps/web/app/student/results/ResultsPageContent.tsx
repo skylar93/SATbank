@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../contexts/auth-context'
 import { getResultsDashboardData, type ResultsDashboardData } from '../../../lib/results-service'
 import ResultsDashboardClient from './ResultsDashboardClient'
@@ -8,17 +9,28 @@ import { ChartBarIcon } from '@heroicons/react/24/outline'
 
 export function ResultsPageContent() {
   const { user, loading: authLoading } = useAuth()
+  const router = useRouter()
   const [dashboardData, setDashboardData] = useState<ResultsDashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    console.log('🔄 ResultsPageContent: Auth state changed', { authLoading, user: !!user, userEmail: user?.email })
+    
     if (!authLoading && user) {
+      console.log('🔄 ResultsPageContent: Loading dashboard data for user:', user.email)
       loadDashboardData()
     } else if (!authLoading && !user) {
-      setLoading(false)
+      console.log('🔄 ResultsPageContent: No user found, redirecting to dashboard')
+      // Redirect to dashboard instead of showing login message
+      router.push('/student/dashboard')
     }
-  }, [user, authLoading])
+  }, [user, authLoading, router])
 
   const loadDashboardData = async () => {
     try {
@@ -32,6 +44,11 @@ export function ResultsPageContent() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Don't render anything until mounted to avoid hydration issues
+  if (!mounted) {
+    return null
   }
 
   // Show auth loading state

@@ -9,6 +9,7 @@ import { ExamTimer } from '../../../../components/exam/exam-timer'
 import { QuestionDisplay } from '../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../components/exam/exam-navigation'
 import { ReferenceSheetModal } from '../../../../components/exam/ReferenceSheetModal'
+import { TimeExpiredOverlay } from '../../../../components/exam/TimeExpiredOverlay'
 import {
   AcademicCapIcon,
   BookOpenIcon,
@@ -79,6 +80,7 @@ function ExamPageContent() {
     goToQuestion,
     nextModule,
     completeExam,
+    timeExpired,
     handleTimeExpired: handleTimeExpiredFromHook,
     updateTimer,
     getCurrentQuestion,
@@ -111,7 +113,6 @@ function ExamPageContent() {
   const [currentAnswer, setCurrentAnswer] = useState('')
   const [isUserSelecting, setIsUserSelecting] = useState(false)
   const [showExitConfirm, setShowExitConfirm] = useState(false)
-  const [showTimeExpiredModal, setShowTimeExpiredModal] = useState(false)
   const [hasInitialized, setHasInitialized] = useState(false)
   const [answerCheckMode, setAnswerCheckMode] = useState<'exam_end' | 'per_question'>('exam_end')
   const [showAnswerReveal, setShowAnswerReveal] = useState(false)
@@ -299,8 +300,8 @@ function ExamPageContent() {
     }
   }
 
-  // Handle timer expiration with popup notification
-  const handleTimeExpired = useCallback(async () => {
+  // Handle timer expiration with immediate state change
+  const handleTimeExpired = useCallback(() => {
     console.log(
       'Timer expired! Current module:',
       currentModuleIndex,
@@ -311,26 +312,22 @@ function ExamPageContent() {
     // Set flag to prevent further input
     timeExpiredRef.current = true
 
-    // Show notification popup
-    setShowTimeExpiredModal(true)
+    // Immediately set time_expired status - no delay
+    timeExpired()
+  }, [timeExpired, currentModuleIndex, modules.length])
 
-    // Use a more reliable approach with useEffect instead of setTimeout
-    // The actual advance will be handled by a separate useEffect
-  }, [currentModuleIndex, modules.length])
-
-  // Handle the actual module advancement when time expires
+  // Handle the actual module advancement when status changes to time_expired
   useEffect(() => {
-    if (showTimeExpiredModal && !isAdvancingModuleRef.current) {
-      const timer = setTimeout(async () => {
-        console.log('Auto-advancing to next module...')
-        isAdvancingModuleRef.current = true
-        setShowTimeExpiredModal(false)
-
+    if (status === 'time_expired' && !isAdvancingModuleRef.current) {
+      isAdvancingModuleRef.current = true
+      console.log('Status changed to time_expired, advancing module...')
+      
+      const advanceModule = async () => {
         try {
-          // Call the original handler from hook
+          console.log('Calling handleTimeExpiredFromHook...')
           await handleTimeExpiredFromHook()
           console.log('Successfully advanced module')
-
+          
           // Navigate to results if exam is complete
           if (currentModuleIndex >= modules.length - 1) {
             console.log('Exam complete, navigating to results')
@@ -338,17 +335,17 @@ function ExamPageContent() {
           }
         } catch (error) {
           console.error('Error advancing module:', error)
+        } finally {
+          // Reset flags for next module
+          timeExpiredRef.current = false
+          isAdvancingModuleRef.current = false
         }
-
-        // Reset flags for next module
-        timeExpiredRef.current = false
-        isAdvancingModuleRef.current = false
-      }, 1500) // 1.5 second delay to show notification
-
-      return () => clearTimeout(timer)
+      }
+      
+      advanceModule()
     }
   }, [
-    showTimeExpiredModal,
+    status,
     handleTimeExpiredFromHook,
     currentModuleIndex,
     modules.length,
@@ -924,7 +921,7 @@ function ExamPageContent() {
               initialTimeSeconds={currentModule.timeRemaining}
               onTimeExpired={handleTimeExpired}
               onTimeUpdate={updateTimer}
-              isPaused={status !== 'in_progress' || showTimeExpiredModal}
+              isPaused={status !== 'in_progress'}
             />
           </div>
         </div>
@@ -976,40 +973,11 @@ function ExamPageContent() {
         isAdminPreview={false}
       />
 
-      {/* Time Expired Modal */}
-      {showTimeExpiredModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md mx-4 border-2 border-red-200">
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                <svg
-                  className="w-8 h-8 text-red-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-red-700 mb-2">
-                Time's Up!
-              </h3>
-              <p className="text-gray-600 mb-4">
-                {currentModuleIndex < modules.length - 1
-                  ? `${currentModule.module.replace(/(\d)/, ' $1').toUpperCase()} time has expired. Moving to the next module...`
-                  : 'Exam time has expired. Submitting your answers...'}
-              </p>
-              <div className="flex justify-center">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Time Expired Overlay */}
+      {status === 'time_expired' && (
+        <TimeExpiredOverlay 
+          isLastModule={currentModuleIndex >= modules.length - 1} 
+        />
       )}
 
       {/* Exit Confirmation Modal */}

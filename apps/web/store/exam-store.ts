@@ -40,7 +40,7 @@ interface ExamState {
   attempt: TestAttempt | null
   modules: ModuleState[]
   currentModuleIndex: number
-  status: 'not_started' | 'in_progress' | 'completed' | 'expired'
+  status: 'not_started' | 'in_progress' | 'time_expired' | 'submitting' | 'completed' | 'expired'
   startedAt: Date | null
   existingAttempt: TestAttempt | null
   showConflictModal: boolean
@@ -59,6 +59,7 @@ interface ExamState {
   goToQuestion: (questionIndex: number) => void
   nextModule: () => Promise<void>
   completeExam: () => Promise<void>
+  timeExpired: () => void
   handleTimeExpired: () => Promise<void>
   updateTimer: (remainingSeconds: number) => void
   getCurrentQuestion: () => Question | null
@@ -95,6 +96,11 @@ export const useExamStore = create<ExamState>((set, get) => ({
   // Actions
   setError: (error: string | null) => set({ error }),
   setLoading: (loading: boolean) => set({ loading }),
+  
+  timeExpired: () => {
+    console.log('timeExpired: Setting status to time_expired')
+    set({ status: 'time_expired' })
+  },
 
   initializeExam: async (examId: string, userId: string) => {
     console.log('initializeExam: Starting initialization for exam:', examId, 'user:', userId)

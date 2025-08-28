@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Toast } from '@/components/ui/toast'
 import { createClient } from '@/lib/supabase'
+import { updateVocabWithSRS } from '@/lib/vocab-actions'
 import { ArrowLeft, Check, X, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
 
@@ -39,7 +40,7 @@ export default function VocabQuizPage() {
   const setId = searchParams.get('setId')
   const quizType = searchParams.get('type') as 'term_to_def' | 'def_to_term'
   const quizFormat = searchParams.get('format') as 'multiple_choice' | 'written_answer'
-  const questionPool = searchParams.get('pool') as 'all' | 'unmastered' | 'not_recent'
+  const questionPool = searchParams.get('pool') as 'all' | 'unmastered' | 'not_recent' | 'smart_review'
 
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -88,6 +89,9 @@ export default function VocabQuizPage() {
       } else if (questionPool === 'not_recent') {
         const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
         query = query.or(`last_reviewed_at.is.null,last_reviewed_at.lt.${yesterday}`)
+      } else if (questionPool === 'smart_review') {
+        // SRS: Get words that are due for review
+        query = query.lte('next_review_date', new Date().toISOString())
       }
 
       const { data: entries, error } = await query
@@ -218,25 +222,22 @@ export default function VocabQuizPage() {
 
       if (sessionError) throw sessionError
 
-      // Update mastery levels for each vocab entry based on results
-      const masteryUpdates = results.map(result => {
-        const currentEntry = questions.find(q => q.id === result.questionId)
-        if (!currentEntry) return null
+      // Update mastery levels and SRS scheduling for each vocab entry based on results
+      const srsUpdates = results.map(async (result) => {
+        try {
+          const response = await updateVocabWithSRS(result.questionId, result.correct)
+          if (!response.success) {
+            console.error('SRS update failed for entry', result.questionId, response.message)
+          }
+          return response
+        } catch (error) {
+          console.error('Error updating SRS for entry', result.questionId, error)
+          return { success: false, message: 'Update failed' }
+        }
+      })
 
-        // Find the original entry data to get current mastery level
-        const masteryChange = result.correct ? 1 : -1
-        
-        return supabase
-          .from('vocab_entries')
-          .update({ 
-            mastery_level: Math.max(0, Math.min(5, (questions.find(q => q.id === result.questionId) as any)?.mastery_level + masteryChange || 0)),
-            last_reviewed_at: new Date().toISOString()
-          })
-          .eq('id', result.questionId)
-      }).filter(update => update !== null)
-
-      // Execute all mastery updates
-      await Promise.all(masteryUpdates)
+      // Execute all SRS updates
+      await Promise.all(srsUpdates)
 
       setIsComplete(true)
     } catch (error) {

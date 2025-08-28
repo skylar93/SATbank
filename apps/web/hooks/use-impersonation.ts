@@ -34,8 +34,10 @@ export function useImpersonation() {
         document.body.style.setProperty('padding-top', '44px', 'important');
         document.body.classList.add('impersonation-active');
         
-        // Navigate immediately after applying styles
-        router.push('/student/dashboard');
+        // Navigate immediately after applying styles - but NOT if we're already on a student page
+        if (!window.location.pathname.startsWith('/student/')) {
+          router.push('/student/dashboard');
+        }
       });
 
     } catch (error: any) {

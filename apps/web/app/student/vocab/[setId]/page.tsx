@@ -56,7 +56,7 @@ export default function VocabSetDetailPage() {
   const [isQuizDialogOpen, setIsQuizDialogOpen] = useState(false)
   const [quizType, setQuizType] = useState<'term_to_def' | 'def_to_term'>('term_to_def')
   const [quizFormat, setQuizFormat] = useState<'multiple_choice' | 'written_answer'>('multiple_choice')
-  const [questionPool, setQuestionPool] = useState<'all' | 'unmastered' | 'not_recent'>('all')
+  const [questionPool, setQuestionPool] = useState<'all' | 'unmastered' | 'not_recent' | 'smart_review'>('all')
 
   // Bulk add state
   const [isBulkAddModalOpen, setIsBulkAddModalOpen] = useState(false)
@@ -222,6 +222,12 @@ export default function VocabSetDetailPage() {
       ? entries.filter(e => e.mastery_level < 3)
       : questionPool === 'not_recent'
       ? entries.filter(e => !e.last_reviewed_at || new Date(e.last_reviewed_at) < new Date(Date.now() - 24 * 60 * 60 * 1000))
+      : questionPool === 'smart_review'
+      ? entries.filter(e => {
+          // For smart review, we'll let the quiz page handle the filtering
+          // since it needs to check next_review_date which isn't loaded here
+          return true;
+        })
       : entries
 
     if (filteredEntries.length === 0) {
@@ -494,6 +500,17 @@ export default function VocabSetDetailPage() {
                           onChange={(e) => setQuestionPool(e.target.value as 'not_recent')}
                         />
                         Not recently reviewed
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          value="smart_review"
+                          checked={questionPool === 'smart_review'}
+                          onChange={(e) => setQuestionPool(e.target.value as 'smart_review')}
+                        />
+                        <span className="flex items-center gap-1">
+                          🧠 <strong>Smart Review</strong> (SRS Algorithm)
+                        </span>
                       </label>
                     </div>
                   </div>

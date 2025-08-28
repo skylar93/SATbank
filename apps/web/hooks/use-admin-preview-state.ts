@@ -373,6 +373,46 @@ export function useAdminPreviewState() {
       .filter(item => item.isMarked)
   }, [examState.modules, examState.currentModuleIndex])
 
+  // Add new question to state optimistically
+  const addNewQuestionToState = useCallback((newQuestion: Question) => {
+    setExamState(prev => {
+      const newModules = [...prev.modules]
+      
+      // Find the module to add the question to
+      let moduleIndex = newModules.findIndex(m => m.module === newQuestion.module_type)
+      
+      // If module doesn't exist, create it (edge case)
+      if (moduleIndex === -1) {
+        const timeLimit = prev.exam?.time_limits[newQuestion.module_type] || 60
+        newModules.push({
+          module: newQuestion.module_type,
+          questions: [newQuestion],
+          currentQuestionIndex: 0,
+          answers: {},
+          markedForReview: new Set(),
+          timeLimit,
+          completed: false
+        })
+        moduleIndex = newModules.length - 1
+      } else {
+        // Add question to existing module
+        const updatedModule = { ...newModules[moduleIndex] }
+        updatedModule.questions = [...updatedModule.questions, newQuestion]
+        newModules[moduleIndex] = updatedModule
+      }
+
+      // Navigate to the new question
+      const newQuestionIndex = newModules[moduleIndex].questions.length - 1
+      newModules[moduleIndex].currentQuestionIndex = newQuestionIndex
+      
+      return {
+        ...prev,
+        modules: newModules,
+        currentModuleIndex: moduleIndex
+      }
+    })
+  }, [])
+
   return {
     examState,
     loading,
@@ -389,6 +429,7 @@ export function useAdminPreviewState() {
     getCurrentAnswer,
     toggleMarkForReview,
     isMarkedForReview,
-    getMarkedQuestions
+    getMarkedQuestions,
+    addNewQuestionToState
   }
 }

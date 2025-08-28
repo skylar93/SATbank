@@ -31,7 +31,7 @@ export default function RootLayout({
               <ImpersonationBanner />
               <div className="flex h-screen bg-gray-50">
                 <Sidebar />
-                <div className="flex-1 overflow-auto">{children}</div>
+                <div className="flex-1 overflow-auto p-6">{children}</div>
               </div>
             </RouteGuard>
           </SidebarProvider>

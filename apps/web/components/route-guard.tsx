@@ -38,9 +38,14 @@ export function RouteGuard({ children }: RouteGuardProps) {
 
     // If not authenticated and trying to access protected route
     if (!user && !isPublicRoute) {
-      console.log('🛡️ RouteGuard: Redirecting unauthenticated user to login')
-      router.push('/login')
-      return
+      // Add a small delay to prevent race conditions with auth loading
+      const redirectTimer = setTimeout(() => {
+        console.log('🛡️ RouteGuard: Redirecting unauthenticated user to login')
+        router.push('/login')
+      }, 100)
+      
+      // Cleanup timer if component unmounts
+      return () => clearTimeout(redirectTimer)
     }
 
     // If authenticated but on login/signup, redirect to appropriate dashboard
