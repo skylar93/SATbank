@@ -21,7 +21,6 @@ import {
   verifyVocabSetOwner,
   verifyAuthenticated,
   verifyVocabEntryOwner,
-  handleServerActionError,
 } from '@/lib/auth-utils.server'
 import { handleApiError, createErrorResponse } from '@/lib/error-handler'
 

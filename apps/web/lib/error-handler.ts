@@ -1,5 +1,3 @@
-'use server'
-
 /**
  * Custom error class for application-specific errors
  */

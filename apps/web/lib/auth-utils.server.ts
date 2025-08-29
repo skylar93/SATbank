@@ -133,10 +133,10 @@ export async function verifyVocabEntryOwner(
  * @param error - The error that occurred
  * @returns Standardized error response
  */
-export function handleServerActionError(error: unknown): {
+export async function handleServerActionError(error: unknown): Promise<{
   success: false
   message: string
-} {
+}> {
   const message =
     error instanceof Error ? error.message : 'An unexpected error occurred'
   return { success: false, message }
