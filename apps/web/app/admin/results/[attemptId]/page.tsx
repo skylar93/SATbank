@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../contexts/auth-context'
@@ -61,13 +61,7 @@ export default function AdminDetailedResultsPage() {
 
   const attemptId = params.attemptId as string
 
-  useEffect(() => {
-    if (user && attemptId) {
-      loadResults()
-    }
-  }, [user, attemptId])
-
-  const loadResults = async () => {
+  const loadResults = useCallback(async () => {
     try {
       // Load comprehensive results
       const comprehensiveResults =
@@ -111,12 +105,19 @@ export default function AdminDetailedResultsPage() {
           comprehensiveResults.detailedScore.totalScore
         )
       }
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
-  }
+  }, [attemptId])
+
+  useEffect(() => {
+    if (user && attemptId) {
+      loadResults()
+    }
+  }, [user, attemptId, loadResults])
 
   const loadClassStats = async (examId: string, studentScore: number) => {
     try {
@@ -171,20 +172,22 @@ export default function AdminDetailedResultsPage() {
 
       // Also download text report
       ExportService.downloadTextReport(results)
-    } catch (err: any) {
-      setError(`Export failed: ${err.message}`)
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+      setError(`Export failed: ${errorMessage}`)
     } finally {
       setExporting(false)
     }
   }
 
+  /* Commented out unused function
   const handleCreateMistakeAssignment = async () => {
     if (!results || !student) return
 
     try {
       // Get all incorrect answers from this specific exam attempt
       const incorrectQuestions = results.questionAnalysis.filter(
-        (q: any) => !q.isCorrect && q.userAnswer !== null
+        (q: { isCorrect: boolean; userAnswer: string | null }) => !q.isCorrect && q.userAnswer !== null
       )
 
       if (incorrectQuestions.length === 0) {
@@ -194,7 +197,7 @@ export default function AdminDetailedResultsPage() {
         return
       }
 
-      const questionIds = incorrectQuestions.map((q: any) => q.questionId)
+      const questionIds = incorrectQuestions.map((q: { questionId: string }) => q.questionId)
 
       // Get exam info from the attempt
       const { data: examInfo, error: examInfoError } = await supabase
@@ -279,13 +282,14 @@ export default function AdminDetailedResultsPage() {
       alert('An error occurred while creating the assignment')
     }
   }
+  */
 
   const handleRegradeQuestion = async () => {
     if (!regradeModal || !regradeReason.trim()) return
 
     setRegrading(regradeModal.userAnswerId)
     try {
-      console.log('Starting regrade for question:', regradeModal.questionNumber)
+      // Starting regrade for question
 
       // Get fresh session and handle token refresh if needed
       let session = null
@@ -296,7 +300,7 @@ export default function AdminDetailedResultsPage() {
 
         // If no session or token is expired, try to refresh
         if (!currentSession || !currentSession.access_token) {
-          console.log('No session or expired token, attempting refresh...')
+          // No session or expired token, attempting refresh
           const { data: refreshData, error: refreshError } =
             await supabase.auth.refreshSession()
           if (refreshError) {
@@ -329,7 +333,7 @@ export default function AdminDetailedResultsPage() {
         reason: regradeReason.trim(),
       }
 
-      console.log('Sending regrade request with body:', requestBody)
+      // Sending regrade request
 
       const response = await fetch('/api/admin/regrade-question', {
         method: 'POST',
@@ -341,16 +345,16 @@ export default function AdminDetailedResultsPage() {
         body: JSON.stringify(requestBody),
       })
 
-      console.log('Response status:', response.status)
+      // Response received
 
       if (!response.ok) {
         const errorData = await response.json()
-        console.log('Error response:', errorData)
+        // Error response received
         throw new Error(errorData.error || 'Failed to regrade question')
       }
 
-      const result = await response.json()
-      console.log('Regrade successful:', result)
+      await response.json()
+      // Regrade successful
 
       // Clear cache and force reload to get fresh data
       setResults(null)
@@ -365,17 +369,22 @@ export default function AdminDetailedResultsPage() {
       setRegradeModal(null)
       setRegradeReason('')
       setError(null)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Regrade error:', err)
-      setError(`Regrade failed: ${err.message}`)
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+      setError(`Regrade failed: ${errorMessage}`)
     } finally {
       setRegrading(null)
     }
   }
 
-  const openRegradeModal = (question: any) => {
-    console.log('Opening regrade modal for question:', question)
-    console.log('Question userAnswerId:', question.userAnswerId)
+  const openRegradeModal = (question: {
+    questionId: string
+    userAnswerId: string
+    isCorrect: boolean
+    questionNumber: number
+  }) => {
+    // Opening regrade modal for question
 
     setRegradeModal({
       questionId: question.questionId,
@@ -501,13 +510,8 @@ export default function AdminDetailedResultsPage() {
     )
   }
 
-  const {
-    attempt,
-    detailedScore,
-    questionAnalysis,
-    performanceAnalytics,
-    progressComparison,
-  } = results
+  const { attempt, detailedScore, performanceAnalytics, progressComparison } =
+    results
 
   return (
     <div className="h-full bg-gray-50">
@@ -667,7 +671,11 @@ export default function AdminDetailedResultsPage() {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() =>
+                  setActiveTab(
+                    tab.id as 'overview' | 'questions' | 'comparison'
+                  )
+                }
                 className={`py-3 px-6 rounded-xl font-medium text-sm transition-all duration-200 ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'
@@ -851,7 +859,15 @@ export default function AdminDetailedResultsPage() {
                   <span className="text-sm text-black">Filter:</span>
                   <select
                     value={questionFilter}
-                    onChange={(e) => setQuestionFilter(e.target.value as any)}
+                    onChange={(e) =>
+                      setQuestionFilter(
+                        e.target.value as
+                          | 'all'
+                          | 'correct'
+                          | 'incorrect'
+                          | 'skipped'
+                      )
+                    }
                     className="px-3 py-1 border border-purple-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="all">All Questions</option>
@@ -887,7 +903,7 @@ export default function AdminDetailedResultsPage() {
                       </h4>
 
                       <div className="space-y-4">
-                        {questions.map((question, index) => (
+                        {questions.map((question) => (
                           <div
                             key={question.questionId}
                             className={`border rounded-xl p-6 backdrop-blur-sm transition-all duration-300 ${
@@ -961,6 +977,7 @@ export default function AdminDetailedResultsPage() {
 
                                 {question.questionImageUrl && (
                                   <div className="mt-3">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                       src={question.questionImageUrl}
                                       alt="Question image"
@@ -1008,8 +1025,8 @@ export default function AdminDetailedResultsPage() {
                                             ? value
                                             : typeof value === 'object' &&
                                                 value !== null
-                                              ? (value as any).text ||
-                                                JSON.stringify(value)
+                                              ? (value as { text?: string })
+                                                  .text || JSON.stringify(value)
                                               : String(value)}
                                         </div>
                                       </div>

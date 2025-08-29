@@ -321,8 +321,8 @@ export default function AdminDashboard() {
       }
 
       setRecentAttempts(recentData)
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
@@ -335,13 +335,6 @@ export default function AdminDashboard() {
       hour: '2-digit',
       minute: '2-digit',
     })
-  }
-
-  const getScoreColor = (score: number) => {
-    if (score >= 1200) return 'text-purple-600'
-    if (score >= 1000) return 'text-violet-600'
-    if (score >= 800) return 'text-yellow-600'
-    return 'text-red-600'
   }
 
   if (!user) return null
@@ -660,7 +653,7 @@ export default function AdminDashboard() {
                     <div className="flex items-center space-x-3">
                       <div className="w-3 h-3 rounded-full bg-blue-500"></div>
                       <span className="text-sm text-gray-700">
-                        Today's Tests
+                        Today&apos;s Tests
                       </span>
                       <span className="ml-auto text-sm font-semibold">
                         {stats.completedToday}

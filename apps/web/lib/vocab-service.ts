@@ -34,7 +34,8 @@ export async function getVocabSetsWithReviewsDue(userId: string) {
   try {
     const { data, error } = await supabase
       .from('user_vocab_progress')
-      .select(`
+      .select(
+        `
         vocab_entries!inner(
           set_id,
           vocab_sets!inner(
@@ -42,7 +43,8 @@ export async function getVocabSetsWithReviewsDue(userId: string) {
             title
           )
         )
-      `)
+      `
+      )
       .eq('user_id', userId)
       .lte('next_review_date', new Date().toISOString())
 
@@ -53,18 +55,18 @@ export async function getVocabSetsWithReviewsDue(userId: string) {
 
     // Group by vocab set and count reviews
     const setReviewCounts = new Map()
-    
+
     data?.forEach((progress: any) => {
       const setId = progress.vocab_entries.set_id
       const setTitle = progress.vocab_entries.vocab_sets.title
-      
+
       if (setReviewCounts.has(setId)) {
         setReviewCounts.get(setId).count += 1
       } else {
         setReviewCounts.set(setId, {
           id: setId,
           title: setTitle,
-          count: 1
+          count: 1,
         })
       }
     })

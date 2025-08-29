@@ -5,7 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Brain, BookOpen, Clock } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
-import { getTodayReviewCount, getVocabSetsWithReviewsDue } from '@/lib/vocab-service'
+import {
+  getTodayReviewCount,
+  getVocabSetsWithReviewsDue,
+} from '@/lib/vocab-service'
 import Link from 'next/link'
 
 interface SmartReviewData {
@@ -38,7 +41,7 @@ export default function SmartReviewWidget() {
       // Use the new vocab service functions
       const [reviewCount, reviewSets] = await Promise.all([
         getTodayReviewCount(user.id),
-        getVocabSetsWithReviewsDue(user.id)
+        getVocabSetsWithReviewsDue(user.id),
       ])
 
       // Get total word count from vocab_entries
@@ -147,7 +150,7 @@ export default function SmartReviewWidget() {
               <p className="text-sm text-gray-600 mb-3">
                 word{reviewData.reviewCount !== 1 ? 's' : ''} ready for review
               </p>
-              
+
               {/* Show vocab sets with reviews due */}
               {reviewData.reviewSets.length > 0 && (
                 <div className="space-y-1 mb-3">
@@ -155,9 +158,16 @@ export default function SmartReviewWidget() {
                     From your sets:
                   </p>
                   {reviewData.reviewSets.slice(0, 2).map((set) => (
-                    <div key={set.id} className="flex justify-between items-center text-xs">
-                      <span className="text-gray-600 truncate">{set.title}</span>
-                      <span className="text-blue-600 font-medium">{set.count}</span>
+                    <div
+                      key={set.id}
+                      className="flex justify-between items-center text-xs"
+                    >
+                      <span className="text-gray-600 truncate">
+                        {set.title}
+                      </span>
+                      <span className="text-blue-600 font-medium">
+                        {set.count}
+                      </span>
                     </div>
                   ))}
                   {reviewData.reviewSets.length > 2 && (

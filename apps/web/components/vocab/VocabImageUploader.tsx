@@ -63,7 +63,10 @@ export function VocabImageUploader({
           data: { publicUrl },
         } = supabase.storage.from('vocab-images').getPublicUrl(filePath)
 
-        console.log('✅ Vocab image uploaded successfully:', { filePath, publicUrl })
+        console.log('✅ Vocab image uploaded successfully:', {
+          filePath,
+          publicUrl,
+        })
         onUploadSuccess(publicUrl)
       } catch (error) {
         console.error('Upload error:', error)

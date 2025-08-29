@@ -35,9 +35,18 @@ export function handleApiError(error: unknown): AppError {
   }
 
   // Handle Supabase errors
-  if (error && typeof error === 'object' && 'code' in error && 'message' in error) {
-    const supabaseError = error as { code: string; message: string; details?: string }
-    
+  if (
+    error &&
+    typeof error === 'object' &&
+    'code' in error &&
+    'message' in error
+  ) {
+    const supabaseError = error as {
+      code: string
+      message: string
+      details?: string
+    }
+
     // Map common Supabase error codes to user-friendly messages
     switch (supabaseError.code) {
       case '23505': // unique_violation
@@ -53,17 +62,9 @@ export function handleApiError(error: unknown): AppError {
           400
         )
       case '42501': // insufficient_privilege
-        return new AppError(
-          'Permission denied.',
-          'PERMISSION_DENIED',
-          403
-        )
+        return new AppError('Permission denied.', 'PERMISSION_DENIED', 403)
       case 'PGRST116': // no rows returned
-        return new AppError(
-          'Resource not found.',
-          'NOT_FOUND',
-          404
-        )
+        return new AppError('Resource not found.', 'NOT_FOUND', 404)
       default:
         return new AppError(
           `Database error: ${supabaseError.message}`,
@@ -75,28 +76,16 @@ export function handleApiError(error: unknown): AppError {
 
   // Handle standard JavaScript errors
   if (error instanceof Error) {
-    return new AppError(
-      error.message,
-      'GENERIC_ERROR',
-      500
-    )
+    return new AppError(error.message, 'GENERIC_ERROR', 500)
   }
 
   // Handle string errors
   if (typeof error === 'string') {
-    return new AppError(
-      error,
-      'STRING_ERROR',
-      500
-    )
+    return new AppError(error, 'STRING_ERROR', 500)
   }
 
   // Fallback for unknown error types
-  return new AppError(
-    'An unexpected error occurred.',
-    'UNKNOWN_ERROR',
-    500
-  )
+  return new AppError('An unexpected error occurred.', 'UNKNOWN_ERROR', 500)
 }
 
 /**

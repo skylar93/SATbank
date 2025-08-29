@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { supabase } from '@/lib/supabase'
@@ -59,13 +59,7 @@ export default function EditExamPage() {
     type: 'success' | 'error'
   } | null>(null)
 
-  useEffect(() => {
-    if (user && isAdmin && examId) {
-      fetchExamAndCurves()
-    }
-  }, [user, isAdmin, examId])
-
-  const fetchExamAndCurves = async () => {
+  const fetchExamAndCurves = useCallback(async () => {
     setLoading(true)
     try {
       // Fetch exam details, scoring curves, and answer visibility stats in parallel
@@ -111,8 +105,6 @@ export default function EditExamPage() {
       // Process answer visibility stats
       if (answerStatsResponse.data) {
         const attempts = answerStatsResponse.data
-        const now = new Date()
-
 
         // Determine answer release setting from exam mode and first attempt
         if (examData.answer_check_mode === 'per_question') {
@@ -146,7 +138,13 @@ export default function EditExamPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [examId, supabase])
+
+  useEffect(() => {
+    if (user && isAdmin && examId) {
+      fetchExamAndCurves()
+    }
+  }, [user, isAdmin, examId, fetchExamAndCurves])
 
   const handleSaveChanges = async () => {
     if (!exam) return

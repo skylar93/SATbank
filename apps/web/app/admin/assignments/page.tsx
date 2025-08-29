@@ -68,7 +68,6 @@ export default function AdminAssignmentsPage() {
     try {
       // First test raw access without RLS constraints for debugging
 
-
       // Load exams and students first
       const [examsData, studentsData] = await Promise.all([
         supabase.from('exams').select('*').eq('is_active', true).order('title'),
@@ -610,8 +609,8 @@ export default function AdminAssignmentsPage() {
                   </label>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  When hidden, students won't see their scores or access the
-                  results section
+                  When hidden, students won&apos;t see their scores or access
+                  the results section
                 </p>
               </div>
             </div>

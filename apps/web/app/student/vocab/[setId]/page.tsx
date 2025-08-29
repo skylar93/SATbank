@@ -518,7 +518,9 @@ export default function VocabSetDetailPage() {
                     <div className="space-y-2">
                       {newImageUrl && (
                         <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded">
-                          <span className="text-sm text-green-700">✓ Image uploaded</span>
+                          <span className="text-sm text-green-700">
+                            ✓ Image uploaded
+                          </span>
                           <Button
                             type="button"
                             variant="outline"
@@ -546,7 +548,7 @@ export default function VocabSetDetailPage() {
                         setShowImageUploader(false)
                       }}
                       onCancel={() => setShowImageUploader(false)}
-                      userId={""} // Will be set when user data is available
+                      userId={''} // Will be set when user data is available
                     />
                   )}
                 </div>
@@ -739,10 +741,12 @@ export default function VocabSetDetailPage() {
                     All words ({entries.length})
                   </SelectItem>
                   <SelectItem value="unmastered">
-                    Unmastered ({entries.filter((e) => e.mastery_level < 3).length})
+                    Unmastered (
+                    {entries.filter((e) => e.mastery_level < 3).length})
                   </SelectItem>
                   <SelectItem value="mastered">
-                    Mastered ({entries.filter((e) => e.mastery_level >= 3).length})
+                    Mastered (
+                    {entries.filter((e) => e.mastery_level >= 3).length})
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -826,7 +830,9 @@ export default function VocabSetDetailPage() {
                         <div className="space-y-2">
                           {newImageUrl && (
                             <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded">
-                              <span className="text-sm text-green-700">✓ Image uploaded</span>
+                              <span className="text-sm text-green-700">
+                                ✓ Image uploaded
+                              </span>
                               <Button
                                 type="button"
                                 variant="outline"
@@ -1023,7 +1029,9 @@ export default function VocabSetDetailPage() {
                     <div className="space-y-2">
                       {editImageUrl && (
                         <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded">
-                          <span className="text-sm text-green-700">✓ Image uploaded</span>
+                          <span className="text-sm text-green-700">
+                            ✓ Image uploaded
+                          </span>
                           <Button
                             type="button"
                             variant="outline"
@@ -1051,7 +1059,7 @@ export default function VocabSetDetailPage() {
                         setShowEditImageUploader(false)
                       }}
                       onCancel={() => setShowEditImageUploader(false)}
-                      userId={""} // Will be set when user data is available
+                      userId={''} // Will be set when user data is available
                     />
                   )}
                 </div>

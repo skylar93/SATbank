@@ -317,7 +317,7 @@ export async function processQuizResults(
     }
 
     // Map the JS array to a format the PostgreSQL function understands
-    const formattedResults = results.map(r => ({
+    const formattedResults = results.map((r) => ({
       entry_id: r.entryId,
       was_correct: r.wasCorrect,
     }))

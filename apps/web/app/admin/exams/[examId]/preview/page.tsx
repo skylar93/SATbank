@@ -36,7 +36,6 @@ function AdminExamPreviewContent() {
     updateQuestionInState,
     nextModule,
     getCurrentQuestion,
-    getCurrentAnswer,
     toggleMarkForReview,
     isMarkedForReview,
     getMarkedQuestions,
@@ -100,12 +99,7 @@ function AdminExamPreviewContent() {
         }
       }
     }
-  }, [
-    examState.modules,
-    examState.currentModuleIndex,
-    examState.modules[examState.currentModuleIndex]?.currentQuestionIndex,
-    isUserSelecting,
-  ])
+  }, [examState.modules, examState.currentModuleIndex, isUserSelecting])
 
   // Handle exam start
   const handleStartExam = async () => {
@@ -237,8 +231,7 @@ function AdminExamPreviewContent() {
     examState.status,
     examState.modules,
     examState.currentModuleIndex,
-    handleNext,
-    handlePrevious,
+    handleGoToModule,
   ])
 
   // Handle module completion
