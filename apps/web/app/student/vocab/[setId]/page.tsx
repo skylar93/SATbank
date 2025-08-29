@@ -31,9 +31,14 @@ import {
   Play,
   ArrowLeft,
   FileUp,
+  Image,
+  Volume2,
+  VolumeX,
 } from 'lucide-react'
 import Link from 'next/link'
 import { BulkAddModal } from '@/components/vocab/BulkAddModal'
+import { VocabImageUploader } from '@/components/vocab/VocabImageUploader'
+import { useTTS } from '@/hooks/useTTS'
 
 interface VocabSet {
   id: number
@@ -47,6 +52,7 @@ interface VocabEntry {
   term: string
   definition: string
   example_sentence: string | null
+  image_url: string | null
   mastery_level: number
   last_reviewed_at: string | null
   created_at: string
@@ -59,6 +65,7 @@ export default function VocabSetDetailPage() {
 
   const [vocabSet, setVocabSet] = useState<VocabSet | null>(null)
   const [entries, setEntries] = useState<VocabEntry[]>([])
+  const [currentUser, setCurrentUser] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   // New word form state
@@ -66,6 +73,8 @@ export default function VocabSetDetailPage() {
   const [newTerm, setNewTerm] = useState('')
   const [newDefinition, setNewDefinition] = useState('')
   const [newExample, setNewExample] = useState('')
+  const [newImageUrl, setNewImageUrl] = useState('')
+  const [showImageUploader, setShowImageUploader] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
 
   // Edit word form state
@@ -73,6 +82,8 @@ export default function VocabSetDetailPage() {
   const [editTerm, setEditTerm] = useState('')
   const [editDefinition, setEditDefinition] = useState('')
   const [editExample, setEditExample] = useState('')
+  const [editImageUrl, setEditImageUrl] = useState('')
+  const [showEditImageUploader, setShowEditImageUploader] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
 
   // Quiz configuration state
@@ -96,6 +107,7 @@ export default function VocabSetDetailPage() {
   } | null>(null)
 
   const supabase = createClient()
+  const { speak, isPlaying } = useTTS()
 
   useEffect(() => {
     fetchVocabSetAndEntries()
@@ -114,6 +126,8 @@ export default function VocabSetDetailPage() {
         router.push('/login')
         return
       }
+
+      setCurrentUser(user)
 
       // Fetch vocab set details
       const { data: set, error: setError } = await supabase
@@ -175,6 +189,7 @@ export default function VocabSetDetailPage() {
         term: newTerm.trim(),
         definition: newDefinition.trim(),
         example_sentence: newExample.trim() || null,
+        image_url: newImageUrl || null,
       })
 
       if (error) throw error
@@ -183,6 +198,8 @@ export default function VocabSetDetailPage() {
       setNewTerm('')
       setNewDefinition('')
       setNewExample('')
+      setNewImageUrl('')
+      setShowImageUploader(false)
       setIsAddDialogOpen(false)
       fetchVocabSetAndEntries()
     } catch (error) {
@@ -198,6 +215,8 @@ export default function VocabSetDetailPage() {
     setEditTerm(entry.term)
     setEditDefinition(entry.definition)
     setEditExample(entry.example_sentence || '')
+    setEditImageUrl(entry.image_url || '')
+    setShowEditImageUploader(false)
   }
 
   const handleUpdateEntry = async () => {
@@ -217,6 +236,7 @@ export default function VocabSetDetailPage() {
           term: editTerm.trim(),
           definition: editDefinition.trim(),
           example_sentence: editExample.trim() || null,
+          image_url: editImageUrl || null,
         })
         .eq('id', editingEntry!.id)
 
@@ -452,6 +472,44 @@ export default function VocabSetDetailPage() {
                     className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[60px]"
                   />
                 </div>
+                <div className="grid gap-2">
+                  <Label>Image (Optional)</Label>
+                  {!showImageUploader ? (
+                    <div className="space-y-2">
+                      {newImageUrl && (
+                        <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded">
+                          <span className="text-sm text-green-700">✓ Image uploaded</span>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setNewImageUrl('')}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      )}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowImageUploader(true)}
+                        className="w-full"
+                      >
+                        <Image className="h-4 w-4 mr-2" />
+                        {newImageUrl ? 'Change Image' : 'Add Image'}
+                      </Button>
+                    </div>
+                  ) : (
+                    <VocabImageUploader
+                      onUploadSuccess={(url) => {
+                        setNewImageUrl(url)
+                        setShowImageUploader(false)
+                      }}
+                      onCancel={() => setShowImageUploader(false)}
+                      userId={""} // Will be set when user data is available
+                    />
+                  )}
+                </div>
               </div>
               <DialogFooter>
                 <Button
@@ -675,6 +733,44 @@ export default function VocabSetDetailPage() {
                         className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[60px]"
                       />
                     </div>
+                    <div className="grid gap-2">
+                      <Label>Image (Optional)</Label>
+                      {!showImageUploader ? (
+                        <div className="space-y-2">
+                          {newImageUrl && (
+                            <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded">
+                              <span className="text-sm text-green-700">✓ Image uploaded</span>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setNewImageUrl('')}
+                              >
+                                Remove
+                              </Button>
+                            </div>
+                          )}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setShowImageUploader(true)}
+                            className="w-full"
+                          >
+                            <Image className="h-4 w-4 mr-2" />
+                            {newImageUrl ? 'Change Image' : 'Add Image'}
+                          </Button>
+                        </div>
+                      ) : (
+                        <VocabImageUploader
+                          onUploadSuccess={(url) => {
+                            setNewImageUrl(url)
+                            setShowImageUploader(false)
+                          }}
+                          onCancel={() => setShowImageUploader(false)}
+                          userId={currentUser?.id || ''}
+                        />
+                      )}
+                    </div>
                   </div>
                   <DialogFooter>
                     <Button
@@ -708,6 +804,17 @@ export default function VocabSetDetailPage() {
                         <h3 className="text-xl font-semibold text-gray-900">
                           {entry.term}
                         </h3>
+                        <button
+                          onClick={() => speak(entry.term)}
+                          className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                          disabled={isPlaying}
+                        >
+                          {isPlaying ? (
+                            <VolumeX className="h-4 w-4" />
+                          ) : (
+                            <Volume2 className="h-4 w-4" />
+                          )}
+                        </button>
                         <span
                           className={`px-2 py-1 text-xs rounded-full ${getMasteryColor(entry.mastery_level)}`}
                         >
@@ -719,6 +826,15 @@ export default function VocabSetDetailPage() {
                         <p className="text-sm text-gray-600 italic">
                           "{entry.example_sentence}"
                         </p>
+                      )}
+                      {entry.image_url && (
+                        <div className="mt-3 mb-2">
+                          <img
+                            src={entry.image_url}
+                            alt={`Visual for ${entry.term}`}
+                            className="max-w-xs max-h-40 object-cover rounded-lg shadow-sm"
+                          />
+                        </div>
                       )}
                       <p className="text-xs text-gray-400 mt-3">
                         Added {formatDate(entry.created_at)}
@@ -790,6 +906,44 @@ export default function VocabSetDetailPage() {
                     onChange={(e) => setEditExample(e.target.value)}
                     className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[60px]"
                   />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Image (Optional)</Label>
+                  {!showEditImageUploader ? (
+                    <div className="space-y-2">
+                      {editImageUrl && (
+                        <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded">
+                          <span className="text-sm text-green-700">✓ Image uploaded</span>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setEditImageUrl('')}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      )}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowEditImageUploader(true)}
+                        className="w-full"
+                      >
+                        <Image className="h-4 w-4 mr-2" />
+                        {editImageUrl ? 'Change Image' : 'Add Image'}
+                      </Button>
+                    </div>
+                  ) : (
+                    <VocabImageUploader
+                      onUploadSuccess={(url) => {
+                        setEditImageUrl(url)
+                        setShowEditImageUploader(false)
+                      }}
+                      onCancel={() => setShowEditImageUploader(false)}
+                      userId={""} // Will be set when user data is available
+                    />
+                  )}
                 </div>
               </div>
               <DialogFooter>

@@ -18,6 +18,7 @@ export interface VocabEntry {
   term: string
   definition: string
   example_sentence: string | null
+  image_url: string | null
   mastery_level: number // 0-5 scale for spaced repetition
   last_reviewed_at: string | null
   next_review_date: string
@@ -104,11 +105,5 @@ export interface ProcessQuizResultsResponse extends VocabActionResponse {
   errors?: string[]
 }
 
-// SRS Algorithm Constants (moved from hardcoded values)
-export const SRS_CONFIG = {
-  MAX_MASTERY_LEVEL: 5,
-  MIN_MASTERY_LEVEL: 0,
-  MAX_REVIEW_INTERVAL_DAYS: 180, // 6 months
-  INCORRECT_REVIEW_DELAY_MINUTES: 10,
-  INITIAL_REVIEW_INTERVAL: 1,
-} as const
+// Import SRS configuration from external config file
+export { srsConfig as SRS_CONFIG } from '@/config/vocab.config'

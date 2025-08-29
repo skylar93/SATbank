@@ -1,6 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 import { type Database } from '../../../packages/database-types/src/index'
 import {
   type BulkWord,
@@ -21,6 +23,7 @@ import {
   verifyVocabEntryOwner,
   handleServerActionError,
 } from '@/lib/auth-utils.server'
+import { handleApiError, createErrorResponse } from '@/lib/error-handler'
 
 export async function addWordsInBulk(
   setId: number,
@@ -40,9 +43,10 @@ export async function addWordsInBulk(
       term: word.term.trim(),
       definition: word.definition.trim(),
       next_review_date: new Date().toISOString(),
-      review_interval: SRS_CONFIG.INITIAL_REVIEW_INTERVAL,
-      mastery_level: SRS_CONFIG.MIN_MASTERY_LEVEL,
+      review_interval: SRS_CONFIG.INITIAL_INTERVAL_DAYS,
+      mastery_level: SRS_CONFIG.MASTERY_LEVEL_MIN,
       example_sentence: null,
+      image_url: null,
       last_reviewed_at: null,
     }))
 
@@ -62,7 +66,7 @@ export async function addWordsInBulk(
     revalidatePath(`/student/vocab/${setId}`)
     return { success: true, count: entriesToInsert.length }
   } catch (error) {
-    return handleServerActionError(error)
+    return createErrorResponse(error)
   }
 }
 
@@ -111,7 +115,7 @@ export async function updateVocabWithSRS(
 
     return { success: true }
   } catch (error) {
-    return handleServerActionError(error)
+    return createErrorResponse(error)
   }
 }
 
@@ -134,12 +138,12 @@ function calculateSRSValues(
   if (isCorrect) {
     // Correct answer: increase mastery level and double the review interval
     newMasteryLevel = Math.min(
-      SRS_CONFIG.MAX_MASTERY_LEVEL,
+      SRS_CONFIG.MASTERY_LEVEL_MAX,
       currentMasteryLevel + 1
     )
     newReviewInterval = Math.min(
       SRS_CONFIG.MAX_REVIEW_INTERVAL_DAYS,
-      currentReviewInterval * 2
+      currentReviewInterval * SRS_CONFIG.INTERVAL_MULTIPLIER
     )
     nextReviewDate = new Date(
       Date.now() + newReviewInterval * 24 * 60 * 60 * 1000
@@ -147,12 +151,12 @@ function calculateSRSValues(
   } else {
     // Incorrect answer: decrease mastery level and reset review interval
     newMasteryLevel = Math.max(
-      SRS_CONFIG.MIN_MASTERY_LEVEL,
+      SRS_CONFIG.MASTERY_LEVEL_MIN,
       currentMasteryLevel - 1
     )
-    newReviewInterval = SRS_CONFIG.INITIAL_REVIEW_INTERVAL
+    newReviewInterval = SRS_CONFIG.INCORRECT_RESET_INTERVAL_DAYS
     nextReviewDate = new Date(
-      Date.now() + SRS_CONFIG.INCORRECT_REVIEW_DELAY_MINUTES * 60 * 1000
+      Date.now() + SRS_CONFIG.INCORRECT_NEXT_REVIEW_MINUTES * 60 * 1000
     )
   }
 
@@ -175,6 +179,7 @@ export async function getWordsForSmartReview(
         term,
         definition,
         example_sentence,
+        image_url,
         mastery_level,
         last_reviewed_at,
         next_review_date,
@@ -196,7 +201,7 @@ export async function getWordsForSmartReview(
       words: (words || []) as unknown as SmartReviewWord[],
     }
   } catch (error) {
-    return handleServerActionError(error)
+    return createErrorResponse(error)
   }
 }
 
@@ -255,7 +260,7 @@ export async function createVocabSet(
     revalidatePath('/student/vocab')
     return { success: true, setId: data.id }
   } catch (error) {
-    return handleServerActionError(error)
+    return createErrorResponse(error)
   }
 }
 
@@ -267,6 +272,7 @@ export async function addVocabEntry(
     const term = formData.get('term') as string
     const definition = formData.get('definition') as string
     const exampleSentence = formData.get('exampleSentence') as string
+    const imageUrl = formData.get('imageUrl') as string
 
     if (!term?.trim() || !definition?.trim()) {
       return { success: false, message: 'Term and definition are required.' }
@@ -280,9 +286,10 @@ export async function addVocabEntry(
       term: term.trim(),
       definition: definition.trim(),
       example_sentence: exampleSentence?.trim() || null,
-      mastery_level: SRS_CONFIG.MIN_MASTERY_LEVEL,
+      image_url: imageUrl?.trim() || null,
+      mastery_level: SRS_CONFIG.MASTERY_LEVEL_MIN,
       next_review_date: new Date().toISOString(),
-      review_interval: SRS_CONFIG.INITIAL_REVIEW_INTERVAL,
+      review_interval: SRS_CONFIG.INITIAL_INTERVAL_DAYS,
       last_reviewed_at: null,
     })
 
@@ -296,7 +303,7 @@ export async function addVocabEntry(
     revalidatePath(`/student/vocab/${setId}`)
     return { success: true }
   } catch (error) {
-    return handleServerActionError(error)
+    return createErrorResponse(error)
   }
 }
 
@@ -304,38 +311,30 @@ export async function processQuizResults(
   results: QuizResult[]
 ): Promise<ProcessQuizResultsResponse> {
   try {
-    const { user } = await verifyAuthenticated()
+    const { user, supabase } = await verifyAuthenticated()
 
     if (!results || results.length === 0) {
       return { success: false, message: 'No results to process.' }
     }
 
-    // Process results in parallel for better performance
-    const updatePromises = results.map(async (result) => {
-      try {
-        const response = await updateVocabWithSRS(
-          result.entryId,
-          result.wasCorrect
-        )
-        return {
-          entryId: result.entryId,
-          success: response.success,
-          error: response.message,
-        }
-      } catch (error) {
-        return {
-          entryId: result.entryId,
-          success: false,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        }
-      }
+    // Map the JS array to a format the PostgreSQL function understands
+    const formattedResults = results.map(r => ({
+      entry_id: r.entryId,
+      was_correct: r.wasCorrect,
+    }))
+
+    // Use the bulk update function for much better performance
+    const { error } = await supabase.rpc('bulk_update_vocab_progress', {
+      p_user_id: user.id,
+      results: formattedResults
     })
 
-    const updateResults = await Promise.all(updatePromises)
-    const processedCount = updateResults.filter((r) => r.success).length
-    const errors = updateResults
-      .filter((r) => !r.success)
-      .map((r) => `Failed to update entry ${r.entryId}: ${r.error}`)
+    if (error) {
+      return {
+        success: false,
+        message: `Failed to process results: ${error.message}`,
+      }
+    }
 
     // Revalidate relevant paths
     const setIds = [...new Set(results.map((r) => r.setId))]
@@ -345,12 +344,11 @@ export async function processQuizResults(
     revalidatePath('/student/vocab')
 
     return {
-      success: processedCount > 0,
-      processedCount,
+      success: true,
+      processedCount: results.length,
       totalCount: results.length,
-      errors: errors.length > 0 ? errors : undefined,
     }
   } catch (error) {
-    return handleServerActionError(error)
+    return createErrorResponse(error)
   }
 }
