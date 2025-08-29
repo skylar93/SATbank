@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
   Card,
@@ -10,6 +10,14 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -34,6 +42,7 @@ import {
   Image,
   Volume2,
   VolumeX,
+  Search,
 } from 'lucide-react'
 import Link from 'next/link'
 import { BulkAddModal } from '@/components/vocab/BulkAddModal'
@@ -101,6 +110,10 @@ export default function VocabSetDetailPage() {
   // Bulk add state
   const [isBulkAddModalOpen, setIsBulkAddModalOpen] = useState(false)
 
+  // Search and filter state
+  const [searchTerm, setSearchTerm] = useState('')
+  const [masteryFilter, setMasteryFilter] = useState('all')
+
   const [toast, setToast] = useState<{
     message: string
     type: 'success' | 'error'
@@ -108,6 +121,33 @@ export default function VocabSetDetailPage() {
 
   const supabase = createClient()
   const { speak, isPlaying } = useTTS()
+
+  // Filter entries based on search term and mastery level
+  const filteredEntries = useMemo(() => {
+    let filtered = entries
+
+    // Apply search filter
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase()
+      filtered = filtered.filter(
+        (entry) =>
+          entry.term.toLowerCase().includes(searchLower) ||
+          entry.definition.toLowerCase().includes(searchLower) ||
+          entry.example_sentence?.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // Apply mastery filter
+    if (masteryFilter !== 'all') {
+      if (masteryFilter === 'unmastered') {
+        filtered = filtered.filter((entry) => entry.mastery_level < 3)
+      } else if (masteryFilter === 'mastered') {
+        filtered = filtered.filter((entry) => entry.mastery_level >= 3)
+      }
+    }
+
+    return filtered
+  }, [entries, searchTerm, masteryFilter])
 
   useEffect(() => {
     fetchVocabSetAndEntries()
@@ -675,6 +715,53 @@ export default function VocabSetDetailPage() {
           )}
         </div>
 
+        {/* Search and Filter Bar */}
+        {entries.length > 0 && (
+          <div className="flex gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search words, definitions, or examples..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <div className="w-48">
+              <Select value={masteryFilter} onValueChange={setMasteryFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by mastery" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    All words ({entries.length})
+                  </SelectItem>
+                  <SelectItem value="unmastered">
+                    Unmastered ({entries.filter((e) => e.mastery_level < 3).length})
+                  </SelectItem>
+                  <SelectItem value="mastered">
+                    Mastered ({entries.filter((e) => e.mastery_level >= 3).length})
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {(searchTerm || masteryFilter !== 'all') && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm('')
+                  setMasteryFilter('all')
+                }}
+                size="sm"
+              >
+                Clear
+              </Button>
+            )}
+          </div>
+        )}
+
         {/* Words List */}
         {entries.length === 0 ? (
           <Card>
@@ -793,9 +880,32 @@ export default function VocabSetDetailPage() {
               </Dialog>
             </CardContent>
           </Card>
+        ) : filteredEntries.length === 0 ? (
+          <Card>
+            <CardContent className="text-center py-12">
+              <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No words found
+              </h3>
+              <p className="text-gray-600 mb-6">
+                {searchTerm
+                  ? `No words match "${searchTerm}"`
+                  : `No ${masteryFilter} words found`}
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm('')
+                  setMasteryFilter('all')
+                }}
+              >
+                Clear filters
+              </Button>
+            </CardContent>
+          </Card>
         ) : (
           <div className="space-y-4">
-            {entries.map((entry) => (
+            {filteredEntries.map((entry) => (
               <Card key={entry.id}>
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start">

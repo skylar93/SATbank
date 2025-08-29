@@ -323,9 +323,17 @@ export async function processQuizResults(
     }))
 
     // Use the bulk update function for much better performance
+    // Pass SRS configuration parameters to ensure consistency
     const { error } = await supabase.rpc('bulk_update_vocab_progress', {
       p_user_id: user.id,
-      results: formattedResults
+      results: formattedResults,
+      // SRS configuration parameters from externalized config
+      p_mastery_max: SRS_CONFIG.MASTERY_LEVEL_MAX,
+      p_mastery_min: SRS_CONFIG.MASTERY_LEVEL_MIN,
+      p_interval_multiplier: SRS_CONFIG.INTERVAL_MULTIPLIER,
+      p_incorrect_reset_interval: SRS_CONFIG.INCORRECT_RESET_INTERVAL_DAYS,
+      p_incorrect_next_review_minutes: SRS_CONFIG.INCORRECT_NEXT_REVIEW_MINUTES,
+      p_max_review_interval_days: SRS_CONFIG.MAX_REVIEW_INTERVAL_DAYS,
     })
 
     if (error) {

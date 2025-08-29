@@ -5,12 +5,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Brain, BookOpen, Clock } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
+import { getTodayReviewCount, getVocabSetsWithReviewsDue } from '@/lib/vocab-service'
 import Link from 'next/link'
 
 interface SmartReviewData {
   reviewCount: number
   totalWords: number
   nextReviewTime?: Date
+  reviewSets: Array<{
+    id: number
+    title: string
+    count: number
+  }>
 }
 
 export default function SmartReviewWidget() {
@@ -29,22 +35,21 @@ export default function SmartReviewWidget() {
       } = await supabase.auth.getUser()
       if (!user) return
 
-      // Get words due for review
-      const { count: reviewCount } = await supabase
-        .from('vocab_entries')
-        .select('id', { count: 'exact' })
-        .eq('user_id', user.id)
-        .lte('next_review_date', new Date().toISOString())
+      // Use the new vocab service functions
+      const [reviewCount, reviewSets] = await Promise.all([
+        getTodayReviewCount(user.id),
+        getVocabSetsWithReviewsDue(user.id)
+      ])
 
-      // Get total word count
+      // Get total word count from vocab_entries
       const { count: totalWords } = await supabase
         .from('vocab_entries')
         .select('id', { count: 'exact' })
         .eq('user_id', user.id)
 
-      // Get next upcoming review
+      // Get next upcoming review from user_vocab_progress
       const { data: nextReview } = await supabase
-        .from('vocab_entries')
+        .from('user_vocab_progress')
         .select('next_review_date')
         .eq('user_id', user.id)
         .gt('next_review_date', new Date().toISOString())
@@ -53,8 +58,9 @@ export default function SmartReviewWidget() {
         .single()
 
       setReviewData({
-        reviewCount: reviewCount || 0,
+        reviewCount,
         totalWords: totalWords || 0,
+        reviewSets,
         nextReviewTime: nextReview
           ? new Date(nextReview.next_review_date)
           : undefined,
@@ -138,9 +144,29 @@ export default function SmartReviewWidget() {
               <div className="text-3xl font-bold text-blue-600 mb-1">
                 {reviewData.reviewCount}
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 mb-3">
                 word{reviewData.reviewCount !== 1 ? 's' : ''} ready for review
               </p>
+              
+              {/* Show vocab sets with reviews due */}
+              {reviewData.reviewSets.length > 0 && (
+                <div className="space-y-1 mb-3">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    From your sets:
+                  </p>
+                  {reviewData.reviewSets.slice(0, 2).map((set) => (
+                    <div key={set.id} className="flex justify-between items-center text-xs">
+                      <span className="text-gray-600 truncate">{set.title}</span>
+                      <span className="text-blue-600 font-medium">{set.count}</span>
+                    </div>
+                  ))}
+                  {reviewData.reviewSets.length > 2 && (
+                    <p className="text-xs text-gray-400">
+                      +{reviewData.reviewSets.length - 2} more sets
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
             <Link href="/student/vocab/quiz?pool=smart_review&type=term_to_def&format=multiple_choice">
               <Button className="w-full bg-blue-600 hover:bg-blue-700">
