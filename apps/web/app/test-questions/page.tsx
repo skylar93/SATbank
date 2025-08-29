@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/auth-context'
-import { createClient } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 
 export default function TestQuestionsPage() {
   const { user } = useAuth()
-  const supabase = createClient()
+  // Use the centralized Supabase client
   const [result, setResult] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 

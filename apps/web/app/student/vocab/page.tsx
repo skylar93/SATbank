@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Toast } from '@/components/ui/toast'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { Plus, BookOpen, Calendar } from 'lucide-react'
 import Link from 'next/link'
 
@@ -44,7 +44,7 @@ export default function VocabSetsPage() {
     type: 'success' | 'error'
   } | null>(null)
 
-  const supabase = createClient()
+  // Use the centralized Supabase client
 
   useEffect(() => {
     fetchVocabSets()

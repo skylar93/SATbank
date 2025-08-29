@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/auth-context'
 
 interface Question {
@@ -42,7 +42,7 @@ export function PracticeQuizGenerator({
 }: PracticeQuizGeneratorProps) {
   const router = useRouter()
   const { user } = useAuth()
-  const supabase = createClient()
+  // Use the centralized Supabase client
   const [settings, setSettings] = useState<PracticeSettings>({
     module: 'all',
     difficulty: 'all',

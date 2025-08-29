@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Brain, BookOpen, Clock } from 'lucide-react'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import {
   getTodayReviewCount,
   getVocabSetsWithReviewsDue,
@@ -25,7 +25,7 @@ interface SmartReviewData {
 export default function SmartReviewWidget() {
   const [reviewData, setReviewData] = useState<SmartReviewData | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
+  // Use the centralized Supabase client
 
   useEffect(() => {
     fetchReviewData()

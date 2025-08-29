@@ -6,7 +6,7 @@ import { QuestionFilter } from '../../../components/problem-bank/question-filter
 import { QuestionList } from '../../../components/problem-bank/question-list'
 import { PracticeQuizGenerator } from '../../../components/problem-bank/practice-quiz-generator'
 import { IncorrectAnswersSection } from '../../../components/problem-bank/incorrect-answers-section'
-import { createClient } from '../../../lib/supabase'
+import { supabase } from '../../../lib/supabase'
 import { StatsCard } from '../../../components/modern-charts'
 import {
   BookOpenIcon,
@@ -45,7 +45,7 @@ interface FilterOptions {
 
 export default function ProblemBank() {
   const { user } = useAuth()
-  const supabase = createClient()
+  // Use the centralized Supabase client
   const [questions, setQuestions] = useState<Question[]>([])
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([])
   const [filters, setFilters] = useState<FilterOptions>({

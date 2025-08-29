@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../contexts/auth-context'
-import { createClient } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import { renderTextWithFormattingAndMath } from '../exam/question-display'
 
 interface Question {
@@ -36,7 +36,7 @@ export function QuestionList({
 }: QuestionListProps) {
   const router = useRouter()
   const { user } = useAuth()
-  const supabase = createClient()
+  // Use the centralized Supabase client
   const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null)
   const [creatingPractice, setCreatingPractice] = useState<string | null>(null)
 

@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { supabase } from '@/lib/supabase'
 import { v4 as uuidv4 } from 'uuid'
 
 interface ImageUploadProps {
@@ -22,7 +22,7 @@ export function ImageUpload({
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const supabase = createClientComponentClient()
+  // Use the centralized Supabase client
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {

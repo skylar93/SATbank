@@ -1,4 +1,4 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { supabase } from './supabase'
 
 export interface WeeklyActivityData {
   days: string[]
@@ -13,7 +13,7 @@ export class WeeklyActivityService {
     try {
       // Get last 7 days of test attempts
       const last7Days = this.getLast7Days()
-      const supabase = createClientComponentClient()
+      // Use the centralized Supabase client
 
       const { data: attempts, error } = await supabase
         .from('test_attempts')

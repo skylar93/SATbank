@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Toast } from '@/components/ui/toast'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { updateVocabWithSRS } from '@/lib/vocab-actions'
 import { ArrowLeft, Check, X, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
@@ -62,7 +62,7 @@ export default function VocabQuizPage() {
     type: 'success' | 'error'
   } | null>(null)
 
-  const supabase = createClient()
+  // Use the centralized Supabase client
 
   useEffect(() => {
     if (!setId || !quizType || !quizFormat || !questionPool) {

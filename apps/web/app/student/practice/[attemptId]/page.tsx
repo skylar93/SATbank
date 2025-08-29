@@ -6,7 +6,7 @@ import { useAuth } from '../../../../contexts/auth-context'
 import { Navigation } from '../../../../components/navigation'
 import { QuestionDisplay } from '../../../../components/exam/question-display'
 import { ExamTimer } from '../../../../components/exam/exam-timer'
-import { createClient } from '../../../../lib/supabase'
+import { supabase } from '../../../../lib/supabase'
 import { Question } from '../../../../lib/exam-service'
 
 interface PracticeSettings {
@@ -27,7 +27,7 @@ export default function PracticeSession() {
   const params = useParams()
   const router = useRouter()
   const { user } = useAuth()
-  const supabase = createClient()
+  // Use the centralized Supabase client
   const attemptId = params.attemptId as string
 
   const [questions, setQuestions] = useState<Question[]>([])

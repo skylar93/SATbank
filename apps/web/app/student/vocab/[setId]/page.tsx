@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Toast } from '@/components/ui/toast'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import {
   Plus,
   BookOpen,
@@ -119,7 +119,7 @@ export default function VocabSetDetailPage() {
     type: 'success' | 'error'
   } | null>(null)
 
-  const supabase = createClient()
+  // Use the centralized Supabase client
   const { speak, isPlaying } = useTTS()
 
   // Filter entries based on search term and mastery level

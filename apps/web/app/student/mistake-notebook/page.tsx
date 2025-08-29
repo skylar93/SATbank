@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../../contexts/auth-context'
-import { createClient } from '../../../lib/supabase'
+import { supabase } from '../../../lib/supabase'
 import { EnhancedIncorrectAnswersSection } from '../../../components/mistake-notebook/enhanced-incorrect-answers-section'
 
 interface Question {
@@ -27,7 +27,7 @@ interface Question {
 
 export default function MistakeNotebookPage() {
   const { user } = useAuth()
-  const supabase = createClient()
+  // Use the centralized Supabase client
   const [questions, setQuestions] = useState<Question[]>([])
   const [loading, setLoading] = useState(true)
 

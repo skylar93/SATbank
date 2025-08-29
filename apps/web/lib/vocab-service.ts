@@ -1,10 +1,10 @@
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 /**
  * Gets the count of words due for review today based on SRS algorithm
  */
 export async function getTodayReviewCount(userId: string): Promise<number> {
-  const supabase = createClient()
+  // Use the centralized Supabase client
 
   try {
     const { count, error } = await supabase
@@ -29,7 +29,7 @@ export async function getTodayReviewCount(userId: string): Promise<number> {
  * Gets vocabulary sets that have words due for review today
  */
 export async function getVocabSetsWithReviewsDue(userId: string) {
-  const supabase = createClient()
+  // Use the centralized Supabase client
 
   try {
     const { data, error } = await supabase

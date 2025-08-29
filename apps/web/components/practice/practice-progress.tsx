@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/auth-context'
-import { createClient } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import { ProgressChart } from '../charts/progress-chart'
 
 interface PracticeStats {
@@ -45,7 +45,7 @@ export function PracticeProgress({
   showDetailedStats = true,
 }: PracticeProgressProps) {
   const { user } = useAuth()
-  const supabase = createClient()
+  // Use the centralized Supabase client
   const [stats, setStats] = useState<PracticeStats | null>(null)
   const [loading, setLoading] = useState(true)
 

@@ -1,10 +1,10 @@
 // Debug script to test authentication and profile access
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { supabase } from './lib/supabase'
 
 async function debugAuth() {
   console.log('🔍 Starting authentication debug...')
 
-  const supabase = createClientComponentClient()
+  // Use the centralized Supabase client
 
   try {
     // Check current session

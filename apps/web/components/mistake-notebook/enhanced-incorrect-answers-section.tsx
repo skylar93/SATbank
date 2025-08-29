@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/auth-context'
-import { createClient } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -39,7 +39,7 @@ export function EnhancedIncorrectAnswersSection({
 }: EnhancedIncorrectAnswersSectionProps) {
   const { user } = useAuth()
   const router = useRouter()
-  const supabase = createClient()
+  // Use the centralized Supabase client
   const [groupBy, setGroupBy] = useState<
     'module' | 'difficulty' | 'topic' | 'recent'
   >('recent')

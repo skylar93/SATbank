@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/auth-context'
-import { createClient } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import Link from 'next/link'
 
 interface Question {
@@ -35,7 +35,7 @@ export function IncorrectAnswersSection({
   onRefresh,
 }: IncorrectAnswersSectionProps) {
   const { user } = useAuth()
-  const supabase = createClient()
+  // Use the centralized Supabase client
   const [detailedQuestions, setDetailedQuestions] = useState<Question[]>([])
   const [loading, setLoading] = useState(true)
   const [groupBy, setGroupBy] = useState<
