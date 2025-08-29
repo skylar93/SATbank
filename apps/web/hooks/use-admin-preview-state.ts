@@ -1,7 +1,13 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { ExamService, type Question, type Exam, type TestAttempt, type ModuleType } from '../lib/exam-service'
+import {
+  ExamService,
+  type Question,
+  type Exam,
+  type TestAttempt,
+  type ModuleType,
+} from '../lib/exam-service'
 import { useAuth } from '../contexts/auth-context'
 import { checkAnswer } from '../lib/answer-checker'
 import { supabase } from '../lib/supabase'
@@ -39,7 +45,7 @@ export function useAdminPreviewState() {
     exam: null,
     modules: [],
     currentModuleIndex: 0,
-    status: 'not_started'
+    status: 'not_started',
   })
 
   const [loading, setLoading] = useState(false)
@@ -59,14 +65,16 @@ export function useAdminPreviewState() {
 
       // Load questions for all modules
       const moduleStates: ModuleState[] = []
-      
+
       for (const moduleType of MODULE_ORDER) {
         const questions = await ExamService.getQuestions(examId, moduleType)
         const timeLimit = exam.time_limits[moduleType] || 60
 
         // Skip modules with no questions (don't add them to the array)
         if (questions.length === 0) {
-          devLogger.warn(`Admin Preview: Skipping module ${moduleType} - no questions found`)
+          devLogger.warn(
+            `Admin Preview: Skipping module ${moduleType} - no questions found`
+          )
           continue
         }
 
@@ -77,7 +85,7 @@ export function useAdminPreviewState() {
           answers: {},
           markedForReview: new Set(),
           timeLimit,
-          completed: false
+          completed: false,
         })
       }
 
@@ -90,7 +98,7 @@ export function useAdminPreviewState() {
         exam,
         modules: moduleStates,
         currentModuleIndex: 0,
-        status: 'in_progress'
+        status: 'in_progress',
       })
     } catch (err: any) {
       devLogger.error('Admin Preview: Error occurred:', err)
@@ -101,40 +109,44 @@ export function useAdminPreviewState() {
   }, [])
 
   // Store answer locally (for preview purposes only)
-  const setLocalAnswer = useCallback((answer: string) => {
-    const currentModule = examState.modules[examState.currentModuleIndex]
-    const currentQuestion = currentModule.questions[currentModule.currentQuestionIndex]
-    
-    if (!currentQuestion) return
+  const setLocalAnswer = useCallback(
+    (answer: string) => {
+      const currentModule = examState.modules[examState.currentModuleIndex]
+      const currentQuestion =
+        currentModule.questions[currentModule.currentQuestionIndex]
 
-    // Update local state only
-    const examAnswer: ExamAnswer = {
-      questionId: currentQuestion.id,
-      answer,
-      timeSpent: 0,
-      answeredAt: new Date()
-    }
+      if (!currentQuestion) return
 
-    setExamState(prev => {
-      const newModules = [...prev.modules]
-      newModules[prev.currentModuleIndex] = {
-        ...newModules[prev.currentModuleIndex],
-        answers: {
-          ...newModules[prev.currentModuleIndex].answers,
-          [currentQuestion.id]: examAnswer
+      // Update local state only
+      const examAnswer: ExamAnswer = {
+        questionId: currentQuestion.id,
+        answer,
+        timeSpent: 0,
+        answeredAt: new Date(),
+      }
+
+      setExamState((prev) => {
+        const newModules = [...prev.modules]
+        newModules[prev.currentModuleIndex] = {
+          ...newModules[prev.currentModuleIndex],
+          answers: {
+            ...newModules[prev.currentModuleIndex].answers,
+            [currentQuestion.id]: examAnswer,
+          },
         }
-      }
 
-      return {
-        ...prev,
-        modules: newModules
-      }
-    })
-  }, [examState])
+        return {
+          ...prev,
+          modules: newModules,
+        }
+      })
+    },
+    [examState]
+  )
 
   // Move to next question
   const nextQuestion = useCallback(() => {
-    setExamState(prev => {
+    setExamState((prev) => {
       const currentModule = prev.modules[prev.currentModuleIndex]
       const nextQuestionIndex = currentModule.currentQuestionIndex + 1
 
@@ -146,19 +158,19 @@ export function useAdminPreviewState() {
       const newModules = [...prev.modules]
       newModules[prev.currentModuleIndex] = {
         ...newModules[prev.currentModuleIndex],
-        currentQuestionIndex: nextQuestionIndex
+        currentQuestionIndex: nextQuestionIndex,
       }
 
       return {
         ...prev,
-        modules: newModules
+        modules: newModules,
       }
     })
   }, [])
 
   // Move to previous question (within same module only)
   const previousQuestion = useCallback(() => {
-    setExamState(prev => {
+    setExamState((prev) => {
       const currentModule = prev.modules[prev.currentModuleIndex]
       const prevQuestionIndex = currentModule.currentQuestionIndex - 1
 
@@ -170,22 +182,25 @@ export function useAdminPreviewState() {
       const newModules = [...prev.modules]
       newModules[prev.currentModuleIndex] = {
         ...newModules[prev.currentModuleIndex],
-        currentQuestionIndex: prevQuestionIndex
+        currentQuestionIndex: prevQuestionIndex,
       }
 
       return {
         ...prev,
-        modules: newModules
+        modules: newModules,
       }
     })
   }, [])
 
   // Navigate to specific question within current module
   const goToQuestion = useCallback((questionIndex: number) => {
-    setExamState(prev => {
+    setExamState((prev) => {
       const currentModule = prev.modules[prev.currentModuleIndex]
-      
-      if (questionIndex < 0 || questionIndex >= currentModule.questions.length) {
+
+      if (
+        questionIndex < 0 ||
+        questionIndex >= currentModule.questions.length
+      ) {
         // Invalid question index
         return prev
       }
@@ -193,73 +208,85 @@ export function useAdminPreviewState() {
       const newModules = [...prev.modules]
       newModules[prev.currentModuleIndex] = {
         ...newModules[prev.currentModuleIndex],
-        currentQuestionIndex: questionIndex
-      }
-
-      return {
-        ...prev,
-        modules: newModules
-      }
-    })
-  }, [])
-  
-  // Admin: Navigate to any module and question (for preview mode)
-  const goToModuleAndQuestion = useCallback((moduleIndex: number, questionIndex: number) => {
-    setExamState(prev => {
-      if (moduleIndex < 0 || moduleIndex >= prev.modules.length) {
-        // Invalid module index
-        return prev
-      }
-      
-      const targetModule = prev.modules[moduleIndex]
-      if (questionIndex < 0 || questionIndex >= targetModule.questions.length) {
-        // Invalid question index
-        return prev
-      }
-
-      const newModules = [...prev.modules]
-      newModules[moduleIndex] = {
-        ...newModules[moduleIndex],
-        currentQuestionIndex: questionIndex
+        currentQuestionIndex: questionIndex,
       }
 
       return {
         ...prev,
         modules: newModules,
-        currentModuleIndex: moduleIndex
       }
     })
   }, [])
-  
+
+  // Admin: Navigate to any module and question (for preview mode)
+  const goToModuleAndQuestion = useCallback(
+    (moduleIndex: number, questionIndex: number) => {
+      setExamState((prev) => {
+        if (moduleIndex < 0 || moduleIndex >= prev.modules.length) {
+          // Invalid module index
+          return prev
+        }
+
+        const targetModule = prev.modules[moduleIndex]
+        if (
+          questionIndex < 0 ||
+          questionIndex >= targetModule.questions.length
+        ) {
+          // Invalid question index
+          return prev
+        }
+
+        const newModules = [...prev.modules]
+        newModules[moduleIndex] = {
+          ...newModules[moduleIndex],
+          currentQuestionIndex: questionIndex,
+        }
+
+        return {
+          ...prev,
+          modules: newModules,
+          currentModuleIndex: moduleIndex,
+        }
+      })
+    },
+    []
+  )
+
   // Update a question in the cached state after successful save
   const updateQuestionInState = useCallback((updatedQuestion: Question) => {
-    setExamState(prev => {
+    setExamState((prev) => {
       const newModules = [...prev.modules]
-      
+
       // Find the module containing this question
-      for (let moduleIndex = 0; moduleIndex < newModules.length; moduleIndex++) {
+      for (
+        let moduleIndex = 0;
+        moduleIndex < newModules.length;
+        moduleIndex++
+      ) {
         const module = newModules[moduleIndex]
         if (module.module === updatedQuestion.module_type) {
           // Find the question within this module
-          const questionIndex = module.questions.findIndex(q => q.id === updatedQuestion.id)
+          const questionIndex = module.questions.findIndex(
+            (q) => q.id === updatedQuestion.id
+          )
           if (questionIndex !== -1) {
             // Update the question in the module
             const newQuestions = [...module.questions]
             newQuestions[questionIndex] = updatedQuestion
-            
+
             newModules[moduleIndex] = {
               ...module,
-              questions: newQuestions
+              questions: newQuestions,
             }
-            
+
             break
           }
         }
       }
-      
+
       return {
         ...prev,
-        modules: newModules
+        modules: newModules,
       }
     })
   }, [])
@@ -267,41 +294,49 @@ export function useAdminPreviewState() {
   // Move to next module (admin preview)
   const nextModule = useCallback(() => {
     const nextModuleIndex = examState.currentModuleIndex + 1
-    
+
     if (nextModuleIndex >= examState.modules.length) {
       // Complete preview
-      setExamState(prev => ({ ...prev, status: 'completed' }))
+      setExamState((prev) => ({ ...prev, status: 'completed' }))
       return
     }
-    
-    setExamState(prev => {
+
+    setExamState((prev) => {
       const newModules = [...prev.modules]
       // Mark current module as completed
       newModules[prev.currentModuleIndex] = {
         ...newModules[prev.currentModuleIndex],
-        completed: true
+        completed: true,
       }
 
       return {
         ...prev,
         modules: newModules,
-        currentModuleIndex: nextModuleIndex
+        currentModuleIndex: nextModuleIndex,
       }
     })
   }, [examState])
 
   // Get current question
   const getCurrentQuestion = useCallback(() => {
-    if (examState.modules.length === 0 || examState.currentModuleIndex >= examState.modules.length) {
+    if (
+      examState.modules.length === 0 ||
+      examState.currentModuleIndex >= examState.modules.length
+    ) {
       return null
     }
-    
+
     const currentModule = examState.modules[examState.currentModuleIndex]
-    if (!currentModule || !currentModule.questions || currentModule.questions.length === 0) {
+    if (
+      !currentModule ||
+      !currentModule.questions ||
+      currentModule.questions.length === 0
+    ) {
       return null
     }
-    
-    const question = currentModule.questions[currentModule.currentQuestionIndex] || null
+
+    const question =
+      currentModule.questions[currentModule.currentQuestionIndex] || null
     return question
   }, [examState.modules, examState.currentModuleIndex])
 
@@ -315,49 +350,54 @@ export function useAdminPreviewState() {
   }, [examState.modules, examState.currentModuleIndex, getCurrentQuestion])
 
   // Toggle mark for review
-  const toggleMarkForReview = useCallback((questionId?: string) => {
-    const currentQuestion = getCurrentQuestion()
-    const questionToToggle = questionId || currentQuestion?.id
-    
-    if (!questionToToggle) return
+  const toggleMarkForReview = useCallback(
+    (questionId?: string) => {
+      const currentQuestion = getCurrentQuestion()
+      const questionToToggle = questionId || currentQuestion?.id
 
-    setExamState(prev => {
-      const newModules = [...prev.modules]
-      const currentModule = newModules[prev.currentModuleIndex]
-      
-      if (currentModule) {
-        const newMarkedForReview = new Set(currentModule.markedForReview)
-        
-        if (newMarkedForReview.has(questionToToggle)) {
-          newMarkedForReview.delete(questionToToggle)
-        } else {
-          newMarkedForReview.add(questionToToggle)
-        }
-        
-        newModules[prev.currentModuleIndex] = {
-          ...currentModule,
-          markedForReview: newMarkedForReview
-        }
-        
-      }
+      if (!questionToToggle) return
 
-      return {
-        ...prev,
-        modules: newModules
-      }
-    })
-  }, [getCurrentQuestion])
+      setExamState((prev) => {
+        const newModules = [...prev.modules]
+        const currentModule = newModules[prev.currentModuleIndex]
+
+        if (currentModule) {
+          const newMarkedForReview = new Set(currentModule.markedForReview)
+
+          if (newMarkedForReview.has(questionToToggle)) {
+            newMarkedForReview.delete(questionToToggle)
+          } else {
+            newMarkedForReview.add(questionToToggle)
+          }
+
+          newModules[prev.currentModuleIndex] = {
+            ...currentModule,
+            markedForReview: newMarkedForReview,
+          }
+        }
+
+        return {
+          ...prev,
+          modules: newModules,
+        }
+      })
+    },
+    [getCurrentQuestion]
+  )
 
   // Check if current question is marked for review
-  const isMarkedForReview = useCallback((questionId?: string) => {
-    const currentQuestion = getCurrentQuestion()
-    const questionToCheck = questionId || currentQuestion?.id
-    
-    if (!questionToCheck) return false
+  const isMarkedForReview = useCallback(
+    (questionId?: string) => {
+      const currentQuestion = getCurrentQuestion()
+      const questionToCheck = questionId || currentQuestion?.id
 
-    const currentModule = examState.modules[examState.currentModuleIndex]
-    return currentModule?.markedForReview.has(questionToCheck) || false
-  }, [examState.modules, examState.currentModuleIndex, getCurrentQuestion])
+      if (!questionToCheck) return false
+
+      const currentModule = examState.modules[examState.currentModuleIndex]
+      return currentModule?.markedForReview.has(questionToCheck) || false
+    },
+    [examState.modules, examState.currentModuleIndex, getCurrentQuestion]
+  )
 
   // Get all marked questions in current module
   const getMarkedQuestions = useCallback(() => {
@@ -368,19 +408,21 @@ export function useAdminPreviewState() {
       .map((question, index) => ({
         question,
         index,
-        isMarked: currentModule.markedForReview.has(question.id)
+        isMarked: currentModule.markedForReview.has(question.id),
       }))
-      .filter(item => item.isMarked)
+      .filter((item) => item.isMarked)
   }, [examState.modules, examState.currentModuleIndex])
 
   // Add new question to state optimistically
   const addNewQuestionToState = useCallback((newQuestion: Question) => {
-    setExamState(prev => {
+    setExamState((prev) => {
       const newModules = [...prev.modules]
-      
+
       // Find the module to add the question to
-      let moduleIndex = newModules.findIndex(m => m.module === newQuestion.module_type)
-      
+      let moduleIndex = newModules.findIndex(
+        (m) => m.module === newQuestion.module_type
+      )
+
       // If module doesn't exist, create it (edge case)
       if (moduleIndex === -1) {
         const timeLimit = prev.exam?.time_limits[newQuestion.module_type] || 60
@@ -391,7 +433,7 @@ export function useAdminPreviewState() {
           answers: {},
           markedForReview: new Set(),
           timeLimit,
-          completed: false
+          completed: false,
         })
         moduleIndex = newModules.length - 1
       } else {
@@ -404,11 +446,11 @@ export function useAdminPreviewState() {
       // Navigate to the new question
       const newQuestionIndex = newModules[moduleIndex].questions.length - 1
       newModules[moduleIndex].currentQuestionIndex = newQuestionIndex
-      
+
       return {
         ...prev,
         modules: newModules,
-        currentModuleIndex: moduleIndex
+        currentModuleIndex: moduleIndex,
       }
     })
   }, [])
@@ -430,6 +472,6 @@ export function useAdminPreviewState() {
     toggleMarkForReview,
     isMarkedForReview,
     getMarkedQuestions,
-    addNewQuestionToState
+    addNewQuestionToState,
   }
 }

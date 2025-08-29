@@ -23,10 +23,11 @@ export function RouteGuard({ children }: RouteGuardProps) {
     if (loading) return // Wait for auth to load
 
     // Prevent route guard actions during impersonation transitions
-    const isTransitioning = typeof window !== 'undefined' && 
-      window.location.href.includes('/admin/students') && 
+    const isTransitioning =
+      typeof window !== 'undefined' &&
+      window.location.href.includes('/admin/students') &&
       localStorage.getItem('impersonation_data')
-    
+
     if (isTransitioning) {
       console.log('🔄 RouteGuard: In transition, skipping route changes')
       return
@@ -43,7 +44,7 @@ export function RouteGuard({ children }: RouteGuardProps) {
         console.log('🛡️ RouteGuard: Redirecting unauthenticated user to login')
         router.push('/login')
       }, 100)
-      
+
       // Cleanup timer if component unmounts
       return () => clearTimeout(redirectTimer)
     }
@@ -62,7 +63,12 @@ export function RouteGuard({ children }: RouteGuardProps) {
     }
 
     // Admin route protection - don't redirect if impersonating
-    if (user && pathname.startsWith('/admin') && !effectiveIsAdmin && !isImpersonating()) {
+    if (
+      user &&
+      pathname.startsWith('/admin') &&
+      !effectiveIsAdmin &&
+      !isImpersonating()
+    ) {
       console.log('🛡️ RouteGuard: Non-admin trying to access admin route')
       router.push('/student/dashboard')
       return
@@ -81,10 +87,22 @@ export function RouteGuard({ children }: RouteGuardProps) {
         router.push('/admin/dashboard')
         return
       } else if (isExamPreview || isImpersonating()) {
-        console.log('🛡️ RouteGuard: Allowing admin exam preview or impersonation')
+        console.log(
+          '🛡️ RouteGuard: Allowing admin exam preview or impersonation'
+        )
       }
     }
-  }, [user, loading, isAdmin, isStudent, effectiveIsAdmin, effectiveIsStudent, pathname, router, isImpersonating])
+  }, [
+    user,
+    loading,
+    isAdmin,
+    isStudent,
+    effectiveIsAdmin,
+    effectiveIsStudent,
+    pathname,
+    router,
+    isImpersonating,
+  ])
 
   // Show loading while checking authentication
   if (loading) {

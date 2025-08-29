@@ -11,7 +11,10 @@ import {
 import { ExportService } from '../../../../lib/export-service'
 import { ModuleType, ExamService } from '../../../../lib/exam-service'
 import { supabase } from '../../../../lib/supabase'
-import { canShowAnswers, type TestAttemptWithVisibility } from '../../../../lib/answer-visibility'
+import {
+  canShowAnswers,
+  type TestAttemptWithVisibility,
+} from '../../../../lib/answer-visibility'
 
 export default function DetailedResultsPage() {
   const params = useParams()
@@ -26,7 +29,8 @@ export default function DetailedResultsPage() {
   const [exporting, setExporting] = useState(false)
   const [showCorrectAnswers, setShowCorrectAnswers] = useState(false)
   const [canShowResults, setCanShowResults] = useState(true)
-  const [attemptData, setAttemptData] = useState<TestAttemptWithVisibility | null>(null)
+  const [attemptData, setAttemptData] =
+    useState<TestAttemptWithVisibility | null>(null)
 
   const attemptId = params.attemptId as string
 
@@ -66,7 +70,7 @@ export default function DetailedResultsPage() {
         .select('show_correct_answers')
         .eq('id', user.id)
         .single()
-      
+
       setShowCorrectAnswers(profileData?.show_correct_answers || false)
     }
   }
@@ -288,7 +292,8 @@ export default function DetailedResultsPage() {
                   Review Your Answers in Exam View
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  Revisit each question exactly as you saw it during the exam, with your answers and explanations
+                  Revisit each question exactly as you saw it during the exam,
+                  with your answers and explanations
                 </p>
               </div>
             </div>
@@ -424,7 +429,6 @@ export default function DetailedResultsPage() {
                 )}
               </div>
             </div>
-
           </div>
         )}
 
@@ -444,10 +448,9 @@ export default function DetailedResultsPage() {
                   <div className="flex items-center">
                     <div className="text-yellow-600 mr-2">ℹ️</div>
                     <div className="text-sm text-yellow-800">
-                      {attemptData?.answers_visible_after 
+                      {attemptData?.answers_visible_after
                         ? `Correct answers will be available on ${new Date(attemptData.answers_visible_after).toLocaleDateString()}`
-                        : 'Correct answers and explanations are not available for review. Contact your administrator for access.'
-                      }
+                        : 'Correct answers and explanations are not available for review. Contact your administrator for access.'}
                     </div>
                   </div>
                 </div>

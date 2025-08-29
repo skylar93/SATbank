@@ -1,5 +1,11 @@
 import { create } from 'zustand'
-import { ExamService, type Question, type Exam, type TestAttempt, type ModuleType } from '../lib/exam-service'
+import {
+  ExamService,
+  type Question,
+  type Exam,
+  type TestAttempt,
+  type ModuleType,
+} from '../lib/exam-service'
 import { checkAnswer, normalizeCorrectAnswers } from '../lib/answer-checker'
 import { supabase } from '../lib/supabase'
 import { createTestAttempt } from '../lib/exam-actions'
@@ -40,7 +46,13 @@ interface ExamState {
   attempt: TestAttempt | null
   modules: ModuleState[]
   currentModuleIndex: number
-  status: 'not_started' | 'in_progress' | 'time_expired' | 'submitting' | 'completed' | 'expired'
+  status:
+    | 'not_started'
+    | 'in_progress'
+    | 'time_expired'
+    | 'submitting'
+    | 'completed'
+    | 'expired'
   startedAt: Date | null
   existingAttempt: TestAttempt | null
   showConflictModal: boolean
@@ -66,7 +78,11 @@ interface ExamState {
   getCurrentAnswer: () => string | undefined
   toggleMarkForReview: (questionId?: string) => void
   isMarkedForReview: (questionId?: string) => boolean
-  getMarkedQuestions: () => Array<{ question: Question; index: number; isMarked: boolean }>
+  getMarkedQuestions: () => Array<{
+    question: Question
+    index: number
+    isMarked: boolean
+  }>
   continueExistingAttempt: () => Promise<void>
   discardAndStartNew: (userId: string) => Promise<void>
   closeConflictModal: (router?: any) => void
@@ -96,14 +112,19 @@ export const useExamStore = create<ExamState>((set, get) => ({
   // Actions
   setError: (error: string | null) => set({ error }),
   setLoading: (loading: boolean) => set({ loading }),
-  
+
   timeExpired: () => {
     console.log('timeExpired: Setting status to time_expired')
     set({ status: 'time_expired' })
   },
 
   initializeExam: async (examId: string, userId: string) => {
-    console.log('initializeExam: Starting initialization for exam:', examId, 'user:', userId)
+    console.log(
+      'initializeExam: Starting initialization for exam:',
+      examId,
+      'user:',
+      userId
+    )
     set({ loading: true, error: null })
 
     try {
@@ -120,22 +141,31 @@ export const useExamStore = create<ExamState>((set, get) => ({
       console.log('initializeExam: Checking exam access...')
       const hasAccess = await ExamService.hasExamAccess(userId, examId)
       if (!hasAccess) {
-        console.error('initializeExam: Access denied - exam not assigned to student')
-        throw new Error('You do not have access to this exam. Please contact your administrator.')
+        console.error(
+          'initializeExam: Access denied - exam not assigned to student'
+        )
+        throw new Error(
+          'You do not have access to this exam. Please contact your administrator.'
+        )
       }
       console.log('initializeExam: Access granted')
 
       // Check for existing in-progress attempt BEFORE cleanup
       console.log('initializeExam: Checking for existing attempts...')
-      const existingAttempt = await ExamService.getInProgressAttempt(userId, examId)
-      
+      const existingAttempt = await ExamService.getInProgressAttempt(
+        userId,
+        examId
+      )
+
       if (existingAttempt) {
-        console.log('initializeExam: Found existing attempt, showing conflict modal')
+        console.log(
+          'initializeExam: Found existing attempt, showing conflict modal'
+        )
         set({
           exam,
           existingAttempt,
           showConflictModal: true,
-          loading: false
+          loading: false,
         })
         return
       }
@@ -146,18 +176,18 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
       // Create new test attempt
       console.log('initializeExam: Creating new test attempt...')
-      
+
       // Prepare headers
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       }
-      
+
       // Add impersonation data to headers if present
       const impersonationData = localStorage.getItem('impersonation_data')
       if (impersonationData) {
         headers['x-impersonation-data'] = impersonationData
       }
-      
+
       const response = await fetch('/api/test-attempts', {
         method: 'POST',
         headers,
@@ -165,8 +195,8 @@ export const useExamStore = create<ExamState>((set, get) => ({
         body: JSON.stringify({
           exam_id: examId,
           status: 'not_started',
-          current_module: 'english1'
-        })
+          current_module: 'english1',
+        }),
       })
 
       if (!response.ok) {
@@ -180,17 +210,23 @@ export const useExamStore = create<ExamState>((set, get) => ({
       // Load questions for all modules
       const moduleStates: ModuleState[] = []
       console.log('initializeExam: Loading questions for all modules...')
-      
+
       for (const moduleType of MODULE_ORDER) {
-        console.log(`initializeExam: Fetching questions for module: ${moduleType}`)
+        console.log(
+          `initializeExam: Fetching questions for module: ${moduleType}`
+        )
         const questions = await ExamService.getQuestions(examId, moduleType)
         const timeLimit = exam.time_limits[moduleType] || 60
 
-        console.log(`initializeExam: Module ${moduleType} loaded ${questions.length} questions`)
+        console.log(
+          `initializeExam: Module ${moduleType} loaded ${questions.length} questions`
+        )
 
         // Skip modules with no questions (don't add them to the array)
         if (questions.length === 0) {
-          console.warn(`initializeExam: Skipping module ${moduleType} - no questions found`)
+          console.warn(
+            `initializeExam: Skipping module ${moduleType} - no questions found`
+          )
           continue
         }
 
@@ -202,11 +238,15 @@ export const useExamStore = create<ExamState>((set, get) => ({
           markedForReview: new Set(),
           timeLimit,
           timeRemaining: timeLimit * 60, // Convert to seconds
-          completed: false
+          completed: false,
         })
       }
 
-      console.log('initializeExam: Final module states:', moduleStates.length, 'modules loaded')
+      console.log(
+        'initializeExam: Final module states:',
+        moduleStates.length,
+        'modules loaded'
+      )
 
       // Ensure we have at least one module with questions
       if (moduleStates.length === 0) {
@@ -215,13 +255,15 @@ export const useExamStore = create<ExamState>((set, get) => ({
       }
 
       // Load highlights from localStorage
-      const savedHighlightsJSON = localStorage.getItem(`highlights_${attempt.id}`)
+      const savedHighlightsJSON = localStorage.getItem(
+        `highlights_${attempt.id}`
+      )
       let savedHighlights = {}
       if (savedHighlightsJSON) {
         try {
           savedHighlights = JSON.parse(savedHighlightsJSON)
         } catch (e) {
-          console.error("Failed to parse saved highlights:", e)
+          console.error('Failed to parse saved highlights:', e)
         }
       }
 
@@ -236,7 +278,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
         existingAttempt: null,
         showConflictModal: false,
         loading: false,
-        highlightsByQuestion: savedHighlights
+        highlightsByQuestion: savedHighlights,
       })
       console.log('initializeExam: Exam state set successfully')
     } catch (err: any) {
@@ -253,12 +295,12 @@ export const useExamStore = create<ExamState>((set, get) => ({
       await ExamService.updateTestAttempt(attempt.id, {
         status: 'in_progress',
         started_at: new Date().toISOString(),
-        current_module: 'english1'
+        current_module: 'english1',
       })
 
       set({
         status: 'in_progress',
-        startedAt: new Date()
+        startedAt: new Date(),
       })
     } catch (err: any) {
       set({ error: err.message })
@@ -270,8 +312,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
     if (!attempt || status !== 'in_progress') return
 
     const currentModule = modules[currentModuleIndex]
-    const currentQuestion = currentModule.questions[currentModule.currentQuestionIndex]
-    
+    const currentQuestion =
+      currentModule.questions[currentModule.currentQuestionIndex]
+
     if (!currentQuestion) return
 
     // Update local state only
@@ -279,7 +322,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
       questionId: currentQuestion.id,
       answer,
       timeSpent: 0,
-      answeredAt: new Date()
+      answeredAt: new Date(),
     }
 
     const newModules = [...modules]
@@ -287,8 +330,8 @@ export const useExamStore = create<ExamState>((set, get) => ({
       ...newModules[currentModuleIndex],
       answers: {
         ...newModules[currentModuleIndex].answers,
-        [currentQuestion.id]: examAnswer
-      }
+        [currentQuestion.id]: examAnswer,
+      },
     }
 
     set({ modules: newModules })
@@ -299,20 +342,26 @@ export const useExamStore = create<ExamState>((set, get) => ({
     if (!attempt || status !== 'in_progress') return
 
     const currentModule = modules[currentModuleIndex]
-    
+
     try {
       // Save all answers for this module
-      for (const [questionId, examAnswer] of Object.entries(currentModule.answers)) {
-        const question = currentModule.questions.find(q => q.id === questionId)
+      for (const [questionId, examAnswer] of Object.entries(
+        currentModule.answers
+      )) {
+        const question = currentModule.questions.find(
+          (q) => q.id === questionId
+        )
         if (question && examAnswer.answer) {
           // Use normalizeCorrectAnswers to handle both grid_in and multiple_choice questions
-          const rawCorrectAnswers = question.question_type === 'grid_in' 
-            ? question.correct_answers || [question.correct_answer]
-            : question.correct_answer
-          
+          const rawCorrectAnswers =
+            question.question_type === 'grid_in'
+              ? question.correct_answers || [question.correct_answer]
+              : question.correct_answer
+
           // Normalize the correct answers to handle double-encoded JSON
-          const normalizedCorrectAnswers = normalizeCorrectAnswers(rawCorrectAnswers)
-          
+          const normalizedCorrectAnswers =
+            normalizeCorrectAnswers(rawCorrectAnswers)
+
           // ================== DIAGNOSTIC LOG START ==================
           console.log(`
             ----------------------------------------------------
@@ -333,16 +382,21 @@ export const useExamStore = create<ExamState>((set, get) => ({
             ----------------------------------------------------
           `)
           // =================== DIAGNOSTIC LOG END ===================
-          
-          const isCorrect = checkAnswer(examAnswer.answer, normalizedCorrectAnswers)
-          console.log(`[RESULT] Comparison result for Question ID ${question.id}: ${isCorrect}`)
-          
+
+          const isCorrect = checkAnswer(
+            examAnswer.answer,
+            normalizedCorrectAnswers
+          )
+          console.log(
+            `[RESULT] Comparison result for Question ID ${question.id}: ${isCorrect}`
+          )
+
           await ExamService.submitAnswer({
             attempt_id: attempt.id,
             question_id: questionId,
             user_answer: examAnswer.answer,
             is_correct: isCorrect,
-            time_spent_seconds: examAnswer.timeSpent
+            time_spent_seconds: examAnswer.timeSpent,
           })
         }
       }
@@ -365,7 +419,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
     const newModules = [...modules]
     newModules[currentModuleIndex] = {
       ...newModules[currentModuleIndex],
-      currentQuestionIndex: nextQuestionIndex
+      currentQuestionIndex: nextQuestionIndex,
     }
 
     set({ modules: newModules })
@@ -384,7 +438,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
     const newModules = [...modules]
     newModules[currentModuleIndex] = {
       ...newModules[currentModuleIndex],
-      currentQuestionIndex: prevQuestionIndex
+      currentQuestionIndex: prevQuestionIndex,
     }
 
     set({ modules: newModules })
@@ -393,7 +447,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
   goToQuestion: (questionIndex: number) => {
     const { modules, currentModuleIndex } = get()
     const currentModule = modules[currentModuleIndex]
-    
+
     if (questionIndex < 0 || questionIndex >= currentModule.questions.length) {
       // Invalid question index
       return
@@ -402,7 +456,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
     const newModules = [...modules]
     newModules[currentModuleIndex] = {
       ...newModules[currentModuleIndex],
-      currentQuestionIndex: questionIndex
+      currentQuestionIndex: questionIndex,
     }
 
     set({ modules: newModules })
@@ -410,7 +464,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
   completeExam: async () => {
     console.log('🏁 Starting exam completion process...')
-    
+
     const { attempt, saveModuleAnswers } = get()
     if (!attempt) return
 
@@ -419,21 +473,27 @@ export const useExamStore = create<ExamState>((set, get) => ({
     try {
       // Save remaining answers for the final module
       await saveModuleAnswers()
-      
+
       // Get the current user session to include proper authentication
       console.log('🔐 Getting user session for authentication')
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-      
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession()
+
       if (sessionError || !session) {
         throw new Error('Authentication error: Could not get user session')
       }
-      
+
       console.log('✅ User session obtained, submitting to Edge Function')
-      
+
       // Use the new Edge Function to calculate and store final scores with proper headers
-      const { data: finalScores, error } = await supabase.functions.invoke('submit-exam', {
-        body: JSON.stringify({ attempt_id: attempt.id })
-      })
+      const { data: finalScores, error } = await supabase.functions.invoke(
+        'submit-exam',
+        {
+          body: JSON.stringify({ attempt_id: attempt.id }),
+        }
+      )
 
       if (error) {
         console.error('❌ Edge Function error:', error)
@@ -445,13 +505,13 @@ export const useExamStore = create<ExamState>((set, get) => ({
       }
 
       console.log('✅ Final scores received:', finalScores)
-      
+
       // Clean up highlights from localStorage
       localStorage.removeItem(`highlights_${attempt.id}`)
-      
+
       set({
         status: 'completed',
-        finalScores // Store the server-calculated scores in state
+        finalScores, // Store the server-calculated scores in state
       })
     } catch (err: any) {
       console.error('💥 Complete exam error:', err)
@@ -461,14 +521,20 @@ export const useExamStore = create<ExamState>((set, get) => ({
   },
 
   nextModule: async () => {
-    const { attempt, currentModuleIndex, modules, saveModuleAnswers, completeExam } = get()
-    
+    const {
+      attempt,
+      currentModuleIndex,
+      modules,
+      saveModuleAnswers,
+      completeExam,
+    } = get()
+
     console.log('nextModule called:', {
       hasAttempt: !!attempt,
       currentModuleIndex,
-      totalModules: modules.length
+      totalModules: modules.length,
     })
-    
+
     if (!attempt) {
       console.error('No attempt found, cannot advance module')
       return
@@ -476,13 +542,13 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
     const nextModuleIndex = currentModuleIndex + 1
     console.log('Attempting to advance to module index:', nextModuleIndex)
-    
+
     try {
       // Save all answers for the current module
       console.log('Saving module answers...')
       await saveModuleAnswers()
       console.log('Module answers saved successfully')
-      
+
       if (nextModuleIndex >= modules.length) {
         // Complete exam
         console.log('Reached end of modules, completing exam')
@@ -492,11 +558,11 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
       const nextModuleName = MODULE_ORDER[nextModuleIndex]
       console.log('Advancing to module:', nextModuleName)
-      
+
       // Update attempt in database
       await ExamService.updateTestAttempt(attempt.id, {
         current_module: nextModuleName,
-        current_question_number: 1
+        current_question_number: 1,
       })
       console.log('Database updated successfully')
 
@@ -504,21 +570,21 @@ export const useExamStore = create<ExamState>((set, get) => ({
       // Mark current module as completed
       newModules[currentModuleIndex] = {
         ...newModules[currentModuleIndex],
-        completed: true
+        completed: true,
       }
-      
+
       // Reset the next module's timer to full time
       if (newModules[nextModuleIndex]) {
         newModules[nextModuleIndex] = {
           ...newModules[nextModuleIndex],
-          timeRemaining: newModules[nextModuleIndex].timeLimit * 60 // Reset to full time in seconds
+          timeRemaining: newModules[nextModuleIndex].timeLimit * 60, // Reset to full time in seconds
         }
       }
 
       console.log('Updating exam state to module index:', nextModuleIndex)
       set({
         modules: newModules,
-        currentModuleIndex: nextModuleIndex
+        currentModuleIndex: nextModuleIndex,
       })
       console.log('Exam state updated successfully')
     } catch (err: any) {
@@ -530,13 +596,13 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
   handleTimeExpired: async () => {
     const { currentModuleIndex, modules, nextModule, completeExam } = get()
-    
+
     console.log('Hook handleTimeExpired called:', {
       currentModuleIndex,
       totalModules: modules.length,
-      isLastModule: currentModuleIndex >= modules.length - 1
+      isLastModule: currentModuleIndex >= modules.length - 1,
     })
-    
+
     try {
       // Auto-advance to next module or complete exam
       if (currentModuleIndex < modules.length - 1) {
@@ -556,7 +622,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
   updateTimer: (remainingSeconds: number) => {
     const { modules, currentModuleIndex } = get()
-    
+
     // Prevent unnecessary updates if time hasn't changed
     const currentModule = modules[currentModuleIndex]
     if (!currentModule || currentModule.timeRemaining === remainingSeconds) {
@@ -566,7 +632,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
     const newModules = [...modules]
     newModules[currentModuleIndex] = {
       ...newModules[currentModuleIndex],
-      timeRemaining: remainingSeconds
+      timeRemaining: remainingSeconds,
     }
 
     set({ modules: newModules })
@@ -574,17 +640,22 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
   getCurrentQuestion: () => {
     const { modules, currentModuleIndex } = get()
-    
+
     if (modules.length === 0 || currentModuleIndex >= modules.length) {
       return null
     }
-    
+
     const currentModule = modules[currentModuleIndex]
-    if (!currentModule || !currentModule.questions || currentModule.questions.length === 0) {
+    if (
+      !currentModule ||
+      !currentModule.questions ||
+      currentModule.questions.length === 0
+    ) {
       return null
     }
-    
-    const question = currentModule.questions[currentModule.currentQuestionIndex] || null
+
+    const question =
+      currentModule.questions[currentModule.currentQuestionIndex] || null
     return question
   },
 
@@ -601,24 +672,24 @@ export const useExamStore = create<ExamState>((set, get) => ({
     const { modules, currentModuleIndex, getCurrentQuestion } = get()
     const currentQuestion = getCurrentQuestion()
     const questionToToggle = questionId || currentQuestion?.id
-    
+
     if (!questionToToggle) return
 
     const newModules = [...modules]
     const currentModule = newModules[currentModuleIndex]
-    
+
     if (currentModule) {
       const newMarkedForReview = new Set(currentModule.markedForReview)
-      
+
       if (newMarkedForReview.has(questionToToggle)) {
         newMarkedForReview.delete(questionToToggle)
       } else {
         newMarkedForReview.add(questionToToggle)
       }
-      
+
       newModules[currentModuleIndex] = {
         ...currentModule,
-        markedForReview: newMarkedForReview
+        markedForReview: newMarkedForReview,
       }
     }
 
@@ -629,7 +700,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
     const { modules, currentModuleIndex, getCurrentQuestion } = get()
     const currentQuestion = getCurrentQuestion()
     const questionToCheck = questionId || currentQuestion?.id
-    
+
     if (!questionToCheck) return false
 
     const currentModule = modules[currentModuleIndex]
@@ -645,9 +716,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
       .map((question, index) => ({
         question,
         index,
-        isMarked: currentModule.markedForReview.has(question.id)
+        isMarked: currentModule.markedForReview.has(question.id),
       }))
-      .filter(item => item.isMarked)
+      .filter((item) => item.isMarked)
   },
 
   continueExistingAttempt: async () => {
@@ -656,51 +727,64 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
     console.log('continueExistingAttempt: Starting with', {
       existingAttempt,
-      exam: exam.title
+      exam: exam.title,
     })
 
     set({ loading: true })
     try {
       // Load existing answers for this attempt
-      const existingAnswers = await ExamService.getUserAnswers(existingAttempt.id)
-      console.log('continueExistingAttempt: Found existing answers:', existingAnswers.length)
-      
+      const existingAnswers = await ExamService.getUserAnswers(
+        existingAttempt.id
+      )
+      console.log(
+        'continueExistingAttempt: Found existing answers:',
+        existingAnswers.length
+      )
+
       // Load questions for all modules
       const moduleStates: ModuleState[] = []
-      
+
       for (const moduleType of MODULE_ORDER) {
         const questions = await ExamService.getQuestions(exam.id, moduleType)
         const timeLimit = exam.time_limits[moduleType] || 60
 
-        console.log(`continueExistingAttempt: Module ${moduleType} has ${questions.length} questions`)
+        console.log(
+          `continueExistingAttempt: Module ${moduleType} has ${questions.length} questions`
+        )
 
         // Skip modules with no questions
         if (questions.length === 0) {
-          console.warn(`continueExistingAttempt: Skipping module ${moduleType} - no questions found`)
+          console.warn(
+            `continueExistingAttempt: Skipping module ${moduleType} - no questions found`
+          )
           continue
         }
 
         // Build answers map for this module from existing database answers
         const moduleAnswers: Record<string, ExamAnswer> = {}
-        existingAnswers.forEach(answer => {
-          const question = questions.find(q => q.id === answer.question_id)
+        existingAnswers.forEach((answer) => {
+          const question = questions.find((q) => q.id === answer.question_id)
           if (question && answer.user_answer) {
             moduleAnswers[answer.question_id] = {
               questionId: answer.question_id,
               answer: answer.user_answer,
               timeSpent: answer.time_spent_seconds,
-              answeredAt: new Date(answer.answered_at)
+              answeredAt: new Date(answer.answered_at),
             }
           }
         })
 
         // Determine if this module is completed (has answers for all questions)
-        const isCompleted = questions.length > 0 && questions.every(q => moduleAnswers[q.id])
+        const isCompleted =
+          questions.length > 0 && questions.every((q) => moduleAnswers[q.id])
 
         // Set current question index based on the existing attempt's current question number
         let currentQuestionIndex = 0
         if (moduleType === existingAttempt.current_module) {
-          currentQuestionIndex = Math.max(0, (existingAttempt.current_question_number || 1) - 1)
+          currentQuestionIndex = Math.max(
+            0,
+            (existingAttempt.current_question_number || 1) - 1
+          )
         } else if (isCompleted) {
           currentQuestionIndex = questions.length - 1
         }
@@ -709,7 +793,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
           questionsLength: questions.length,
           answersCount: Object.keys(moduleAnswers).length,
           isCompleted,
-          currentQuestionIndex
+          currentQuestionIndex,
         })
 
         moduleStates.push({
@@ -720,7 +804,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
           markedForReview: new Set(),
           timeLimit,
           timeRemaining: timeLimit * 60,
-          completed: isCompleted
+          completed: isCompleted,
         })
       }
 
@@ -731,33 +815,38 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
       // Find current module index based on existing attempt (within the filtered modules)
       const attemptCurrentModule = existingAttempt.current_module || 'english1'
-      const currentModuleIndex = moduleStates.findIndex(module => module.module === attemptCurrentModule)
-      const validCurrentModuleIndex = currentModuleIndex >= 0 ? currentModuleIndex : 0
+      const currentModuleIndex = moduleStates.findIndex(
+        (module) => module.module === attemptCurrentModule
+      )
+      const validCurrentModuleIndex =
+        currentModuleIndex >= 0 ? currentModuleIndex : 0
 
       console.log('continueExistingAttempt: Final state setup:', {
         attemptCurrentModule,
         currentModuleIndex: validCurrentModuleIndex,
         modulesCount: moduleStates.length,
-        availableModules: moduleStates.map(m => m.module),
-        status: existingAttempt.status
+        availableModules: moduleStates.map((m) => m.module),
+        status: existingAttempt.status,
       })
 
       // If the existing attempt was expired, reactivate it
       if (existingAttempt.status === 'expired') {
         console.log('continueExistingAttempt: Reactivating expired attempt')
         await ExamService.updateTestAttempt(existingAttempt.id, {
-          status: 'in_progress'
+          status: 'in_progress',
         })
       }
 
       // Load highlights from localStorage
-      const savedHighlightsJSON = localStorage.getItem(`highlights_${existingAttempt.id}`)
+      const savedHighlightsJSON = localStorage.getItem(
+        `highlights_${existingAttempt.id}`
+      )
       let savedHighlights = {}
       if (savedHighlightsJSON) {
         try {
           savedHighlights = JSON.parse(savedHighlightsJSON)
         } catch (e) {
-          console.error("Failed to parse saved highlights:", e)
+          console.error('Failed to parse saved highlights:', e)
         }
       }
 
@@ -767,11 +856,13 @@ export const useExamStore = create<ExamState>((set, get) => ({
         modules: moduleStates,
         currentModuleIndex: validCurrentModuleIndex,
         status: 'in_progress', // Always set to in_progress when continuing
-        startedAt: existingAttempt.started_at ? new Date(existingAttempt.started_at) : null,
+        startedAt: existingAttempt.started_at
+          ? new Date(existingAttempt.started_at)
+          : null,
         existingAttempt: null,
         showConflictModal: false,
         loading: false,
-        highlightsByQuestion: savedHighlights
+        highlightsByQuestion: savedHighlights,
       })
     } catch (err: any) {
       console.error('continueExistingAttempt: Error:', err)
@@ -787,10 +878,10 @@ export const useExamStore = create<ExamState>((set, get) => ({
     try {
       // Clean up highlights for the existing attempt
       localStorage.removeItem(`highlights_${existingAttempt.id}`)
-      
+
       // Delete existing attempt
       await ExamService.deleteTestAttempt(existingAttempt.id)
-      
+
       // Create new test attempt
       const response = await fetch('/api/test-attempts', {
         method: 'POST',
@@ -801,8 +892,8 @@ export const useExamStore = create<ExamState>((set, get) => ({
         body: JSON.stringify({
           exam_id: exam.id,
           status: 'not_started',
-          current_module: 'english1'
-        })
+          current_module: 'english1',
+        }),
       })
 
       if (!response.ok) {
@@ -814,16 +905,20 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
       // Load questions for all modules
       const moduleStates: ModuleState[] = []
-      
+
       for (const moduleType of MODULE_ORDER) {
         const questions = await ExamService.getQuestions(exam.id, moduleType)
         const timeLimit = exam.time_limits[moduleType] || 60
 
-        console.log(`discardAndStartNew: Module ${moduleType} has ${questions.length} questions`)
+        console.log(
+          `discardAndStartNew: Module ${moduleType} has ${questions.length} questions`
+        )
 
         // Skip modules with no questions
         if (questions.length === 0) {
-          console.warn(`discardAndStartNew: Skipping module ${moduleType} - no questions found`)
+          console.warn(
+            `discardAndStartNew: Skipping module ${moduleType} - no questions found`
+          )
           continue
         }
 
@@ -835,7 +930,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
           markedForReview: new Set(),
           timeLimit,
           timeRemaining: timeLimit * 60,
-          completed: false
+          completed: false,
         })
       }
 
@@ -854,7 +949,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
         existingAttempt: null,
         showConflictModal: false,
         loading: false,
-        highlightsByQuestion: {}
+        highlightsByQuestion: {},
       })
     } catch (err: any) {
       set({ error: err.message, loading: false })
@@ -864,9 +959,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
   closeConflictModal: (router?: any) => {
     set({
       showConflictModal: false,
-      existingAttempt: null
+      existingAttempt: null,
     })
-    
+
     // Redirect to dashboard if router is provided
     if (router) {
       router.push('/student/dashboard')
@@ -885,44 +980,51 @@ export const useExamStore = create<ExamState>((set, get) => ({
       showConflictModal: false,
       loading: false,
       error: null,
-      highlightsByQuestion: {}
+      highlightsByQuestion: {},
     })
   },
 
   addHighlight: (questionId: string, newHighlight: Highlight) => {
     const { highlightsByQuestion, attempt } = get()
-    
+
     const newHighlights = { ...highlightsByQuestion }
     if (!newHighlights[questionId]) {
       newHighlights[questionId] = []
     }
-    
+
     // Add the new highlight and sort by start position
     newHighlights[questionId].push(newHighlight)
     newHighlights[questionId].sort((a, b) => a.start - b.start)
-    
+
     // Update React state for immediate UI re-render
     set({ highlightsByQuestion: newHighlights })
-    
+
     // Persist to localStorage
     if (attempt?.id) {
-      localStorage.setItem(`highlights_${attempt.id}`, JSON.stringify(newHighlights))
+      localStorage.setItem(
+        `highlights_${attempt.id}`,
+        JSON.stringify(newHighlights)
+      )
     }
   },
 
   removeHighlight: (questionId: string, highlightToRemove: Highlight) => {
     const { highlightsByQuestion, attempt } = get()
-    
+
     const newHighlights = { ...highlightsByQuestion }
     if (newHighlights[questionId]) {
       newHighlights[questionId] = newHighlights[questionId].filter(
-        h => h.start !== highlightToRemove.start || h.end !== highlightToRemove.end
+        (h) =>
+          h.start !== highlightToRemove.start || h.end !== highlightToRemove.end
       )
       set({ highlightsByQuestion: newHighlights })
-      
+
       if (attempt?.id) {
-        localStorage.setItem(`highlights_${attempt.id}`, JSON.stringify(newHighlights))
+        localStorage.setItem(
+          `highlights_${attempt.id}`,
+          JSON.stringify(newHighlights)
+        )
       }
     }
-  }
+  },
 }))

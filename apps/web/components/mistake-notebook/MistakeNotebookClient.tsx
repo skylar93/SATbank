@@ -17,9 +17,11 @@ interface MistakeNotebookClientProps {
   mistakes: MistakeWithQuestion[]
 }
 
-export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) {
+export function MistakeNotebookClient({
+  mistakes,
+}: MistakeNotebookClientProps) {
   const router = useRouter()
-  
+
   const [filters, setFilters] = useState<FilterOptions>({
     module: 'all',
     difficulty: 'all',
@@ -27,13 +29,13 @@ export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) 
     topics: [],
     showIncorrectOnly: false,
   })
-  
+
   const [selectedMistakes, setSelectedMistakes] = useState<string[]>([])
 
   // Extract available topics from mistakes
   const availableTopics = useMemo(() => {
     const topics = new Set<string>()
-    mistakes.forEach(mistake => {
+    mistakes.forEach((mistake) => {
       if (mistake.questions?.topic_tags) {
         mistake.questions.topic_tags.forEach((tag: string) => topics.add(tag))
       }
@@ -43,7 +45,7 @@ export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) 
 
   // Filter mistakes based on current filters
   const filteredMistakes = useMemo(() => {
-    return mistakes.filter(mistake => {
+    return mistakes.filter((mistake) => {
       const question = mistake.questions
       if (!question) return false
 
@@ -53,19 +55,27 @@ export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) 
       }
 
       // Difficulty filter
-      if (filters.difficulty !== 'all' && question.difficulty_level !== filters.difficulty) {
+      if (
+        filters.difficulty !== 'all' &&
+        question.difficulty_level !== filters.difficulty
+      ) {
         return false
       }
 
       // Question type filter
-      if (filters.questionType !== 'all' && question.question_type !== filters.questionType) {
+      if (
+        filters.questionType !== 'all' &&
+        question.question_type !== filters.questionType
+      ) {
         return false
       }
 
       // Topics filter
       if (filters.topics.length > 0) {
         const questionTopics = question.topic_tags || []
-        const hasMatchingTopic = filters.topics.some(topic => questionTopics.includes(topic))
+        const hasMatchingTopic = filters.topics.some((topic) =>
+          questionTopics.includes(topic)
+        )
         if (!hasMatchingTopic) return false
       }
 
@@ -77,13 +87,13 @@ export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) 
   }, [mistakes, filters])
 
   const handleFilterChange = (newFilters: Partial<FilterOptions>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }))
+    setFilters((prev) => ({ ...prev, ...newFilters }))
   }
 
   const handleMistakeToggle = (mistakeId: string) => {
-    setSelectedMistakes(prev => 
+    setSelectedMistakes((prev) =>
       prev.includes(mistakeId)
-        ? prev.filter(id => id !== mistakeId)
+        ? prev.filter((id) => id !== mistakeId)
         : [...prev, mistakeId]
     )
   }
@@ -92,7 +102,7 @@ export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) 
     if (selectedMistakes.length === filteredMistakes.length) {
       setSelectedMistakes([])
     } else {
-      setSelectedMistakes(filteredMistakes.map(mistake => mistake.id))
+      setSelectedMistakes(filteredMistakes.map((mistake) => mistake.id))
     }
   }
 
@@ -100,11 +110,11 @@ export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) 
     if (selectedMistakes.length === 0) return
 
     const selectedQuestionIds = mistakes
-      .filter(mistake => selectedMistakes.includes(mistake.id))
-      .map(mistake => mistake.question_id)
+      .filter((mistake) => selectedMistakes.includes(mistake.id))
+      .map((mistake) => mistake.question_id)
 
     const queryParams = new URLSearchParams()
-    selectedQuestionIds.forEach(id => queryParams.append('q', id))
+    selectedQuestionIds.forEach((id) => queryParams.append('q', id))
     router.push(`/student/practice-quiz?${queryParams.toString()}`)
   }
 
@@ -112,7 +122,7 @@ export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) 
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     })
   }
 
@@ -149,7 +159,8 @@ export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) 
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">
-                {filteredMistakes.length} Mistake{filteredMistakes.length !== 1 ? 's' : ''} Found
+                {filteredMistakes.length} Mistake
+                {filteredMistakes.length !== 1 ? 's' : ''} Found
               </h2>
               <p className="text-sm text-gray-600">
                 {selectedMistakes.length} selected
@@ -161,7 +172,9 @@ export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) 
                 className="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
                 disabled={filteredMistakes.length === 0}
               >
-                {selectedMistakes.length === filteredMistakes.length ? 'Deselect All' : 'Select All'}
+                {selectedMistakes.length === filteredMistakes.length
+                  ? 'Deselect All'
+                  : 'Select All'}
               </button>
               <button
                 onClick={handleCreatePracticeQuiz}
@@ -179,13 +192,14 @@ export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) 
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <div className="text-gray-400 text-lg mb-2">🎉</div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {mistakes.length === 0 ? 'No mistakes yet!' : 'No mistakes match your filters'}
+              {mistakes.length === 0
+                ? 'No mistakes yet!'
+                : 'No mistakes match your filters'}
             </h3>
             <p className="text-gray-600">
-              {mistakes.length === 0 
+              {mistakes.length === 0
                 ? 'Take an exam to start building your mistake notebook.'
-                : 'Try adjusting your filters to see more results.'
-              }
+                : 'Try adjusting your filters to see more results.'}
             </p>
           </div>
         ) : (
@@ -195,7 +209,10 @@ export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) 
               if (!question) return null
 
               return (
-                <div key={mistake.id} className="bg-white rounded-lg shadow border border-gray-200">
+                <div
+                  key={mistake.id}
+                  className="bg-white rounded-lg shadow border border-gray-200"
+                >
                   <div className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-3 flex-1">
@@ -223,24 +240,34 @@ export function MistakeNotebookClient({ mistakes }: MistakeNotebookClientProps) 
                             {question.question_text.length > 150 && '...'}
                           </div>
                           <div className="flex items-center text-xs text-gray-500 space-x-4">
-                            <span>First mistake: {formatDate(mistake.first_mistaken_at)}</span>
+                            <span>
+                              First mistake:{' '}
+                              {formatDate(mistake.first_mistaken_at)}
+                            </span>
                             {mistake.last_reviewed_at && (
-                              <span>Last reviewed: {formatDate(mistake.last_reviewed_at)}</span>
+                              <span>
+                                Last reviewed:{' '}
+                                {formatDate(mistake.last_reviewed_at)}
+                              </span>
                             )}
-                            <span>Worth {question.points} point{question.points !== 1 ? 's' : ''}</span>
+                            <span>
+                              Worth {question.points} point
+                              {question.points !== 1 ? 's' : ''}
+                            </span>
                           </div>
-                          {question.topic_tags && question.topic_tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              {question.topic_tags.map((tag: string) => (
-                                <span
-                                  key={tag}
-                                  className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
+                          {question.topic_tags &&
+                            question.topic_tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {question.topic_tags.map((tag: string) => (
+                                  <span
+                                    key={tag}
+                                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                         </div>
                       </div>
                     </div>

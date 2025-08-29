@@ -28,18 +28,26 @@ interface StudentAttemptsListProps {
   onVisibilityUpdate: () => void
 }
 
-export default function StudentAttemptsList({ attempts, onVisibilityUpdate }: StudentAttemptsListProps) {
-  const [updatingAttempts, setUpdatingAttempts] = useState<Set<string>>(new Set())
+export default function StudentAttemptsList({
+  attempts,
+  onVisibilityUpdate,
+}: StudentAttemptsListProps) {
+  const [updatingAttempts, setUpdatingAttempts] = useState<Set<string>>(
+    new Set()
+  )
 
-  const handleVisibilityToggle = async (attemptId: string, currentVisible: boolean) => {
-    setUpdatingAttempts(prev => new Set(prev).add(attemptId))
-    
+  const handleVisibilityToggle = async (
+    attemptId: string,
+    currentVisible: boolean
+  ) => {
+    setUpdatingAttempts((prev) => new Set(prev).add(attemptId))
+
     try {
       const { error } = await supabase
         .from('test_attempts')
-        .update({ 
+        .update({
           answers_visible: !currentVisible,
-          answers_visible_after: null // Reset scheduled release when toggling
+          answers_visible_after: null, // Reset scheduled release when toggling
         })
         .eq('id', attemptId)
 
@@ -51,12 +59,11 @@ export default function StudentAttemptsList({ attempts, onVisibilityUpdate }: St
 
       // Refresh the data in the parent component
       onVisibilityUpdate()
-      
     } catch (error) {
       console.error('Error updating visibility:', error)
       alert('Failed to update answer visibility. Please try again.')
     } finally {
-      setUpdatingAttempts(prev => {
+      setUpdatingAttempts((prev) => {
         const newSet = new Set(prev)
         newSet.delete(attemptId)
         return newSet
@@ -107,9 +114,9 @@ export default function StudentAttemptsList({ attempts, onVisibilityUpdate }: St
       if (now >= releaseDate) {
         return { status: 'Visible', color: 'text-emerald-600' }
       } else {
-        return { 
-          status: `Scheduled: ${formatDate(attempt.answers_visible_after)}`, 
-          color: 'text-orange-600' 
+        return {
+          status: `Scheduled: ${formatDate(attempt.answers_visible_after)}`,
+          color: 'text-orange-600',
         }
       }
     }
@@ -186,7 +193,9 @@ export default function StudentAttemptsList({ attempts, onVisibilityUpdate }: St
                     </td>
                     <td className="px-6 py-4">
                       {attempt.status === 'completed' ? (
-                        <div className={`text-sm font-medium ${getScoreColor(displayScore)}`}>
+                        <div
+                          className={`text-sm font-medium ${getScoreColor(displayScore)}`}
+                        >
                           {displayScore}
                         </div>
                       ) : (
@@ -195,17 +204,27 @@ export default function StudentAttemptsList({ attempts, onVisibilityUpdate }: St
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
-                        <span className={`text-sm font-medium ${visibilityStatus.color}`}>
+                        <span
+                          className={`text-sm font-medium ${visibilityStatus.color}`}
+                        >
                           {visibilityStatus.status}
                         </span>
                         <button
-                          onClick={() => handleVisibilityToggle(attempt.id, attempt.answers_visible)}
-                          disabled={isUpdating || attempt.status !== 'completed'}
+                          onClick={() =>
+                            handleVisibilityToggle(
+                              attempt.id,
+                              attempt.answers_visible
+                            )
+                          }
+                          disabled={
+                            isUpdating || attempt.status !== 'completed'
+                          }
                           className={`
                             relative inline-flex h-6 w-11 items-center rounded-full transition-colors 
-                            ${attempt.answers_visible 
-                              ? 'bg-emerald-600' 
-                              : 'bg-gray-200'
+                            ${
+                              attempt.answers_visible
+                                ? 'bg-emerald-600'
+                                : 'bg-gray-200'
                             }
                             ${attempt.status !== 'completed' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                             ${isUpdating ? 'opacity-75' : ''}

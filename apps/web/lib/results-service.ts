@@ -32,7 +32,9 @@ export interface DashboardStats {
  * Efficiently fetches all results dashboard data in minimal queries
  * Solves N+1 query problem by fetching attempts and visibility in optimized way
  */
-export async function getResultsDashboardData(userId: string): Promise<ResultsDashboardData> {
+export async function getResultsDashboardData(
+  userId: string
+): Promise<ResultsDashboardData> {
   if (!userId) {
     throw new Error('User ID is required')
   }
@@ -60,9 +62,7 @@ export async function getResultsDashboardData(userId: string): Promise<ResultsDa
 
   attemptsByExam.forEach((attempts, examId) => {
     // Separate completed and in_progress attempts
-    const completedAttempts = attempts.filter(
-      (a) => a.status === 'completed'
-    )
+    const completedAttempts = attempts.filter((a) => a.status === 'completed')
     const inProgressAttempts = attempts.filter(
       (a) => a.status === 'in_progress'
     )
@@ -88,7 +88,10 @@ export async function getResultsDashboardData(userId: string): Promise<ResultsDa
   )
 
   // Check result visibility for all unique exams in parallel
-  const resultVisibility = await checkResultVisibilityBatch(userId, sortedAttempts)
+  const resultVisibility = await checkResultVisibilityBatch(
+    userId,
+    sortedAttempts
+  )
 
   return {
     attempts: sortedAttempts,
@@ -101,7 +104,7 @@ export async function getResultsDashboardData(userId: string): Promise<ResultsDa
  * Reduces database calls by checking unique exam IDs only once
  */
 async function checkResultVisibilityBatch(
-  userId: string, 
+  userId: string,
   attempts: (TestAttempt & { exam?: Exam })[]
 ): Promise<Map<string, boolean>> {
   const visibilityMap = new Map<string, boolean>()
@@ -140,7 +143,7 @@ export function calculateDashboardStats(
   resultVisibility: Map<string, boolean>
 ): DashboardStats {
   const completedAttempts = attempts.filter((a) => a.status === 'completed')
-  
+
   // Helper function to check if results can be shown for an attempt
   const canShowAttemptResults = (attempt: TestAttempt): boolean => {
     if (!attempt.exam_id) return true // Practice mode, always show

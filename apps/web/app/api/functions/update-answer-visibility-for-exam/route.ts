@@ -32,10 +32,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (authError || !user) {
-      return NextResponse.json({ 
-        error: 'Unauthorized', 
-        details: authError?.message || 'No user found'
-      }, { status: 401 })
+      return NextResponse.json(
+        {
+          error: 'Unauthorized',
+          details: authError?.message || 'No user found',
+        },
+        { status: 401 }
+      )
     }
 
     // Check admin role
@@ -74,16 +77,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Construct update object based on visibility option
-    let updateData: { answers_visible: boolean; answers_visible_after?: string | null } = {
+    let updateData: {
+      answers_visible: boolean
+      answers_visible_after?: string | null
+    } = {
       answers_visible: false,
-      answers_visible_after: null
+      answers_visible_after: null,
     }
 
     switch (visibilityOption) {
       case 'immediate':
         updateData = {
           answers_visible: true,
-          answers_visible_after: null
+          answers_visible_after: null,
         }
         break
       case 'scheduled':
@@ -95,20 +101,20 @@ export async function POST(request: NextRequest) {
         }
         updateData = {
           answers_visible: false,
-          answers_visible_after: releaseTimestamp
+          answers_visible_after: releaseTimestamp,
         }
         break
       case 'per_question':
         updateData = {
           answers_visible: true,
-          answers_visible_after: null
+          answers_visible_after: null,
         }
         break
       case 'hidden':
       default:
         updateData = {
           answers_visible: false,
-          answers_visible_after: null
+          answers_visible_after: null,
         }
         break
     }
@@ -116,7 +122,7 @@ export async function POST(request: NextRequest) {
     // Use service role for admin operations
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    
+
     if (!supabaseUrl || !serviceKey) {
       return NextResponse.json(
         { error: 'Server configuration error' },
@@ -124,15 +130,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabaseService = createClient(
-      supabaseUrl,
-      serviceKey,
-      { auth: { autoRefreshToken: false, persistSession: false } }
-    )
+    const supabaseService = createClient(supabaseUrl, serviceKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    })
 
     // Update exam's answer check mode
     const examUpdateData: { answer_check_mode: string } = {
-      answer_check_mode: visibilityOption === 'per_question' ? 'per_question' : 'exam_end'
+      answer_check_mode:
+        visibilityOption === 'per_question' ? 'per_question' : 'exam_end',
     }
 
     const { error: examError } = await supabaseService
@@ -163,12 +168,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       message: `Updated answer visibility for ${data?.length || 0} attempts`,
-      updatedAttempts: data?.length || 0
+      updatedAttempts: data?.length || 0,
     })
-
   } catch (error) {
     console.error('API route error:', error)
     return NextResponse.json(

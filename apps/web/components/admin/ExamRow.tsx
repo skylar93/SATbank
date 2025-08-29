@@ -138,7 +138,7 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
           </div>
         </td>
       </tr>
-      
+
       {/* Expanded Row */}
       {isExpanded && (
         <tr className="bg-gradient-to-r from-purple-25 to-pink-25 border-t border-purple-100">
@@ -150,13 +150,17 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
                 </h3>
                 <span className="text-sm text-gray-500">ID: {exam.id}</span>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <h4 className="font-medium text-gray-800">Scoring Configuration</h4>
+                  <h4 className="font-medium text-gray-800">
+                    Scoring Configuration
+                  </h4>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-100">
-                      <span className="text-sm text-gray-600">English Curve:</span>
+                      <span className="text-sm text-gray-600">
+                        English Curve:
+                      </span>
                       <CurveAssignmentControl
                         examId={exam.id}
                         curveType="english"
@@ -177,13 +181,17 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="space-y-3">
-                  <h4 className="font-medium text-gray-800">Answer Visibility</h4>
+                  <h4 className="font-medium text-gray-800">
+                    Answer Visibility
+                  </h4>
                   <div className="p-3 bg-white rounded-lg border border-green-100">
                     {exam.answer_release_setting ? (
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Current Setting:</span>
+                        <span className="text-sm text-gray-600">
+                          Current Setting:
+                        </span>
                         <AnswerVisibilityControl
                           examId={exam.id}
                           currentVisibility={exam.answer_release_setting}
@@ -197,9 +205,11 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
                   </div>
                 </div>
               </div>
-              
+
               <div className="pt-4 border-t border-purple-100">
-                <h4 className="font-medium text-gray-800 mb-3">Quick Actions</h4>
+                <h4 className="font-medium text-gray-800 mb-3">
+                  Quick Actions
+                </h4>
                 <div className="flex flex-wrap gap-3">
                   <Link
                     href={`/admin/exams/${exam.id}/settings`}

@@ -220,7 +220,10 @@ function AdminExamPreviewContent() {
           currentModule.questions.length - 1
         ) {
           handleNext()
-        } else if (examState.currentModuleIndex < examState.modules.length - 1) {
+        } else if (
+          examState.currentModuleIndex <
+          examState.modules.length - 1
+        ) {
           // Move to next module's first question
           const nextModuleIndex = examState.currentModuleIndex + 1
           handleGoToModule(nextModuleIndex, 0)

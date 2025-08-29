@@ -6,7 +6,12 @@ import { QuestionDisplay } from '../../../../../components/exam/question-display
 import { ExamNavigation } from '../../../../../components/exam/exam-navigation'
 import { useExamReviewState } from '../../../../../hooks/use-exam-review-state'
 import { supabase } from '../../../../../lib/supabase'
-import type { Question, TestAttempt, UserAnswer, Exam } from '../../../../../lib/exam-service'
+import type {
+  Question,
+  TestAttempt,
+  UserAnswer,
+  Exam,
+} from '../../../../../lib/exam-service'
 
 interface ReviewData {
   attempt: TestAttempt & { exams: Exam }
@@ -53,7 +58,7 @@ export default function ReviewPageClient({
     if (!isAdminView || !currentQuestion || !userAnswer) return
 
     const currentUserAnswer = reviewData.userAnswers.find(
-      ua => ua.question_id === currentQuestion.id
+      (ua) => ua.question_id === currentQuestion.id
     )
 
     if (!currentUserAnswer) return
@@ -63,10 +68,14 @@ export default function ReviewPageClient({
 
     try {
       // Get fresh session
-      const { data: { session } } = await supabase.auth.getSession()
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
       if (!session?.access_token) {
-        throw new Error('Authentication failed. Please refresh the page and try again.')
+        throw new Error(
+          'Authentication failed. Please refresh the page and try again.'
+        )
       }
 
       const response = await fetch('/api/admin/regrade-question', {
@@ -119,32 +128,39 @@ export default function ReviewPageClient({
   }
 
   // Get question status for navigation display using the exact same ordering as the hook
-  const { correctQuestions, incorrectQuestions, answeredQuestions } = useMemo(() => {
-    const correct = new Set<number>()
-    const incorrect = new Set<number>()
-    const answered = new Set<number>()
-    
-    // Use the exact same ordered questions array as the hook to ensure perfect consistency
-    allQuestionsOrdered.forEach((question, index) => {
-      const userAnswer = reviewData.userAnswers.find(ua => ua.question_id === question.id)
-      const questionNumber = index + 1
-      
-      if (userAnswer?.user_answer) {
-        answered.add(questionNumber)
-        
-        // Use the definitive is_correct value from the database (includes admin regrades)
-        const isCorrect = userAnswer.is_correct ?? false
-        
-        if (isCorrect) {
-          correct.add(questionNumber)
-        } else {
-          incorrect.add(questionNumber)
+  const { correctQuestions, incorrectQuestions, answeredQuestions } =
+    useMemo(() => {
+      const correct = new Set<number>()
+      const incorrect = new Set<number>()
+      const answered = new Set<number>()
+
+      // Use the exact same ordered questions array as the hook to ensure perfect consistency
+      allQuestionsOrdered.forEach((question, index) => {
+        const userAnswer = reviewData.userAnswers.find(
+          (ua) => ua.question_id === question.id
+        )
+        const questionNumber = index + 1
+
+        if (userAnswer?.user_answer) {
+          answered.add(questionNumber)
+
+          // Use the definitive is_correct value from the database (includes admin regrades)
+          const isCorrect = userAnswer.is_correct ?? false
+
+          if (isCorrect) {
+            correct.add(questionNumber)
+          } else {
+            incorrect.add(questionNumber)
+          }
         }
+      })
+
+      return {
+        correctQuestions: correct,
+        incorrectQuestions: incorrect,
+        answeredQuestions: answered,
       }
-    })
-    
-    return { correctQuestions: correct, incorrectQuestions: incorrect, answeredQuestions: answered }
-  }, [allQuestionsOrdered, reviewData.userAnswers])
+    }, [allQuestionsOrdered, reviewData.userAnswers])
 
   // Get all modules for navigation
   const allModules = getAllModules()
@@ -152,7 +168,9 @@ export default function ReviewPageClient({
   // Calculate current question number within the module
   const currentModuleIndex = getCurrentModuleIndex()
   const currentModuleQuestions = getModuleQuestions(currentModule)
-  const questionIndexInModule = currentModuleQuestions.findIndex(q => q.id === currentQuestion.id)
+  const questionIndexInModule = currentModuleQuestions.findIndex(
+    (q) => q.id === currentQuestion.id
+  )
   const currentQuestionInModule = questionIndexInModule + 1
   const totalQuestionsInModule = currentModuleQuestions.length
 
@@ -195,24 +213,40 @@ export default function ReviewPageClient({
         <div className="mx-auto">
           <div className="flex items-center">
             <Link
-              href={isAdminView ? `/admin/results/${attemptId}` : `/student/results/${attemptId}`}
+              href={
+                isAdminView
+                  ? `/admin/results/${attemptId}`
+                  : `/student/results/${attemptId}`
+              }
               className="inline-flex items-center justify-center w-10 h-10 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors mr-4"
-              title={isAdminView ? "Back to Analysis" : "Back to Results"}
+              title={isAdminView ? 'Back to Analysis' : 'Back to Results'}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </Link>
-            
+
             <div>
               <h1 className="text-2xl font-bold text-gray-900 mb-1">
                 {isAdminView ? 'Admin Exam Review' : 'Exam Review'}
               </h1>
-              <p className="text-gray-600">
-                {reviewData.exam.title}
-              </p>
+              <p className="text-gray-600">{reviewData.exam.title}</p>
               <div className="text-sm text-gray-500 mt-1">
-                Completed: {formatDate(reviewData.attempt.completed_at || reviewData.attempt.created_at)}
+                Completed:{' '}
+                {formatDate(
+                  reviewData.attempt.completed_at ||
+                    reviewData.attempt.created_at
+                )}
               </div>
             </div>
           </div>
@@ -241,9 +275,11 @@ export default function ReviewPageClient({
           allModules={allModules}
           currentModuleIndex={getCurrentModuleIndex()}
           onGoToModule={(moduleIndex, questionIndex) => {
-            const globalIndex = allModules
-              .slice(0, moduleIndex)
-              .reduce((acc, module) => acc + module.questions.length, 0) + questionIndex
+            const globalIndex =
+              allModules
+                .slice(0, moduleIndex)
+                .reduce((acc, module) => acc + module.questions.length, 0) +
+              questionIndex
             goToQuestion(globalIndex)
           }}
           isCompact={true}
@@ -281,15 +317,23 @@ export default function ReviewPageClient({
               <div className="flex items-center space-x-6">
                 <div className="text-sm text-gray-600">
                   <span className="font-medium">Status:</span>{' '}
-                  <span className={`font-semibold ${
-                    !userAnswer 
-                      ? 'text-gray-500'
-                      : (isCorrect ? 'text-green-600' : 'text-red-600')
-                  }`}>
-                    {!userAnswer ? 'No answer' : (isCorrect ? '✓ Correct' : '✗ Incorrect')}
+                  <span
+                    className={`font-semibold ${
+                      !userAnswer
+                        ? 'text-gray-500'
+                        : isCorrect
+                          ? 'text-green-600'
+                          : 'text-red-600'
+                    }`}
+                  >
+                    {!userAnswer
+                      ? 'No answer'
+                      : isCorrect
+                        ? '✓ Correct'
+                        : '✗ Incorrect'}
                   </span>
                 </div>
-                
+
                 {userAnswer && (
                   <div className="text-sm text-gray-600">
                     <span className="font-medium">Selected:</span>{' '}
@@ -310,21 +354,21 @@ export default function ReviewPageClient({
                         : 'bg-green-100 text-green-700 hover:bg-green-200 disabled:bg-green-50'
                     } disabled:cursor-not-allowed`}
                   >
-                    {regrading 
-                      ? 'Regrading...' 
-                      : isCorrect 
-                        ? 'Mark as Incorrect' 
-                        : 'Mark as Correct'
-                    }
+                    {regrading
+                      ? 'Regrading...'
+                      : isCorrect
+                        ? 'Mark as Incorrect'
+                        : 'Mark as Correct'}
                   </button>
                 )}
               </div>
 
               <div className="flex items-center space-x-3">
                 <div className="text-sm text-gray-500">
-                  {getModuleDisplayName(currentModule)}: {currentQuestionInModule} of {totalQuestionsInModule}
+                  {getModuleDisplayName(currentModule)}:{' '}
+                  {currentQuestionInModule} of {totalQuestionsInModule}
                 </div>
-                
+
                 <div className="flex space-x-2">
                   <button
                     onClick={previousQuestion}

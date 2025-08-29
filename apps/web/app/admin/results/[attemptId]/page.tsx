@@ -183,31 +183,35 @@ export default function AdminDetailedResultsPage() {
 
     try {
       // Get all incorrect answers from this specific exam attempt
-      const incorrectQuestions = results.questionAnalysis.filter((q: any) => !q.isCorrect && q.userAnswer !== null)
-      
+      const incorrectQuestions = results.questionAnalysis.filter(
+        (q: any) => !q.isCorrect && q.userAnswer !== null
+      )
+
       if (incorrectQuestions.length === 0) {
-        alert('This student got all questions correct! No mistakes to create an assignment from.')
+        alert(
+          'This student got all questions correct! No mistakes to create an assignment from.'
+        )
         return
       }
 
       const questionIds = incorrectQuestions.map((q: any) => q.questionId)
-      
+
       // Get exam info from the attempt
       const { data: examInfo, error: examInfoError } = await supabase
         .from('exams')
         .select('title')
         .eq('id', results.attempt.exam_id)
         .single()
-      
+
       if (examInfoError) {
         console.error('Error fetching exam info:', examInfoError)
         alert('Failed to get exam information')
         return
       }
-      
+
       // Create a custom exam with these specific mistakes
       const examTitle = `Retake - ${examInfo.title} (${student.full_name})`
-      
+
       const { data: exam, error: examError } = await supabase
         .from('exams')
         .insert({
@@ -221,8 +225,8 @@ export default function AdminDetailedResultsPage() {
             english1: 35 * 60,
             english2: 35 * 60,
             math1: 35 * 60,
-            math2: 35 * 60
-          }
+            math2: 35 * 60,
+          },
         })
         .select()
         .single()
@@ -236,7 +240,7 @@ export default function AdminDetailedResultsPage() {
       // Link questions to the exam
       const examQuestions = questionIds.map((questionId: string) => ({
         exam_id: exam.id,
-        question_id: questionId
+        question_id: questionId,
       }))
 
       const { error: linkError } = await supabase
@@ -258,7 +262,7 @@ export default function AdminDetailedResultsPage() {
           assigned_by: user?.id,
           due_date: null,
           show_results: true,
-          is_active: true
+          is_active: true,
         })
 
       if (assignmentError) {
@@ -267,8 +271,9 @@ export default function AdminDetailedResultsPage() {
         return
       }
 
-      alert(`Successfully created assignment "${examTitle}" with ${questionIds.length} questions for ${student.full_name}!`)
-      
+      alert(
+        `Successfully created assignment "${examTitle}" with ${questionIds.length} questions for ${student.full_name}!`
+      )
     } catch (error) {
       console.error('Error creating mistake assignment:', error)
       alert('An error occurred while creating the assignment')
@@ -288,26 +293,33 @@ export default function AdminDetailedResultsPage() {
         const {
           data: { session: currentSession },
         } = await supabase.auth.getSession()
-        
+
         // If no session or token is expired, try to refresh
         if (!currentSession || !currentSession.access_token) {
           console.log('No session or expired token, attempting refresh...')
-          const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession()
+          const { data: refreshData, error: refreshError } =
+            await supabase.auth.refreshSession()
           if (refreshError) {
             console.error('Failed to refresh session:', refreshError)
-            throw new Error('Authentication failed. Please refresh the page and try again.')
+            throw new Error(
+              'Authentication failed. Please refresh the page and try again.'
+            )
           }
           session = refreshData.session
         } else {
           session = currentSession
         }
-        
+
         if (!session?.access_token) {
-          throw new Error('No valid session found. Please refresh the page and try again.')
+          throw new Error(
+            'No valid session found. Please refresh the page and try again.'
+          )
         }
       } catch (authError) {
         console.error('Authentication error:', authError)
-        setError('Authentication failed. Please refresh the page and try again.')
+        setError(
+          'Authentication failed. Please refresh the page and try again.'
+        )
         return
       }
 

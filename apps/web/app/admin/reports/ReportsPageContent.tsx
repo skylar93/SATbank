@@ -34,10 +34,17 @@ export default function ReportsPageContent() {
   }, [])
 
   useEffect(() => {
-    console.log('🔄 ReportsPageContent: Auth state changed', { authLoading, user: !!user, isAdmin })
-    
+    console.log('🔄 ReportsPageContent: Auth state changed', {
+      authLoading,
+      user: !!user,
+      isAdmin,
+    })
+
     if (!authLoading && user && isAdmin) {
-      console.log('🔄 ReportsPageContent: Loading report data for admin:', user.email)
+      console.log(
+        '🔄 ReportsPageContent: Loading report data for admin:',
+        user.email
+      )
       loadReportData()
     } else if (!authLoading && (!user || !isAdmin)) {
       console.log('🔄 ReportsPageContent: Not authorized, redirecting to login')
@@ -49,9 +56,9 @@ export default function ReportsPageContent() {
     try {
       setError(null)
       setLoading(true)
-      
+
       const { data, error } = await supabase.rpc('get_admin_report_attempts')
-      
+
       if (error) {
         console.error('Error fetching report attempts:', error)
         setError(error.message || 'Failed to load report data')
@@ -105,7 +112,8 @@ export default function ReportsPageContent() {
         </div>
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-800">
-            You don't have permission to access this page. Admin access required.
+            You don't have permission to access this page. Admin access
+            required.
           </p>
         </div>
       </div>
@@ -154,10 +162,8 @@ export default function ReportsPageContent() {
           </div>
         </div>
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">
-            Error loading reports: {error}
-          </p>
-          <button 
+          <p className="text-red-800">Error loading reports: {error}</p>
+          <button
             onClick={loadReportData}
             className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
@@ -175,9 +181,7 @@ export default function ReportsPageContent() {
       <div className="bg-white rounded-lg shadow-sm px-6 py-6 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Reports
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">Reports</h1>
           </div>
           <div className="flex items-center space-x-4">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">

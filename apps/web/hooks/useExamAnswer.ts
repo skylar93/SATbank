@@ -14,7 +14,9 @@ export const useExamAnswer = ({
 }: UseExamAnswerProps) => {
   const [currentAnswer, setCurrentAnswer] = useState('')
   const [isUserSelecting, setIsUserSelecting] = useState(false)
-  const [answerCheckMode, setAnswerCheckMode] = useState<'exam_end' | 'per_question'>('exam_end')
+  const [answerCheckMode, setAnswerCheckMode] = useState<
+    'exam_end' | 'per_question'
+  >('exam_end')
   const [showAnswerReveal, setShowAnswerReveal] = useState(false)
   const [answerRevealData, setAnswerRevealData] = useState<{
     question: any
@@ -24,35 +26,35 @@ export const useExamAnswer = ({
   const [shouldShowCorrectAnswer, setShouldShowCorrectAnswer] = useState(false)
 
   // Handle answer change
-  const handleAnswerChange = useCallback(async (
-    answer: string,
-    timeExpiredRef: React.RefObject<boolean>
-  ) => {
-    // Prevent input if time has expired
-    if (timeExpiredRef.current) {
-      return
-    }
+  const handleAnswerChange = useCallback(
+    async (answer: string, timeExpiredRef: React.RefObject<boolean>) => {
+      // Prevent input if time has expired
+      if (timeExpiredRef.current) {
+        return
+      }
 
-    setIsUserSelecting(true)
-    setCurrentAnswer(answer)
+      setIsUserSelecting(true)
+      setCurrentAnswer(answer)
 
-    // Store answer locally only - not saved to database until module completion
-    setLocalAnswer(answer)
+      // Store answer locally only - not saved to database until module completion
+      setLocalAnswer(answer)
 
-    // Clear any existing answer reveal state when answer changes
-    // This allows student to try again with different answer
-    if (showAnswerReveal) {
-      setShowAnswerReveal(false)
-      setAnswerRevealData(null)
-      setShouldShowCorrectAnswer(false)
-    }
+      // Clear any existing answer reveal state when answer changes
+      // This allows student to try again with different answer
+      if (showAnswerReveal) {
+        setShowAnswerReveal(false)
+        setAnswerRevealData(null)
+        setShouldShowCorrectAnswer(false)
+      }
 
-    // In per-question mode, just store the answer - don't auto-submit
-    // User will need to click "Check Answer" button to see results
+      // In per-question mode, just store the answer - don't auto-submit
+      // User will need to click "Check Answer" button to see results
 
-    // Clear the flag after a short delay to allow answer loading on navigation
-    setTimeout(() => setIsUserSelecting(false), 100)
-  }, [setLocalAnswer, showAnswerReveal])
+      // Clear the flag after a short delay to allow answer loading on navigation
+      setTimeout(() => setIsUserSelecting(false), 100)
+    },
+    [setLocalAnswer, showAnswerReveal]
+  )
 
   // Handle checking answer in per-question mode
   const handleCheckAnswer = useCallback(async () => {
@@ -64,13 +66,13 @@ export const useExamAnswer = ({
             attempt_id: attempt.id,
             question_id: currentQuestion.id,
             user_answer: currentAnswer,
-            time_spent_seconds: 0
+            time_spent_seconds: 0,
           })
 
           setAnswerRevealData({
             question: result.question,
             userAnswer: currentAnswer,
-            isCorrect: result.isCorrect
+            isCorrect: result.isCorrect,
           })
           // For incorrect answers on first attempt, don't show correct answer yet
           setShouldShowCorrectAnswer(result.isCorrect)
@@ -105,11 +107,14 @@ export const useExamAnswer = ({
   }, [])
 
   // Update current answer from external source (e.g., when navigating)
-  const updateCurrentAnswer = useCallback((answer: string) => {
-    if (!isUserSelecting) {
-      setCurrentAnswer(answer || '')
-    }
-  }, [isUserSelecting])
+  const updateCurrentAnswer = useCallback(
+    (answer: string) => {
+      if (!isUserSelecting) {
+        setCurrentAnswer(answer || '')
+      }
+    },
+    [isUserSelecting]
+  )
 
   return {
     currentAnswer,

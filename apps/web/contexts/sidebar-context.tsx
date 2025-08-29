@@ -1,6 +1,12 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react'
 
 interface SidebarContextType {
   isSidebarOpen: boolean
@@ -32,11 +38,13 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
   const sidebarWidth = isSidebarOpen ? 'ml-64' : 'ml-16'
 
   return (
-    <SidebarContext.Provider value={{
-      isSidebarOpen,
-      setIsSidebarOpen,
-      sidebarWidth
-    }}>
+    <SidebarContext.Provider
+      value={{
+        isSidebarOpen,
+        setIsSidebarOpen,
+        sidebarWidth,
+      }}
+    >
       {children}
     </SidebarContext.Provider>
   )

@@ -49,7 +49,9 @@ export default function EditExamPage() {
   )
   const [answerReleaseSetting, setAnswerReleaseSetting] =
     useState<AnswerReleaseSetting | null>(null)
-  const [answerCheckMode, setAnswerCheckMode] = useState<'exam_end' | 'per_question'>('exam_end')
+  const [answerCheckMode, setAnswerCheckMode] = useState<
+    'exam_end' | 'per_question'
+  >('exam_end')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<{
@@ -100,7 +102,10 @@ export default function EditExamPage() {
       setExam(examData)
       setSelectedEnglishCurve(examData.english_scoring_curve_id)
       setSelectedMathCurve(examData.math_scoring_curve_id)
-      setAnswerCheckMode(examData.answer_check_mode as 'exam_end' | 'per_question' || 'exam_end')
+      setAnswerCheckMode(
+        (examData.answer_check_mode as 'exam_end' | 'per_question') ||
+          'exam_end'
+      )
       setCurves(curvesResponse.data || [])
 
       // Process answer visibility stats
@@ -108,61 +113,30 @@ export default function EditExamPage() {
         const attempts = answerStatsResponse.data
         const now = new Date()
 
-        const visibleImmediately = attempts.filter(
-          (a) => a.answers_visible && !a.answers_visible_after
-        ).length
-        const visibleScheduled = attempts.filter(
-          (a) =>
-            a.answers_visible &&
-            a.answers_visible_after &&
-            new Date(a.answers_visible_after) > now
-        ).length
-        const hidden = attempts.filter((a) => !a.answers_visible).length
-        const visibleNow = attempts.filter(
-          (a) =>
-            a.answers_visible &&
-            (!a.answers_visible_after ||
-              new Date(a.answers_visible_after) <= now)
-        ).length
-
-        // Determine global status
-        let globalStatus: 'all_visible' | 'all_hidden' | 'all_scheduled' | 'mixed' | 'no_attempts' = 'mixed'
-        let scheduledDate: string | undefined
-
-        if (attempts.length === 0) {
-          globalStatus = 'no_attempts'
-        } else if (visibleNow === attempts.length) {
-          globalStatus = 'all_visible'
-        } else if (hidden === attempts.length) {
-          globalStatus = 'all_hidden'
-        } else if (visibleScheduled === attempts.length) {
-          globalStatus = 'all_scheduled'
-          const scheduledAttempt = attempts.find(a => a.answers_visible_after)
-          if (scheduledAttempt?.answers_visible_after) {
-            scheduledDate = scheduledAttempt.answers_visible_after
-          }
-        }
 
         // Determine answer release setting from exam mode and first attempt
         if (examData.answer_check_mode === 'per_question') {
           setAnswerReleaseSetting({
-            type: 'per_question'
+            type: 'per_question',
           })
         } else if (attempts.length > 0) {
           const attempt = attempts[0]
-          
+
           if (!attempt.answers_visible) {
             setAnswerReleaseSetting({
-              type: 'hidden'
+              type: 'hidden',
             })
-          } else if (attempt.answers_visible && !attempt.answers_visible_after) {
+          } else if (
+            attempt.answers_visible &&
+            !attempt.answers_visible_after
+          ) {
             setAnswerReleaseSetting({
-              type: 'immediate'
+              type: 'immediate',
             })
           } else if (attempt.answers_visible && attempt.answers_visible_after) {
             setAnswerReleaseSetting({
               type: 'scheduled',
-              scheduled_date: new Date(attempt.answers_visible_after)
+              scheduled_date: new Date(attempt.answers_visible_after),
             })
           }
         }
@@ -333,7 +307,7 @@ export default function EditExamPage() {
           <p className="text-indigo-600/70 mb-6">
             Choose when students can see correct answers during the exam.
           </p>
-          
+
           <div className="space-y-4">
             <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
               <input
@@ -341,27 +315,45 @@ export default function EditExamPage() {
                 name="answerCheckMode"
                 value="exam_end"
                 checked={answerCheckMode === 'exam_end'}
-                onChange={(e) => setAnswerCheckMode(e.target.value as 'exam_end' | 'per_question')}
+                onChange={(e) =>
+                  setAnswerCheckMode(
+                    e.target.value as 'exam_end' | 'per_question'
+                  )
+                }
                 className="mr-3 text-indigo-600"
               />
               <div>
-                <div className="font-medium text-gray-900">After Exam Completion</div>
-                <div className="text-sm text-gray-600">Traditional mode - students see answers only after completing the entire exam</div>
+                <div className="font-medium text-gray-900">
+                  After Exam Completion
+                </div>
+                <div className="text-sm text-gray-600">
+                  Traditional mode - students see answers only after completing
+                  the entire exam
+                </div>
               </div>
             </label>
-            
+
             <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
               <input
                 type="radio"
                 name="answerCheckMode"
                 value="per_question"
                 checked={answerCheckMode === 'per_question'}
-                onChange={(e) => setAnswerCheckMode(e.target.value as 'exam_end' | 'per_question')}
+                onChange={(e) =>
+                  setAnswerCheckMode(
+                    e.target.value as 'exam_end' | 'per_question'
+                  )
+                }
                 className="mr-3 text-indigo-600"
               />
               <div>
-                <div className="font-medium text-gray-900">After Each Question</div>
-                <div className="text-sm text-gray-600">Students see the correct answer immediately after submitting each question</div>
+                <div className="font-medium text-gray-900">
+                  After Each Question
+                </div>
+                <div className="text-sm text-gray-600">
+                  Students see the correct answer immediately after submitting
+                  each question
+                </div>
               </div>
             </label>
           </div>
@@ -380,8 +372,13 @@ export default function EditExamPage() {
                 <div className="flex items-center space-x-3 p-4 bg-green-50 border border-green-200 rounded-lg">
                   <span className="text-2xl">✅</span>
                   <div>
-                    <div className="text-lg font-semibold text-green-800">Answers Visible Immediately</div>
-                    <div className="text-sm text-green-600">Students can see correct answers right after completing the exam</div>
+                    <div className="text-lg font-semibold text-green-800">
+                      Answers Visible Immediately
+                    </div>
+                    <div className="text-sm text-green-600">
+                      Students can see correct answers right after completing
+                      the exam
+                    </div>
                   </div>
                 </div>
               )}
@@ -389,8 +386,12 @@ export default function EditExamPage() {
                 <div className="flex items-center space-x-3 p-4 bg-red-50 border border-red-200 rounded-lg">
                   <span className="text-2xl">🔒</span>
                   <div>
-                    <div className="text-lg font-semibold text-red-800">Answers Hidden</div>
-                    <div className="text-sm text-red-600">Correct answers are hidden from all students</div>
+                    <div className="text-lg font-semibold text-red-800">
+                      Answers Hidden
+                    </div>
+                    <div className="text-sm text-red-600">
+                      Correct answers are hidden from all students
+                    </div>
                   </div>
                 </div>
               )}
@@ -398,9 +399,12 @@ export default function EditExamPage() {
                 <div className="flex items-center space-x-3 p-4 bg-orange-50 border border-orange-200 rounded-lg">
                   <span className="text-2xl">⏰</span>
                   <div>
-                    <div className="text-lg font-semibold text-orange-800">Scheduled Release</div>
+                    <div className="text-lg font-semibold text-orange-800">
+                      Scheduled Release
+                    </div>
                     <div className="text-sm text-orange-600">
-                      Answers will be visible on: {answerReleaseSetting.scheduled_date?.toLocaleString()}
+                      Answers will be visible on:{' '}
+                      {answerReleaseSetting.scheduled_date?.toLocaleString()}
                     </div>
                   </div>
                 </div>
@@ -409,8 +413,13 @@ export default function EditExamPage() {
                 <div className="flex items-center space-x-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <span className="text-2xl">🎯</span>
                   <div>
-                    <div className="text-lg font-semibold text-blue-800">Per-Question Answer Checking</div>
-                    <div className="text-sm text-blue-600">Students can see correct answers immediately after submitting each question</div>
+                    <div className="text-lg font-semibold text-blue-800">
+                      Per-Question Answer Checking
+                    </div>
+                    <div className="text-sm text-blue-600">
+                      Students can see correct answers immediately after
+                      submitting each question
+                    </div>
                   </div>
                 </div>
               )}

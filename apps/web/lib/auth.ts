@@ -75,7 +75,7 @@ export class AuthService {
     try {
       // Clear local storage first
       localStorage.removeItem('sb-eoyzqdsxlweygsukjnef-auth-token')
-      
+
       // Use global scope for complete logout across all devices
       const { error } = await supabase.auth.signOut({ scope: 'global' })
       if (error) {
@@ -84,7 +84,7 @@ export class AuthService {
     } catch (error: any) {
       console.warn('SignOut error (continuing anyway):', error.message)
     }
-    
+
     // Always clear auth state manager cache
     authStateManager.clearState()
   }

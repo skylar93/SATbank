@@ -37,35 +37,33 @@ export const useExamTimer = ({
   }, [timeExpired, currentModuleIndex, modules.length])
 
   // Handle the actual module advancement when status changes to time_expired
-  const handleModuleAdvancement = useCallback(async (router: any) => {
-    if (status === 'time_expired' && !isAdvancingModuleRef.current) {
-      isAdvancingModuleRef.current = true
-      console.log('Status changed to time_expired, advancing module...')
-      
-      try {
-        console.log('Calling handleTimeExpiredFromHook...')
-        await handleTimeExpiredFromHook()
-        console.log('Successfully advanced module')
-        
-        // Navigate to results if exam is complete
-        if (currentModuleIndex >= modules.length - 1) {
-          console.log('Exam complete, navigating to results')
-          router.push('/student/results')
+  const handleModuleAdvancement = useCallback(
+    async (router: any) => {
+      if (status === 'time_expired' && !isAdvancingModuleRef.current) {
+        isAdvancingModuleRef.current = true
+        console.log('Status changed to time_expired, advancing module...')
+
+        try {
+          console.log('Calling handleTimeExpiredFromHook...')
+          await handleTimeExpiredFromHook()
+          console.log('Successfully advanced module')
+
+          // Navigate to results if exam is complete
+          if (currentModuleIndex >= modules.length - 1) {
+            console.log('Exam complete, navigating to results')
+            router.push('/student/results')
+          }
+        } catch (error) {
+          console.error('Error advancing module:', error)
+        } finally {
+          // Reset flags for next module
+          timeExpiredRef.current = false
+          isAdvancingModuleRef.current = false
         }
-      } catch (error) {
-        console.error('Error advancing module:', error)
-      } finally {
-        // Reset flags for next module
-        timeExpiredRef.current = false
-        isAdvancingModuleRef.current = false
       }
-    }
-  }, [
-    status,
-    handleTimeExpiredFromHook,
-    currentModuleIndex,
-    modules.length,
-  ])
+    },
+    [status, handleTimeExpiredFromHook, currentModuleIndex, modules.length]
+  )
 
   const resetTimerFlags = useCallback(() => {
     timeExpiredRef.current = false

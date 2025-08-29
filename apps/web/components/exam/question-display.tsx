@@ -990,17 +990,23 @@ export function QuestionDisplay({
         <div className="space-y-3">
           {Object.entries(localQuestion.options || {}).map(([key, value]) => {
             // Normalize comparison - ensure both are strings and trim whitespace
-            const normalizedCorrectAnswer = String(localQuestion.correct_answer || '').trim().toUpperCase()
+            const normalizedCorrectAnswer = String(
+              localQuestion.correct_answer || ''
+            )
+              .trim()
+              .toUpperCase()
             const normalizedKey = String(key).trim().toUpperCase()
-            const normalizedUserAnswer = String(userAnswer || '').trim().toUpperCase()
-            
+            const normalizedUserAnswer = String(userAnswer || '')
+              .trim()
+              .toUpperCase()
+
             const isCorrectAnswer = normalizedCorrectAnswer === normalizedKey
             const isUserAnswer = normalizedUserAnswer === normalizedKey
-            
+
             return (
-            <label
-              key={key}
-              className={`
+              <label
+                key={key}
+                className={`
                 flex items-start p-3 rounded-lg transition-all
                 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
                 ${
@@ -1022,121 +1028,128 @@ export function QuestionDisplay({
                         : 'bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }
               `}
-            >
-              <input
-                type="radio"
-                name={`question-${question.id}`}
-                value={key}
-                checked={isUserAnswer}
-                onChange={(e) => onAnswerChange(e.target.value)}
-                className="mt-1 mr-3 text-blue-600 focus:ring-blue-500"
-                disabled={disabled || (showExplanation && !showPerQuestionAnswers)}
-              />
-              <div className="flex-1">
-                <div className="flex items-center mb-1">
-                  <span className="font-semibold text-gray-700 mr-2">
-                    {key}.
-                  </span>
-                  {showExplanation && (
-                    <>
-                      {isCorrectAnswer && (
-                        <span className={`text-sm font-bold ${
-                          !isUserAnswer 
-                            ? 'text-green-700 bg-green-100 px-2 py-1 rounded-full border border-green-300' 
-                            : 'text-green-600 font-medium'
-                        }`}>
-                          ✓ Correct Answer
-                        </span>
-                      )}
-                      {isUserAnswer && (
-                        <span className={`text-sm font-medium ${
-                          isCorrect !== undefined 
-                            ? isCorrect 
-                              ? 'text-green-600' 
-                              : 'text-red-600'
-                            : isCorrectAnswer
-                              ? 'text-green-600'
-                              : 'text-red-600'
-                        }`}>
-                          {isCorrect !== undefined 
-                            ? isCorrect 
-                              ? '✓ Your Answer (Correct)' 
-                              : '✗ Your Answer (Incorrect)'
-                            : isCorrectAnswer
-                              ? '✓ Your Answer (Correct)'
-                              : '✗ Your Answer (Incorrect)'
-                          }
-                        </span>
-                      )}
-                    </>
-                  )}
-                </div>
-                <div className="text-gray-900 leading-relaxed">
-                  {(() => {
-                    // Handle cases where value is already an object (not a string)
-                    if (typeof value === 'object' && value !== null) {
-                      const objValue = value as any // Type assertion to fix TypeScript error
+              >
+                <input
+                  type="radio"
+                  name={`question-${question.id}`}
+                  value={key}
+                  checked={isUserAnswer}
+                  onChange={(e) => onAnswerChange(e.target.value)}
+                  className="mt-1 mr-3 text-blue-600 focus:ring-blue-500"
+                  disabled={
+                    disabled || (showExplanation && !showPerQuestionAnswers)
+                  }
+                />
+                <div className="flex-1">
+                  <div className="flex items-center mb-1">
+                    <span className="font-semibold text-gray-700 mr-2">
+                      {key}.
+                    </span>
+                    {showExplanation && (
+                      <>
+                        {isCorrectAnswer && (
+                          <span
+                            className={`text-sm font-bold ${
+                              !isUserAnswer
+                                ? 'text-green-700 bg-green-100 px-2 py-1 rounded-full border border-green-300'
+                                : 'text-green-600 font-medium'
+                            }`}
+                          >
+                            ✓ Correct Answer
+                          </span>
+                        )}
+                        {isUserAnswer && (
+                          <span
+                            className={`text-sm font-medium ${
+                              isCorrect !== undefined
+                                ? isCorrect
+                                  ? 'text-green-600'
+                                  : 'text-red-600'
+                                : isCorrectAnswer
+                                  ? 'text-green-600'
+                                  : 'text-red-600'
+                            }`}
+                          >
+                            {isCorrect !== undefined
+                              ? isCorrect
+                                ? '✓ Your Answer (Correct)'
+                                : '✗ Your Answer (Incorrect)'
+                              : isCorrectAnswer
+                                ? '✓ Your Answer (Correct)'
+                                : '✗ Your Answer (Incorrect)'}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
+                  <div className="text-gray-900 leading-relaxed">
+                    {(() => {
+                      // Handle cases where value is already an object (not a string)
+                      if (typeof value === 'object' && value !== null) {
+                        const objValue = value as any // Type assertion to fix TypeScript error
 
-                      // Check if it has table structure
-                      if (objValue.headers && objValue.rows) {
-                        return renderTable(objValue, true)
-                      }
+                        // Check if it has table structure
+                        if (objValue.headers && objValue.rows) {
+                          return renderTable(objValue, true)
+                        }
 
-                      // Check if it has nested table_data
-                      if (
-                        objValue.table_data &&
-                        objValue.table_data.headers &&
-                        objValue.table_data.rows
-                      ) {
-                        return renderTable(objValue.table_data, true)
-                      }
+                        // Check if it has nested table_data
+                        if (
+                          objValue.table_data &&
+                          objValue.table_data.headers &&
+                          objValue.table_data.rows
+                        ) {
+                          return renderTable(objValue.table_data, true)
+                        }
 
-                      // Check for text/image content
-                      if (objValue.text || objValue.imageUrl) {
+                        // Check for text/image content
+                        if (objValue.text || objValue.imageUrl) {
+                          return (
+                            <div className="space-y-2">
+                              {objValue.text && (
+                                <div>
+                                  {renderTextWithFormattingAndMath(
+                                    objValue.text
+                                  )}
+                                </div>
+                              )}
+                              {objValue.imageUrl && (
+                                <img
+                                  src={objValue.imageUrl}
+                                  alt="Answer choice image"
+                                  className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
+                                  onError={(e) => {
+                                    console.error(
+                                      'Answer option object image failed to load:',
+                                      objValue.imageUrl
+                                    )
+                                    e.currentTarget.style.display = 'none'
+                                  }}
+                                />
+                              )}
+                            </div>
+                          )
+                        }
+
+                        // Fallback for unrecognized object structure
                         return (
-                          <div className="space-y-2">
-                            {objValue.text && (
-                              <div>
-                                {renderTextWithFormattingAndMath(objValue.text)}
-                              </div>
-                            )}
-                            {objValue.imageUrl && (
-                              <img
-                                src={objValue.imageUrl}
-                                alt="Answer choice image"
-                                className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
-                                onError={(e) => {
-                                  console.error(
-                                    'Answer option object image failed to load:',
-                                    objValue.imageUrl
-                                  )
-                                  e.currentTarget.style.display = 'none'
-                                }}
-                              />
-                            )}
+                          <div className="text-sm text-red-600 bg-red-50 p-2 rounded border">
+                            <div className="font-medium">
+                              Debug: Object detected in option {key}
+                            </div>
+                            <pre className="text-xs mt-1 whitespace-pre-wrap">
+                              {JSON.stringify(value, null, 2)}
+                            </pre>
                           </div>
                         )
                       }
 
-                      // Fallback for unrecognized object structure
-                      return (
-                        <div className="text-sm text-red-600 bg-red-50 p-2 rounded border">
-                          <div className="font-medium">
-                            Debug: Object detected in option {key}
-                          </div>
-                          <pre className="text-xs mt-1 whitespace-pre-wrap">
-                            {JSON.stringify(value, null, 2)}
-                          </pre>
-                        </div>
-                      )
-                    }
-
-                    // Handle string values normally
-                    return renderAnswerChoiceContent(String(value))
-                  })()}
+                      // Handle string values normally
+                      return renderAnswerChoiceContent(String(value))
+                    })()}
+                  </div>
                 </div>
-              </div>
-            </label>
+              </label>
             )
           })}
         </div>
@@ -1168,20 +1181,30 @@ export function QuestionDisplay({
                   : 'border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200'
               }`}
               placeholder="Enter your answer"
-              disabled={disabled || (showExplanation && !showPerQuestionAnswers)}
+              disabled={
+                disabled || (showExplanation && !showPerQuestionAnswers)
+              }
             />
           </div>
           {showExplanation && (
             <div className="space-y-3">
-              <div className={`p-4 border rounded-lg ${
-                isCorrect !== false 
-                  ? 'bg-green-50 border-green-200' 
-                  : 'bg-green-100 border-2 border-green-500 ring-1 ring-green-200'
-              }`}>
-                <p className={`text-sm ${
-                  isCorrect !== false ? 'text-green-800' : 'text-green-900 font-bold'
-                }`}>
-                  <strong className={isCorrect === false ? 'text-green-800' : ''}>
+              <div
+                className={`p-4 border rounded-lg ${
+                  isCorrect !== false
+                    ? 'bg-green-50 border-green-200'
+                    : 'bg-green-100 border-2 border-green-500 ring-1 ring-green-200'
+                }`}
+              >
+                <p
+                  className={`text-sm ${
+                    isCorrect !== false
+                      ? 'text-green-800'
+                      : 'text-green-900 font-bold'
+                  }`}
+                >
+                  <strong
+                    className={isCorrect === false ? 'text-green-800' : ''}
+                  >
                     Correct Answer
                     {(() => {
                       if (localQuestion.question_type === 'grid_in') {
@@ -1192,7 +1215,13 @@ export function QuestionDisplay({
                     })()}
                     :
                   </strong>{' '}
-                  <span className={isCorrect === false ? 'bg-green-200 px-2 py-1 rounded font-bold' : ''}>
+                  <span
+                    className={
+                      isCorrect === false
+                        ? 'bg-green-200 px-2 py-1 rounded font-bold'
+                        : ''
+                    }
+                  >
                     {localQuestion.question_type === 'grid_in'
                       ? parseCorrectAnswers(localQuestion).join(', ')
                       : localQuestion.correct_answer}
@@ -1200,20 +1229,24 @@ export function QuestionDisplay({
                 </p>
               </div>
               {userAnswer && (
-                <div className={`p-3 border rounded-lg ${
-                  isCorrect !== undefined 
-                    ? isCorrect 
-                      ? 'bg-green-50 border-green-200' 
-                      : 'bg-red-50 border-red-200'
-                    : 'bg-gray-50 border-gray-200'
-                }`}>
-                  <p className={`text-sm ${
-                    isCorrect !== undefined 
-                      ? isCorrect 
-                        ? 'text-green-800' 
-                        : 'text-red-800'
-                      : 'text-gray-800'
-                  }`}>
+                <div
+                  className={`p-3 border rounded-lg ${
+                    isCorrect !== undefined
+                      ? isCorrect
+                        ? 'bg-green-50 border-green-200'
+                        : 'bg-red-50 border-red-200'
+                      : 'bg-gray-50 border-gray-200'
+                  }`}
+                >
+                  <p
+                    className={`text-sm ${
+                      isCorrect !== undefined
+                        ? isCorrect
+                          ? 'text-green-800'
+                          : 'text-red-800'
+                        : 'text-gray-800'
+                    }`}
+                  >
                     {userAnswer}
                   </p>
                 </div>
@@ -1235,9 +1268,15 @@ export function QuestionDisplay({
           <div className="flex items-center justify-between mb-2">
             <h2
               className="text-lg font-semibold text-gray-900 truncate"
-              title={moduleDisplayName ? `${moduleDisplayName}: ${questionNumber} of ${totalQuestions}` : `Question ${questionNumber} of ${totalQuestions}`}
+              title={
+                moduleDisplayName
+                  ? `${moduleDisplayName}: ${questionNumber} of ${totalQuestions}`
+                  : `Question ${questionNumber} of ${totalQuestions}`
+              }
             >
-              {moduleDisplayName ? `${moduleDisplayName}: ${questionNumber} of ${totalQuestions}` : `Question ${questionNumber} of ${totalQuestions}`}
+              {moduleDisplayName
+                ? `${moduleDisplayName}: ${questionNumber} of ${totalQuestions}`
+                : `Question ${questionNumber} of ${totalQuestions}`}
             </h2>
             <div className="flex items-center space-x-2">
               {!isAdminPreview && !showExplanation && onToggleMarkForReview && (
@@ -1568,7 +1607,7 @@ export function QuestionDisplay({
               </div>
             </div>
           ) : (
-            <div 
+            <div
               ref={questionContentRef}
               className="text-gray-900 leading-relaxed relative"
             >
@@ -1621,33 +1660,38 @@ export function QuestionDisplay({
           {renderAnswerOptions()}
 
           {/* Check Answer Button for per-question mode */}
-          {showPerQuestionAnswers && !isAnswerSubmitted && userAnswer && userAnswer.trim() && onCheckAnswer && (
-            <div className="mt-4">
-              <button
-                onClick={onCheckAnswer}
-                disabled={disabled}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-3 px-6 rounded-lg font-semibold text-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-              >
-                Check Answer
-              </button>
-            </div>
-          )}
+          {showPerQuestionAnswers &&
+            !isAnswerSubmitted &&
+            userAnswer &&
+            userAnswer.trim() &&
+            onCheckAnswer && (
+              <div className="mt-4">
+                <button
+                  onClick={onCheckAnswer}
+                  disabled={disabled}
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-3 px-6 rounded-lg font-semibold text-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+                >
+                  Check Answer
+                </button>
+              </div>
+            )}
 
           {/* Answer Reveal Card for per-question mode */}
-          {showPerQuestionAnswers && isAnswerSubmitted && isCorrect !== undefined && (
-            <div className="mt-4">
-              <AnswerRevealCard
-                question={question}
-                userAnswer={userAnswer || ''}
-                isCorrect={isCorrect}
-                onContinue={onContinueAfterAnswer || (() => {})}
-                onTryAgain={onTryAgain}
-                showExplanation={true}
-                showCorrectAnswer={showCorrectAnswer}
-              />
-            </div>
-          )}
-
+          {showPerQuestionAnswers &&
+            isAnswerSubmitted &&
+            isCorrect !== undefined && (
+              <div className="mt-4">
+                <AnswerRevealCard
+                  question={question}
+                  userAnswer={userAnswer || ''}
+                  isCorrect={isCorrect}
+                  onContinue={onContinueAfterAnswer || (() => {})}
+                  onTryAgain={onTryAgain}
+                  showExplanation={true}
+                  showCorrectAnswer={showCorrectAnswer}
+                />
+              </div>
+            )}
         </div>
 
         {/* Explanation (if showing results) */}
@@ -1659,7 +1703,6 @@ export function QuestionDisplay({
             </div>
           </div>
         )}
-
       </div>
     </div>
   )

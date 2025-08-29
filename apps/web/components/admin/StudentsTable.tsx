@@ -42,13 +42,23 @@ interface StudentsTableProps {
   onSort?: (key: string) => void
 }
 
-export default function StudentsTable({ students, sortConfig, onSort }: StudentsTableProps) {
-  const SortableHeader = ({ sortKey, children }: { sortKey: string; children: React.ReactNode }) => {
+export default function StudentsTable({
+  students,
+  sortConfig,
+  onSort,
+}: StudentsTableProps) {
+  const SortableHeader = ({
+    sortKey,
+    children,
+  }: {
+    sortKey: string
+    children: React.ReactNode
+  }) => {
     const isActive = sortConfig?.key === sortKey
     const isAsc = isActive && sortConfig?.direction === 'asc'
-    
+
     return (
-      <th 
+      <th
         className={`px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider cursor-pointer hover:bg-purple-100 transition-colors ${
           isActive ? 'bg-purple-100' : ''
         }`}
@@ -58,8 +68,12 @@ export default function StudentsTable({ students, sortConfig, onSort }: Students
           <span>{children}</span>
           {onSort && (
             <div className="flex flex-col">
-              <ChevronUpIcon className={`w-3 h-3 ${isActive && isAsc ? 'text-purple-600' : 'text-gray-400'}`} />
-              <ChevronDownIcon className={`w-3 h-3 -mt-1 ${isActive && !isAsc ? 'text-purple-600' : 'text-gray-400'}`} />
+              <ChevronUpIcon
+                className={`w-3 h-3 ${isActive && isAsc ? 'text-purple-600' : 'text-gray-400'}`}
+              />
+              <ChevronDownIcon
+                className={`w-3 h-3 -mt-1 ${isActive && !isAsc ? 'text-purple-600' : 'text-gray-400'}`}
+              />
             </div>
           )}
         </div>
@@ -79,7 +93,7 @@ export default function StudentsTable({ students, sortConfig, onSort }: Students
           </span>
         </div>
       </div>
-      
+
       {students.length === 0 ? (
         <div className="text-center py-12">
           <UserGroupIcon className="w-12 h-12 text-purple-400 mx-auto mb-4" />
@@ -91,18 +105,23 @@ export default function StudentsTable({ students, sortConfig, onSort }: Students
             <thead className="bg-gradient-to-r from-purple-50 to-pink-50">
               <tr>
                 <SortableHeader sortKey="student_name">Student</SortableHeader>
-                <SortableHeader sortKey="avgScore">Average Score</SortableHeader>
-                <SortableHeader sortKey="totalAttempts">Total Attempts</SortableHeader>
-                <SortableHeader sortKey="lastActive">Last Active</SortableHeader>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">Actions</th>
+                <SortableHeader sortKey="avgScore">
+                  Average Score
+                </SortableHeader>
+                <SortableHeader sortKey="totalAttempts">
+                  Total Attempts
+                </SortableHeader>
+                <SortableHeader sortKey="lastActive">
+                  Last Active
+                </SortableHeader>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white">
               {students.map((student) => (
-                <StudentReportRow 
-                  key={student.student_id} 
-                  student={student} 
-                />
+                <StudentReportRow key={student.student_id} student={student} />
               ))}
             </tbody>
           </table>

@@ -1,7 +1,14 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { addWordsInBulk } from '@/lib/vocab-actions'
@@ -13,9 +20,16 @@ interface BulkAddModalProps {
   setId: number
 }
 
-export function BulkAddModal({ isOpen, onClose, onAddWords, setId }: BulkAddModalProps) {
+export function BulkAddModal({
+  isOpen,
+  onClose,
+  onAddWords,
+  setId,
+}: BulkAddModalProps) {
   const [pastedText, setPastedText] = useState('')
-  const [parsedWords, setParsedWords] = useState<{ term: string; definition: string }[]>([])
+  const [parsedWords, setParsedWords] = useState<
+    { term: string; definition: string }[]
+  >([])
   const [parseError, setParseError] = useState<string | null>(null)
   const [step, setStep] = useState<'paste' | 'preview'>('paste')
   const [isPending, startTransition] = useTransition()
@@ -35,7 +49,7 @@ export function BulkAddModal({ isOpen, onClose, onAddWords, setId }: BulkAddModa
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim()
-      
+
       // Skip empty lines
       if (!line) continue
 
@@ -43,23 +57,27 @@ export function BulkAddModal({ isOpen, onClose, onAddWords, setId }: BulkAddModa
 
       // Validation
       if (parts.length !== 2 || !parts[0].trim() || !parts[1].trim()) {
-        setParseError(`Error on line ${i + 1}: Please ensure the word and definition are separated by a Tab character. Make sure both term and definition are not empty.`)
+        setParseError(
+          `Error on line ${i + 1}: Please ensure the word and definition are separated by a Tab character. Make sure both term and definition are not empty.`
+        )
         hasErrors = true
         break
       }
 
       tempWords.push({
         term: parts[0].trim(),
-        definition: parts[1].trim()
+        definition: parts[1].trim(),
       })
     }
 
     if (!hasErrors) {
       if (tempWords.length === 0) {
-        setParseError('No valid word entries found. Make sure each line contains a term and definition separated by a Tab character.')
+        setParseError(
+          'No valid word entries found. Make sure each line contains a term and definition separated by a Tab character.'
+        )
         return
       }
-      
+
       setParsedWords(tempWords)
       setStep('preview')
     }
@@ -69,7 +87,7 @@ export function BulkAddModal({ isOpen, onClose, onAddWords, setId }: BulkAddModa
     startTransition(async () => {
       try {
         const result = await addWordsInBulk(setId, parsedWords)
-        
+
         if (result.success) {
           await onAddWords(parsedWords)
           handleClose()
@@ -102,8 +120,9 @@ export function BulkAddModal({ isOpen, onClose, onAddWords, setId }: BulkAddModa
         <DialogHeader>
           <DialogTitle>Bulk Add Words</DialogTitle>
           <DialogDescription>
-            Paste your words below. Each line should contain one word and its definition, separated by a Tab. 
-            (Copying directly from Excel or Google Sheets works best)
+            Paste your words below. Each line should contain one word and its
+            definition, separated by a Tab. (Copying directly from Excel or
+            Google Sheets works best)
           </DialogDescription>
         </DialogHeader>
 
@@ -144,15 +163,26 @@ export function BulkAddModal({ isOpen, onClose, onAddWords, setId }: BulkAddModa
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50 sticky top-0">
                     <tr>
-                      <th className="px-3 py-2 text-left font-medium text-gray-700 border-b">Term</th>
-                      <th className="px-3 py-2 text-left font-medium text-gray-700 border-b">Definition</th>
+                      <th className="px-3 py-2 text-left font-medium text-gray-700 border-b">
+                        Term
+                      </th>
+                      <th className="px-3 py-2 text-left font-medium text-gray-700 border-b">
+                        Definition
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {parsedWords.map((word, index) => (
-                      <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                        <td className="px-3 py-2 font-medium border-b">{word.term}</td>
-                        <td className="px-3 py-2 border-b">{word.definition}</td>
+                      <tr
+                        key={index}
+                        className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                      >
+                        <td className="px-3 py-2 font-medium border-b">
+                          {word.term}
+                        </td>
+                        <td className="px-3 py-2 border-b">
+                          {word.definition}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -171,7 +201,11 @@ export function BulkAddModal({ isOpen, onClose, onAddWords, setId }: BulkAddModa
         <DialogFooter>
           {step === 'paste' && (
             <>
-              <Button variant="outline" onClick={handleClose} disabled={isPending}>
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                disabled={isPending}
+              >
                 Cancel
               </Button>
               <Button
@@ -185,17 +219,27 @@ export function BulkAddModal({ isOpen, onClose, onAddWords, setId }: BulkAddModa
 
           {step === 'preview' && (
             <>
-              <Button variant="outline" onClick={goBackToEdit} disabled={isPending}>
+              <Button
+                variant="outline"
+                onClick={goBackToEdit}
+                disabled={isPending}
+              >
                 Back to Edit
               </Button>
-              <Button variant="outline" onClick={handleClose} disabled={isPending}>
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                disabled={isPending}
+              >
                 Cancel
               </Button>
               <Button
                 onClick={handleAddWords}
                 disabled={isPending || parsedWords.length === 0}
               >
-                {isPending ? 'Adding Words...' : `Add ${parsedWords.length} Words to Set`}
+                {isPending
+                  ? 'Adding Words...'
+                  : `Add ${parsedWords.length} Words to Set`}
               </Button>
             </>
           )}

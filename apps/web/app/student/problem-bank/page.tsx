@@ -115,13 +115,15 @@ export default function ProblemBank() {
       // First, fetch all questions with exam information
       const { data: questionsData, error: questionsError } = await supabase
         .from('questions')
-        .select(`
+        .select(
+          `
           *,
           exams!questions_exam_id_fkey (
             id,
             title
           )
-        `)
+        `
+        )
         .order('module_type')
         .order('question_number')
 

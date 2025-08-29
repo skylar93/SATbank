@@ -24,7 +24,9 @@ export default function SmartReviewWidget() {
 
   const fetchReviewData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) return
 
       // Get words due for review
@@ -53,7 +55,9 @@ export default function SmartReviewWidget() {
       setReviewData({
         reviewCount: reviewCount || 0,
         totalWords: totalWords || 0,
-        nextReviewTime: nextReview ? new Date(nextReview.next_review_date) : undefined
+        nextReviewTime: nextReview
+          ? new Date(nextReview.next_review_date)
+          : undefined,
       })
     } catch (error) {
       console.error('Error fetching review data:', error)
@@ -99,7 +103,9 @@ export default function SmartReviewWidget() {
       <Card className="border-dashed">
         <CardContent className="p-6 text-center">
           <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No vocabulary yet</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No vocabulary yet
+          </h3>
           <p className="text-sm text-gray-600 mb-4">
             Start building your vocabulary to use Smart Review
           </p>
@@ -112,7 +118,13 @@ export default function SmartReviewWidget() {
   }
 
   return (
-    <Card className={reviewData.reviewCount > 0 ? 'border-blue-200 bg-blue-50' : 'border-green-200 bg-green-50'}>
+    <Card
+      className={
+        reviewData.reviewCount > 0
+          ? 'border-blue-200 bg-blue-50'
+          : 'border-green-200 bg-green-50'
+      }
+    >
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Brain className="h-5 w-5 text-blue-600" />
@@ -148,7 +160,8 @@ export default function SmartReviewWidget() {
               {reviewData.nextReviewTime && (
                 <div className="flex items-center gap-1 text-xs text-gray-500">
                   <Clock className="h-3 w-3" />
-                  Next review in {formatTimeUntilNext(reviewData.nextReviewTime)}
+                  Next review in{' '}
+                  {formatTimeUntilNext(reviewData.nextReviewTime)}
                 </div>
               )}
             </div>

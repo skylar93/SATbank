@@ -17,10 +17,10 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline'
-import { 
+import {
   getDisplayScore,
   formatExamDate,
-  canShowAttemptResults 
+  canShowAttemptResults,
 } from '../../lib/analytics-utils'
 
 interface ExamAttemptRowProps {
@@ -28,13 +28,16 @@ interface ExamAttemptRowProps {
   resultVisibility: any
 }
 
-export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProps) {
+export function ExamAttemptRow({
+  attempt,
+  resultVisibility,
+}: ExamAttemptRowProps) {
   const [isOpen, setIsOpen] = useState(false)
-  
+
   const canShowResults = canShowAttemptResults(attempt, resultVisibility)
   const finalScores = attempt.final_scores
   const moduleScores = attempt.module_scores
-  
+
   // For now, we'll disable accuracy calculation until we have access to user_answers
   const accuracy = null
 
@@ -43,7 +46,7 @@ export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProp
       {/* Main Row - Always Visible */}
       <TableRow className="hover:bg-gray-50">
         <TableCell className="w-10">
-          <button 
+          <button
             onClick={() => setIsOpen(!isOpen)}
             className="p-1 hover:bg-gray-100 rounded transition-colors"
           >
@@ -54,7 +57,7 @@ export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProp
             )}
           </button>
         </TableCell>
-        
+
         <TableCell className="font-medium">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg flex items-center justify-center">
@@ -70,7 +73,7 @@ export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProp
             </div>
           </div>
         </TableCell>
-        
+
         <TableCell>
           {attempt.completed_at ? (
             <div className="flex items-center space-x-1 text-sm text-gray-600">
@@ -84,23 +87,23 @@ export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProp
             </div>
           )}
         </TableCell>
-        
+
         <TableCell>
           <div className="flex items-center justify-between">
             <span
               className={`px-2 py-1 text-xs font-medium rounded-full border ${
-                attempt.status === 'completed' 
-                  ? 'bg-green-100 text-green-700 border-green-200' 
+                attempt.status === 'completed'
+                  ? 'bg-green-100 text-green-700 border-green-200'
                   : attempt.status === 'in_progress'
-                  ? 'bg-blue-100 text-blue-700 border-blue-200'
-                  : 'bg-red-100 text-red-700 border-red-200'
+                    ? 'bg-blue-100 text-blue-700 border-blue-200'
+                    : 'bg-red-100 text-red-700 border-red-200'
               }`}
             >
               {attempt.status === 'completed' && 'Completed'}
               {attempt.status === 'in_progress' && 'In Progress'}
               {attempt.status === 'expired' && 'Expired'}
             </span>
-            
+
             {attempt.status === 'completed' && (
               <div className="text-right">
                 <div className="text-lg font-bold text-violet-600">
@@ -120,33 +123,46 @@ export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProp
               {/* Detailed Scores */}
               {attempt.status === 'completed' && canShowResults && (
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-900 mb-3">Detailed Scores</h4>
-                  
+                  <h4 className="text-sm font-semibold text-gray-900 mb-3">
+                    Detailed Scores
+                  </h4>
+
                   {/* Final Scores (English + Math) */}
                   {finalScores && finalScores.english && finalScores.math && (
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div className="bg-white p-3 rounded-lg border">
                         <div className="flex items-center space-x-2 mb-1">
                           <DocumentTextIcon className="w-4 h-4 text-indigo-600" />
-                          <span className="text-sm font-medium text-gray-900">English</span>
+                          <span className="text-sm font-medium text-gray-900">
+                            English
+                          </span>
                         </div>
-                        <div className="text-xl font-bold text-indigo-600">{finalScores.english}</div>
+                        <div className="text-xl font-bold text-indigo-600">
+                          {finalScores.english}
+                        </div>
                       </div>
                       <div className="bg-white p-3 rounded-lg border">
                         <div className="flex items-center space-x-2 mb-1">
                           <BoltIcon className="w-4 h-4 text-purple-600" />
-                          <span className="text-sm font-medium text-gray-900">Math</span>
+                          <span className="text-sm font-medium text-gray-900">
+                            Math
+                          </span>
                         </div>
-                        <div className="text-xl font-bold text-purple-600">{finalScores.math}</div>
+                        <div className="text-xl font-bold text-purple-600">
+                          {finalScores.math}
+                        </div>
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Module Scores */}
                   {moduleScores && (
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                       {Object.entries(moduleScores).map(([module, score]) => (
-                        <div key={module} className="bg-white p-3 rounded-lg border">
+                        <div
+                          key={module}
+                          className="bg-white p-3 rounded-lg border"
+                        >
                           <div className="flex items-center space-x-2 mb-1">
                             {module.includes('english') ? (
                               <DocumentTextIcon className="w-4 h-4 text-indigo-600" />
@@ -157,25 +173,31 @@ export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProp
                               {module.replace(/(\d)/, ' $1').toUpperCase()}
                             </span>
                           </div>
-                          <div className="text-lg font-bold text-gray-800">{score || 0}</div>
+                          <div className="text-lg font-bold text-gray-800">
+                            {score || 0}
+                          </div>
                         </div>
                       ))}
                     </div>
                   )}
-                  
+
                   {/* Accuracy */}
                   {accuracy !== null && (
                     <div className="bg-white p-3 rounded-lg border inline-block">
                       <div className="flex items-center space-x-2">
                         <CheckCircleIcon className="w-4 h-4 text-green-600" />
-                        <span className="text-sm font-medium text-gray-900">Overall Accuracy</span>
-                        <span className="text-lg font-bold text-green-600">{accuracy}%</span>
+                        <span className="text-sm font-medium text-gray-900">
+                          Overall Accuracy
+                        </span>
+                        <span className="text-lg font-bold text-green-600">
+                          {accuracy}%
+                        </span>
                       </div>
                     </div>
                   )}
                 </div>
               )}
-              
+
               {/* Hidden Results Message */}
               {attempt.status === 'completed' && !canShowResults && (
                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
@@ -187,7 +209,7 @@ export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProp
                   </div>
                 </div>
               )}
-              
+
               {/* Action Buttons */}
               <div className="flex items-center space-x-3 pt-2 border-t border-gray-200">
                 {attempt.status === 'completed' && canShowResults && (
@@ -199,7 +221,7 @@ export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProp
                       <EyeIcon className="w-4 h-4" />
                       <span>View Detailed Analysis</span>
                     </Link>
-                    
+
                     <Link
                       href={`/student/results/${attempt.id}/review`}
                       className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
@@ -209,7 +231,7 @@ export function ExamAttemptRow({ attempt, resultVisibility }: ExamAttemptRowProp
                     </Link>
                   </>
                 )}
-                
+
                 {attempt.status === 'in_progress' && (
                   <Link
                     href={`/student/exam/${attempt.exam_id}`}

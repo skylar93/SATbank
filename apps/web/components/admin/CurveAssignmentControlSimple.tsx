@@ -30,16 +30,18 @@ export function CurveAssignmentControl({
   curveType,
   currentCurveName,
   currentCurveId,
-  allCurves
+  allCurves,
 }: CurveAssignmentControlProps) {
   const [isPending, startTransition] = useTransition()
 
   // Filter curves based on type (basic filtering by curve name)
-  const relevantCurves = allCurves.filter(curve => {
+  const relevantCurves = allCurves.filter((curve) => {
     if (curveType === 'english') {
-      return curve.curve_name.toLowerCase().includes('reading') || 
-             curve.curve_name.toLowerCase().includes('writing') ||
-             curve.curve_name.toLowerCase().includes('english')
+      return (
+        curve.curve_name.toLowerCase().includes('reading') ||
+        curve.curve_name.toLowerCase().includes('writing') ||
+        curve.curve_name.toLowerCase().includes('english')
+      )
     } else {
       return curve.curve_name.toLowerCase().includes('math')
     }
@@ -60,29 +62,29 @@ export function CurveAssignmentControl({
     })
   }
 
-  const displayText = currentCurveName 
+  const displayText = currentCurveName
     ? `#${currentCurveId}: ${curveType === 'english' ? 'English' : 'Math'}`
     : 'Not Assigned'
 
   return (
     <div className="flex items-center space-x-2">
       {isPending && <Loader2 className="h-3 w-3 animate-spin" />}
-      
-      <Select 
-        value={currentCurveId ? currentCurveId.toString() : 'none'} 
+
+      <Select
+        value={currentCurveId ? currentCurveId.toString() : 'none'}
         onValueChange={handleCurveSelect}
         disabled={isPending}
       >
-        <SelectTrigger className={`w-auto h-auto px-3 py-1.5 text-xs font-medium rounded-full border shadow-sm ${
-          currentCurveName
-            ? curveType === 'english'
-              ? 'bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 border-purple-200'
-              : 'bg-gradient-to-r from-orange-100 to-yellow-100 text-orange-700 border-orange-200'
-            : 'bg-gray-100 text-gray-500 border-gray-200'
-        }`}>
-          <SelectValue placeholder="Select curve">
-            {displayText}
-          </SelectValue>
+        <SelectTrigger
+          className={`w-auto h-auto px-3 py-1.5 text-xs font-medium rounded-full border shadow-sm ${
+            currentCurveName
+              ? curveType === 'english'
+                ? 'bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 border-purple-200'
+                : 'bg-gradient-to-r from-orange-100 to-yellow-100 text-orange-700 border-orange-200'
+              : 'bg-gray-100 text-gray-500 border-gray-200'
+          }`}
+        >
+          <SelectValue placeholder="Select curve">{displayText}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="none">Not Assigned</SelectItem>

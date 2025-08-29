@@ -72,49 +72,59 @@ export function ExamsListClient() {
     setLoading(true)
     try {
       // Use the optimized RPC function for better performance
-      const { data: rpcData, error } = await supabase.rpc('get_admin_exams_list')
-      
+      const { data: rpcData, error } = await supabase.rpc(
+        'get_admin_exams_list'
+      )
+
       if (error) {
         console.error('Error fetching exams:', error)
         return
       }
 
       // Transform RPC data to UI format
-      const transformedData: ExamWithCurves[] = (rpcData || []).map((exam: RpcExamData) => {
-        // Determine answer release setting based on RPC data
-        let answerReleaseSetting
-        if (exam.latest_attempt_visibility === null) {
-          // No attempts exist: default to immediate release
-          answerReleaseSetting = {
-            type: 'immediate' as const,
+      const transformedData: ExamWithCurves[] = (rpcData || []).map(
+        (exam: RpcExamData) => {
+          // Determine answer release setting based on RPC data
+          let answerReleaseSetting
+          if (exam.latest_attempt_visibility === null) {
+            // No attempts exist: default to immediate release
+            answerReleaseSetting = {
+              type: 'immediate' as const,
+            }
+          } else if (!exam.latest_attempt_visibility) {
+            answerReleaseSetting = {
+              type: 'hidden' as const,
+            }
+          } else if (
+            exam.latest_attempt_visibility &&
+            !exam.latest_attempt_visible_after
+          ) {
+            answerReleaseSetting = {
+              type: 'immediate' as const,
+            }
+          } else if (
+            exam.latest_attempt_visibility &&
+            exam.latest_attempt_visible_after
+          ) {
+            answerReleaseSetting = {
+              type: 'scheduled' as const,
+              scheduled_date: new Date(exam.latest_attempt_visible_after),
+            }
           }
-        } else if (!exam.latest_attempt_visibility) {
-          answerReleaseSetting = {
-            type: 'hidden' as const,
-          }
-        } else if (exam.latest_attempt_visibility && !exam.latest_attempt_visible_after) {
-          answerReleaseSetting = {
-            type: 'immediate' as const,
-          }
-        } else if (exam.latest_attempt_visibility && exam.latest_attempt_visible_after) {
-          answerReleaseSetting = {
-            type: 'scheduled' as const,
-            scheduled_date: new Date(exam.latest_attempt_visible_after),
-          }
-        }
 
-        return {
-          id: exam.id,
-          title: exam.title,
-          description: exam.description,
-          created_at: exam.created_at,
-          english_scoring_curve_id: exam.english_curve_id,
-          math_scoring_curve_id: exam.math_curve_id,
-          english_curve_name: exam.english_curve_name,
-          math_curve_name: exam.math_curve_name,
-          answer_release_setting: answerReleaseSetting,
+          return {
+            id: exam.id,
+            title: exam.title,
+            description: exam.description,
+            created_at: exam.created_at,
+            english_scoring_curve_id: exam.english_curve_id,
+            math_scoring_curve_id: exam.math_curve_id,
+            english_curve_name: exam.english_curve_name,
+            math_curve_name: exam.math_curve_name,
+            answer_release_setting: answerReleaseSetting,
+          }
         }
-      })
+      )
 
       setExams(transformedData)
     } catch (error) {
@@ -129,9 +139,10 @@ export function ExamsListClient() {
     if (!searchTerm.trim()) {
       setFilteredExams(exams)
     } else {
-      const filtered = exams.filter(exam =>
-        exam.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        exam.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = exams.filter(
+        (exam) =>
+          exam.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          exam.description?.toLowerCase().includes(searchTerm.toLowerCase())
       )
       setFilteredExams(filtered)
     }
@@ -174,7 +185,7 @@ export function ExamsListClient() {
       alert(
         `Successfully updated answer visibility for ${result.updatedAttempts} attempts`
       )
-      
+
       // Refresh data after update
       await fetchExamsOptimized()
     } catch (error) {
@@ -280,7 +291,9 @@ export function ExamsListClient() {
           {filteredExams.length === 0 ? (
             <div className="p-12 text-center">
               <p className="text-gray-500">
-                {searchTerm ? 'No exams match your search criteria.' : 'No exams found.'}
+                {searchTerm
+                  ? 'No exams match your search criteria.'
+                  : 'No exams found.'}
               </p>
             </div>
           ) : (
@@ -338,8 +351,9 @@ export function ExamsListClient() {
           <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-emerald-100 p-6">
             <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               {
-                filteredExams.filter((e) => e.english_curve_name && e.math_curve_name)
-                  .length
+                filteredExams.filter(
+                  (e) => e.english_curve_name && e.math_curve_name
+                ).length
               }
             </div>
             <div className="text-sm text-gray-600">Fully Configured</div>
@@ -347,8 +361,9 @@ export function ExamsListClient() {
           <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-orange-100 p-6">
             <div className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
               {
-                filteredExams.filter((e) => !e.english_curve_name || !e.math_curve_name)
-                  .length
+                filteredExams.filter(
+                  (e) => !e.english_curve_name || !e.math_curve_name
+                ).length
               }
             </div>
             <div className="text-sm text-gray-600">Need Configuration</div>

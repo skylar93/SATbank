@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import {
   Dialog,
@@ -6,20 +6,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
 export function ReferenceSheetModal() {
-  const referenceSheetUrl = process.env.NEXT_PUBLIC_REFERENCE_SHEET_URL;
+  const referenceSheetUrl = process.env.NEXT_PUBLIC_REFERENCE_SHEET_URL
 
   if (!referenceSheetUrl) {
-    return null;
+    return null
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">Reference</Button>
+        <Button variant="outline" size="sm">
+          Reference
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl h-[90vh] flex flex-col bg-white">
         <DialogHeader className="bg-white border-b border-gray-200 pb-4">
@@ -34,5 +36,5 @@ export function ReferenceSheetModal() {
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

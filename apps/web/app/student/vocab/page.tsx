@@ -1,9 +1,23 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Toast } from '@/components/ui/toast'
 import { createClient } from '@/lib/supabase'
@@ -38,32 +52,40 @@ export default function VocabSetsPage() {
 
   const fetchVocabSets = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) {
-        setToast({ message: 'Please log in to view your vocabulary sets', type: 'error' })
+        setToast({
+          message: 'Please log in to view your vocabulary sets',
+          type: 'error',
+        })
         return
       }
 
       // Fetch vocab sets with entry count
       const { data: sets, error } = await supabase
         .from('vocab_sets')
-        .select(`
+        .select(
+          `
           id,
           title,
           description,
           created_at,
           vocab_entries(count)
-        `)
+        `
+        )
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
 
       if (error) throw error
 
       // Transform the data to include entry count
-      const setsWithCount = sets?.map(set => ({
-        ...set,
-        entry_count: set.vocab_entries?.[0]?.count || 0
-      })) || []
+      const setsWithCount =
+        sets?.map((set) => ({
+          ...set,
+          entry_count: set.vocab_entries?.[0]?.count || 0,
+        })) || []
 
       setVocabSets(setsWithCount)
     } catch (error) {
@@ -76,26 +98,32 @@ export default function VocabSetsPage() {
 
   const handleCreateSet = async () => {
     if (!newSetTitle.trim()) {
-      setToast({ message: 'Please enter a title for your vocabulary set', type: 'error' })
+      setToast({
+        message: 'Please enter a title for your vocabulary set',
+        type: 'error',
+      })
       return
     }
 
     setIsCreating(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
-      const { error } = await supabase
-        .from('vocab_sets')
-        .insert({
-          user_id: user.id,
-          title: newSetTitle.trim(),
-          description: newSetDescription.trim() || null
-        })
+      const { error } = await supabase.from('vocab_sets').insert({
+        user_id: user.id,
+        title: newSetTitle.trim(),
+        description: newSetDescription.trim() || null,
+      })
 
       if (error) throw error
 
-      setToast({ message: 'Vocabulary set created successfully!', type: 'success' })
+      setToast({
+        message: 'Vocabulary set created successfully!',
+        type: 'success',
+      })
       setNewSetTitle('')
       setNewSetDescription('')
       setIsCreateDialogOpen(false)
@@ -112,7 +140,7 @@ export default function VocabSetsPage() {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     })
   }
 
@@ -123,7 +151,7 @@ export default function VocabSetsPage() {
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-gray-200 rounded w-1/3"></div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="h-40 bg-gray-200 rounded"></div>
               ))}
             </div>
@@ -138,11 +166,18 @@ export default function VocabSetsPage() {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">My Vocabulary Sets</h1>
-            <p className="text-gray-600">Create and manage your personal vocabulary collections</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              My Vocabulary Sets
+            </h1>
+            <p className="text-gray-600">
+              Create and manage your personal vocabulary collections
+            </p>
           </div>
-          
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          >
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
@@ -153,7 +188,8 @@ export default function VocabSetsPage() {
               <DialogHeader>
                 <DialogTitle>Create New Vocabulary Set</DialogTitle>
                 <DialogDescription>
-                  Create a new collection of vocabulary words to study and quiz yourself on.
+                  Create a new collection of vocabulary words to study and quiz
+                  yourself on.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -200,9 +236,17 @@ export default function VocabSetsPage() {
         {vocabSets.length === 0 ? (
           <div className="text-center py-12">
             <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No vocabulary sets yet</h3>
-            <p className="text-gray-600 mb-6">Create your first vocabulary set to start building your personal word collection.</p>
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No vocabulary sets yet
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Create your first vocabulary set to start building your personal
+              word collection.
+            </p>
+            <Dialog
+              open={isCreateDialogOpen}
+              onOpenChange={setIsCreateDialogOpen}
+            >
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="h-4 w-4 mr-2" />
@@ -213,7 +257,8 @@ export default function VocabSetsPage() {
                 <DialogHeader>
                   <DialogTitle>Create New Vocabulary Set</DialogTitle>
                   <DialogDescription>
-                    Create a new collection of vocabulary words to study and quiz yourself on.
+                    Create a new collection of vocabulary words to study and
+                    quiz yourself on.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -278,9 +323,7 @@ export default function VocabSetsPage() {
                     </span>
                   </div>
                   <Link href={`/student/vocab/${set.id}`}>
-                    <Button className="w-full">
-                      Manage Words
-                    </Button>
+                    <Button className="w-full">Manage Words</Button>
                   </Link>
                 </CardContent>
               </Card>

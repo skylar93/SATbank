@@ -36,11 +36,17 @@ interface QuizResult {
 export default function VocabQuizPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  
+
   const setId = searchParams.get('setId')
   const quizType = searchParams.get('type') as 'term_to_def' | 'def_to_term'
-  const quizFormat = searchParams.get('format') as 'multiple_choice' | 'written_answer'
-  const questionPool = searchParams.get('pool') as 'all' | 'unmastered' | 'not_recent' | 'smart_review'
+  const quizFormat = searchParams.get('format') as
+    | 'multiple_choice'
+    | 'written_answer'
+  const questionPool = searchParams.get('pool') as
+    | 'all'
+    | 'unmastered'
+    | 'not_recent'
+    | 'smart_review'
 
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -64,13 +70,15 @@ export default function VocabQuizPage() {
       router.push('/student/vocab')
       return
     }
-    
+
     generateQuiz()
   }, [setId, quizType, quizFormat, questionPool])
 
   const generateQuiz = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) {
         setToast({ message: 'Please log in to take a quiz', type: 'error' })
         router.push('/login')
@@ -87,8 +95,12 @@ export default function VocabQuizPage() {
       if (questionPool === 'unmastered') {
         query = query.lt('mastery_level', 3)
       } else if (questionPool === 'not_recent') {
-        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-        query = query.or(`last_reviewed_at.is.null,last_reviewed_at.lt.${yesterday}`)
+        const yesterday = new Date(
+          Date.now() - 24 * 60 * 60 * 1000
+        ).toISOString()
+        query = query.or(
+          `last_reviewed_at.is.null,last_reviewed_at.lt.${yesterday}`
+        )
       } else if (questionPool === 'smart_review') {
         // SRS: Get words that are due for review
         query = query.lte('next_review_date', new Date().toISOString())
@@ -98,39 +110,48 @@ export default function VocabQuizPage() {
 
       if (error) throw error
       if (!entries || entries.length === 0) {
-        setToast({ message: 'No words available for this quiz configuration', type: 'error' })
+        setToast({
+          message: 'No words available for this quiz configuration',
+          type: 'error',
+        })
         router.push(`/student/vocab/${setId}`)
         return
       }
 
       // Shuffle entries for quiz order
       const shuffledEntries = [...entries].sort(() => Math.random() - 0.5)
-      
+
       // Generate questions
       const quizQuestions: QuizQuestion[] = await Promise.all(
         shuffledEntries.map(async (entry) => {
-          const question = quizType === 'term_to_def' ? entry.term : entry.definition
-          const correctAnswer = quizType === 'term_to_def' ? entry.definition : entry.term
+          const question =
+            quizType === 'term_to_def' ? entry.term : entry.definition
+          const correctAnswer =
+            quizType === 'term_to_def' ? entry.definition : entry.term
 
           let options: string[] | undefined = undefined
 
           if (quizFormat === 'multiple_choice') {
             // Get 3 random incorrect options from other entries
-            const otherEntries = entries.filter(e => e.id !== entry.id)
-            const shuffledOthers = [...otherEntries].sort(() => Math.random() - 0.5).slice(0, 3)
-            
-            const incorrectAnswers = shuffledOthers.map(e => 
+            const otherEntries = entries.filter((e) => e.id !== entry.id)
+            const shuffledOthers = [...otherEntries]
+              .sort(() => Math.random() - 0.5)
+              .slice(0, 3)
+
+            const incorrectAnswers = shuffledOthers.map((e) =>
               quizType === 'term_to_def' ? e.definition : e.term
             )
 
-            options = [correctAnswer, ...incorrectAnswers].sort(() => Math.random() - 0.5)
+            options = [correctAnswer, ...incorrectAnswers].sort(
+              () => Math.random() - 0.5
+            )
           }
 
           return {
             id: entry.id,
             question,
             correctAnswer,
-            options
+            options,
           }
         })
       )
@@ -146,14 +167,13 @@ export default function VocabQuizPage() {
           quiz_type: quizType,
           quiz_format: quizFormat,
           questions_total: quizQuestions.length,
-          questions_correct: 0
+          questions_correct: 0,
         })
         .select('id')
         .single()
 
       if (sessionError) throw sessionError
       setSessionId(session.id)
-
     } catch (error) {
       console.error('Error generating quiz:', error)
       setToast({ message: 'Failed to generate quiz', type: 'error' })
@@ -169,31 +189,33 @@ export default function VocabQuizPage() {
     }
 
     const currentQuestion = questions[currentQuestionIndex]
-    const isCorrect = quizFormat === 'multiple_choice' 
-      ? userAnswer === currentQuestion.correctAnswer
-      : userAnswer.trim().toLowerCase() === currentQuestion.correctAnswer.toLowerCase()
+    const isCorrect =
+      quizFormat === 'multiple_choice'
+        ? userAnswer === currentQuestion.correctAnswer
+        : userAnswer.trim().toLowerCase() ===
+          currentQuestion.correctAnswer.toLowerCase()
 
     const result: QuizResult = {
       questionId: currentQuestion.id,
       correct: isCorrect,
-      userAnswer: userAnswer
+      userAnswer: userAnswer,
     }
 
-    setResults(prev => [...prev, result])
-    
+    setResults((prev) => [...prev, result])
+
     // Update the current question with result
-    setQuestions(prev => prev.map((q, index) => 
-      index === currentQuestionIndex 
-        ? { ...q, isCorrect, userAnswer }
-        : q
-    ))
+    setQuestions((prev) =>
+      prev.map((q, index) =>
+        index === currentQuestionIndex ? { ...q, isCorrect, userAnswer } : q
+      )
+    )
 
     setShowResult(true)
   }
 
   const handleNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1)
+      setCurrentQuestionIndex((prev) => prev + 1)
       setUserAnswer('')
       setShowResult(false)
     } else {
@@ -204,10 +226,12 @@ export default function VocabQuizPage() {
 
   const completeQuiz = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user || !sessionId) return
 
-      const correctAnswers = results.filter(r => r.correct).length
+      const correctAnswers = results.filter((r) => r.correct).length
       const scorePercentage = (correctAnswers / results.length) * 100
 
       // Update quiz session with final results
@@ -216,7 +240,7 @@ export default function VocabQuizPage() {
         .update({
           questions_correct: correctAnswers,
           score_percentage: scorePercentage,
-          completed_at: new Date().toISOString()
+          completed_at: new Date().toISOString(),
         })
         .eq('id', sessionId)
 
@@ -225,13 +249,24 @@ export default function VocabQuizPage() {
       // Update mastery levels and SRS scheduling for each vocab entry based on results
       const srsUpdates = results.map(async (result) => {
         try {
-          const response = await updateVocabWithSRS(result.questionId, result.correct)
+          const response = await updateVocabWithSRS(
+            result.questionId,
+            result.correct
+          )
           if (!response.success) {
-            console.error('SRS update failed for entry', result.questionId, response.message)
+            console.error(
+              'SRS update failed for entry',
+              result.questionId,
+              response.message
+            )
           }
           return response
         } catch (error) {
-          console.error('Error updating SRS for entry', result.questionId, error)
+          console.error(
+            'Error updating SRS for entry',
+            result.questionId,
+            error
+          )
           return { success: false, message: 'Update failed' }
         }
       })
@@ -257,7 +292,10 @@ export default function VocabQuizPage() {
   }
 
   const currentQuestion = questions[currentQuestionIndex]
-  const progress = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0
+  const progress =
+    questions.length > 0
+      ? ((currentQuestionIndex + 1) / questions.length) * 100
+      : 0
 
   if (isLoading) {
     return (
@@ -274,9 +312,9 @@ export default function VocabQuizPage() {
   }
 
   if (isComplete) {
-    const correctAnswers = results.filter(r => r.correct).length
+    const correctAnswers = results.filter((r) => r.correct).length
     const scorePercentage = Math.round((correctAnswers / results.length) * 100)
-    
+
     return (
       <div className="p-6">
         <div className="max-w-2xl mx-auto">
@@ -287,23 +325,34 @@ export default function VocabQuizPage() {
                 {scorePercentage}%
               </div>
               <p className="text-gray-600">
-                You got {correctAnswers} out of {results.length} questions correct
+                You got {correctAnswers} out of {results.length} questions
+                correct
               </p>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {results.map((result, index) => {
-                  const question = questions.find(q => q.id === result.questionId)
+                  const question = questions.find(
+                    (q) => q.id === result.questionId
+                  )
                   if (!question) return null
 
                   return (
                     <div key={result.questionId} className="border rounded p-4">
                       <div className="flex items-start gap-3">
-                        <div className={`p-1 rounded-full ${result.correct ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-                          {result.correct ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                        <div
+                          className={`p-1 rounded-full ${result.correct ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}
+                        >
+                          {result.correct ? (
+                            <Check className="h-4 w-4" />
+                          ) : (
+                            <X className="h-4 w-4" />
+                          )}
                         </div>
                         <div className="flex-1">
-                          <p className="font-medium mb-1">{question.question}</p>
+                          <p className="font-medium mb-1">
+                            {question.question}
+                          </p>
                           <p className="text-sm text-green-600 mb-1">
                             Correct: {question.correctAnswer}
                           </p>
@@ -350,7 +399,9 @@ export default function VocabQuizPage() {
     return (
       <div className="p-6">
         <div className="max-w-2xl mx-auto text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">No questions available</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            No questions available
+          </h1>
           <Link href={`/student/vocab/${setId}`}>
             <Button>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -368,11 +419,13 @@ export default function VocabQuizPage() {
         {/* Progress Bar */}
         <div className="mb-6">
           <div className="flex justify-between text-sm text-gray-600 mb-2">
-            <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
+            <span>
+              Question {currentQuestionIndex + 1} of {questions.length}
+            </span>
             <span>{Math.round(progress)}% Complete</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             ></div>
@@ -383,7 +436,9 @@ export default function VocabQuizPage() {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-center text-xl">
-              {quizType === 'term_to_def' ? 'What does this term mean?' : 'What term has this definition?'}
+              {quizType === 'term_to_def'
+                ? 'What does this term mean?'
+                : 'What term has this definition?'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -398,7 +453,10 @@ export default function VocabQuizPage() {
                 {quizFormat === 'multiple_choice' ? (
                   <div className="space-y-3">
                     {currentQuestion.options?.map((option, index) => (
-                      <label key={index} className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                      <label
+                        key={index}
+                        className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
+                      >
                         <input
                           type="radio"
                           name="answer"
@@ -423,7 +481,7 @@ export default function VocabQuizPage() {
                   </div>
                 )}
 
-                <Button 
+                <Button
                   onClick={handleAnswerSubmit}
                   disabled={!userAnswer.trim()}
                   className="w-full py-3 text-lg"
@@ -434,34 +492,44 @@ export default function VocabQuizPage() {
             ) : (
               <div className="space-y-4">
                 {/* Result Display */}
-                <div className={`text-center p-6 rounded-lg ${
-                  currentQuestion.isCorrect 
-                    ? 'bg-green-50 border border-green-200' 
-                    : 'bg-red-50 border border-red-200'
-                }`}>
-                  <div className={`text-3xl mb-3 ${
-                    currentQuestion.isCorrect ? 'text-green-600' : 'text-red-600'
-                  }`}>
+                <div
+                  className={`text-center p-6 rounded-lg ${
+                    currentQuestion.isCorrect
+                      ? 'bg-green-50 border border-green-200'
+                      : 'bg-red-50 border border-red-200'
+                  }`}
+                >
+                  <div
+                    className={`text-3xl mb-3 ${
+                      currentQuestion.isCorrect
+                        ? 'text-green-600'
+                        : 'text-red-600'
+                    }`}
+                  >
                     {currentQuestion.isCorrect ? '✓ Correct!' : '✗ Incorrect'}
                   </div>
-                  
+
                   {!currentQuestion.isCorrect && (
                     <div className="space-y-2">
                       <p className="text-red-700">
-                        <span className="font-medium">Your answer:</span> {currentQuestion.userAnswer}
+                        <span className="font-medium">Your answer:</span>{' '}
+                        {currentQuestion.userAnswer}
                       </p>
                       <p className="text-green-700">
-                        <span className="font-medium">Correct answer:</span> {currentQuestion.correctAnswer}
+                        <span className="font-medium">Correct answer:</span>{' '}
+                        {currentQuestion.correctAnswer}
                       </p>
                     </div>
                   )}
                 </div>
 
-                <Button 
+                <Button
                   onClick={handleNextQuestion}
                   className="w-full py-3 text-lg"
                 >
-                  {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+                  {currentQuestionIndex < questions.length - 1
+                    ? 'Next Question'
+                    : 'Finish Quiz'}
                 </Button>
               </div>
             )}
@@ -470,7 +538,10 @@ export default function VocabQuizPage() {
 
         {/* Back Link */}
         <div className="text-center">
-          <Link href={`/student/vocab/${setId}`} className="text-blue-600 hover:text-blue-700">
+          <Link
+            href={`/student/vocab/${setId}`}
+            className="text-blue-600 hover:text-blue-700"
+          >
             <ArrowLeft className="h-4 w-4 inline mr-1" />
             Back to vocabulary set
           </Link>

@@ -7,8 +7,16 @@ import { useAuth } from '../../../../../contexts/auth-context'
 import { ExamService } from '../../../../../lib/exam-service'
 import { supabase } from '../../../../../lib/supabase'
 import ReviewPageClient from './ReviewPageClient'
-import type { Question, TestAttempt, UserAnswer, Exam } from '../../../../../lib/exam-service'
-import { canShowAnswers, type TestAttemptWithVisibility } from '../../../../../lib/answer-visibility'
+import type {
+  Question,
+  TestAttempt,
+  UserAnswer,
+  Exam,
+} from '../../../../../lib/exam-service'
+import {
+  canShowAnswers,
+  type TestAttemptWithVisibility,
+} from '../../../../../lib/answer-visibility'
 
 interface ReviewData {
   attempt: TestAttempt & { exams: Exam }
@@ -64,7 +72,7 @@ export default function ReviewPage() {
         .select('show_correct_answers')
         .eq('id', user.id)
         .single()
-      
+
       setShowCorrectAnswers(profileData?.show_correct_answers || false)
     }
   }
@@ -89,7 +97,7 @@ export default function ReviewPage() {
           attemptData.exam_id
         )
         setCanShowResults(canShow)
-        
+
         if (!canShow) {
           router.push(`/student/results/${attemptId}`)
           return
@@ -120,10 +128,12 @@ export default function ReviewPage() {
       // Get the test attempt with exam information and answer visibility fields
       const { data: attempt, error: attemptError } = await supabase
         .from('test_attempts')
-        .select(`
+        .select(
+          `
           *,
           exams!inner(*)
-        `)
+        `
+        )
         .eq('id', attemptId)
         .single()
 
@@ -157,7 +167,7 @@ export default function ReviewPage() {
         attempt,
         exam: attempt.exams,
         questions: questions || [],
-        userAnswers: userAnswers || []
+        userAnswers: userAnswers || [],
       }
 
       setReviewData(reviewData)
@@ -217,7 +227,9 @@ export default function ReviewPage() {
             <h3 className="text-lg font-medium text-red-900 mb-2">
               Error Loading Review
             </h3>
-            <p className="text-red-700 mb-4">{error || 'Review data not found'}</p>
+            <p className="text-red-700 mb-4">
+              {error || 'Review data not found'}
+            </p>
             <Link
               href={`/student/results/${attemptId}`}
               className="inline-block bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"

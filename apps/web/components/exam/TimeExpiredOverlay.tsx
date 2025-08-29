@@ -6,7 +6,9 @@ interface TimeExpiredOverlayProps {
   isLastModule?: boolean
 }
 
-export function TimeExpiredOverlay({ isLastModule = false }: TimeExpiredOverlayProps) {
+export function TimeExpiredOverlay({
+  isLastModule = false,
+}: TimeExpiredOverlayProps) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-md mx-4 border-2 border-red-200 shadow-xl">
@@ -14,9 +16,7 @@ export function TimeExpiredOverlay({ isLastModule = false }: TimeExpiredOverlayP
           <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
             <ClockIcon className="w-8 h-8 text-red-500" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">
-            Time's Up!
-          </h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Time's Up!</h3>
           <p className="text-gray-600 mb-4">
             {isLastModule
               ? 'Submitting your exam and calculating final scores...'

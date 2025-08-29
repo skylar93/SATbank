@@ -29,7 +29,7 @@ interface AnswerVisibilityControlProps {
 
 export function AnswerVisibilityControl({
   examId,
-  currentVisibility
+  currentVisibility,
 }: AnswerVisibilityControlProps) {
   const [isPending, startTransition] = useTransition()
   const [showCalendar, setShowCalendar] = useState(false)
@@ -46,7 +46,10 @@ export function AnswerVisibilityControl({
     const visibility = value as 'hidden' | 'immediate'
     startTransition(async () => {
       try {
-        const result = await updateAnswerVisibilityForAttempt(examId, visibility)
+        const result = await updateAnswerVisibilityForAttempt(
+          examId,
+          visibility
+        )
         if (!result.success) {
           alert(`Failed to update answer visibility: ${result.message}`)
         }
@@ -62,7 +65,11 @@ export function AnswerVisibilityControl({
       setSelectedDate(date)
       startTransition(async () => {
         try {
-          const result = await updateAnswerVisibilityForAttempt(examId, 'scheduled', date.toISOString())
+          const result = await updateAnswerVisibilityForAttempt(
+            examId,
+            'scheduled',
+            date.toISOString()
+          )
           if (!result.success) {
             alert(`Failed to update answer visibility: ${result.message}`)
           }
@@ -81,25 +88,29 @@ export function AnswerVisibilityControl({
         return {
           icon: <Eye className="h-3 w-3" />,
           text: '',
-          style: 'px-2 py-1.5 text-xs font-medium text-green-700 rounded-full border border-gray-200 bg-gray-50'
+          style:
+            'px-2 py-1.5 text-xs font-medium text-green-700 rounded-full border border-gray-200 bg-gray-50',
         }
       case 'hidden':
         return {
           icon: <EyeOff className="h-3 w-3" />,
           text: '',
-          style: 'px-2 py-1.5 text-xs font-medium text-red-700 rounded-full border border-gray-200 bg-gray-50'
+          style:
+            'px-2 py-1.5 text-xs font-medium text-red-700 rounded-full border border-gray-200 bg-gray-50',
         }
       case 'scheduled':
         return {
           icon: <Clock className="h-3 w-3" />,
           text: '',
-          style: 'px-2 py-1.5 text-xs font-medium text-orange-700 rounded-full border border-gray-200 bg-gray-50'
+          style:
+            'px-2 py-1.5 text-xs font-medium text-orange-700 rounded-full border border-gray-200 bg-gray-50',
         }
       default:
         return {
           icon: <EyeOff className="h-3 w-3" />,
           text: '',
-          style: 'px-2 py-1.5 text-xs font-medium text-gray-500 rounded-full border border-gray-200 bg-gray-50'
+          style:
+            'px-2 py-1.5 text-xs font-medium text-gray-500 rounded-full border border-gray-200 bg-gray-50',
         }
     }
   }
@@ -110,16 +121,14 @@ export function AnswerVisibilityControl({
     <div className="space-y-1">
       <div className="flex items-center space-x-2">
         {isPending && <Loader2 className="h-3 w-3 animate-spin" />}
-        
-        <Select 
-          value={currentVisibility.type} 
+
+        <Select
+          value={currentVisibility.type}
           onValueChange={handleVisibilityChange}
           disabled={isPending}
         >
           <SelectTrigger className={`w-auto h-auto ${display.style}`}>
-            <div className="flex items-center">
-              {display.icon}
-            </div>
+            <div className="flex items-center">{display.icon}</div>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="immediate">
@@ -164,11 +173,12 @@ export function AnswerVisibilityControl({
         </Popover>
       )}
 
-      {currentVisibility.type === 'scheduled' && currentVisibility.scheduled_date && (
-        <div className="text-xs text-gray-600">
-          Release: {format(currentVisibility.scheduled_date, 'PPP p')}
-        </div>
-      )}
+      {currentVisibility.type === 'scheduled' &&
+        currentVisibility.scheduled_date && (
+          <div className="text-xs text-gray-600">
+            Release: {format(currentVisibility.scheduled_date, 'PPP p')}
+          </div>
+        )}
     </div>
   )
 }

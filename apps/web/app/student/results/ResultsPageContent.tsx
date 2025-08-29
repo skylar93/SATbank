@@ -3,14 +3,18 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../contexts/auth-context'
-import { getResultsDashboardData, type ResultsDashboardData } from '../../../lib/results-service'
+import {
+  getResultsDashboardData,
+  type ResultsDashboardData,
+} from '../../../lib/results-service'
 import ResultsDashboardClient from './ResultsDashboardClient'
 import { ChartBarIcon } from '@heroicons/react/24/outline'
 
 export function ResultsPageContent() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
-  const [dashboardData, setDashboardData] = useState<ResultsDashboardData | null>(null)
+  const [dashboardData, setDashboardData] =
+    useState<ResultsDashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
@@ -20,13 +24,22 @@ export function ResultsPageContent() {
   }, [])
 
   useEffect(() => {
-    console.log('🔄 ResultsPageContent: Auth state changed', { authLoading, user: !!user, userEmail: user?.email })
-    
+    console.log('🔄 ResultsPageContent: Auth state changed', {
+      authLoading,
+      user: !!user,
+      userEmail: user?.email,
+    })
+
     if (!authLoading && user) {
-      console.log('🔄 ResultsPageContent: Loading dashboard data for user:', user.email)
+      console.log(
+        '🔄 ResultsPageContent: Loading dashboard data for user:',
+        user.email
+      )
       loadDashboardData()
     } else if (!authLoading && !user) {
-      console.log('🔄 ResultsPageContent: No user found, redirecting to dashboard')
+      console.log(
+        '🔄 ResultsPageContent: No user found, redirecting to dashboard'
+      )
       // Redirect to dashboard instead of showing login message
       router.push('/student/dashboard')
     }
@@ -79,7 +92,9 @@ export function ResultsPageContent() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Results</h1>
-              <p className="text-gray-600">Please log in to view your results</p>
+              <p className="text-gray-600">
+                Please log in to view your results
+              </p>
             </div>
           </div>
           <div className="border-b border-gray-200"></div>
@@ -148,7 +163,7 @@ export function ResultsPageContent() {
             <p className="text-red-800">
               Error loading results: {error || 'Unknown error'}
             </p>
-            <button 
+            <button
               onClick={loadDashboardData}
               className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >

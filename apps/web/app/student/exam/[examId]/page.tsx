@@ -114,7 +114,9 @@ function ExamPageContent() {
   const [isUserSelecting, setIsUserSelecting] = useState(false)
   const [showExitConfirm, setShowExitConfirm] = useState(false)
   const [hasInitialized, setHasInitialized] = useState(false)
-  const [answerCheckMode, setAnswerCheckMode] = useState<'exam_end' | 'per_question'>('exam_end')
+  const [answerCheckMode, setAnswerCheckMode] = useState<
+    'exam_end' | 'per_question'
+  >('exam_end')
   const [showAnswerReveal, setShowAnswerReveal] = useState(false)
   const [answerRevealData, setAnswerRevealData] = useState<{
     question: any
@@ -141,8 +143,10 @@ function ExamPageContent() {
   useEffect(() => {
     if (examId && !authLoading) {
       ExamService.getExamAnswerMode(examId)
-        .then(mode => setAnswerCheckMode(mode))
-        .catch(error => console.error('Error getting answer check mode:', error))
+        .then((mode) => setAnswerCheckMode(mode))
+        .catch((error) =>
+          console.error('Error getting answer check mode:', error)
+        )
     }
   }, [examId, authLoading])
 
@@ -275,13 +279,13 @@ function ExamPageContent() {
             attempt_id: attempt.id,
             question_id: currentQuestion.id,
             user_answer: currentAnswer,
-            time_spent_seconds: 0
+            time_spent_seconds: 0,
           })
 
           setAnswerRevealData({
             question: result.question,
             userAnswer: currentAnswer,
-            isCorrect: result.isCorrect
+            isCorrect: result.isCorrect,
           })
           // For incorrect answers on first attempt, don't show correct answer yet
           setShouldShowCorrectAnswer(result.isCorrect)
@@ -321,13 +325,13 @@ function ExamPageContent() {
     if (status === 'time_expired' && !isAdvancingModuleRef.current) {
       isAdvancingModuleRef.current = true
       console.log('Status changed to time_expired, advancing module...')
-      
+
       const advanceModule = async () => {
         try {
           console.log('Calling handleTimeExpiredFromHook...')
           await handleTimeExpiredFromHook()
           console.log('Successfully advanced module')
-          
+
           // Navigate to results if exam is complete
           if (currentModuleIndex >= modules.length - 1) {
             console.log('Exam complete, navigating to results')
@@ -341,7 +345,7 @@ function ExamPageContent() {
           isAdvancingModuleRef.current = false
         }
       }
-      
+
       advanceModule()
     }
   }, [
@@ -515,14 +519,14 @@ function ExamPageContent() {
     setShowAnswerReveal(false)
     setAnswerRevealData(null)
     setShouldShowCorrectAnswer(false)
-    
+
     // Move to next question
     const currentModule = modules[currentModuleIndex]
     if (currentModule) {
       const currentQuestionIndex = currentModule.questions.findIndex(
-        q => q.id === getCurrentQuestion()?.id
+        (q) => q.id === getCurrentQuestion()?.id
       )
-      
+
       if (currentQuestionIndex < currentModule.questions.length - 1) {
         nextQuestion()
       } else {
@@ -543,7 +547,6 @@ function ExamPageContent() {
     setShouldShowCorrectAnswer(false)
     // Keep the current answer so they can modify it and try again
   }
-
 
   // Get answered questions for current module
   const getAnsweredQuestions = () => {
@@ -941,8 +944,12 @@ function ExamPageContent() {
           onToggleMarkForReview={() => toggleMarkForReview()}
           questionContentRef={questionContentRef}
           highlights={highlightsByQuestion[currentQuestion.id] || []}
-          onRemoveHighlight={(highlight) => removeHighlight(currentQuestion.id, highlight)}
-          onAddHighlight={(highlight) => addHighlight(currentQuestion.id, highlight)}
+          onRemoveHighlight={(highlight) =>
+            removeHighlight(currentQuestion.id, highlight)
+          }
+          onAddHighlight={(highlight) =>
+            addHighlight(currentQuestion.id, highlight)
+          }
           showPerQuestionAnswers={answerCheckMode === 'per_question'}
           isAnswerSubmitted={showAnswerReveal}
           isCorrect={answerRevealData?.isCorrect}
@@ -951,7 +958,6 @@ function ExamPageContent() {
           onTryAgain={handleTryAgain}
           showCorrectAnswer={shouldShowCorrectAnswer}
         />
-
       </div>
 
       {/* Bottom Navigation */}
@@ -975,8 +981,8 @@ function ExamPageContent() {
 
       {/* Time Expired Overlay */}
       {status === 'time_expired' && (
-        <TimeExpiredOverlay 
-          isLastModule={currentModuleIndex >= modules.length - 1} 
+        <TimeExpiredOverlay
+          isLastModule={currentModuleIndex >= modules.length - 1}
         />
       )}
 

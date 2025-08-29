@@ -19,7 +19,11 @@ interface CreateExamModalProps {
   onExamCreated: (examId: string) => void
 }
 
-export function CreateExamModal({ isOpen, onClose, onExamCreated }: CreateExamModalProps) {
+export function CreateExamModal({
+  isOpen,
+  onClose,
+  onExamCreated,
+}: CreateExamModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -29,7 +33,7 @@ export function CreateExamModal({ isOpen, onClose, onExamCreated }: CreateExamMo
 
     try {
       const result = await createExam(formData)
-      
+
       if (result.success && result.newExam) {
         onExamCreated(result.newExam.id)
       } else {
@@ -56,7 +60,7 @@ export function CreateExamModal({ isOpen, onClose, onExamCreated }: CreateExamMo
         <DialogHeader>
           <DialogTitle>Create a New Exam</DialogTitle>
         </DialogHeader>
-        
+
         <form action={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="title">Exam Title *</Label>
@@ -69,7 +73,7 @@ export function CreateExamModal({ isOpen, onClose, onExamCreated }: CreateExamMo
               className="mt-1"
             />
           </div>
-          
+
           <div>
             <Label htmlFor="description">Description</Label>
             <Textarea
@@ -81,13 +85,13 @@ export function CreateExamModal({ isOpen, onClose, onExamCreated }: CreateExamMo
               className="mt-1"
             />
           </div>
-          
+
           {error && (
             <div className="text-red-600 text-sm bg-red-50 p-2 rounded">
               {error}
             </div>
           )}
-          
+
           <div className="flex justify-end space-x-2">
             <Button
               type="button"

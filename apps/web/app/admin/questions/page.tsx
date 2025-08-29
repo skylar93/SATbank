@@ -189,13 +189,15 @@ export default function ManageExamsPage() {
 
       let query = supabase
         .from('questions')
-        .select(`
+        .select(
+          `
           *,
           exams!questions_exam_id_fkey (
             id,
             title
           )
-        `)
+        `
+        )
         .order('module_type', { ascending: true })
         .order('question_number', { ascending: true })
 
@@ -499,7 +501,9 @@ export default function ManageExamsPage() {
                               {question.exam_title}
                             </span>
                           ) : (
-                            <span className="text-xs text-gray-400">No exam</span>
+                            <span className="text-xs text-gray-400">
+                              No exam
+                            </span>
                           )}
                         </td>
                         <td className="px-4 py-4">

@@ -4,12 +4,12 @@ import type { NextRequest } from 'next/server'
 
 export async function middleware(req: NextRequest) {
   console.log('🔄 Middleware: Processing request to:', req.nextUrl.pathname)
-  
+
   const res = NextResponse.next()
-  
+
   // TEMPORARILY DISABLED: Session sync issue between middleware and client auth
   // Using client-side protection instead
-  
+
   /*
   const supabase = createMiddlewareClient({ req, res })
 
@@ -108,7 +108,10 @@ export async function middleware(req: NextRequest) {
   }
   */
 
-  console.log('🔄 Middleware: Allowing request to proceed to:', req.nextUrl.pathname)
+  console.log(
+    '🔄 Middleware: Allowing request to proceed to:',
+    req.nextUrl.pathname
+  )
   return res
 }
 

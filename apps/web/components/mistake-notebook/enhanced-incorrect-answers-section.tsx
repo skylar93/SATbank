@@ -191,7 +191,9 @@ export function EnhancedIncorrectAnswersSection({
           exam_id: null,
           status: 'not_started',
           is_practice_mode: true,
-          current_module: questions.find(q => selectedQuestions.includes(q.id))?.module_type || 'english1',
+          current_module:
+            questions.find((q) => selectedQuestions.includes(q.id))
+              ?.module_type || 'english1',
           current_question_number: 1,
         })
         .select()
@@ -219,7 +221,10 @@ export function EnhancedIncorrectAnswersSection({
       // Navigate to practice session
       router.push(`/student/practice/${attempt.id}`)
     } catch (error) {
-      console.error('Error creating practice quiz from selected mistakes:', error)
+      console.error(
+        'Error creating practice quiz from selected mistakes:',
+        error
+      )
       alert('Failed to create practice quiz. Please try again.')
     }
   }
@@ -339,7 +344,9 @@ export function EnhancedIncorrectAnswersSection({
               onClick={handleSelectAll}
               className="text-blue-600 hover:text-blue-800 text-sm font-medium"
             >
-              {selectedQuestions.length === questions.length ? 'Deselect All' : 'Select All'}
+              {selectedQuestions.length === questions.length
+                ? 'Deselect All'
+                : 'Select All'}
             </button>
             <button
               onClick={createPracticeQuizFromSelected}
@@ -466,18 +473,19 @@ export function EnhancedIncorrectAnswersSection({
                         )}
 
                       {/* Topics */}
-                      {question.topic_tags && question.topic_tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
-                          {question.topic_tags.map((tag, index) => (
-                            <span
-                              key={index}
-                              className="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-50 text-blue-700"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
+                      {question.topic_tags &&
+                        question.topic_tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {question.topic_tags.map((tag, index) => (
+                              <span
+                                key={index}
+                                className="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-50 text-blue-700"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                     </div>
                   </div>
 

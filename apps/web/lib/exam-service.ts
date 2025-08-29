@@ -230,20 +230,25 @@ export class ExamService {
     // If no direct questions, try linked questions (for mistake-based assignments)
     const { data: linkedQuestions, error: linkedError } = await supabase
       .from('exam_questions')
-      .select(`
+      .select(
+        `
         questions (*)
-      `)
+      `
+      )
       .eq('exam_id', examId)
       .eq('questions.module_type', moduleType)
 
     if (linkedError) throw linkedError
 
     // Extract questions from the linked results and sort by question_number
-    const questions = linkedQuestions
-      ?.map((item: any) => item.questions)
-      .filter((question: Question | null) => question !== null) as Question[] || []
+    const questions =
+      (linkedQuestions
+        ?.map((item: any) => item.questions)
+        .filter(
+          (question: Question | null) => question !== null
+        ) as Question[]) || []
 
-    // Sort by question_number since we can't do it in the query
+    // Sort by question_number since we cannot do it in the query
     questions.sort((a, b) => a.question_number - b.question_number)
 
     return questions
@@ -288,10 +293,12 @@ export class ExamService {
   ): Promise<(TestAttempt & { exam?: Exam })[]> {
     let query = supabase
       .from('test_attempts')
-      .select(`
+      .select(
+        `
         *,
         exam:exams(*)
-      `)
+      `
+      )
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
@@ -425,70 +432,82 @@ export class ExamService {
   }> {
     // Submit the answer first
     const userAnswer = await this.submitAnswer(answer)
-    
+
     // Get the question details to check correctness
     const { data: question, error: questionError } = await supabase
       .from('questions')
       .select('*')
       .eq('id', answer.question_id)
       .single()
-    
+
     if (questionError) throw questionError
-    
+
     // Check if answer is correct
     const isCorrect = this.checkAnswer(question, answer.user_answer || '')
-    
+
     // Mark answer as viewed if per-question mode
     const { error: viewError } = await supabase
       .from('user_answers')
       .update({ viewed_correct_answer_at: new Date().toISOString() })
       .eq('attempt_id', answer.attempt_id)
       .eq('question_id', answer.question_id)
-    
+
     if (viewError) throw viewError
-    
+
     return {
       userAnswer,
       question,
-      isCorrect
+      isCorrect,
     }
   }
 
   // Check if answer is correct
   static checkAnswer(question: Question, userAnswer: string): boolean {
     if (!userAnswer || !question.correct_answer) return false
-    
+
     if (question.question_type === 'grid_in') {
       // For grid-in questions, check against all possible correct answers
-      const correctAnswers = question.correct_answers || [question.correct_answer]
-      return correctAnswers.some(correct => 
-        String(correct).trim().toLowerCase() === String(userAnswer).trim().toLowerCase()
+      const correctAnswers = question.correct_answers || [
+        question.correct_answer,
+      ]
+      return correctAnswers.some(
+        (correct) =>
+          String(correct).trim().toLowerCase() ===
+          String(userAnswer).trim().toLowerCase()
       )
     }
-    
+
     // For multiple choice, direct comparison
-    return String(question.correct_answer).trim().toLowerCase() === String(userAnswer).trim().toLowerCase()
+    return (
+      String(question.correct_answer).trim().toLowerCase() ===
+      String(userAnswer).trim().toLowerCase()
+    )
   }
 
   // Get exam answer check mode
-  static async getExamAnswerMode(examId: string): Promise<'exam_end' | 'per_question'> {
+  static async getExamAnswerMode(
+    examId: string
+  ): Promise<'exam_end' | 'per_question'> {
     const { data, error } = await supabase
       .from('exams')
       .select('answer_check_mode')
       .eq('id', examId)
       .single()
-    
+
     if (error) throw error
     return data?.answer_check_mode || 'exam_end'
   }
 
   // Update exam answer check mode
-  static async updateExamAnswerMode(examId: string, mode: 'exam_end' | 'per_question'): Promise<void> {
+  static async updateExamAnswerMode(
+    examId: string,
+    mode: 'exam_end' | 'per_question'
+  ): Promise<void> {
     const { error } = await supabase
       .from('exams')
       .update({ answer_check_mode: mode })
       .eq('id', examId)
-    
+
     if (error) throw error
   }
 

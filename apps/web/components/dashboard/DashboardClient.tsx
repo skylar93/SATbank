@@ -10,16 +10,10 @@ import {
   WeeklyActivityChart,
   CircularProgress,
 } from '../charts'
-import {
-  ModernScoreProgress,
-  StatsCard,
-} from '../modern-charts'
+import { ModernScoreProgress, StatsCard } from '../modern-charts'
 import { Calendar } from '../calendar'
 import SmartReviewWidget from './SmartReviewWidget'
-import {
-  ChartBarIcon,
-  FireIcon,
-} from '@heroicons/react/24/outline'
+import { ChartBarIcon, FireIcon } from '@heroicons/react/24/outline'
 import { formatTimeAgo } from '../../lib/utils'
 
 interface DashboardData {
@@ -56,24 +50,27 @@ interface DashboardClientProps {
   canShowResults?: boolean
 }
 
-export default function DashboardClient({ initialData, canShowResults = true }: DashboardClientProps) {
+export default function DashboardClient({
+  initialData,
+  canShowResults = true,
+}: DashboardClientProps) {
   const { user } = useAuth()
   const [loading, setLoading] = useState(!initialData)
-  
+
   // Apply impersonation padding immediately on mount
   useEffect(() => {
     const checkImpersonation = () => {
       if (typeof window !== 'undefined') {
-        const impersonationData = localStorage.getItem('impersonation_data');
+        const impersonationData = localStorage.getItem('impersonation_data')
         if (impersonationData) {
-          document.body.style.setProperty('padding-top', '44px', 'important');
-          document.body.classList.add('impersonation-active');
+          document.body.style.setProperty('padding-top', '44px', 'important')
+          document.body.classList.add('impersonation-active')
         }
       }
-    };
-    
-    checkImpersonation();
-  }, []);
+    }
+
+    checkImpersonation()
+  }, [])
 
   // Use initial data or fallback to empty state
   const data = initialData || {
@@ -157,7 +154,8 @@ export default function DashboardClient({ initialData, canShowResults = true }: 
               Dashboard
             </h1>
             <p className="text-sm md:text-base text-gray-600">
-              Hello {user.profile?.full_name?.split(' ')[0] || 'there'}, welcome back
+              Hello {user.profile?.full_name?.split(' ')[0] || 'there'}, welcome
+              back
             </p>
           </div>
           <div className="flex items-center space-x-4">
@@ -204,7 +202,8 @@ export default function DashboardClient({ initialData, canShowResults = true }: 
                   if (result.isZero) return 'neutral'
                   return data.overallStats.bestScore &&
                     data.previousMonthStats.bestScore &&
-                    data.overallStats.bestScore >= data.previousMonthStats.bestScore
+                    data.overallStats.bestScore >=
+                      data.previousMonthStats.bestScore
                     ? 'positive'
                     : 'negative'
                 })()}
@@ -233,7 +232,8 @@ export default function DashboardClient({ initialData, canShowResults = true }: 
                     data.previousMonthStats.examsTaken
                   )
                   if (result.isZero) return 'neutral'
-                  return data.overallStats.examsTaken >= data.previousMonthStats.examsTaken
+                  return data.overallStats.examsTaken >=
+                    data.previousMonthStats.examsTaken
                     ? 'positive'
                     : 'negative'
                 })()}
@@ -269,7 +269,8 @@ export default function DashboardClient({ initialData, canShowResults = true }: 
                   if (result.isZero) return 'neutral'
                   return data.overallStats.averageScore &&
                     data.previousMonthStats.averageScore &&
-                    data.overallStats.averageScore >= data.previousMonthStats.averageScore
+                    data.overallStats.averageScore >=
+                      data.previousMonthStats.averageScore
                     ? 'positive'
                     : 'negative'
                 })()}

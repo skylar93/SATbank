@@ -1,12 +1,23 @@
 'use client'
 
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -16,7 +27,10 @@ interface AnswerReleaseModalProps {
   onClose: () => void
   examId: string
   examTitle: string
-  onConfirm: (visibilityOption: 'hidden' | 'immediate' | 'scheduled' | 'per_question', releaseTimestamp?: Date) => Promise<void>
+  onConfirm: (
+    visibilityOption: 'hidden' | 'immediate' | 'scheduled' | 'per_question',
+    releaseTimestamp?: Date
+  ) => Promise<void>
 }
 
 export default function AnswerReleaseModal({
@@ -24,9 +38,11 @@ export default function AnswerReleaseModal({
   onClose,
   examId,
   examTitle,
-  onConfirm
+  onConfirm,
 }: AnswerReleaseModalProps) {
-  const [visibilityOption, setVisibilityOption] = useState<'hidden' | 'immediate' | 'scheduled' | 'per_question'>('hidden')
+  const [visibilityOption, setVisibilityOption] = useState<
+    'hidden' | 'immediate' | 'scheduled' | 'per_question'
+  >('hidden')
   const [releaseDate, setReleaseDate] = useState<Date>()
   const [releaseTime, setReleaseTime] = useState('12:00')
   const [isLoading, setIsLoading] = useState(false)
@@ -44,7 +60,7 @@ export default function AnswerReleaseModal({
 
       await onConfirm(visibilityOption, releaseTimestamp)
       onClose()
-      
+
       // Reset form
       setVisibilityOption('hidden')
       setReleaseDate(undefined)
@@ -56,7 +72,8 @@ export default function AnswerReleaseModal({
     }
   }
 
-  const isFormValid = visibilityOption !== 'scheduled' || (releaseDate && releaseTime)
+  const isFormValid =
+    visibilityOption !== 'scheduled' || (releaseDate && releaseTime)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -64,12 +81,18 @@ export default function AnswerReleaseModal({
         <DialogHeader>
           <DialogTitle>Answer Release Settings</DialogTitle>
           <DialogDescription>
-            Configure when students can see correct answers for <strong>{examTitle}</strong>
+            Configure when students can see correct answers for{' '}
+            <strong>{examTitle}</strong>
           </DialogDescription>
         </DialogHeader>
 
         <div className="py-4 space-y-6">
-          <RadioGroup value={visibilityOption} onValueChange={(value: 'hidden' | 'immediate' | 'scheduled' | 'per_question') => setVisibilityOption(value)}>
+          <RadioGroup
+            value={visibilityOption}
+            onValueChange={(
+              value: 'hidden' | 'immediate' | 'scheduled' | 'per_question'
+            ) => setVisibilityOption(value)}
+          >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="hidden" id="hidden" />
               <Label htmlFor="hidden" className="font-medium">
@@ -107,7 +130,8 @@ export default function AnswerReleaseModal({
               </Label>
             </div>
             <p className="text-sm text-gray-600 ml-6">
-              Students can see the correct answer immediately after submitting each question.
+              Students can see the correct answer immediately after submitting
+              each question.
             </p>
           </RadioGroup>
 
@@ -122,12 +146,16 @@ export default function AnswerReleaseModal({
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal mt-1",
-                        !releaseDate && "text-muted-foreground"
+                        'w-full justify-start text-left font-normal mt-1',
+                        !releaseDate && 'text-muted-foreground'
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {releaseDate ? format(releaseDate, "PPP") : <span>Pick a date</span>}
+                      {releaseDate ? (
+                        format(releaseDate, 'PPP')
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -162,8 +190,8 @@ export default function AnswerReleaseModal({
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleConfirm} 
+          <Button
+            onClick={handleConfirm}
             disabled={!isFormValid || isLoading}
             className="bg-blue-600 hover:bg-blue-700"
           >

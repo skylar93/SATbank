@@ -2,13 +2,36 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Toast } from '@/components/ui/toast'
 import { createClient } from '@/lib/supabase'
-import { Plus, BookOpen, Calendar, Edit, Trash2, Play, ArrowLeft, FileUp } from 'lucide-react'
+import {
+  Plus,
+  BookOpen,
+  Calendar,
+  Edit,
+  Trash2,
+  Play,
+  ArrowLeft,
+  FileUp,
+} from 'lucide-react'
 import Link from 'next/link'
 import { BulkAddModal } from '@/components/vocab/BulkAddModal'
 
@@ -37,7 +60,7 @@ export default function VocabSetDetailPage() {
   const [vocabSet, setVocabSet] = useState<VocabSet | null>(null)
   const [entries, setEntries] = useState<VocabEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  
+
   // New word form state
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [newTerm, setNewTerm] = useState('')
@@ -54,9 +77,15 @@ export default function VocabSetDetailPage() {
 
   // Quiz configuration state
   const [isQuizDialogOpen, setIsQuizDialogOpen] = useState(false)
-  const [quizType, setQuizType] = useState<'term_to_def' | 'def_to_term'>('term_to_def')
-  const [quizFormat, setQuizFormat] = useState<'multiple_choice' | 'written_answer'>('multiple_choice')
-  const [questionPool, setQuestionPool] = useState<'all' | 'unmastered' | 'not_recent' | 'smart_review'>('all')
+  const [quizType, setQuizType] = useState<'term_to_def' | 'def_to_term'>(
+    'term_to_def'
+  )
+  const [quizFormat, setQuizFormat] = useState<
+    'multiple_choice' | 'written_answer'
+  >('multiple_choice')
+  const [questionPool, setQuestionPool] = useState<
+    'all' | 'unmastered' | 'not_recent' | 'smart_review'
+  >('all')
 
   // Bulk add state
   const [isBulkAddModalOpen, setIsBulkAddModalOpen] = useState(false)
@@ -74,9 +103,14 @@ export default function VocabSetDetailPage() {
 
   const fetchVocabSetAndEntries = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) {
-        setToast({ message: 'Please log in to access your vocabulary sets', type: 'error' })
+        setToast({
+          message: 'Please log in to access your vocabulary sets',
+          type: 'error',
+        })
         router.push('/login')
         return
       }
@@ -121,24 +155,27 @@ export default function VocabSetDetailPage() {
 
   const handleAddEntry = async () => {
     if (!newTerm.trim() || !newDefinition.trim()) {
-      setToast({ message: 'Please fill in both term and definition', type: 'error' })
+      setToast({
+        message: 'Please fill in both term and definition',
+        type: 'error',
+      })
       return
     }
 
     setIsCreating(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
-      const { error } = await supabase
-        .from('vocab_entries')
-        .insert({
-          set_id: parseInt(setId),
-          user_id: user.id,
-          term: newTerm.trim(),
-          definition: newDefinition.trim(),
-          example_sentence: newExample.trim() || null
-        })
+      const { error } = await supabase.from('vocab_entries').insert({
+        set_id: parseInt(setId),
+        user_id: user.id,
+        term: newTerm.trim(),
+        definition: newDefinition.trim(),
+        example_sentence: newExample.trim() || null,
+      })
 
       if (error) throw error
 
@@ -165,7 +202,10 @@ export default function VocabSetDetailPage() {
 
   const handleUpdateEntry = async () => {
     if (!editTerm.trim() || !editDefinition.trim()) {
-      setToast({ message: 'Please fill in both term and definition', type: 'error' })
+      setToast({
+        message: 'Please fill in both term and definition',
+        type: 'error',
+      })
       return
     }
 
@@ -176,7 +216,7 @@ export default function VocabSetDetailPage() {
         .update({
           term: editTerm.trim(),
           definition: editDefinition.trim(),
-          example_sentence: editExample.trim() || null
+          example_sentence: editExample.trim() || null,
         })
         .eq('id', editingEntry!.id)
 
@@ -214,24 +254,36 @@ export default function VocabSetDetailPage() {
 
   const handleStartQuiz = () => {
     if (entries.length === 0) {
-      setToast({ message: 'Add some words before starting a quiz', type: 'error' })
+      setToast({
+        message: 'Add some words before starting a quiz',
+        type: 'error',
+      })
       return
     }
 
-    const filteredEntries = questionPool === 'unmastered' 
-      ? entries.filter(e => e.mastery_level < 3)
-      : questionPool === 'not_recent'
-      ? entries.filter(e => !e.last_reviewed_at || new Date(e.last_reviewed_at) < new Date(Date.now() - 24 * 60 * 60 * 1000))
-      : questionPool === 'smart_review'
-      ? entries.filter(e => {
-          // For smart review, we'll let the quiz page handle the filtering
-          // since it needs to check next_review_date which isn't loaded here
-          return true;
-        })
-      : entries
+    const filteredEntries =
+      questionPool === 'unmastered'
+        ? entries.filter((e) => e.mastery_level < 3)
+        : questionPool === 'not_recent'
+          ? entries.filter(
+              (e) =>
+                !e.last_reviewed_at ||
+                new Date(e.last_reviewed_at) <
+                  new Date(Date.now() - 24 * 60 * 60 * 1000)
+            )
+          : questionPool === 'smart_review'
+            ? entries.filter((e) => {
+                // For smart review, we'll let the quiz page handle the filtering
+                // since it needs to check next_review_date which isn't loaded here
+                return true
+              })
+            : entries
 
     if (filteredEntries.length === 0) {
-      setToast({ message: 'No words match the selected criteria', type: 'error' })
+      setToast({
+        message: 'No words match the selected criteria',
+        type: 'error',
+      })
       return
     }
 
@@ -239,15 +291,20 @@ export default function VocabSetDetailPage() {
       setId: setId,
       type: quizType,
       format: quizFormat,
-      pool: questionPool
+      pool: questionPool,
     })
 
     router.push(`/student/vocab/quiz?${queryParams.toString()}`)
   }
 
-  const handleBulkAddWords = async (words: { term: string; definition: string }[]) => {
+  const handleBulkAddWords = async (
+    words: { term: string; definition: string }[]
+  ) => {
     try {
-      setToast({ message: `Successfully added ${words.length} words!`, type: 'success' })
+      setToast({
+        message: `Successfully added ${words.length} words!`,
+        type: 'success',
+      })
       setIsBulkAddModalOpen(false)
       await fetchVocabSetAndEntries()
     } catch (error) {
@@ -260,19 +317,30 @@ export default function VocabSetDetailPage() {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     })
   }
 
   const getMasteryLabel = (level: number) => {
-    const labels = ['New', 'Learning', 'Familiar', 'Known', 'Mastered', 'Expert']
+    const labels = [
+      'New',
+      'Learning',
+      'Familiar',
+      'Known',
+      'Mastered',
+      'Expert',
+    ]
     return labels[Math.min(level, 5)]
   }
 
   const getMasteryColor = (level: number) => {
     const colors = [
-      'bg-gray-200', 'bg-red-200', 'bg-orange-200', 
-      'bg-yellow-200', 'bg-green-200', 'bg-blue-200'
+      'bg-gray-200',
+      'bg-red-200',
+      'bg-orange-200',
+      'bg-yellow-200',
+      'bg-green-200',
+      'bg-blue-200',
     ]
     return colors[Math.min(level, 5)]
   }
@@ -285,7 +353,7 @@ export default function VocabSetDetailPage() {
             <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
             <div className="h-40 bg-gray-200 rounded mb-6"></div>
             <div className="space-y-4">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="h-20 bg-gray-200 rounded"></div>
               ))}
             </div>
@@ -299,7 +367,9 @@ export default function VocabSetDetailPage() {
     return (
       <div className="p-6">
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Vocabulary set not found</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Vocabulary set not found
+          </h1>
           <Link href="/student/vocab">
             <Button className="mt-4">
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -323,7 +393,9 @@ export default function VocabSetDetailPage() {
             </Button>
           </Link>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900">{vocabSet.title}</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {vocabSet.title}
+            </h1>
             {vocabSet.description && (
               <p className="text-gray-600">{vocabSet.description}</p>
             )}
@@ -391,7 +463,9 @@ export default function VocabSetDetailPage() {
                 </Button>
                 <Button
                   onClick={handleAddEntry}
-                  disabled={isCreating || !newTerm.trim() || !newDefinition.trim()}
+                  disabled={
+                    isCreating || !newTerm.trim() || !newDefinition.trim()
+                  }
                 >
                   {isCreating ? 'Adding...' : 'Add Word'}
                 </Button>
@@ -399,10 +473,7 @@ export default function VocabSetDetailPage() {
             </DialogContent>
           </Dialog>
 
-          <Button 
-            variant="outline"
-            onClick={() => setIsBulkAddModalOpen(true)}
-          >
+          <Button variant="outline" onClick={() => setIsBulkAddModalOpen(true)}>
             <FileUp className="h-4 w-4 mr-2" />
             Bulk Add Words
           </Button>
@@ -431,7 +502,9 @@ export default function VocabSetDetailPage() {
                           type="radio"
                           value="term_to_def"
                           checked={quizType === 'term_to_def'}
-                          onChange={(e) => setQuizType(e.target.value as 'term_to_def')}
+                          onChange={(e) =>
+                            setQuizType(e.target.value as 'term_to_def')
+                          }
                         />
                         Show term, guess definition
                       </label>
@@ -440,7 +513,9 @@ export default function VocabSetDetailPage() {
                           type="radio"
                           value="def_to_term"
                           checked={quizType === 'def_to_term'}
-                          onChange={(e) => setQuizType(e.target.value as 'def_to_term')}
+                          onChange={(e) =>
+                            setQuizType(e.target.value as 'def_to_term')
+                          }
                         />
                         Show definition, guess term
                       </label>
@@ -455,7 +530,9 @@ export default function VocabSetDetailPage() {
                           type="radio"
                           value="multiple_choice"
                           checked={quizFormat === 'multiple_choice'}
-                          onChange={(e) => setQuizFormat(e.target.value as 'multiple_choice')}
+                          onChange={(e) =>
+                            setQuizFormat(e.target.value as 'multiple_choice')
+                          }
                         />
                         Multiple choice
                       </label>
@@ -464,7 +541,9 @@ export default function VocabSetDetailPage() {
                           type="radio"
                           value="written_answer"
                           checked={quizFormat === 'written_answer'}
-                          onChange={(e) => setQuizFormat(e.target.value as 'written_answer')}
+                          onChange={(e) =>
+                            setQuizFormat(e.target.value as 'written_answer')
+                          }
                         />
                         Written answer
                       </label>
@@ -479,7 +558,9 @@ export default function VocabSetDetailPage() {
                           type="radio"
                           value="all"
                           checked={questionPool === 'all'}
-                          onChange={(e) => setQuestionPool(e.target.value as 'all')}
+                          onChange={(e) =>
+                            setQuestionPool(e.target.value as 'all')
+                          }
                         />
                         All words ({entries.length})
                       </label>
@@ -488,16 +569,21 @@ export default function VocabSetDetailPage() {
                           type="radio"
                           value="unmastered"
                           checked={questionPool === 'unmastered'}
-                          onChange={(e) => setQuestionPool(e.target.value as 'unmastered')}
+                          onChange={(e) =>
+                            setQuestionPool(e.target.value as 'unmastered')
+                          }
                         />
-                        Unmastered words ({entries.filter(e => e.mastery_level < 3).length})
+                        Unmastered words (
+                        {entries.filter((e) => e.mastery_level < 3).length})
                       </label>
                       <label className="flex items-center gap-2">
                         <input
                           type="radio"
                           value="not_recent"
                           checked={questionPool === 'not_recent'}
-                          onChange={(e) => setQuestionPool(e.target.value as 'not_recent')}
+                          onChange={(e) =>
+                            setQuestionPool(e.target.value as 'not_recent')
+                          }
                         />
                         Not recently reviewed
                       </label>
@@ -506,7 +592,9 @@ export default function VocabSetDetailPage() {
                           type="radio"
                           value="smart_review"
                           checked={questionPool === 'smart_review'}
-                          onChange={(e) => setQuestionPool(e.target.value as 'smart_review')}
+                          onChange={(e) =>
+                            setQuestionPool(e.target.value as 'smart_review')
+                          }
                         />
                         <span className="flex items-center gap-1">
                           🧠 <strong>Smart Review</strong> (SRS Algorithm)
@@ -522,9 +610,7 @@ export default function VocabSetDetailPage() {
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleStartQuiz}>
-                    Start Quiz Now
-                  </Button>
+                  <Button onClick={handleStartQuiz}>Start Quiz Now</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -536,8 +622,12 @@ export default function VocabSetDetailPage() {
           <Card>
             <CardContent className="text-center py-12">
               <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No words yet</h3>
-              <p className="text-gray-600 mb-6">Start building your vocabulary by adding your first word.</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No words yet
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Start building your vocabulary by adding your first word.
+              </p>
               <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                 <DialogTrigger asChild>
                   <Button>
@@ -574,7 +664,9 @@ export default function VocabSetDetailPage() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="example">Example Sentence (Optional)</Label>
+                      <Label htmlFor="example">
+                        Example Sentence (Optional)
+                      </Label>
                       <textarea
                         id="example"
                         placeholder="e.g., Beauty is ephemeral, but memories last forever."
@@ -594,7 +686,9 @@ export default function VocabSetDetailPage() {
                     </Button>
                     <Button
                       onClick={handleAddEntry}
-                      disabled={isCreating || !newTerm.trim() || !newDefinition.trim()}
+                      disabled={
+                        isCreating || !newTerm.trim() || !newDefinition.trim()
+                      }
                     >
                       {isCreating ? 'Adding...' : 'Add Word'}
                     </Button>
@@ -611,8 +705,12 @@ export default function VocabSetDetailPage() {
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-semibold text-gray-900">{entry.term}</h3>
-                        <span className={`px-2 py-1 text-xs rounded-full ${getMasteryColor(entry.mastery_level)}`}>
+                        <h3 className="text-xl font-semibold text-gray-900">
+                          {entry.term}
+                        </h3>
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${getMasteryColor(entry.mastery_level)}`}
+                        >
                           {getMasteryLabel(entry.mastery_level)}
                         </span>
                       </div>
@@ -652,7 +750,10 @@ export default function VocabSetDetailPage() {
 
         {/* Edit Dialog */}
         {editingEntry && (
-          <Dialog open={!!editingEntry} onOpenChange={() => setEditingEntry(null)}>
+          <Dialog
+            open={!!editingEntry}
+            onOpenChange={() => setEditingEntry(null)}
+          >
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle>Edit Word</DialogTitle>
@@ -680,7 +781,9 @@ export default function VocabSetDetailPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-example">Example Sentence (Optional)</Label>
+                  <Label htmlFor="edit-example">
+                    Example Sentence (Optional)
+                  </Label>
                   <textarea
                     id="edit-example"
                     value={editExample}
@@ -699,7 +802,9 @@ export default function VocabSetDetailPage() {
                 </Button>
                 <Button
                   onClick={handleUpdateEntry}
-                  disabled={isUpdating || !editTerm.trim() || !editDefinition.trim()}
+                  disabled={
+                    isUpdating || !editTerm.trim() || !editDefinition.trim()
+                  }
                 >
                   {isUpdating ? 'Updating...' : 'Update Word'}
                 </Button>

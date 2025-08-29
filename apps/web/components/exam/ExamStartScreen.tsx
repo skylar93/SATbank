@@ -20,7 +20,11 @@ interface ExamStartScreenProps {
   onStartExam: () => Promise<void>
 }
 
-export function ExamStartScreen({ exam, modules, onStartExam }: ExamStartScreenProps) {
+export function ExamStartScreen({
+  exam,
+  modules,
+  onStartExam,
+}: ExamStartScreenProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
@@ -51,8 +55,8 @@ export function ExamStartScreen({ exam, modules, onStartExam }: ExamStartScreenP
                 <li className="flex items-start space-x-3">
                   <span className="w-2 h-2 bg-violet-400 rounded-full mt-2 flex-shrink-0"></span>
                   <span>
-                    This exam consists of 4 modules: English 1, English 2,
-                    Math 1, Math 2
+                    This exam consists of 4 modules: English 1, English 2, Math
+                    1, Math 2
                   </span>
                 </li>
                 <li className="flex items-start space-x-3">
@@ -67,9 +71,7 @@ export function ExamStartScreen({ exam, modules, onStartExam }: ExamStartScreenP
                 </li>
                 <li className="flex items-start space-x-3">
                   <span className="w-2 h-2 bg-violet-400 rounded-full mt-2 flex-shrink-0"></span>
-                  <span>
-                    Answer all questions to the best of your ability
-                  </span>
+                  <span>Answer all questions to the best of your ability</span>
                 </li>
                 <li className="flex items-start space-x-3">
                   <span className="w-2 h-2 bg-violet-400 rounded-full mt-2 flex-shrink-0"></span>

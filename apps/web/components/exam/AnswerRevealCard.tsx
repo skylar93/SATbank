@@ -23,21 +23,31 @@ export function AnswerRevealCard({
   onContinue,
   onTryAgain,
   showExplanation = true,
-  showCorrectAnswer = true
+  showCorrectAnswer = true,
 }: AnswerRevealCardProps) {
   const [showDetailedExplanation, setShowDetailedExplanation] = useState(false)
 
   const getCorrectAnswerDisplay = () => {
     if (question.question_type === 'multiple_choice') {
-      const correctOption = question.options && Object.entries(question.options).find(([key, value]) => key === question.correct_answer)
-      return correctOption ? `${question.correct_answer}. ${correctOption[1]}` : question.correct_answer
+      const correctOption =
+        question.options &&
+        Object.entries(question.options).find(
+          ([key, value]) => key === question.correct_answer
+        )
+      return correctOption
+        ? `${question.correct_answer}. ${correctOption[1]}`
+        : question.correct_answer
     }
     return question.correct_answer
   }
 
   const getUserAnswerDisplay = () => {
     if (question.question_type === 'multiple_choice') {
-      const userOption = question.options && Object.entries(question.options).find(([key, value]) => key === userAnswer)
+      const userOption =
+        question.options &&
+        Object.entries(question.options).find(
+          ([key, value]) => key === userAnswer
+        )
       return userOption ? `${userAnswer}. ${userOption[1]}` : userAnswer
     }
     return userAnswer
@@ -46,27 +56,35 @@ export function AnswerRevealCard({
   return (
     <div className="bg-white rounded-lg border shadow-lg p-6 mt-6">
       {/* Result Header */}
-      <div className={`flex items-center gap-3 p-4 rounded-lg mb-6 ${
-        isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-      }`}>
+      <div
+        className={`flex items-center gap-3 p-4 rounded-lg mb-6 ${
+          isCorrect
+            ? 'bg-green-50 border-green-200'
+            : 'bg-red-50 border-red-200'
+        }`}
+      >
         {isCorrect ? (
           <CheckCircle className="w-6 h-6 text-green-600" />
         ) : (
           <XCircle className="w-6 h-6 text-red-600" />
         )}
         <div>
-          <h3 className={`text-lg font-semibold ${
-            isCorrect ? 'text-green-800' : 'text-red-800'
-          }`}>
+          <h3
+            className={`text-lg font-semibold ${
+              isCorrect ? 'text-green-800' : 'text-red-800'
+            }`}
+          >
             {isCorrect ? 'Correct!' : 'Incorrect'}
           </h3>
-          <p className={`text-sm ${
-            isCorrect ? 'text-green-600' : 'text-red-600'
-          }`}>
-            {isCorrect 
-              ? 'Well done!' 
-              : showCorrectAnswer 
-                ? 'Don\'t worry, keep practicing!' 
+          <p
+            className={`text-sm ${
+              isCorrect ? 'text-green-600' : 'text-red-600'
+            }`}
+          >
+            {isCorrect
+              ? 'Well done!'
+              : showCorrectAnswer
+                ? "Don't worry, keep practicing!"
                 : 'Try a different answer!'}
           </p>
         </div>
@@ -76,10 +94,14 @@ export function AnswerRevealCard({
       {!isCorrect && showCorrectAnswer && (
         <div className="space-y-4 mb-6">
           <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Correct Answer:</h4>
+            <h4 className="text-sm font-medium text-gray-700 mb-2">
+              Correct Answer:
+            </h4>
             <div className="p-3 rounded-lg border bg-green-50 border-green-200">
               <div className="text-sm">
-                {renderTextWithFormattingAndMath(getCorrectAnswerDisplay() || 'Answer not available')}
+                {renderTextWithFormattingAndMath(
+                  getCorrectAnswerDisplay() || 'Answer not available'
+                )}
               </div>
             </div>
           </div>
@@ -87,31 +109,37 @@ export function AnswerRevealCard({
       )}
 
       {/* Explanation */}
-      {showExplanation && question.explanation && (isCorrect || showCorrectAnswer) && (
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="text-sm font-medium text-gray-700">Explanation:</h4>
-            {question.explanation.length > 300 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowDetailedExplanation(!showDetailedExplanation)}
-              >
-                {showDetailedExplanation ? 'Show Less' : 'Show More'}
-              </Button>
-            )}
-          </div>
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="text-sm text-gray-700">
-              {renderTextWithFormattingAndMath(
-                showDetailedExplanation || question.explanation.length <= 300
-                  ? question.explanation
-                  : question.explanation.substring(0, 300) + '...'
+      {showExplanation &&
+        question.explanation &&
+        (isCorrect || showCorrectAnswer) && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-sm font-medium text-gray-700">
+                Explanation:
+              </h4>
+              {question.explanation.length > 300 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setShowDetailedExplanation(!showDetailedExplanation)
+                  }
+                >
+                  {showDetailedExplanation ? 'Show Less' : 'Show More'}
+                </Button>
               )}
             </div>
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="text-sm text-gray-700">
+                {renderTextWithFormattingAndMath(
+                  showDetailedExplanation || question.explanation.length <= 300
+                    ? question.explanation
+                    : question.explanation.substring(0, 300) + '...'
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Action Buttons */}
       <div className="flex justify-end gap-3">
@@ -127,8 +155,8 @@ export function AnswerRevealCard({
         <Button
           onClick={onContinue}
           className={`px-6 py-2 flex items-center gap-2 ${
-            isCorrect 
-              ? 'bg-green-600 hover:bg-green-700 text-white font-semibold' 
+            isCorrect
+              ? 'bg-green-600 hover:bg-green-700 text-white font-semibold'
               : 'bg-gray-500 hover:bg-gray-600 text-white'
           }`}
         >

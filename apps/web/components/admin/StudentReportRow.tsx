@@ -52,7 +52,7 @@ export default function StudentReportRow({ student }: StudentReportRowProps) {
   return (
     <>
       {/* Trigger Row */}
-      <tr 
+      <tr
         className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200 cursor-pointer border-b border-purple-100"
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -77,29 +77,21 @@ export default function StudentReportRow({ student }: StudentReportRowProps) {
           <div className="text-sm font-bold text-gray-900">
             {student.avgScore}/1600
           </div>
-          <div className="text-xs text-gray-500">
-            Average Score
-          </div>
+          <div className="text-xs text-gray-500">Average Score</div>
         </td>
         <td className="px-6 py-4 whitespace-nowrap">
-          <div className="text-sm text-gray-900">
-            {student.totalAttempts}
-          </div>
-          <div className="text-xs text-gray-500">
-            Total Attempts
-          </div>
+          <div className="text-sm text-gray-900">{student.totalAttempts}</div>
+          <div className="text-xs text-gray-500">Total Attempts</div>
         </td>
         <td className="px-6 py-4 whitespace-nowrap">
           <div className="text-sm text-gray-900">
             {new Date(student.lastActive).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'short',
-              day: 'numeric'
+              day: 'numeric',
             })}
           </div>
-          <div className="text-xs text-gray-500">
-            Last Active
-          </div>
+          <div className="text-xs text-gray-500">Last Active</div>
         </td>
         <td className="px-6 py-4 whitespace-nowrap">
           <span className="text-sm text-gray-500">
@@ -121,28 +113,47 @@ export default function StudentReportRow({ student }: StudentReportRowProps) {
                   <table className="min-w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Exam</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Total Score</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">English</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Math</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Duration</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Completed</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                          Exam
+                        </th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                          Total Score
+                        </th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                          English
+                        </th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                          Math
+                        </th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                          Duration
+                        </th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                          Completed
+                        </th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {student.attempts.map((attempt) => {
-                        const totalScore = calculateTotalScore(attempt.final_scores)
+                        const totalScore = calculateTotalScore(
+                          attempt.final_scores
+                        )
                         const englishScore = attempt.final_scores?.english || 0
                         const mathScore = attempt.final_scores?.math || 0
-                        
+
                         return (
-                          <tr 
-                            key={attempt.attempt_id} 
+                          <tr
+                            key={attempt.attempt_id}
                             className="hover:bg-gray-50 transition-colors cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation()
-                              window.open(`/admin/results/${attempt.attempt_id}`, '_blank')
+                              window.open(
+                                `/admin/results/${attempt.attempt_id}`,
+                                '_blank'
+                              )
                             }}
                           >
                             <td className="px-4 py-3">
@@ -172,12 +183,14 @@ export default function StudentReportRow({ student }: StudentReportRowProps) {
                             </td>
                             <td className="px-4 py-3">
                               <div className="text-sm text-gray-700">
-                                {new Date(attempt.completed_at).toLocaleDateString('en-US', {
+                                {new Date(
+                                  attempt.completed_at
+                                ).toLocaleDateString('en-US', {
                                   year: 'numeric',
                                   month: 'short',
                                   day: 'numeric',
                                   hour: '2-digit',
-                                  minute: '2-digit'
+                                  minute: '2-digit',
                                 })}
                               </div>
                             </td>

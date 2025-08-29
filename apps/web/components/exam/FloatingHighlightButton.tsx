@@ -14,17 +14,23 @@ interface FloatingHighlightButtonProps {
   onHighlight: (highlight: Highlight) => void
 }
 
-export default function FloatingHighlightButton({ containerRef, onHighlight }: FloatingHighlightButtonProps) {
+export default function FloatingHighlightButton({
+  containerRef,
+  onHighlight,
+}: FloatingHighlightButtonProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [selectedText, setSelectedText] = useState('')
-  const [selectionRange, setSelectionRange] = useState<{ start: number; end: number } | null>(null)
+  const [selectionRange, setSelectionRange] = useState<{
+    start: number
+    end: number
+  } | null>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     const handleSelectionChange = () => {
       const selection = window.getSelection()
-      
+
       if (!selection || !containerRef.current || selection.rangeCount === 0) {
         setIsVisible(false)
         return
@@ -32,8 +38,11 @@ export default function FloatingHighlightButton({ containerRef, onHighlight }: F
 
       const range = selection.getRangeAt(0)
       const text = selection.toString().trim()
-      
-      if (!text || !containerRef.current.contains(range.commonAncestorContainer)) {
+
+      if (
+        !text ||
+        !containerRef.current.contains(range.commonAncestorContainer)
+      ) {
         setIsVisible(false)
         return
       }
@@ -50,18 +59,18 @@ export default function FloatingHighlightButton({ containerRef, onHighlight }: F
       // Get selection position for floating button
       const rect = range.getBoundingClientRect()
       const containerRect = containerElement.getBoundingClientRect()
-      
+
       // Position button at the end of selection, slightly offset
       // Prevent button from going beyond container bounds
       const buttonX = rect.right - containerRect.left + 5
       const containerWidth = containerElement.offsetWidth
       const maxX = containerWidth - 60 // Button width + margin
-      
+
       setPosition({
         x: Math.min(buttonX, maxX),
-        y: rect.bottom - containerRect.top + 5
+        y: rect.bottom - containerRect.top + 5,
       })
-      
+
       setSelectedText(text)
       setSelectionRange({ start, end })
       setIsVisible(true)
@@ -75,7 +84,7 @@ export default function FloatingHighlightButton({ containerRef, onHighlight }: F
 
     document.addEventListener('selectionchange', handleSelectionChange)
     document.addEventListener('mousedown', handleClickOutside)
-    
+
     return () => {
       document.removeEventListener('selectionchange', handleSelectionChange)
       document.removeEventListener('mousedown', handleClickOutside)
@@ -87,9 +96,9 @@ export default function FloatingHighlightButton({ containerRef, onHighlight }: F
       onHighlight({
         start: selectionRange.start,
         end: selectionRange.end,
-        text: selectedText
+        text: selectedText,
       })
-      
+
       // Clear selection and hide button
       window.getSelection()?.removeAllRanges()
       setIsVisible(false)

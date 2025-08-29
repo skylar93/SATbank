@@ -45,30 +45,36 @@ const SCORE_RANGES = [
   { label: 'Under 800 (Needs Work)', value: '0-799' },
 ]
 
-export default function FilterBar({ attempts, filters, onFiltersChange }: FilterBarProps) {
+export default function FilterBar({
+  attempts,
+  filters,
+  onFiltersChange,
+}: FilterBarProps) {
   const uniqueExams = useMemo(() => {
-    const examsSet = new Set(attempts.map(attempt => attempt.exam_title))
+    const examsSet = new Set(attempts.map((attempt) => attempt.exam_title))
     return Array.from(examsSet).sort()
   }, [attempts])
 
   const uniqueStudents = useMemo(() => {
     const studentsMap = new Map()
-    attempts.forEach(attempt => {
+    attempts.forEach((attempt) => {
       if (!studentsMap.has(attempt.student_id)) {
         studentsMap.set(attempt.student_id, {
           id: attempt.student_id,
           name: attempt.student_full_name,
-          email: attempt.student_email
+          email: attempt.student_email,
         })
       }
     })
-    return Array.from(studentsMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+    return Array.from(studentsMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    )
   }, [attempts])
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {
     onFiltersChange({
       ...filters,
-      [key]: value
+      [key]: value,
     })
   }
 
@@ -76,18 +82,21 @@ export default function FilterBar({ attempts, filters, onFiltersChange }: Filter
     onFiltersChange({
       examFilter: '',
       studentFilter: '',
-      scoreRangeFilter: ''
+      scoreRangeFilter: '',
     })
   }
 
-  const hasActiveFilters = filters.examFilter || filters.studentFilter || filters.scoreRangeFilter
+  const hasActiveFilters =
+    filters.examFilter || filters.studentFilter || filters.scoreRangeFilter
 
   return (
     <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-md border border-purple-100 p-4 mb-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
           <FunnelIcon className="w-5 h-5 text-purple-600 mr-2" />
-          <h4 className="text-sm font-semibold text-gray-900">Advanced Filters</h4>
+          <h4 className="text-sm font-semibold text-gray-900">
+            Advanced Filters
+          </h4>
           {hasActiveFilters && (
             <span className="ml-2 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
               Active
@@ -134,7 +143,9 @@ export default function FilterBar({ attempts, filters, onFiltersChange }: Filter
           </label>
           <select
             value={filters.studentFilter}
-            onChange={(e) => handleFilterChange('studentFilter', e.target.value)}
+            onChange={(e) =>
+              handleFilterChange('studentFilter', e.target.value)
+            }
             className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           >
             <option value="">All Students</option>
@@ -154,7 +165,9 @@ export default function FilterBar({ attempts, filters, onFiltersChange }: Filter
           </label>
           <select
             value={filters.scoreRangeFilter}
-            onChange={(e) => handleFilterChange('scoreRangeFilter', e.target.value)}
+            onChange={(e) =>
+              handleFilterChange('scoreRangeFilter', e.target.value)
+            }
             className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           >
             {SCORE_RANGES.map((range) => (

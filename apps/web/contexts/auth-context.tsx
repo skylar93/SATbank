@@ -21,10 +21,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Get impersonation data from localStorage
   const getImpersonationUser = (): AuthUser | null => {
     if (typeof window === 'undefined') return null
-    
+
     const dataJSON = localStorage.getItem('impersonation_data')
     if (!dataJSON) return null
-    
+
     try {
       const data = JSON.parse(dataJSON)
       return data.target_user || null
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let isInitialized = false
-    
+
     // Simpler initialization with AuthStateManager
     const initializeAuth = async () => {
       try {
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false)
       }
     }
-    
+
     // Run initialization immediately
     initializeAuth()
 
@@ -79,7 +79,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           // Impersonation ended - don't reload, let the page handle redirection
           // This prevents duplicate API calls and infinite loading
-          console.log('🔄 AuthProvider: Impersonation ended, waiting for navigation...')
+          console.log(
+            '🔄 AuthProvider: Impersonation ended, waiting for navigation...'
+          )
         }
       }
     }
@@ -87,37 +89,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener('storage', handleStorageChange)
 
     // Subscribe to auth state changes from AuthStateManager
-    const unsubscribeFromStateManager = authStateManager.subscribe(async (stateChangedUser) => {
-      // Check for impersonation first, it takes precedence
-      const impersonationUser = getImpersonationUser()
-      if (impersonationUser) {
-        setUser(impersonationUser)
+    const unsubscribeFromStateManager = authStateManager.subscribe(
+      async (stateChangedUser) => {
+        // Check for impersonation first, it takes precedence
+        const impersonationUser = getImpersonationUser()
+        if (impersonationUser) {
+          setUser(impersonationUser)
+          isInitialized = true
+          setLoading(false)
+          setError(null)
+          return
+        }
+
+        if (stateChangedUser === null) {
+          // State manager notified of change, fetch fresh user data
+          try {
+            const currentUser = await authStateManager.getCurrentUser()
+            setUser(currentUser)
+          } catch (err: any) {
+            setUser(null)
+            setError(err.message)
+          }
+        } else {
+          setUser(stateChangedUser)
+        }
+
         isInitialized = true
         setLoading(false)
         setError(null)
-        return
       }
-      
-      if (stateChangedUser === null) {
-        // State manager notified of change, fetch fresh user data
-        try {
-          const currentUser = await authStateManager.getCurrentUser()
-          setUser(currentUser)
-        } catch (err: any) {
-          setUser(null)
-          setError(err.message)
-        }
-      } else {
-        setUser(stateChangedUser)
-      }
-      
-      isInitialized = true
-      setLoading(false)
-      setError(null)
-    })
+    )
 
     // Also listen to Supabase auth changes and forward to AuthStateManager
-    const { data: { subscription } } = AuthService.onAuthStateChange(() => {
+    const {
+      data: { subscription },
+    } = AuthService.onAuthStateChange(() => {
       // AuthService.onAuthStateChange now delegates to AuthStateManager
       // This subscription is mainly for cleanup
     })
@@ -133,10 +139,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     setLoading(true)
     setError(null)
-    
+
     try {
       await AuthService.signIn(email, password)
-      
+
       // Immediately try to get user data
       const currentUser = await AuthService.getCurrentUser()
       if (currentUser) {
@@ -155,7 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, fullName: string) => {
     setLoading(true)
     setError(null)
-    
+
     try {
       await AuthService.signUp(email, password, fullName)
       // Don't manually set user here, let the auth state change handle it
@@ -170,7 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     setLoading(true)
     setError(null)
-    
+
     try {
       await AuthService.signOut()
       setUser(null)
@@ -185,7 +191,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const isAdmin = user?.profile?.role === 'admin'
   const isStudent = user?.profile?.role === 'student'
-
 
   const value = {
     user,

@@ -17,9 +17,9 @@ async function createPracticeExam(questionIds: string[], userId: string) {
         english1: 35 * 60, // 35 minutes
         english2: 35 * 60,
         math1: 35 * 60,
-        math2: 35 * 60
+        math2: 35 * 60,
       },
-      created_by: userId
+      created_by: userId,
     })
     .select()
     .single()
@@ -30,9 +30,9 @@ async function createPracticeExam(questionIds: string[], userId: string) {
   }
 
   // Link questions to the exam
-  const examQuestions = questionIds.map(questionId => ({
+  const examQuestions = questionIds.map((questionId) => ({
     exam_id: exam.id,
-    question_id: questionId
+    question_id: questionId,
   }))
 
   const { error: linkError } = await supabase
@@ -51,7 +51,7 @@ async function createPracticeExam(questionIds: string[], userId: string) {
       user_id: userId,
       exam_id: exam.id,
       status: 'not_started',
-      is_practice_mode: true
+      is_practice_mode: true,
     })
     .select()
     .single()
@@ -65,21 +65,24 @@ async function createPracticeExam(questionIds: string[], userId: string) {
 }
 
 export default async function PracticeQuizPage({
-  searchParams
+  searchParams,
 }: {
   searchParams: { q?: string | string[] }
 }) {
-  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
 
   if (userError || !user) {
     redirect('/login')
   }
 
   // Get question IDs from search params
-  const questionIds = Array.isArray(searchParams.q) 
-    ? searchParams.q 
-    : searchParams.q 
-      ? [searchParams.q] 
+  const questionIds = Array.isArray(searchParams.q)
+    ? searchParams.q
+    : searchParams.q
+      ? [searchParams.q]
       : []
 
   if (questionIds.length === 0) {
@@ -89,7 +92,7 @@ export default async function PracticeQuizPage({
   try {
     // Create a practice exam and attempt
     const attemptId = await createPracticeExam(questionIds, user.id)
-    
+
     // Redirect to the exam page
     redirect(`/student/practice/${attemptId}`)
   } catch (error) {

@@ -131,7 +131,7 @@ export const useExamExit = ({
     // Refs
     forcingExitRef,
     isExitingRef,
-    
+
     // Handlers
     handleExitAttempt,
     handleConfirmExit,

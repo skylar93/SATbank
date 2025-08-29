@@ -5,7 +5,7 @@ interface ExamModalsProps {
   showExitConfirm: boolean
   onConfirmExit: () => void
   onCancelExit: () => void
-  
+
   // Conflict modal
   showConflictModal: boolean
   existingAttempt: any

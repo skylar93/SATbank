@@ -126,7 +126,8 @@ export function ExamNavigation({
                     <div className="flex flex-wrap gap-1 max-w-xs">
                       {module.questions.map((_, qIndex) => {
                         const isCurrent =
-                          isCurrentModule && qIndex === module.currentQuestionIndex
+                          isCurrentModule &&
+                          qIndex === module.currentQuestionIndex
                         const globalQuestionIndex =
                           allModules
                             .slice(0, moduleIndex)
@@ -135,8 +136,10 @@ export function ExamNavigation({
                           1
                         const isAnswered =
                           answeredQuestions.has(globalQuestionIndex)
-                        const isCorrect = correctQuestions.has(globalQuestionIndex)
-                        const isIncorrect = incorrectQuestions.has(globalQuestionIndex)
+                        const isCorrect =
+                          correctQuestions.has(globalQuestionIndex)
+                        const isIncorrect =
+                          incorrectQuestions.has(globalQuestionIndex)
 
                         return (
                           <button
@@ -218,7 +221,8 @@ export function ExamNavigation({
                     {module.questions.map((_, qIndex) => {
                       const questionNum = qIndex + 1
                       const isCurrent =
-                        isCurrentModule && qIndex === module.currentQuestionIndex
+                        isCurrentModule &&
+                        qIndex === module.currentQuestionIndex
                       const globalQuestionIndex =
                         allModules
                           .slice(0, moduleIndex)
@@ -227,8 +231,10 @@ export function ExamNavigation({
                         1
                       const isAnswered =
                         answeredQuestions.has(globalQuestionIndex)
-                      const isCorrect = correctQuestions.has(globalQuestionIndex)
-                      const isIncorrect = incorrectQuestions.has(globalQuestionIndex)
+                      const isCorrect =
+                        correctQuestions.has(globalQuestionIndex)
+                      const isIncorrect =
+                        incorrectQuestions.has(globalQuestionIndex)
                       const isMarked = markedQuestions.some(
                         (mq) =>
                           mq.index === qIndex &&
@@ -322,7 +328,8 @@ export function ExamNavigation({
             const questionNum = index + 1
             const isCorrect = correctQuestions.has(questionNum)
             const isIncorrect = incorrectQuestions.has(questionNum)
-            const isAnswered = answeredQuestions.has(questionNum) || isCorrect || isIncorrect
+            const isAnswered =
+              answeredQuestions.has(questionNum) || isCorrect || isIncorrect
             const isCurrent = questionNum === currentQuestion
             const isMarked = markedQuestions.some((mq) => mq.index === index)
 

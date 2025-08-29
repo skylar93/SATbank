@@ -67,18 +67,7 @@ export default function AdminAssignmentsPage() {
   const loadData = async () => {
     try {
       // First test raw access without RLS constraints for debugging
-      console.log('Testing raw database access...')
 
-      const testExams = await supabase
-        .from('exams')
-        .select('*', { count: 'exact' })
-
-      const testProfiles = await supabase
-        .from('user_profiles')
-        .select('*', { count: 'exact' })
-
-      console.log('Raw exams query result:', testExams)
-      console.log('Raw profiles query result:', testProfiles)
 
       // Load exams and students first
       const [examsData, studentsData] = await Promise.all([
@@ -100,7 +89,7 @@ export default function AdminAssignmentsPage() {
         .eq('is_active', true)
         .order('assigned_at', { ascending: false })
 
-      let assignmentsData: { data: ExamAssignment[]; error: any } = {
+      let assignmentsData: { data: ExamAssignment[]; error: unknown } = {
         data: [],
         error: assignmentError,
       }
@@ -126,14 +115,6 @@ export default function AdminAssignmentsPage() {
         }
       }
 
-      console.log('=== DEBUGGING ASSIGNMENT DATA ===')
-      console.log('Loaded exams:', examsData.data)
-      console.log('Loaded students:', studentsData.data)
-      console.log('Assignments error:', assignmentsData.error)
-      console.log('Exams error:', examsData.error)
-      console.log('Students error:', studentsData.error)
-      console.log('Exams count:', examsData.data?.length || 0)
-      console.log('Students count:', studentsData.data?.length || 0)
       setAssignments(assignmentsData.data || [])
       setExams(examsData.data || [])
       setStudents(studentsData.data || [])

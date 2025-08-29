@@ -14,8 +14,14 @@ export async function POST(request: NextRequest) {
   console.log('🚀 REGRADE API CALLED!')
   console.log('Environment variables check:')
   console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
-  console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'MISSING')
-  console.log('SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SET' : 'MISSING')
+  console.log(
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY:',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'MISSING'
+  )
+  console.log(
+    'SUPABASE_SERVICE_ROLE_KEY:',
+    process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SET' : 'MISSING'
+  )
   try {
     const cookieStore = cookies()
     console.log(
@@ -54,12 +60,18 @@ export async function POST(request: NextRequest) {
 
     if (authError || !user) {
       console.log('No user or auth error:', authError?.message)
-      console.log('Request headers:', Object.fromEntries(request.headers.entries()))
-      return NextResponse.json({ 
-        error: 'Unauthorized', 
-        details: authError?.message || 'No user found',
-        timestamp: new Date().toISOString()
-      }, { status: 401 })
+      console.log(
+        'Request headers:',
+        Object.fromEntries(request.headers.entries())
+      )
+      return NextResponse.json(
+        {
+          error: 'Unauthorized',
+          details: authError?.message || 'No user found',
+          timestamp: new Date().toISOString(),
+        },
+        { status: 401 }
+      )
     }
 
     // Check admin role using user metadata
@@ -129,24 +141,24 @@ export async function POST(request: NextRequest) {
     // Check if service role key is available
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    
+
     if (!supabaseUrl || !serviceKey) {
-      console.error('Missing required environment variables for service role client')
+      console.error(
+        'Missing required environment variables for service role client'
+      )
       return NextResponse.json(
-        { 
-          error: 'supabaseKey is required', 
-          details: 'Server configuration error: Missing environment variables' 
+        {
+          error: 'supabaseKey is required',
+          details: 'Server configuration error: Missing environment variables',
         },
         { status: 500 }
       )
     }
 
     // Temporarily use service role to bypass RLS for debugging
-    const supabaseService = createClient(
-      supabaseUrl,
-      serviceKey,
-      { auth: { autoRefreshToken: false, persistSession: false } }
-    )
+    const supabaseService = createClient(supabaseUrl, serviceKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    })
 
     const { data: userAnswer, error: answerError } = await supabaseService
       .from('user_answers')

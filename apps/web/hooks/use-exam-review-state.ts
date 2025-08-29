@@ -1,7 +1,13 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { ModuleType, Question, UserAnswer, TestAttempt, Exam } from '../lib/exam-service'
+import {
+  ModuleType,
+  Question,
+  UserAnswer,
+  TestAttempt,
+  Exam,
+} from '../lib/exam-service'
 
 interface ReviewData {
   attempt: TestAttempt & { exams: Exam }
@@ -41,14 +47,16 @@ export function useExamReviewState(reviewData: ReviewData) {
   const allQuestionsOrdered = useMemo(() => {
     const orderedQuestions: Question[] = []
     const moduleOrder: ModuleType[] = ['english1', 'english2', 'math1', 'math2']
-    
+
     moduleOrder.forEach((moduleType) => {
       const moduleQuestions = moduleData[moduleType] || []
       // Sort by question_number within each module
-      const sortedQuestions = [...moduleQuestions].sort((a, b) => a.question_number - b.question_number)
+      const sortedQuestions = [...moduleQuestions].sort(
+        (a, b) => a.question_number - b.question_number
+      )
       orderedQuestions.push(...sortedQuestions)
     })
-    
+
     return orderedQuestions
   }, [moduleData])
 
@@ -64,7 +72,7 @@ export function useExamReviewState(reviewData: ReviewData) {
   // Get user answer for current question
   const userAnswer = useMemo(() => {
     if (!currentQuestion) return null
-    
+
     const answer = reviewData.userAnswers.find(
       (ua) => ua.question_id === currentQuestion.id
     )
@@ -74,11 +82,11 @@ export function useExamReviewState(reviewData: ReviewData) {
   // Check if current answer is correct - use the authoritative is_correct value from database
   const isCorrect = useMemo(() => {
     if (!currentQuestion) return false
-    
+
     const answer = reviewData.userAnswers.find(
       (ua) => ua.question_id === currentQuestion.id
     )
-    
+
     // Use the definitive is_correct value from the database (includes admin regrades)
     return answer?.is_correct ?? false
   }, [currentQuestion, reviewData.userAnswers])
@@ -110,7 +118,7 @@ export function useExamReviewState(reviewData: ReviewData) {
   // Get all modules data for navigation
   const getAllModules = (): ModuleData[] => {
     const moduleOrder: ModuleType[] = ['english1', 'english2', 'math1', 'math2']
-    
+
     return moduleOrder
       .filter((moduleType) => (moduleData[moduleType] || []).length > 0)
       .map((moduleType) => ({
@@ -123,29 +131,32 @@ export function useExamReviewState(reviewData: ReviewData) {
   // Get current question index within the current module
   const getCurrentQuestionIndexInModule = (moduleType: ModuleType) => {
     if (moduleType !== currentModule) return 0
-    
+
     const moduleQuestions = moduleData[moduleType] || []
     const currentQuestionInModule = moduleQuestions.findIndex(
       (q) => q.id === currentQuestion?.id
     )
-    
+
     return Math.max(0, currentQuestionInModule)
   }
 
   // Get current module index
   const getCurrentModuleIndex = () => {
     const moduleOrder: ModuleType[] = ['english1', 'english2', 'math1', 'math2']
-    const modulesWithQuestions = moduleOrder.filter((moduleType) => 
-      (moduleData[moduleType] || []).length > 0
+    const modulesWithQuestions = moduleOrder.filter(
+      (moduleType) => (moduleData[moduleType] || []).length > 0
     )
-    
-    return modulesWithQuestions.findIndex((moduleType) => moduleType === currentModule)
+
+    return modulesWithQuestions.findIndex(
+      (moduleType) => moduleType === currentModule
+    )
   }
 
   // Calculate correct/incorrect answers for all questions
   const getQuestionResult = (questionIndex: number) => {
     const question = allQuestionsOrdered[questionIndex]
-    if (!question) return { hasAnswer: false, isCorrect: false, userAnswer: null }
+    if (!question)
+      return { hasAnswer: false, isCorrect: false, userAnswer: null }
 
     const answer = reviewData.userAnswers.find(
       (ua) => ua.question_id === question.id
@@ -159,7 +170,11 @@ export function useExamReviewState(reviewData: ReviewData) {
     // Use the definitive is_correct value from the database (includes admin regrades)
     const isQuestionCorrect = answer?.is_correct ?? false
 
-    return { hasAnswer: true, isCorrect: isQuestionCorrect, userAnswer: userAnswerValue }
+    return {
+      hasAnswer: true,
+      isCorrect: isQuestionCorrect,
+      userAnswer: userAnswerValue,
+    }
   }
 
   return {
@@ -170,19 +185,19 @@ export function useExamReviewState(reviewData: ReviewData) {
     totalQuestions,
     userAnswer,
     isCorrect,
-    
+
     // Navigation
     nextQuestion,
     previousQuestion,
     goToQuestion,
-    
+
     // Data access
     getModuleQuestions,
     getAllModules,
     getCurrentQuestionIndexInModule,
     getCurrentModuleIndex,
     getQuestionResult,
-    
+
     // Raw data
     allQuestionsOrdered,
     moduleData,

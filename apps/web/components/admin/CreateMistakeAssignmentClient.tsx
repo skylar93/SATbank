@@ -26,13 +26,17 @@ interface CreateMistakeAssignmentClientProps {
   students: Student[]
 }
 
-export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignmentClientProps) {
+export function CreateMistakeAssignmentClient({
+  students,
+}: CreateMistakeAssignmentClientProps) {
   const router = useRouter()
-  
+
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedStudents, setSelectedStudents] = useState<string[]>([])
   const [mistakes, setMistakes] = useState<MistakeWithQuestion[]>([])
-  const [filteredMistakes, setFilteredMistakes] = useState<MistakeWithQuestion[]>([])
+  const [filteredMistakes, setFilteredMistakes] = useState<
+    MistakeWithQuestion[]
+  >([])
   const [selectedMistakes, setSelectedMistakes] = useState<string[]>([])
   const [assignmentTitle, setAssignmentTitle] = useState('')
   const [loading, setLoading] = useState(false)
@@ -47,7 +51,7 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
   // Extract available topics from mistakes
   const availableTopics = useMemo(() => {
     const topics = new Set<string>()
-    mistakes.forEach(mistake => {
+    mistakes.forEach((mistake) => {
       if (mistake.questions?.topic_tags) {
         mistake.questions.topic_tags.forEach((tag: string) => topics.add(tag))
       }
@@ -57,7 +61,7 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
 
   // Filter mistakes based on current filters
   useMemo(() => {
-    const filtered = mistakes.filter(mistake => {
+    const filtered = mistakes.filter((mistake) => {
       const question = mistake.questions
       if (!question) return false
 
@@ -67,19 +71,27 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
       }
 
       // Difficulty filter
-      if (filters.difficulty !== 'all' && question.difficulty_level !== filters.difficulty) {
+      if (
+        filters.difficulty !== 'all' &&
+        question.difficulty_level !== filters.difficulty
+      ) {
         return false
       }
 
       // Question type filter
-      if (filters.questionType !== 'all' && question.question_type !== filters.questionType) {
+      if (
+        filters.questionType !== 'all' &&
+        question.question_type !== filters.questionType
+      ) {
         return false
       }
 
       // Topics filter
       if (filters.topics.length > 0) {
         const questionTopics = question.topic_tags || []
-        const hasMatchingTopic = filters.topics.some(topic => questionTopics.includes(topic))
+        const hasMatchingTopic = filters.topics.some((topic) =>
+          questionTopics.includes(topic)
+        )
         if (!hasMatchingTopic) return false
       }
 
@@ -89,9 +101,9 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
   }, [mistakes, filters])
 
   const handleStudentToggle = (studentId: string) => {
-    setSelectedStudents(prev => 
+    setSelectedStudents((prev) =>
       prev.includes(studentId)
-        ? prev.filter(id => id !== studentId)
+        ? prev.filter((id) => id !== studentId)
         : [...prev, studentId]
     )
   }
@@ -104,7 +116,8 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
       // Fetch mistakes for selected students
       const { data: studentMistakes, error } = await supabase
         .from('mistake_bank')
-        .select(`
+        .select(
+          `
           id,
           user_id,
           question_id,
@@ -130,7 +143,8 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
             created_at,
             updated_at
           )
-        `)
+        `
+        )
         .in('user_id', selectedStudents)
         .order('first_mistaken_at', { ascending: false })
 
@@ -140,7 +154,7 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
         return
       }
 
-      setMistakes(studentMistakes as unknown as MistakeWithQuestion[] || [])
+      setMistakes((studentMistakes as unknown as MistakeWithQuestion[]) || [])
       setCurrentStep(2)
     } catch (error) {
       console.error('Error:', error)
@@ -151,13 +165,13 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
   }
 
   const handleFilterChange = (newFilters: Partial<FilterOptions>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }))
+    setFilters((prev) => ({ ...prev, ...newFilters }))
   }
 
   const handleMistakeToggle = (mistakeId: string) => {
-    setSelectedMistakes(prev => 
+    setSelectedMistakes((prev) =>
       prev.includes(mistakeId)
-        ? prev.filter(id => id !== mistakeId)
+        ? prev.filter((id) => id !== mistakeId)
         : [...prev, mistakeId]
     )
   }
@@ -166,7 +180,7 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
     if (selectedMistakes.length === filteredMistakes.length) {
       setSelectedMistakes([])
     } else {
-      setSelectedMistakes(filteredMistakes.map(mistake => mistake.id))
+      setSelectedMistakes(filteredMistakes.map((mistake) => mistake.id))
     }
   }
 
@@ -177,8 +191,8 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
     try {
       // Get question IDs from selected mistakes
       const selectedQuestionIds = mistakes
-        .filter(mistake => selectedMistakes.includes(mistake.id))
-        .map(mistake => mistake.question_id)
+        .filter((mistake) => selectedMistakes.includes(mistake.id))
+        .map((mistake) => mistake.question_id)
 
       // Remove duplicates
       const uniqueQuestionIds = [...new Set(selectedQuestionIds)]
@@ -197,8 +211,8 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
             english1: 35 * 60,
             english2: 35 * 60,
             math1: 35 * 60,
-            math2: 35 * 60
-          }
+            math2: 35 * 60,
+          },
         })
         .select()
         .single()
@@ -210,9 +224,9 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
       }
 
       // Link questions to the exam
-      const examQuestions = uniqueQuestionIds.map(questionId => ({
+      const examQuestions = uniqueQuestionIds.map((questionId) => ({
         exam_id: exam.id,
-        question_id: questionId
+        question_id: questionId,
       }))
 
       const { error: linkError } = await supabase
@@ -226,13 +240,13 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
       }
 
       // Create assignments for each student
-      const assignments = selectedStudents.map(studentId => ({
+      const assignments = selectedStudents.map((studentId) => ({
         exam_id: exam.id,
         student_id: studentId,
         assigned_by: null, // Will be set by RLS
         due_date: null,
         show_results: true,
-        is_active: true
+        is_active: true,
       }))
 
       const { error: assignmentError } = await supabase
@@ -245,7 +259,9 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
         return
       }
 
-      alert(`Assignment "${assignmentTitle}" created successfully for ${selectedStudents.length} students!`)
+      alert(
+        `Assignment "${assignmentTitle}" created successfully for ${selectedStudents.length} students!`
+      )
       router.push('/admin/assignments')
     } catch (error) {
       console.error('Error creating assignment:', error)
@@ -259,7 +275,7 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     })
   }
 
@@ -271,34 +287,41 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
             Step 1: Select Students
           </h2>
           <p className="text-gray-600 mb-6">
-            Choose the students whose mistakes you want to use for the assignment.
+            Choose the students whose mistakes you want to use for the
+            assignment.
           </p>
 
           {students.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-gray-400 text-4xl mb-4">👥</div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Students Found</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No Students Found
+              </h3>
               <p className="text-gray-600">
-                Students need to register and take exams before you can create mistake-based assignments.
+                Students need to register and take exams before you can create
+                mistake-based assignments.
               </p>
             </div>
           ) : (
             <>
               <div className="mb-4 flex items-center justify-between">
                 <p className="text-sm text-gray-600">
-                  {selectedStudents.length} of {students.length} students selected
+                  {selectedStudents.length} of {students.length} students
+                  selected
                 </p>
                 <button
                   onClick={() => {
                     if (selectedStudents.length === students.length) {
                       setSelectedStudents([])
                     } else {
-                      setSelectedStudents(students.map(s => s.id))
+                      setSelectedStudents(students.map((s) => s.id))
                     }
                   }}
                   className="text-sm text-blue-600 hover:text-blue-800"
                 >
-                  {selectedStudents.length === students.length ? 'Deselect All' : 'Select All'}
+                  {selectedStudents.length === students.length
+                    ? 'Deselect All'
+                    : 'Select All'}
                 </button>
               </div>
 
@@ -349,7 +372,9 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
                   disabled={selectedStudents.length === 0 || loading}
                   className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Loading...' : `Continue with ${selectedStudents.length} students`}
+                  {loading
+                    ? 'Loading...'
+                    : `Continue with ${selectedStudents.length} students`}
                 </button>
               </div>
             </>
@@ -380,7 +405,9 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
                   Step 2: Select Mistakes & Create Assignment
                 </h2>
                 <p className="text-sm text-gray-600">
-                  {filteredMistakes.length} mistake{filteredMistakes.length !== 1 ? 's' : ''} found • {selectedMistakes.length} selected
+                  {filteredMistakes.length} mistake
+                  {filteredMistakes.length !== 1 ? 's' : ''} found •{' '}
+                  {selectedMistakes.length} selected
                 </p>
               </div>
               <button
@@ -410,14 +437,22 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
                 className="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
                 disabled={filteredMistakes.length === 0}
               >
-                {selectedMistakes.length === filteredMistakes.length ? 'Deselect All' : 'Select All'}
+                {selectedMistakes.length === filteredMistakes.length
+                  ? 'Deselect All'
+                  : 'Select All'}
               </button>
               <button
                 onClick={handleCreateAssignment}
-                disabled={selectedMistakes.length === 0 || !assignmentTitle.trim() || loading}
+                disabled={
+                  selectedMistakes.length === 0 ||
+                  !assignmentTitle.trim() ||
+                  loading
+                }
                 className="px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                {loading ? 'Creating...' : `Create Assignment (${selectedMistakes.length} questions)`}
+                {loading
+                  ? 'Creating...'
+                  : `Create Assignment (${selectedMistakes.length} questions)`}
               </button>
             </div>
           </div>
@@ -427,13 +462,14 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
             <div className="bg-white rounded-lg shadow p-8 text-center">
               <div className="text-gray-400 text-lg mb-2">🎯</div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {mistakes.length === 0 ? 'No mistakes found' : 'No mistakes match your filters'}
+                {mistakes.length === 0
+                  ? 'No mistakes found'
+                  : 'No mistakes match your filters'}
               </h3>
               <p className="text-gray-600">
-                {mistakes.length === 0 
-                  ? 'The selected students haven\'t made any mistakes yet, or need to take more exams.'
-                  : 'Try adjusting your filters to see more results.'
-                }
+                {mistakes.length === 0
+                  ? "The selected students haven't made any mistakes yet, or need to take more exams."
+                  : 'Try adjusting your filters to see more results.'}
               </p>
             </div>
           ) : (
@@ -443,7 +479,10 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
                 if (!question) return null
 
                 return (
-                  <div key={mistake.id} className="bg-white rounded-lg shadow border border-gray-200">
+                  <div
+                    key={mistake.id}
+                    className="bg-white rounded-lg shadow border border-gray-200"
+                  >
                     <div className="p-6">
                       <div className="flex items-start space-x-3">
                         <input
@@ -463,12 +502,16 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                               {question.question_type.replace('_', ' ')}
                             </span>
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              mistake.status === 'mastered' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-red-100 text-red-800'
-                            }`}>
-                              {mistake.status === 'mastered' ? 'Mastered' : 'Needs Practice'}
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                mistake.status === 'mastered'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}
+                            >
+                              {mistake.status === 'mastered'
+                                ? 'Mastered'
+                                : 'Needs Practice'}
                             </span>
                           </div>
                           <div className="text-sm text-gray-900 mb-2">
@@ -476,21 +519,28 @@ export function CreateMistakeAssignmentClient({ students }: CreateMistakeAssignm
                             {question.question_text.length > 200 && '...'}
                           </div>
                           <div className="flex items-center text-xs text-gray-500 space-x-4">
-                            <span>First mistake: {formatDate(mistake.first_mistaken_at)}</span>
-                            <span>Worth {question.points} point{question.points !== 1 ? 's' : ''}</span>
+                            <span>
+                              First mistake:{' '}
+                              {formatDate(mistake.first_mistaken_at)}
+                            </span>
+                            <span>
+                              Worth {question.points} point
+                              {question.points !== 1 ? 's' : ''}
+                            </span>
                           </div>
-                          {question.topic_tags && question.topic_tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              {question.topic_tags.map((tag: string) => (
-                                <span
-                                  key={tag}
-                                  className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
+                          {question.topic_tags &&
+                            question.topic_tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {question.topic_tags.map((tag: string) => (
+                                  <span
+                                    key={tag}
+                                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                         </div>
                       </div>
                     </div>

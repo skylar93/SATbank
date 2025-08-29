@@ -47,7 +47,11 @@ interface ExamInterfaceProps {
   getCurrentAnswer: () => any
   isMarkedForReview: () => boolean
   toggleMarkForReview: () => void
-  getMarkedQuestions: () => Array<{ question: any; index: number; isMarked: boolean }>
+  getMarkedQuestions: () => Array<{
+    question: any
+    index: number
+    isMarked: boolean
+  }>
   addHighlight: (questionId: string, highlight: any) => void
   removeHighlight: (questionId: string, highlight: any) => void
   getAnsweredQuestions: () => Set<number>
@@ -132,14 +136,20 @@ export function ExamInterface({
           totalQuestions={currentModule.questions.length}
           userAnswer={currentAnswer}
           onAnswerChange={onAnswerChange}
-          disabled={status !== 'in_progress' || (timeExpiredRef.current ?? false)}
+          disabled={
+            status !== 'in_progress' || (timeExpiredRef.current ?? false)
+          }
           isAdminPreview={false}
           isMarkedForReview={isMarkedForReview()}
           onToggleMarkForReview={toggleMarkForReview}
           questionContentRef={questionContentRef}
           highlights={highlightsByQuestion[currentQuestion.id] || []}
-          onRemoveHighlight={(highlight) => removeHighlight(currentQuestion.id, highlight)}
-          onAddHighlight={(highlight) => addHighlight(currentQuestion.id, highlight)}
+          onRemoveHighlight={(highlight) =>
+            removeHighlight(currentQuestion.id, highlight)
+          }
+          onAddHighlight={(highlight) =>
+            addHighlight(currentQuestion.id, highlight)
+          }
           showPerQuestionAnswers={answerCheckMode === 'per_question'}
           isAnswerSubmitted={showAnswerReveal}
           isCorrect={answerRevealData?.isCorrect}
@@ -171,8 +181,8 @@ export function ExamInterface({
 
       {/* Time Expired Overlay */}
       {status === 'time_expired' && (
-        <TimeExpiredOverlay 
-          isLastModule={currentModuleIndex >= modules.length - 1} 
+        <TimeExpiredOverlay
+          isLastModule={currentModuleIndex >= modules.length - 1}
         />
       )}
     </div>

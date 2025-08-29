@@ -24,8 +24,6 @@ export default function CreateMistakeAssignmentPage() {
   useEffect(() => {
     async function loadStudentsWithMistakes() {
       try {
-        console.log('🔍 Loading students with mistakes...')
-
         // First get all students
         const { data: studentsData, error: studentsError } = await supabase
           .from('user_profiles')
@@ -41,7 +39,6 @@ export default function CreateMistakeAssignmentPage() {
           .order('full_name')
 
         if (studentsError) {
-          console.error('❌ Error fetching students:', studentsError)
           setError('Failed to load students')
           return
         }
@@ -55,25 +52,15 @@ export default function CreateMistakeAssignmentPage() {
               .eq('user_id', student.id)
 
             if (countError) {
-              console.error(
-                `❌ Error fetching mistake count for ${student.full_name}:`,
-                countError
-              )
               return { ...student, mistake_count: [{ count: 0 }] }
             }
 
-            console.log(`🔍 Mistake count for ${student.full_name} (${student.id}):`, count)
             return { ...student, mistake_count: [{ count: count || 0 }] }
           })
         )
 
-        console.log(
-          '✅ Successfully loaded students with mistake counts:',
-          studentsWithMistakeCounts?.length || 0
-        )
         setStudents(studentsWithMistakeCounts || [])
       } catch (err) {
-        console.error('❌ Unexpected error:', err)
         setError('An unexpected error occurred')
       } finally {
         setLoading(false)
@@ -83,18 +70,15 @@ export default function CreateMistakeAssignmentPage() {
     // Wait for auth to load, then check authorization
     if (!authLoading) {
       if (!user) {
-        console.log('🔒 No user, redirecting to login')
         router.push('/login')
         return
       }
 
       if (user.profile?.role !== 'admin') {
-        console.log('🔒 User is not admin, redirecting to student dashboard')
         router.push('/student/dashboard')
         return
       }
 
-      console.log('✅ User is admin, loading page data')
       loadStudentsWithMistakes()
     }
   }, [user, authLoading, router])

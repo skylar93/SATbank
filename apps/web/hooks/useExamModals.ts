@@ -21,7 +21,7 @@ export const useExamModals = () => {
   return {
     // State
     showExitConfirm,
-    
+
     // Actions
     openExitConfirm,
     closeExitConfirm,

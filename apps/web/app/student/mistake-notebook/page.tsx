@@ -53,7 +53,8 @@ export default function MistakeNotebookPage() {
       // Fetch user's incorrect answers
       const { data: incorrectAnswers, error: answersError } = await supabase
         .from('user_answers')
-        .select(`
+        .select(
+          `
           *,
           test_attempts!inner (
             user_id,
@@ -72,7 +73,8 @@ export default function MistakeNotebookPage() {
             explanation,
             topic_tags
           )
-        `)
+        `
+        )
         .eq('test_attempts.user_id', user?.id)
         .eq('is_correct', false)
         .order('answered_at', { ascending: false })
@@ -114,9 +116,12 @@ export default function MistakeNotebookPage() {
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Mistake Notebook</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Mistake Notebook
+            </h1>
             <p className="text-gray-600">
-              Review your incorrectly answered questions and create custom practice quizzes
+              Review your incorrectly answered questions and create custom
+              practice quizzes
             </p>
           </div>
           <div className="flex items-center space-x-4">

@@ -504,8 +504,8 @@ export default function StudentDetailPage() {
         )}
 
         {activeTab === 'attempts' && (
-          <StudentAttemptsList 
-            attempts={attempts} 
+          <StudentAttemptsList
+            attempts={attempts}
             onVisibilityUpdate={loadStudentData}
           />
         )}
