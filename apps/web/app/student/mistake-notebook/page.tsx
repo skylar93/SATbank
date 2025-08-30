@@ -16,7 +16,10 @@ interface Question {
   correct_answer: string
   explanation: string
   topic_tags: string[]
-  is_incorrect?: boolean
+  mistakeId?: string
+  masteryStatus?: 'unmastered' | 'mastered'
+  firstMistakenAt?: string
+  lastReviewedAt?: string
   incorrectAttempts?: Array<{
     id: string
     user_answer: string
@@ -41,26 +44,16 @@ export default function MistakeNotebookPage() {
     try {
       setLoading(true)
 
-      // Fetch all questions
-      const { data: questionsData, error: questionsError } = await supabase
-        .from('questions')
-        .select('*')
-        .order('module_type')
-        .order('question_number')
-
-      if (questionsError) throw questionsError
-
-      // Fetch user's incorrect answers
-      const { data: incorrectAnswers, error: answersError } = await supabase
-        .from('user_answers')
+      // Fetch mistakes from mistake_bank with question details and recent incorrect answers
+      const { data: mistakeData, error: mistakeError } = await supabase
+        .from('mistake_bank')
         .select(
           `
-          *,
-          test_attempts!inner (
-            user_id,
-            created_at,
-            is_practice_mode
-          ),
+          id,
+          question_id,
+          status,
+          first_mistaken_at,
+          last_reviewed_at,
           questions (
             id,
             module_type,
@@ -75,32 +68,64 @@ export default function MistakeNotebookPage() {
           )
         `
         )
-        .eq('test_attempts.user_id', user?.id)
-        .eq('is_correct', false)
-        .order('answered_at', { ascending: false })
+        .eq('user_id', user?.id)
+        .order('first_mistaken_at', { ascending: false })
 
-      if (answersError) throw answersError
+      if (mistakeError) throw mistakeError
 
-      // Group answers by question
-      const questionMap = new Map()
-      incorrectAnswers?.forEach((answer) => {
-        const questionId = answer.questions.id
-        if (!questionMap.has(questionId)) {
-          questionMap.set(questionId, {
-            ...answer.questions,
-            incorrectAttempts: [],
-          })
-        }
-        questionMap.get(questionId).incorrectAttempts.push({
-          id: answer.id,
-          user_answer: answer.user_answer,
-          answered_at: answer.answered_at,
-          attempt_id: answer.attempt_id,
-        })
-      })
+      // For each mistake, get recent incorrect attempts
+      const questionsWithAttempts = await Promise.all(
+        mistakeData?.map(async (mistake) => {
+          // Get recent incorrect answers for this question
+          const { data: incorrectAnswers, error: answersError } = await supabase
+            .from('user_answers')
+            .select(
+              `
+              id,
+              user_answer,
+              answered_at,
+              attempt_id,
+              test_attempts!inner (
+                user_id
+              )
+            `
+            )
+            .eq('test_attempts.user_id', user?.id)
+            .eq('question_id', mistake.question_id)
+            .eq('is_correct', false)
+            .order('answered_at', { ascending: false })
+            .limit(5) // Get last 5 incorrect attempts
 
-      const incorrectQuestions = Array.from(questionMap.values())
-      setQuestions(incorrectQuestions)
+          const incorrectAttempts =
+            incorrectAnswers?.map((answer) => ({
+              id: answer.id,
+              user_answer: answer.user_answer,
+              answered_at: answer.answered_at,
+              attempt_id: answer.attempt_id,
+            })) || []
+
+          const question = mistake.questions as any
+          return {
+            id: question.id,
+            module_type: question.module_type,
+            question_number: question.question_number,
+            question_type: question.question_type,
+            difficulty_level: question.difficulty_level,
+            question_text: question.question_text,
+            options: question.options,
+            correct_answer: question.correct_answer,
+            explanation: question.explanation,
+            topic_tags: question.topic_tags,
+            mistakeId: mistake.id,
+            masteryStatus: mistake.status,
+            firstMistakenAt: mistake.first_mistaken_at,
+            lastReviewedAt: mistake.last_reviewed_at,
+            incorrectAttempts,
+          }
+        }) || []
+      )
+
+      setQuestions(questionsWithAttempts)
     } catch (error) {
       console.error('Error fetching incorrect questions:', error)
     } finally {

@@ -1,10 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../../contexts/auth-context'
-import { ExamService } from '../../../../../lib/exam-service'
 import { supabase } from '../../../../../lib/supabase'
 import ReviewPageClient from '../../../../student/results/[attemptId]/review/ReviewPageClient'
 import type {
@@ -23,12 +22,10 @@ interface ReviewData {
 
 export default function AdminReviewPage() {
   const params = useParams()
-  const router = useRouter()
   const { user } = useAuth()
   const [reviewData, setReviewData] = useState<ReviewData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [canShowResults, setCanShowResults] = useState(true)
 
   const attemptId = params.attemptId as string
 

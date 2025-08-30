@@ -17,7 +17,10 @@ interface Question {
   correct_answer: string
   explanation: string
   topic_tags: string[]
-  is_incorrect?: boolean
+  mistakeId?: string
+  masteryStatus?: 'unmastered' | 'mastered'
+  firstMistakenAt?: string
+  lastReviewedAt?: string
   incorrectAttempts?: Array<{
     id: string
     user_answer: string
@@ -43,6 +46,9 @@ export function EnhancedIncorrectAnswersSection({
   const [groupBy, setGroupBy] = useState<
     'module' | 'difficulty' | 'topic' | 'recent'
   >('recent')
+  const [masteryFilter, setMasteryFilter] = useState<
+    'all' | 'unmastered' | 'mastered'
+  >('all')
   const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null)
   const [selectedQuestions, setSelectedQuestions] = useState<string[]>([])
 
@@ -103,11 +109,17 @@ export function EnhancedIncorrectAnswersSection({
   }
 
   const getGroupedQuestions = () => {
+    // First, apply mastery status filter
+    const filteredQuestions = questions.filter((q) => {
+      if (masteryFilter === 'all') return true
+      return q.masteryStatus === masteryFilter
+    })
+
     const grouped: { [key: string]: Question[] } = {}
 
     switch (groupBy) {
       case 'module':
-        questions.forEach((q) => {
+        filteredQuestions.forEach((q) => {
           const key = formatModuleName(q.module_type)
           if (!grouped[key]) grouped[key] = []
           grouped[key].push(q)
@@ -115,7 +127,7 @@ export function EnhancedIncorrectAnswersSection({
         break
 
       case 'difficulty':
-        questions.forEach((q) => {
+        filteredQuestions.forEach((q) => {
           const key =
             q.difficulty_level.charAt(0).toUpperCase() +
             q.difficulty_level.slice(1)
@@ -125,7 +137,7 @@ export function EnhancedIncorrectAnswersSection({
         break
 
       case 'topic':
-        questions.forEach((q) => {
+        filteredQuestions.forEach((q) => {
           if (q.topic_tags && q.topic_tags.length > 0) {
             q.topic_tags.forEach((topic) => {
               if (!grouped[topic]) grouped[topic] = []
@@ -140,7 +152,7 @@ export function EnhancedIncorrectAnswersSection({
 
       case 'recent':
       default:
-        grouped['All Mistake Questions'] = questions.sort((a, b) => {
+        grouped['All Mistake Questions'] = filteredQuestions.sort((a, b) => {
           const aLatest = Math.max(
             ...(a.incorrectAttempts?.map((att) =>
               new Date(att.answered_at).getTime()
@@ -172,10 +184,26 @@ export function EnhancedIncorrectAnswersSection({
   }
 
   const handleSelectAll = () => {
-    if (selectedQuestions.length === questions.length) {
-      setSelectedQuestions([])
+    const filteredQuestions = questions.filter((q) => {
+      if (masteryFilter === 'all') return true
+      return q.masteryStatus === masteryFilter
+    })
+
+    const filteredQuestionIds = filteredQuestions.map((q) => q.id)
+    const allFilteredSelected = filteredQuestionIds.every((id) =>
+      selectedQuestions.includes(id)
+    )
+
+    if (allFilteredSelected) {
+      // Deselect all filtered questions
+      setSelectedQuestions((prev) =>
+        prev.filter((id) => !filteredQuestionIds.includes(id))
+      )
     } else {
-      setSelectedQuestions(questions.map((q) => q.id))
+      // Select all filtered questions (keeping existing selections from other filters)
+      setSelectedQuestions((prev) => [
+        ...new Set([...prev, ...filteredQuestionIds]),
+      ])
     }
   }
 
@@ -325,6 +353,10 @@ export function EnhancedIncorrectAnswersSection({
   }
 
   const groupedQuestions = getGroupedQuestions()
+  const filteredQuestions = questions.filter((q) => {
+    if (masteryFilter === 'all') return true
+    return q.masteryStatus === masteryFilter
+  })
 
   return (
     <div className="space-y-6">
@@ -333,10 +365,13 @@ export function EnhancedIncorrectAnswersSection({
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-lg font-medium text-gray-900">
-              Mistake Questions ({questions.length})
+              Mistake Questions ({filteredQuestions.length}
+              {masteryFilter !== 'all' ? ` of ${questions.length}` : ''})
             </h3>
             <p className="text-sm text-gray-500 mt-1">
               Review and practice questions you've answered incorrectly
+              {masteryFilter !== 'all' &&
+                ` • Showing ${masteryFilter} questions only`}
             </p>
           </div>
           <div className="flex items-center space-x-3">
@@ -344,9 +379,15 @@ export function EnhancedIncorrectAnswersSection({
               onClick={handleSelectAll}
               className="text-blue-600 hover:text-blue-800 text-sm font-medium"
             >
-              {selectedQuestions.length === questions.length
-                ? 'Deselect All'
-                : 'Select All'}
+              {(() => {
+                const filteredIds = filteredQuestions.map((q) => q.id)
+                const allFilteredSelected = filteredIds.every((id) =>
+                  selectedQuestions.includes(id)
+                )
+                return allFilteredSelected && filteredIds.length > 0
+                  ? 'Deselect All'
+                  : 'Select All'
+              })()}
             </button>
             <button
               onClick={createPracticeQuizFromSelected}
@@ -370,27 +411,52 @@ export function EnhancedIncorrectAnswersSection({
           </div>
         </div>
 
-        {/* Group By Controls */}
-        <div className="flex items-center space-x-4">
-          <span className="text-sm font-medium text-gray-700">Group by:</span>
-          {[
-            { value: 'recent', label: 'Most Recent' },
-            { value: 'module', label: 'Module' },
-            { value: 'difficulty', label: 'Difficulty' },
-            { value: 'topic', label: 'Topic' },
-          ].map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setGroupBy(option.value as any)}
-              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                groupBy === option.value
-                  ? 'bg-blue-100 text-blue-800'
-                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
+        {/* Filter and Group Controls */}
+        <div className="flex flex-col space-y-3">
+          {/* Mastery Filter */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-700">Show:</span>
+            {[
+              { value: 'all', label: 'All Questions' },
+              { value: 'unmastered', label: 'Unmastered' },
+              { value: 'mastered', label: 'Mastered' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                onClick={() => setMasteryFilter(option.value as any)}
+                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  masteryFilter === option.value
+                    ? 'bg-green-100 text-green-800'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Group By Controls */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-700">Group by:</span>
+            {[
+              { value: 'recent', label: 'Most Recent' },
+              { value: 'module', label: 'Module' },
+              { value: 'difficulty', label: 'Difficulty' },
+              { value: 'topic', label: 'Topic' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                onClick={() => setGroupBy(option.value as any)}
+                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  groupBy === option.value
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -438,6 +504,17 @@ export function EnhancedIncorrectAnswersSection({
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                           Incorrect {question.incorrectAttempts?.length || 0}{' '}
                           time(s)
+                        </span>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            question.masteryStatus === 'mastered'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-orange-100 text-orange-800'
+                          }`}
+                        >
+                          {question.masteryStatus === 'mastered'
+                            ? '✓ Mastered'
+                            : '⚠ Unmastered'}
                         </span>
                       </div>
 

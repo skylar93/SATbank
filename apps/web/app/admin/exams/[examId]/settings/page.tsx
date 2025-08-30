@@ -138,7 +138,7 @@ export default function EditExamPage() {
     } finally {
       setLoading(false)
     }
-  }, [examId, supabase])
+  }, [examId])
 
   useEffect(() => {
     if (user && isAdmin && examId) {

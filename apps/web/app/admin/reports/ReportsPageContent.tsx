@@ -112,7 +112,7 @@ export default function ReportsPageContent() {
         </div>
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-800">
-            You don't have permission to access this page. Admin access
+            You don&apos;t have permission to access this page. Admin access
             required.
           </p>
         </div>

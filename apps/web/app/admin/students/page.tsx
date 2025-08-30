@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
-import { ExportService } from '../../../lib/export-service'
+// import { ExportService } from '../../../lib/export-service'
 import { supabase } from '../../../lib/supabase'
 import { useImpersonation } from '../../../hooks/use-impersonation'
 
@@ -46,7 +46,6 @@ export default function AdminStudentsPage() {
     sortBy: 'name',
     sortOrder: 'asc',
   })
-  const [exporting, setExporting] = useState(false)
   const [updatingAnswerVisibility, setUpdatingAnswerVisibility] = useState<
     string | null
   >(null)
@@ -185,7 +184,7 @@ export default function AdminStudentsPage() {
         case 'attempts':
           comparison = a.attempts.completed - b.attempts.completed
           break
-        case 'date':
+        case 'date': {
           const dateA = a.attempts.latest_date
             ? new Date(a.attempts.latest_date).getTime()
             : 0
@@ -194,6 +193,7 @@ export default function AdminStudentsPage() {
             : 0
           comparison = dateA - dateB
           break
+        }
       }
 
       return filters.sortOrder === 'desc' ? -comparison : comparison
@@ -202,48 +202,46 @@ export default function AdminStudentsPage() {
     setFilteredStudents(filtered)
   }
 
-  const handleExportAll = async () => {
-    setExporting(true)
-    try {
-      // Prepare data for export
-      const exportData = await Promise.all(
-        filteredStudents.map(async (student) => {
-          const { data: attempts } = await supabase
-            .from('test_attempts')
-            .select('*')
-            .eq('user_id', student.id)
-            .eq('status', 'completed')
-            .order('completed_at', { ascending: false })
-
-          return (
-            attempts?.map((attempt) => ({
-              student_name: student.full_name,
-              email: student.email,
-              grade_level: student.grade_level,
-              target_score: student.target_score,
-              test_date: attempt.completed_at,
-              total_score: attempt.total_score,
-              module_scores: attempt.module_scores,
-              started_at: attempt.started_at,
-              completed_at: attempt.completed_at,
-              status: attempt.status,
-            })) || []
-          )
-        })
-      )
-
-      const flattenedData = exportData.flat()
-      const csvContent = ExportService.exportAdminDataToCSV(flattenedData)
-      ExportService.downloadCSV(
-        csvContent,
-        `students-performance-${new Date().toISOString().split('T')[0]}.csv`
-      )
-    } catch (err: any) {
-      setError(`Export failed: ${err.message}`)
-    } finally {
-      setExporting(false)
-    }
-  }
+  // Export functionality (keeping for future use)
+  // const handleExportAll = async () => {
+  //   try {
+  //     // Prepare data for export
+  //     const exportData = await Promise.all(
+  //       filteredStudents.map(async (student) => {
+  //         const { data: attempts } = await supabase
+  //           .from('test_attempts')
+  //           .select('*')
+  //           .eq('user_id', student.id)
+  //           .eq('status', 'completed')
+  //           .order('completed_at', { ascending: false })
+  //
+  //         return (
+  //           attempts?.map((attempt) => ({
+  //             student_name: student.full_name,
+  //             email: student.email,
+  //             grade_level: student.grade_level,
+  //             target_score: student.target_score,
+  //             test_date: attempt.completed_at,
+  //             total_score: attempt.total_score,
+  //             module_scores: attempt.module_scores,
+  //             started_at: attempt.started_at,
+  //             completed_at: attempt.completed_at,
+  //             status: attempt.status,
+  //           })) || []
+  //         )
+  //       })
+  //     )
+  //
+  //     const flattenedData = exportData.flat()
+  //     const csvContent = ExportService.exportAdminDataToCSV(flattenedData)
+  //     ExportService.downloadCSV(
+  //       csvContent,
+  //       `students-performance-${new Date().toISOString().split('T')[0]}.csv`
+  //     )
+  //   } catch (err: any) {
+  //     setError(`Export failed: ${err.message}`)
+  //   }
+  // }
 
   const handleToggleAnswerVisibility = async (
     studentId: string,
@@ -292,13 +290,14 @@ export default function AdminStudentsPage() {
     return 'text-slate-500'
   }
 
-  const getPerformanceLevel = (score: number | null) => {
-    if (!score) return 'No data'
-    if (score >= 1200) return 'Excellent'
-    if (score >= 1000) return 'Good'
-    if (score >= 800) return 'Fair'
-    return 'Needs Improvement'
-  }
+  // Helper function for performance levels (keeping for future use)
+  // const getPerformanceLevel = (score: number | null) => {
+  //   if (!score) return 'No data'
+  //   if (score >= 1200) return 'Excellent'
+  //   if (score >= 1000) return 'Good'
+  //   if (score >= 800) return 'Fair'
+  //   return 'Needs Improvement'
+  // }
 
   if (!user) return null
 

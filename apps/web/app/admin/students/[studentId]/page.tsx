@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../contexts/auth-context'
 import {
@@ -43,7 +43,6 @@ interface TestAttemptSummary {
 
 export default function StudentDetailPage() {
   const params = useParams()
-  const router = useRouter()
   const { user } = useAuth()
   const [student, setStudent] = useState<StudentProfile | null>(null)
   const [attempts, setAttempts] = useState<TestAttemptSummary[]>([])
@@ -186,18 +185,19 @@ export default function StudentDetailPage() {
     return 'text-red-600'
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-purple-100 text-purple-800'
-      case 'in_progress':
-        return 'bg-blue-100 text-blue-800'
-      case 'expired':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
+  // Helper function for status colors (keeping for future use)
+  // const getStatusColor = (status: string) => {
+  //   switch (status) {
+  //     case 'completed':
+  //       return 'bg-purple-100 text-purple-800'
+  //     case 'in_progress':
+  //       return 'bg-blue-100 text-blue-800'
+  //     case 'expired':
+  //       return 'bg-red-100 text-red-800'
+  //     default:
+  //       return 'bg-gray-100 text-gray-800'
+  //   }
+  // }
 
   if (loading) {
     return (
@@ -369,7 +369,7 @@ export default function StudentDetailPage() {
               {attempts
                 .filter((a) => a.status === 'completed')
                 .slice(0, 3)
-                .map((attempt, index) => {
+                .map((attempt, _index) => {
                   const displayScore = getDisplayScore(attempt)
                   return (
                     <div

@@ -13,7 +13,7 @@ interface PracticeSettings {
   shuffleQuestions: boolean
   showExplanations: boolean
   timeLimit: number
-  isIncorrectReview?: boolean
+  isMistakeReview?: boolean
 }
 
 interface UserAnswer {
@@ -194,6 +194,35 @@ export default function PracticeSession() {
 
       if (updateError) throw updateError
 
+      // If this is a mistake review practice session, update mistake_bank mastery status
+      if (practiceSettings.isMistakeReview && user) {
+        console.log('📚 Updating mistake bank mastery status')
+
+        // Get all correct answers from this practice session
+        const correctlyAnsweredQuestions = Array.from(userAnswers.values())
+          .filter((answer) => answer.is_correct)
+          .map((answer) => answer.question_id)
+
+        if (correctlyAnsweredQuestions.length > 0) {
+          const { error: mistakeUpdateError } = await supabase
+            .from('mistake_bank')
+            .update({
+              status: 'mastered',
+              last_reviewed_at: new Date().toISOString(),
+            })
+            .eq('user_id', user.id)
+            .in('question_id', correctlyAnsweredQuestions)
+
+          if (mistakeUpdateError) {
+            console.error('Error updating mistake bank:', mistakeUpdateError)
+          } else {
+            console.log(
+              `✅ Updated ${correctlyAnsweredQuestions.length} questions to mastered status`
+            )
+          }
+        }
+      }
+
       setIsComplete(true)
 
       // Clean up localStorage
@@ -344,7 +373,7 @@ export default function PracticeSession() {
               </h1>
               <p className="text-sm text-gray-600">
                 Question {currentQuestionIndex + 1} of {questions.length}
-                {practiceSettings.isIncorrectReview &&
+                {practiceSettings.isMistakeReview &&
                   ' • Reviewing Incorrect Answers'}
               </p>
             </div>

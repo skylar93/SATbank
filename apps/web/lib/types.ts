@@ -34,6 +34,16 @@ export interface UserProfile {
   updated_at: string
 }
 
+// User type for Supabase Auth
+export interface User {
+  id: string
+  email?: string
+  created_at: string
+  updated_at: string
+  app_metadata?: Record<string, any>
+  user_metadata?: Record<string, any>
+}
+
 // Exam Assignment Types
 export interface ExamAssignment {
   id: string
