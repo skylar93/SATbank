@@ -1,5 +1,5 @@
 'use client'
-import { renderTextWithFormattingAndMath } from './question-display'
+import { renderHtmlContent, renderTextWithFormattingAndMath } from './question-display'
 
 interface Highlight {
   start: number
@@ -11,15 +11,24 @@ interface Props {
   text: string
   highlights: Highlight[]
   onRemoveHighlight?: (highlight: Highlight) => void
+  isHtml?: boolean // Flag to indicate if content is HTML
 }
 
 export function HighlightedTextRenderer({
   text,
   highlights,
   onRemoveHighlight,
+  isHtml = false,
 }: Props) {
+  // If no highlights, render as HTML or markdown based on flag
   if (!highlights || highlights.length === 0) {
-    return <>{renderTextWithFormattingAndMath(text)}</>
+    return isHtml ? renderHtmlContent(text) : <>{renderTextWithFormattingAndMath(text)}</>
+  }
+
+  // For now, if content is HTML and has highlights, fall back to simple HTML rendering
+  // TODO: Implement proper HTML-aware highlighting in future
+  if (isHtml) {
+    return renderHtmlContent(text)
   }
 
   const parts = []

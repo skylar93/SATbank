@@ -5,7 +5,7 @@ import { Question } from '../../lib/exam-service'
 import { TableData, OptionData } from '../../lib/types'
 import { InlineMath, BlockMath } from 'react-katex'
 import { supabase } from '../../lib/supabase'
-import { RichTextEditor } from '../rich-text-editor'
+import { WysiwygEditor } from '../wysiwyg-editor'
 // import { WysiwygEditor } from '../wysiwyg-editor' // KEEPING COMMENTED OUT - HTML conversion functionality removed
 import { ImageUpload } from '../image-upload'
 import { HelpCircle } from 'lucide-react'
@@ -15,7 +15,19 @@ import { HighlightedTextRenderer } from './HighlightedTextRenderer'
 import FloatingHighlightButton from './FloatingHighlightButton'
 import { AnswerRevealCard } from './AnswerRevealCard'
 
-// Shared text rendering function
+// HTML rendering function for content that is already in HTML format
+export const renderHtmlContent = (htmlContent: string) => {
+  if (!htmlContent || typeof htmlContent !== 'string') return htmlContent
+
+  return (
+    <div
+      className="prose prose-sm max-w-none"
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
+    />
+  )
+}
+
+// Legacy text rendering function for markdown (kept for backward compatibility)
 export const renderTextWithFormattingAndMath = (text: string) => {
   if (!text || typeof text !== 'string') return text
 
@@ -696,7 +708,7 @@ export function QuestionDisplay({
           return (
             <div className="space-y-2">
               {parsed.text && (
-                <div>{renderTextWithFormattingAndMath(parsed.text)}</div>
+                <div>{renderHtmlContent(parsed.text)}</div>
               )}
               {parsed.imageUrl && (
                 <img
@@ -742,7 +754,7 @@ export function QuestionDisplay({
         }
 
         // If parsed is a string or primitive, use it directly
-        return renderTextWithFormattingAndMath(String(parsed))
+        return renderHtmlContent(String(parsed))
       } catch (e) {
         // Not JSON, continue with regular text rendering
       }
@@ -771,8 +783,8 @@ export function QuestionDisplay({
       )
     }
 
-    // Regular text rendering with formatting
-    return renderTextWithFormattingAndMath(value)
+    // Regular text rendering - now using HTML
+    return renderHtmlContent(value)
   }
 
   const renderAnswerOptions = () => {
@@ -845,8 +857,8 @@ export function QuestionDisplay({
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Text Content
                     </label>
-                    <RichTextEditor
-                      value={optionData.text || ''}
+                    <WysiwygEditor
+                      content={optionData.text || ''}
                       onChange={(newValue) => {
                         const updatedOption = { ...optionData, text: newValue }
                         setEditForm({
@@ -860,7 +872,6 @@ export function QuestionDisplay({
                       placeholder={`Enter text for option ${key}...`}
                       rows={3}
                       compact={true}
-                      showPreview={true}
                     />
                   </div>
 
@@ -1108,9 +1119,7 @@ export function QuestionDisplay({
                             <div className="space-y-2">
                               {objValue.text && (
                                 <div>
-                                  {renderTextWithFormattingAndMath(
-                                    objValue.text
-                                  )}
+                                  {renderHtmlContent(objValue.text)}
                                 </div>
                               )}
                               {objValue.imageUrl && (
@@ -1411,14 +1420,13 @@ export function QuestionDisplay({
                   </div>
                 )}
 
-                <RichTextEditor
-                  value={editForm.question_text}
+                <WysiwygEditor
+                  content={editForm.question_text}
                   onChange={(value) =>
                     setEditForm({ ...editForm, question_text: value })
                   }
                   placeholder="Enter question text..."
                   rows={8}
-                  showPreview={true}
                 />
               </div>
 
@@ -1596,8 +1604,8 @@ export function QuestionDisplay({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Explanation (Optional)
                 </label>
-                <RichTextEditor
-                  value={editForm.explanation}
+                <WysiwygEditor
+                  content={editForm.explanation}
                   onChange={(value) =>
                     setEditForm({ ...editForm, explanation: value })
                   }
@@ -1615,6 +1623,7 @@ export function QuestionDisplay({
                 text={localQuestion.question_text}
                 highlights={highlights}
                 onRemoveHighlight={onRemoveHighlight}
+                isHtml={true}
               />
               {!isAdminPreview && questionContentRef && onAddHighlight && (
                 <FloatingHighlightButton
@@ -1699,7 +1708,7 @@ export function QuestionDisplay({
           <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
             <h4 className="font-semibold text-gray-900 mb-2">Explanation:</h4>
             <div className="text-gray-700 leading-relaxed">
-              {renderTextWithFormattingAndMath(localQuestion.explanation)}
+              {renderHtmlContent(localQuestion.explanation)}
             </div>
           </div>
         )}
