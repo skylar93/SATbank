@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, memo } from 'react'
 
 interface DataPoint {
   label: string
@@ -16,7 +16,7 @@ interface ProgressChartProps {
   height?: number
 }
 
-export function ProgressChart({
+const ProgressChartComponent = function ProgressChart({
   data,
   title,
   type = 'line',
@@ -191,3 +191,6 @@ export function ProgressChart({
     </div>
   )
 }
+
+// Memoized component - prevents unnecessary re-renders when chart data hasn't changed
+export const ProgressChart = memo(ProgressChartComponent)

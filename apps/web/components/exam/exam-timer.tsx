@@ -1,6 +1,13 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, memo } from 'react'
+
+// Pure utility function moved outside component for better performance
+const formatTime = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+}
 
 interface ExamTimerProps {
   initialTimeSeconds: number // Total time for this module in seconds
@@ -9,7 +16,7 @@ interface ExamTimerProps {
   isPaused?: boolean // Pause the timer
 }
 
-export function ExamTimer({
+const ExamTimerComponent = function ExamTimer({
   initialTimeSeconds,
   onTimeExpired,
   onTimeUpdate,
@@ -31,12 +38,6 @@ export function ExamTimer({
     onTimeExpiredRef.current = onTimeExpired
   }, [onTimeExpired])
 
-  // Format time as MM:SS
-  const formatTime = useCallback((seconds: number) => {
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
-  }, [])
 
   // Determine timer color based on remaining time
   const getTimerColor = useCallback(
@@ -121,3 +122,6 @@ export function ExamTimer({
     </div>
   )
 }
+
+// Memoized component - prevents unnecessary re-renders when props haven't changed
+export const ExamTimer = memo(ExamTimerComponent)

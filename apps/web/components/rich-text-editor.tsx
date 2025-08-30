@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import {
   Bold,
   Italic,
@@ -31,7 +31,7 @@ interface RichTextEditorProps {
   tableData?: any // For displaying Supabase table data
 }
 
-export function RichTextEditor({
+const RichTextEditorComponent = function RichTextEditor({
   value,
   onChange,
   placeholder = 'Enter text...',
@@ -568,7 +568,7 @@ export function RichTextEditor({
               alt={alt}
               className="max-w-full h-auto border border-gray-200 rounded inline-block"
               onError={(e) => {
-                console.error('Image failed to load:', url)
+                // Image failed to load - hide the element
                 e.currentTarget.style.display = 'none'
               }}
             />
@@ -586,7 +586,7 @@ export function RichTextEditor({
               alt={imageAlt}
               className="max-w-full h-auto border border-gray-200 rounded inline-block"
               onError={(e) => {
-                console.error('Image failed to load:', imageUrl)
+                // Image failed to load - hide the element
                 e.currentTarget.style.display = 'none'
               }}
             />
@@ -638,7 +638,7 @@ export function RichTextEditor({
             )
           }
         } catch (error) {
-          console.error('KaTeX render error:', error)
+          // KaTeX render error - fallback to plain text
           parts.push(
             <span
               key={`fallback-${match.index}`}
@@ -1209,3 +1209,6 @@ export function RichTextEditor({
     </div>
   )
 }
+
+// Memoized component - prevents unnecessary re-renders of complex editor
+export const RichTextEditor = memo(RichTextEditorComponent)

@@ -53,7 +53,7 @@ export const useExamAnswer = ({
       // Clear the flag after a short delay to allow answer loading on navigation
       setTimeout(() => setIsUserSelecting(false), 100)
     },
-    [setLocalAnswer, showAnswerReveal]
+    [showAnswerReveal] // Removed setLocalAnswer as it's passed from parent and can be unstable
   )
 
   // Handle checking answer in per-question mode
@@ -89,7 +89,7 @@ export const useExamAnswer = ({
     if (currentAnswer.trim()) {
       setLocalAnswer(currentAnswer)
     }
-  }, [currentAnswer, setLocalAnswer])
+  }, [currentAnswer]) // Removed setLocalAnswer as it's passed from parent and can be unstable
 
   // Handle try again - reset answer submission state so student can try again
   const handleTryAgain = useCallback(() => {

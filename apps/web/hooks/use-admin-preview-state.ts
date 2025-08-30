@@ -109,13 +109,13 @@ export function useAdminPreviewState() {
   }, [])
 
   // Store answer locally (for preview purposes only)
-  const setLocalAnswer = useCallback(
-    (answer: string) => {
-      const currentModule = examState.modules[examState.currentModuleIndex]
+  const setLocalAnswer = useCallback((answer: string) => {
+    setExamState((prev) => {
+      const currentModule = prev.modules[prev.currentModuleIndex]
       const currentQuestion =
-        currentModule.questions[currentModule.currentQuestionIndex]
+        currentModule?.questions[currentModule.currentQuestionIndex]
 
-      if (!currentQuestion) return
+      if (!currentQuestion) return prev
 
       // Update local state only
       const examAnswer: ExamAnswer = {
@@ -125,24 +125,21 @@ export function useAdminPreviewState() {
         answeredAt: new Date(),
       }
 
-      setExamState((prev) => {
-        const newModules = [...prev.modules]
-        newModules[prev.currentModuleIndex] = {
-          ...newModules[prev.currentModuleIndex],
-          answers: {
-            ...newModules[prev.currentModuleIndex].answers,
-            [currentQuestion.id]: examAnswer,
-          },
-        }
+      const newModules = [...prev.modules]
+      newModules[prev.currentModuleIndex] = {
+        ...newModules[prev.currentModuleIndex],
+        answers: {
+          ...newModules[prev.currentModuleIndex].answers,
+          [currentQuestion.id]: examAnswer,
+        },
+      }
 
-        return {
-          ...prev,
-          modules: newModules,
-        }
-      })
-    },
-    [examState]
-  )
+      return {
+        ...prev,
+        modules: newModules,
+      }
+    })
+  }, []) // Empty dependency array since we use functional updates
 
   // Move to next question
   const nextQuestion = useCallback(() => {
@@ -293,15 +290,14 @@ export function useAdminPreviewState() {
 
   // Move to next module (admin preview)
   const nextModule = useCallback(() => {
-    const nextModuleIndex = examState.currentModuleIndex + 1
-
-    if (nextModuleIndex >= examState.modules.length) {
-      // Complete preview
-      setExamState((prev) => ({ ...prev, status: 'completed' }))
-      return
-    }
-
     setExamState((prev) => {
+      const nextModuleIndex = prev.currentModuleIndex + 1
+
+      if (nextModuleIndex >= prev.modules.length) {
+        // Complete preview
+        return { ...prev, status: 'completed' }
+      }
+
       const newModules = [...prev.modules]
       // Mark current module as completed
       newModules[prev.currentModuleIndex] = {
@@ -315,7 +311,7 @@ export function useAdminPreviewState() {
         currentModuleIndex: nextModuleIndex,
       }
     })
-  }, [examState])
+  }, []) // Empty dependency array since we use functional updates
 
   // Get current question
   const getCurrentQuestion = useCallback(() => {
