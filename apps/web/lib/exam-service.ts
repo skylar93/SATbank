@@ -212,7 +212,10 @@ export class ExamService {
     examId: string,
     moduleType: ModuleType
   ): Promise<Question[]> {
+    console.log(`🔍 getQuestions: Fetching questions for examId=${examId}, moduleType=${moduleType}`)
+    
     // First try direct questions (for regular exams)
+    console.log('🔍 getQuestions: Trying direct questions first...')
     const { data: directQuestions, error: directError } = await supabase
       .from('questions')
       .select('*')
@@ -220,14 +223,21 @@ export class ExamService {
       .eq('module_type', moduleType)
       .order('question_number', { ascending: true })
 
-    if (directError) throw directError
+    if (directError) {
+      console.error('❌ getQuestions: Direct questions query error:', directError)
+      throw directError
+    }
+
+    console.log(`✅ getQuestions: Found ${directQuestions?.length || 0} direct questions`)
 
     // If we found direct questions, return them
     if (directQuestions && directQuestions.length > 0) {
+      console.log('✅ getQuestions: Returning direct questions')
       return directQuestions
     }
 
     // If no direct questions, try linked questions (for mistake-based assignments)
+    console.log('🔍 getQuestions: No direct questions found, trying linked questions...')
     const { data: linkedQuestions, error: linkedError } = await supabase
       .from('exam_questions')
       .select(
@@ -238,7 +248,12 @@ export class ExamService {
       .eq('exam_id', examId)
       .eq('questions.module_type', moduleType)
 
-    if (linkedError) throw linkedError
+    if (linkedError) {
+      console.error('❌ getQuestions: Linked questions query error:', linkedError)
+      throw linkedError
+    }
+
+    console.log(`✅ getQuestions: Found ${linkedQuestions?.length || 0} linked questions`)
 
     // Extract questions from the linked results and sort by question_number
     const questions =
@@ -250,6 +265,12 @@ export class ExamService {
 
     // Sort by question_number since we cannot do it in the query
     questions.sort((a, b) => a.question_number - b.question_number)
+
+    console.log(`✅ getQuestions: Final result: ${questions.length} questions for ${moduleType}`)
+
+    if (questions.length === 0) {
+      console.warn(`⚠️ getQuestions: No questions found for examId=${examId}, moduleType=${moduleType}`)
+    }
 
     return questions
   }

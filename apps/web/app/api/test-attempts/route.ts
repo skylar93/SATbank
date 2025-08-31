@@ -1,58 +1,127 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
-  console.log('🔥🔥🔥 API ROUTE HIT: test-attempts POST request 🔥🔥🔥')
+  console.log('🔥 API ROUTE: test-attempts POST started')
   
-  const cookieStore = cookies()
-  
-  // Create Supabase client with explicit cookie handling
-  const supabase = createRouteHandlerClient({ 
-    cookies: () => cookieStore,
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  })
-
   try {
-    // Get session first
-    const {
-      data: { session },
-      error: sessionError
-    } = await supabase.auth.getSession()
+    const cookieStore = cookies()
     
-    console.log('API: Session check - Session exists:', !!session, 'Error:', sessionError)
-    console.log('API: User from session:', session?.user?.email)
+    // Debug: Log all cookies to see what's available
+    const allCookies = cookieStore.getAll()
+    console.log('🍪 API: Available cookies:', allCookies.map(c => ({ 
+      name: c.name, 
+      hasValue: !!c.value,
+      valueLength: c.value?.length || 0
+    })))
     
-    // If no session, try to get user directly
-    if (!session) {
-      console.log('API: No session found, trying direct user lookup...')
-      const { data: { user }, error: directUserError } = await supabase.auth.getUser()
-      console.log('API: Direct user lookup - User exists:', !!user, 'Error:', directUserError)
-    }
+    // Look for Supabase auth cookies specifically
+    const authCookies = allCookies.filter(c => 
+      c.name.includes('supabase') || 
+      c.name.includes('sb-') || 
+      c.name.includes('auth')
+    )
+    console.log('🔐 API: Auth-related cookies:', authCookies.map(c => ({
+      name: c.name,
+      hasValue: !!c.value,
+      valuePreview: c.value?.substring(0, 50) + '...'
+    })))
     
-    // Also try getUser as backup
-    if (!session?.user) {
-      console.log('API: Trying getUser as backup...')
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
-      console.log('API: getUser result - User exists:', !!user, 'Error:', userError)
-      
-      if (!user) {
-        return NextResponse.json({ error: 'Unauthorized - No session or user found' }, { status: 401 })
-      }
-      
-      // Use user from getUser if session is not available
-      console.log('API: Using user from getUser:', user.email)
-    }
+    // Check for Authorization header as alternative to cookies
+    const authHeader = request.headers.get('authorization')
+    console.log('🔑 API: Authorization header:', authHeader ? 'present' : 'missing')
     
+    // Create Supabase client with better error handling
+    const supabase = createRouteHandlerClient({ 
+      cookies: () => cookieStore
+    })
+    
+    console.log('🔥 API: Supabase client created')
+
+    // Enhanced authentication check with session fallback
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    
+    console.log('🔥 API: Session check result:', { 
+      hasSession: !!session, 
+      hasUser: !!session?.user,
+      userEmail: session?.user?.email, 
+      sessionError: sessionError?.message,
+      accessToken: session?.access_token ? 'present' : 'missing'
+    })
+    
+    // If session method fails, try getUser as fallback
     let user = session?.user
-    if (!user) {
-      const { data: { user: backupUser }, error: backupError } = await supabase.auth.getUser()
-      if (backupError) {
-        console.log('API: Backup getUser failed:', backupError)
-        return NextResponse.json({ error: 'Unauthorized - Authentication failed' }, { status: 401 })
+    if (!user || sessionError) {
+      console.log('🔄 API: Session method failed, trying getUser as fallback')
+      const { data: { user: fallbackUser }, error: userError } = await supabase.auth.getUser()
+      
+      console.log('🔄 API: Fallback getUser result:', { 
+        hasUser: !!fallbackUser, 
+        userEmail: fallbackUser?.email, 
+        userError: userError?.message 
+      })
+      
+      if (fallbackUser && !userError) {
+        user = fallbackUser
       }
-      user = backupUser
+    }
+    
+    // If both methods fail but we have Authorization header, try token-based auth
+    if (!user && authHeader) {
+      console.log('🔑 API: Trying token-based authentication from Authorization header')
+      try {
+        const token = authHeader.replace('Bearer ', '')
+        const { data: { user: tokenUser }, error: tokenError } = await supabase.auth.getUser(token)
+        
+        console.log('🔑 API: Token auth result:', {
+          hasUser: !!tokenUser,
+          userEmail: tokenUser?.email,
+          tokenError: tokenError?.message
+        })
+        
+        if (tokenUser && !tokenError) {
+          user = tokenUser
+        }
+      } catch (tokenAuthError: any) {
+        console.log('🔑 API: Token auth failed:', tokenAuthError.message)
+      }
+    }
+    
+    if (!user) {
+      console.log('🚨 API: Authentication failed - no user found through session or getUser methods')
+      return NextResponse.json({ 
+        error: 'Unauthorized - Authentication failed',
+        details: 'Unable to authenticate user. Please refresh the page and try again.'
+      }, { status: 401 })
+    }
+    
+    console.log('✅ API: User authenticated successfully:', user.email)
+
+    // Create authenticated Supabase client for database operations
+    let authenticatedSupabase = supabase
+    
+    // If we used token-based auth, create a new client with that token
+    if (authHeader && (!session || sessionError)) {
+      console.log('🔄 API: Creating token-authenticated Supabase client for database operations')
+      const token = authHeader.replace('Bearer ', '')
+      
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      
+      authenticatedSupabase = createClient(supabaseUrl, supabaseAnonKey, {
+        global: {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        },
+        auth: {
+          persistSession: false
+        }
+      })
+      
+      console.log('✅ API: Token-authenticated Supabase client created')
     }
 
     const body = await request.json()
@@ -66,7 +135,7 @@ export async function POST(request: NextRequest) {
         const impersonationData = JSON.parse(impersonationHeader)
         if (impersonationData.target_user && impersonationData.target_user.id) {
           // Verify that the current user is an admin when impersonating
-          const { data: userProfile, error: profileError } = await supabase
+          const { data: userProfile, error: profileError } = await authenticatedSupabase
             .from('user_profiles')
             .select('role')
             .eq('id', user.id)
@@ -85,7 +154,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const { data, error } = await supabase
+    console.log('🔄 API: Attempting to insert test attempt for user:', targetUserId)
+    
+    const { data, error } = await authenticatedSupabase
       .from('test_attempts')
       .insert({
         ...body,
@@ -93,6 +164,12 @@ export async function POST(request: NextRequest) {
       })
       .select()
       .single()
+      
+    console.log('🔄 API: Database insertion result:', { 
+      success: !!data, 
+      error: error?.message,
+      insertedId: data?.id 
+    })
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
@@ -100,6 +177,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data)
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('🚨 API: Unexpected error in test-attempts POST:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    })
+    return NextResponse.json({ 
+      error: 'Internal server error', 
+      details: error.message 
+    }, { status: 500 })
   }
 }

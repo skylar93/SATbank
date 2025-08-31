@@ -233,6 +233,14 @@ export const useExamStore = create<ExamState>((set, get) => ({
         'Content-Type': 'application/json',
       }
       
+      // Add Authorization header with access token
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`
+        console.log('initializeExam: Added Authorization header with access token')
+      } else {
+        console.warn('initializeExam: No access token available for Authorization header')
+      }
+      
       if (impersonationData) {
         headers['x-impersonation-data'] = impersonationData
       }
@@ -265,31 +273,38 @@ export const useExamStore = create<ExamState>((set, get) => ({
         console.log(
           `initializeExam: Fetching questions for module: ${moduleType}`
         )
-        const questions = await ExamService.getQuestions(examId, moduleType)
-        const timeLimit = exam.time_limits[moduleType] || 60
+        try {
+          const questions = await ExamService.getQuestions(examId, moduleType)
+          const timeLimit = exam.time_limits[moduleType] || 60
 
-        console.log(
-          `initializeExam: Module ${moduleType} loaded ${questions.length} questions`
-        )
-
-        // Skip modules with no questions (don't add them to the array)
-        if (questions.length === 0) {
-          console.warn(
-            `initializeExam: Skipping module ${moduleType} - no questions found`
+          console.log(
+            `initializeExam: Module ${moduleType} loaded ${questions.length} questions`
           )
-          continue
-        }
 
-        moduleStates.push({
-          module: moduleType,
-          questions,
-          currentQuestionIndex: 0,
-          answers: {},
-          markedForReview: new Set(),
-          timeLimit,
-          timeRemaining: timeLimit * 60, // Convert to seconds
-          completed: false,
-        })
+          // Skip modules with no questions (don't add them to the array)
+          if (questions.length === 0) {
+            console.warn(
+              `initializeExam: Skipping module ${moduleType} - no questions found`
+            )
+            continue
+          }
+
+          moduleStates.push({
+            module: moduleType,
+            questions,
+            currentQuestionIndex: 0,
+            answers: {},
+            markedForReview: new Set(),
+            timeLimit,
+            timeRemaining: timeLimit * 60, // Convert to seconds
+            completed: false,
+          })
+          
+          console.log(`✅ initializeExam: Successfully added module ${moduleType} with ${questions.length} questions`)
+        } catch (error: any) {
+          console.error(`❌ initializeExam: Error loading questions for module ${moduleType}:`, error)
+          throw new Error(`Failed to load questions for ${moduleType}: ${error.message}`)
+        }
       }
 
       console.log(
@@ -932,12 +947,25 @@ export const useExamStore = create<ExamState>((set, get) => ({
       // Delete existing attempt
       await ExamService.deleteTestAttempt(existingAttempt.id)
 
+      // Get current session for Authorization header
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      
+      // Add Authorization header with access token
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`
+        console.log('discardAndStartNew: Added Authorization header with access token')
+      } else {
+        console.warn('discardAndStartNew: No access token available for Authorization header')
+      }
+
       // Create new test attempt
       const response = await fetch('/api/test-attempts', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         credentials: 'include',
         body: JSON.stringify({
           exam_id: exam.id,
