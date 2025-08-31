@@ -1,6 +1,6 @@
 'use server'
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createServerActionClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 // Temporary local database type definition
@@ -52,7 +52,7 @@ export async function updateExamCurve(
   curveType: 'english' | 'math',
   curveId: number | null
 ) {
-  const supabase = createServerComponentClient<Database>({ cookies })
+  const supabase = createServerActionClient<Database>({ cookies })
   await checkAdminAuth(supabase)
 
   const updateData =
@@ -78,7 +78,7 @@ export async function updateAnswerVisibilityForAttempt(
   visibility: 'hidden' | 'immediate' | 'scheduled',
   releaseDate?: string | null
 ) {
-  const supabase = createServerComponentClient<Database>({ cookies })
+  const supabase = createServerActionClient<Database>({ cookies })
   await checkAdminAuth(supabase)
 
   let updateData: any
@@ -106,14 +106,17 @@ export async function updateAnswerVisibilityForAttempt(
 }
 
 export async function createTestAttempt(attempt: any) {
-  const supabase = createServerComponentClient<Database>({ cookies })
+  const supabase = createServerActionClient<Database>({ cookies })
 
   const {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) {
+    console.log('🚨 No user found in createTestAttempt')
     throw new Error('Unauthorized: No user found.')
   }
+  
+  console.log('✅ User found in createTestAttempt:', user.id)
 
   const { data, error } = await supabase
     .from('test_attempts')
@@ -129,7 +132,7 @@ export async function createTestAttempt(attempt: any) {
 }
 
 export async function createExam(formData: FormData) {
-  const supabase = createServerComponentClient<Database>({ cookies })
+  const supabase = createServerActionClient<Database>({ cookies })
   await checkAdminAuth(supabase)
 
   const title = formData.get('title') as string
@@ -162,7 +165,7 @@ export async function createExam(formData: FormData) {
 }
 
 export async function addQuestionToExam(examId: string) {
-  const supabase = createServerComponentClient<Database>({ cookies })
+  const supabase = createServerActionClient<Database>({ cookies })
   await checkAdminAuth(supabase)
 
   try {

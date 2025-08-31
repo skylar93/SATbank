@@ -20,44 +20,33 @@ export default function LoginPage() {
   } = useAuth()
   const router = useRouter()
 
-  // Fallback redirect if middleware doesn't work
-  useEffect(() => {
-    if (user && !authLoading) {
-      console.log('🔄 User already logged in, performing router redirect...', user)
-      const redirectUrl = user.profile?.role === 'admin' ? '/admin/dashboard' : '/student/dashboard'
-      console.log('🔄 Redirecting to:', redirectUrl)
-      router.replace(redirectUrl)
-    }
-  }, [user, authLoading, router])
+  // Note: Middleware now handles all redirects - no client-side redirect needed
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (user) return // Prevent duplicate login
     
-    // Prevent form submission if user is already logged in
-    if (user) {
-      console.log('🚫 User already logged in, preventing duplicate login attempt')
-      return
-    }
-    
-    console.log('🚀 Login form submitted', { email })
     setLoading(true)
     setError('')
 
     try {
-      // 1. Await the signIn function and receive the user object
-      console.log('📞 Calling signIn function...')
+      // 1. Await the signIn function. It will return the user object on success.
       const loggedInUser = await signIn(email, password)
-      console.log('✅ SignIn successful, user:', loggedInUser)
 
-      // 2. Let middleware handle the redirect - it will automatically redirect to the right dashboard
-      console.log('✅ Login successful, letting middleware handle redirect...')
-      // Middleware will automatically redirect logged-in users to their dashboard
+      // 2. Based on the returned user's role, determine the correct destination.
+      const redirectUrl = loggedInUser.profile?.role === 'admin'
+        ? '/admin/dashboard'
+        : '/student/dashboard'
+
+      // 3. Use the Next.js router to push the user to their dashboard.
+      //    This is a clean, client-side navigation.
+      router.push(redirectUrl)
 
     } catch (err: any) {
-      console.error('❌ Login failed:', err)
       setError(err.message || 'Login failed')
-      setLoading(false) // Only set loading to false on error
+      setLoading(false) // Only set loading to false if an error occurs.
     }
+    // On success, we don't set loading to false because the component will unmount.
   }
 
   // Middleware will handle redirect after successful login

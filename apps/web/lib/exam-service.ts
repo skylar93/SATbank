@@ -232,7 +232,7 @@ export class ExamService {
       .from('exam_questions')
       .select(
         `
-        questions (*)
+        questions!inner (*)
       `
       )
       .eq('exam_id', examId)

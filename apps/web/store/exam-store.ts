@@ -8,7 +8,6 @@ import {
 } from '../lib/exam-service'
 import { checkAnswer, normalizeCorrectAnswers } from '../lib/answer-checker'
 import { supabase } from '../lib/supabase'
-import { createTestAttempt } from '../lib/exam-actions'
 
 interface ExamAnswer {
   questionId: string
@@ -177,13 +176,63 @@ export const useExamStore = create<ExamState>((set, get) => ({
       // Create new test attempt
       console.log('initializeExam: Creating new test attempt...')
 
-      // Prepare headers
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
+      // Check if there's impersonation data
+      const impersonationData = localStorage.getItem('impersonation_data')
+      let targetUserId = userId
+      
+      if (impersonationData) {
+        try {
+          const impersonationParsed = JSON.parse(impersonationData)
+          if (impersonationParsed.target_user?.id) {
+            targetUserId = impersonationParsed.target_user.id
+          }
+        } catch (error) {
+          console.error('Failed to parse impersonation data:', error)
+        }
       }
 
-      // Add impersonation data to headers if present
-      const impersonationData = localStorage.getItem('impersonation_data')
+      // Use API route instead of server action for better reliability
+      // First, ensure we have a fresh session
+      console.log('initializeExam: Checking client session before API call...')
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      console.log('initializeExam: Client session check:', {
+        hasSession: !!session,
+        sessionError,
+        userEmail: session?.user?.email,
+        accessToken: session?.access_token ? 'present' : 'missing'
+      })
+      
+      if (sessionError) {
+        console.error('initializeExam: Session error:', sessionError)
+        // Try to refresh the session
+        const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession()
+        console.log('initializeExam: Refresh attempt:', { 
+          success: !!refreshedSession, 
+          error: refreshError 
+        })
+        
+        if (refreshError || !refreshedSession) {
+          throw new Error('Authentication failed - please log in again')
+        }
+      }
+      
+      if (!session) {
+        console.error('initializeExam: No session found, attempting refresh...')
+        const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession()
+        
+        if (refreshError || !refreshedSession) {
+          throw new Error('Authentication required - please refresh the page and log in again')
+        }
+        console.log('initializeExam: Session refreshed successfully')
+      }
+
+      console.log('initializeExam: Session validated before API call, user:', session?.user?.email || 'unknown')
+
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      
       if (impersonationData) {
         headers['x-impersonation-data'] = impersonationData
       }
@@ -191,7 +240,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
       const response = await fetch('/api/test-attempts', {
         method: 'POST',
         headers,
-        credentials: 'include',
+        credentials: 'same-origin',
         body: JSON.stringify({
           exam_id: examId,
           status: 'not_started',
@@ -200,11 +249,12 @@ export const useExamStore = create<ExamState>((set, get) => ({
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to create test attempt')
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to create test attempt')
       }
 
       const attempt = await response.json()
+      
       console.log('initializeExam: Test attempt created:', attempt.id)
 
       // Load questions for all modules
