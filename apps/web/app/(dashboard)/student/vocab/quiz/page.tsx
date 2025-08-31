@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -33,7 +33,7 @@ interface QuizResult {
   userAnswer: string
 }
 
-export default function VocabQuizPage() {
+function VocabQuizContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -556,5 +556,23 @@ export default function VocabQuizPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function VocabQuizPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-6">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto mb-6"></div>
+            <div className="h-64 bg-gray-200 rounded mb-6"></div>
+            <div className="h-12 bg-gray-200 rounded w-1/3 mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    }>
+      <VocabQuizContent />
+    </Suspense>
   )
 }
