@@ -9,6 +9,7 @@ import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
 import TableCell from '@tiptap/extension-table-cell'
 import Image from '@tiptap/extension-image'
+import MathInline from './tiptap-extensions/MathInline'
 import { 
   Bold, 
   Italic, 
@@ -345,6 +346,7 @@ export function WysiwygEditor({
           class: 'border border-gray-300 px-4 py-2',
         },
       }),
+      MathInline,
     ],
     content: content,
     immediatelyRender: false,

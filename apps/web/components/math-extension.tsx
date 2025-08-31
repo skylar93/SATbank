@@ -14,16 +14,25 @@ export function renderMathToHTML(math: string, inline: boolean = true): string {
   }
 }
 
-// Helper function to insert math into editor
+// Helper function to clean LaTeX input
+function cleanLatex(input: string): string {
+  return input.trim()
+}
+
+// Helper function to insert math into editor using custom node
 export function insertMath(editor: any, math: string, inline: boolean = true) {
-  const rendered = renderMathToHTML(math, inline)
-  const className = inline 
-    ? 'math-inline bg-purple-100 px-1 rounded text-purple-800' 
-    : 'math-block bg-purple-100 px-2 py-1 rounded text-purple-800 block my-2'
+  if (!inline) {
+    // Handle block math separately if needed in the future
+    // For now, we focus on inline math
+    console.log('Block math not implemented yet')
+    return
+  }
   
-  // Create a proper HTML structure that won't be escaped
-  const mathHTML = `<span class="${className}" data-math="${math}" data-inline="${inline}" contenteditable="false">${rendered}</span>`
-  
-  // Insert HTML content properly without escaping
-  editor.chain().focus().insertContent(mathHTML).run()
+  const cleanMath = cleanLatex(math)
+
+  // Insert using our custom mathInline node instead of HTML
+  editor.chain().focus().insertContent({
+    type: 'mathInline',
+    attrs: { 'data-math': cleanMath },
+  }).run()
 }

@@ -30,6 +30,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@supabase/auth-helpers-nextjs": "^0.8.7",
     "@supabase/supabase-js": "^2.53.0",
+    "@tiptap/core": "^3.3.0",
     "@tiptap/extension-image": "^3.3.0",
     "@tiptap/extension-table": "^3.3.0",
     "@tiptap/extension-table-cell": "^3.3.0",

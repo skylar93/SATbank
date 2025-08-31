@@ -93,6 +93,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.53.0
         version: 2.53.0
+      '@tiptap/core':
+        specifier: ^3.3.0
+        version: 3.3.0(@tiptap/pm@3.3.0)
       '@tiptap/extension-image':
         specifier: ^3.3.0
         version: 3.3.0(@tiptap/core@3.3.0)
