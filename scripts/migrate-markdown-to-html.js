@@ -18,7 +18,7 @@
 const { marked } = require('marked')
 const { createClient } = require('@supabase/supabase-js')
 const fs = require('fs')
-require('dotenv').config({ path: '../.env.local' })
+require('dotenv').config({ path: 'apps/web/.env.local' })
 
 // Supabase configuration - using service role key for admin access
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL

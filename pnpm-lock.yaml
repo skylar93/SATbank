@@ -23,6 +23,9 @@ importers:
       lucide-react:
         specifier: ^0.316.0
         version: 0.316.0(react@18.3.1)
+      marked:
+        specifier: ^4.3.0
+        version: 4.3.0
       next:
         specifier: ^14.2.30
         version: 14.2.31(@babel/core@7.28.3)(@playwright/test@1.55.0)(react-dom@18.3.1)(react@18.3.1)
@@ -5146,6 +5149,12 @@ packages:
   /marked@16.2.1:
     resolution: {integrity: sha512-r3UrXED9lMlHF97jJByry90cwrZBBvZmjG1L68oYfuPMW+uDTnuMbyJDymCWwbTE+f+3LhpNDKfpR3a3saFyjA==}
     engines: {node: '>= 20'}
+    hasBin: true
+    dev: false
+
+  /marked@4.3.0:
+    resolution: {integrity: sha512-PRsaiG84bK+AMvxziE/lCFss8juXjNaWzVbN5tXAm4XjeaS9NAHhop+PjQxz2A9h8Q4M/xGmzP8vqNwy6JeK0A==}
+    engines: {node: '>= 12'}
     hasBin: true
     dev: false
 

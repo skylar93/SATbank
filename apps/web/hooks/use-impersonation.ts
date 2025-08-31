@@ -1,4 +1,5 @@
 'use client'
+import { useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
@@ -67,7 +68,7 @@ export function useImpersonation() {
     }
   }
 
-  const getImpersonationData = () => {
+  const getImpersonationData = useCallback(() => {
     if (typeof window === 'undefined') return null
 
     const dataJSON = localStorage.getItem(IMPERSONATION_DATA_KEY)
@@ -78,11 +79,11 @@ export function useImpersonation() {
     } catch {
       return null
     }
-  }
+  }, [])
 
-  const isImpersonating = () => {
+  const isImpersonating = useCallback(() => {
     return getImpersonationData() !== null
-  }
+  }, [getImpersonationData])
 
   return {
     startImpersonation,
