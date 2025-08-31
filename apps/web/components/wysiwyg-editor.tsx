@@ -3,6 +3,7 @@
 import { useEditor, EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
+import TextAlign from '@tiptap/extension-text-align'
 import { Table } from '@tiptap/extension-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
@@ -19,16 +20,20 @@ import {
   Minus, 
   Table as TableIcon,
   ImageIcon,
-  Type,
-  Superscript,
-  Subscript
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Sigma as MathIcon
 } from 'lucide-react'
 import { useState } from 'react'
 import { ImageUpload } from './image-upload'
+import { insertMath } from './math-extension'
+import { TableSelector } from './table-selector'
 
 // Toolbar component for editor controls
 const Toolbar = ({ editor }: { editor: Editor | null }) => {
   const [showImageUpload, setShowImageUpload] = useState(false)
+  const [showTableSelector, setShowTableSelector] = useState(false)
 
   if (!editor) return null
 
@@ -37,8 +42,8 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
     setShowImageUpload(false)
   }
 
-  const insertTable = () => {
-    editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+  const insertTable = (rows: number, cols: number) => {
+    editor.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run()
   }
 
   return (
@@ -144,13 +149,27 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
       <div className="w-px h-6 bg-gray-300 mx-1" />
 
       {/* Table */}
-      <button
-        onClick={insertTable}
-        className="p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-600"
-        title="Insert Table"
-      >
-        <TableIcon size={16} />
-      </button>
+      <div className="relative">
+        <button
+          onClick={() => setShowTableSelector(!showTableSelector)}
+          className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
+            showTableSelector ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+          }`}
+          title="Insert Table"
+        >
+          <TableIcon size={16} />
+        </button>
+        
+        {showTableSelector && (
+          <TableSelector
+            onTableSelect={(rows, cols) => {
+              insertTable(rows, cols)
+              setShowTableSelector(false)
+            }}
+            onClose={() => setShowTableSelector(false)}
+          />
+        )}
+      </div>
 
       {/* Image */}
       <button
@@ -159,6 +178,58 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
         title="Insert Image"
       >
         <ImageIcon size={16} />
+      </button>
+
+      <div className="w-px h-6 bg-gray-300 mx-1" />
+
+      {/* Text Alignment */}
+      <button
+        onClick={() => editor.chain().focus().setTextAlign('left').run()}
+        className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
+          editor.isActive({ textAlign: 'left' }) ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+        }`}
+        title="Align Left"
+      >
+        <AlignLeft size={16} />
+      </button>
+
+      <button
+        onClick={() => editor.chain().focus().setTextAlign('center').run()}
+        className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
+          editor.isActive({ textAlign: 'center' }) ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+        }`}
+        title="Align Center"
+      >
+        <AlignCenter size={16} />
+      </button>
+
+      <button
+        onClick={() => editor.chain().focus().setTextAlign('right').run()}
+        className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
+          editor.isActive({ textAlign: 'right' }) ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+        }`}
+        title="Align Right"
+      >
+        <AlignRight size={16} />
+      </button>
+
+      <div className="w-px h-6 bg-gray-300 mx-1" />
+
+      {/* Math Expression */}
+      <button
+        onClick={() => {
+          const mathText = prompt('Enter math expression (LaTeX format):')
+          if (mathText && mathText.trim()) {
+            const trimmedText = mathText.trim()
+            const isBlock = trimmedText.startsWith('$$') && trimmedText.endsWith('$$')
+            const cleanMath = isBlock ? trimmedText.slice(2, -2) : trimmedText
+            insertMath(editor, cleanMath, !isBlock)
+          }
+        }}
+        className="p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-600"
+        title="Insert Math Expression"
+      >
+        <MathIcon size={16} />
       </button>
 
       <div className="w-px h-6 bg-gray-300 mx-1" />
@@ -213,8 +284,36 @@ export function WysiwygEditor({
 }: WysiwygEditorProps) {
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        // Configure heading extension to add proper classes
+        heading: {
+          levels: [2, 3],
+          HTMLAttributes: {
+            class: 'font-bold',
+          },
+        },
+        // Configure blockquote
+        blockquote: {
+          HTMLAttributes: {
+            class: 'border-l-4 border-gray-300 pl-4 italic text-gray-700 my-4',
+          },
+        },
+        // Configure lists
+        bulletList: {
+          HTMLAttributes: {
+            class: 'list-disc pl-6 my-4 space-y-1',
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: 'list-decimal pl-6 my-4 space-y-1',
+          },
+        },
+      }),
       Underline,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
       Image.configure({
         inline: false,
         HTMLAttributes: {
@@ -244,9 +343,10 @@ export function WysiwygEditor({
       }),
     ],
     content: content,
+    immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: `prose prose-sm max-w-none p-3 min-h-[${rows * 1.5}rem] focus:outline-none ${compact ? 'text-sm' : ''}`,
+        class: `prose prose-sm max-w-none p-3 min-h-[${rows * 1.5}rem] focus:outline-none ${compact ? 'text-sm' : ''} [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-3 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-700`,
       },
     },
     onUpdate: ({ editor }) => {

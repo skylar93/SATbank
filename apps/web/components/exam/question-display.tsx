@@ -1623,7 +1623,7 @@ export function QuestionDisplay({
                 text={localQuestion.question_text}
                 highlights={highlights}
                 onRemoveHighlight={onRemoveHighlight}
-                isHtml={true}
+                isHtml={false}
               />
               {!isAdminPreview && questionContentRef && onAddHighlight && (
                 <FloatingHighlightButton

@@ -108,6 +108,9 @@ importers:
       '@tiptap/extension-table-row':
         specifier: ^3.3.0
         version: 3.3.0(@tiptap/extension-table@3.3.0)
+      '@tiptap/extension-text-align':
+        specifier: ^3.3.0
+        version: 3.3.0(@tiptap/core@3.3.0)
       '@tiptap/extension-underline':
         specifier: ^3.3.0
         version: 3.3.0(@tiptap/core@3.3.0)
@@ -2353,6 +2356,14 @@ packages:
     dependencies:
       '@tiptap/core': 3.3.0(@tiptap/pm@3.3.0)
       '@tiptap/pm': 3.3.0
+    dev: false
+
+  /@tiptap/extension-text-align@3.3.0(@tiptap/core@3.3.0):
+    resolution: {integrity: sha512-y/ulBpzrukEgXLvMGT0mI+tbnf64zq06vC3jmSvS7MwunOjgVk5K8CFRQeh/OwuAqGHSqQKcmIH5kOkx2FMI1Q==}
+    peerDependencies:
+      '@tiptap/core': ^3.3.0
+    dependencies:
+      '@tiptap/core': 3.3.0(@tiptap/pm@3.3.0)
     dev: false
 
   /@tiptap/extension-text@3.3.0(@tiptap/core@3.3.0):

@@ -176,10 +176,10 @@ export default function ReportsPageContent() {
 
   // Show reports with data
   return (
-    <div>
+    <div className="h-full bg-gray-50">
       {/* Top Header Section */}
-      <div className="bg-white rounded-lg shadow-sm px-6 py-6 mb-6">
-        <div className="flex items-center justify-between">
+      <div className="bg-white px-6 py-6">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Reports</h1>
           </div>
@@ -191,9 +191,14 @@ export default function ReportsPageContent() {
             </div>
           </div>
         </div>
+
+        {/* Separator line */}
+        <div className="border-b border-gray-200"></div>
       </div>
 
-      <ReportsClient attempts={attempts} />
+      <div className="p-6">
+        <ReportsClient attempts={attempts} />
+      </div>
     </div>
   )
 }
