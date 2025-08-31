@@ -59,13 +59,14 @@ export function TableSelector({ onTableSelect, onClose }: TableSelectorProps) {
         {getTablePreview() || 'Select table size'}
       </div>
       
-      <div className="grid grid-cols-10 gap-1 w-fit">
+      <div className="grid grid-cols-10 gap-1 w-max">
         {Array.from({ length: maxRows }, (_, row) =>
           Array.from({ length: maxCols }, (_, col) => (
             <div
               key={`${row}-${col}`}
               className={`
-                w-4 h-4 border border-gray-300 cursor-pointer transition-colors
+                w-5 h-5 border border-gray-300 cursor-pointer transition-colors 
+                flex-shrink-0 flex-grow-0 aspect-square
                 ${isCellHighlighted(row, col) 
                   ? 'bg-blue-200 border-blue-400' 
                   : 'bg-white hover:bg-gray-100'

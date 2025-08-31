@@ -29,11 +29,13 @@ import { useState } from 'react'
 import { ImageUpload } from './image-upload'
 import { insertMath } from './math-extension'
 import { TableSelector } from './table-selector'
+import { MathEditorModal } from './exam/MathEditorModal'
 
 // Toolbar component for editor controls
 const Toolbar = ({ editor }: { editor: Editor | null }) => {
   const [showImageUpload, setShowImageUpload] = useState(false)
   const [showTableSelector, setShowTableSelector] = useState(false)
+  const [isMathModalOpen, setIsMathModalOpen] = useState(false)
 
   if (!editor) return null
 
@@ -217,15 +219,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
 
       {/* Math Expression */}
       <button
-        onClick={() => {
-          const mathText = prompt('Enter math expression (LaTeX format):')
-          if (mathText && mathText.trim()) {
-            const trimmedText = mathText.trim()
-            const isBlock = trimmedText.startsWith('$$') && trimmedText.endsWith('$$')
-            const cleanMath = isBlock ? trimmedText.slice(2, -2) : trimmedText
-            insertMath(editor, cleanMath, !isBlock)
-          }
-        }}
+        onClick={() => setIsMathModalOpen(true)}
         className="p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-600"
         title="Insert Math Expression"
       >
@@ -261,6 +255,16 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
           </div>
         </div>
       )}
+
+      {/* Math Editor Modal */}
+      <MathEditorModal
+        isOpen={isMathModalOpen}
+        onClose={() => setIsMathModalOpen(false)}
+        onInsert={(latex, isBlock) => {
+          insertMath(editor, latex, !isBlock);
+          setIsMathModalOpen(false);
+        }}
+      />
     </div>
   )
 }
