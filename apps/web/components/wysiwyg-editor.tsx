@@ -8,7 +8,7 @@ import { Table } from '@tiptap/extension-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
 import TableCell from '@tiptap/extension-table-cell'
-import Image from '@tiptap/extension-image'
+import { CustomImage } from './tiptap-extensions/CustomImage'
 import MathInline from './tiptap-extensions/MathInline'
 import { 
   Bold, 
@@ -362,7 +362,7 @@ export function WysiwygEditor({
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
-      Image.configure({
+      CustomImage.configure({
         inline: false,
         HTMLAttributes: {
           class: 'max-w-full h-auto border border-gray-200 rounded my-2',
@@ -370,6 +370,7 @@ export function WysiwygEditor({
       }),
       Table.configure({
         resizable: true,
+        allowTableNodeSelection: true,
         HTMLAttributes: {
           class: 'border-collapse border border-gray-300 w-full my-4',
         },
@@ -395,7 +396,7 @@ export function WysiwygEditor({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: `prose prose-sm max-w-none p-3 min-h-[${rows * 1.5}rem] focus:outline-none ${compact ? 'text-sm' : ''} [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-3 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-700`,
+        class: `tiptap prose prose-sm max-w-none p-3 min-h-[${rows * 1.5}rem] focus:outline-none ${compact ? 'text-sm' : ''} [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-3 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-700`,
       },
     },
     onUpdate: ({ editor }) => {

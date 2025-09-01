@@ -46,6 +46,7 @@
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "@types/react-katex": "^3.0.4",
+    "@types/turndown": "^5.0.5",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^5.0.2",
     "autoprefixer": "^10.4.21",
@@ -70,6 +71,7 @@
     "tailwind-merge": "^2.2.1",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
+    "turndown": "^7.2.1",
     "typescript": "^5.8.3",
     "uuid": "^11.1.0",
     "zustand": "^5.0.7"

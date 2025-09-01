@@ -28,6 +28,7 @@ export interface Question {
   question_type: 'multiple_choice' | 'grid_in' | 'essay'
   difficulty_level: 'easy' | 'medium' | 'hard'
   question_text: string
+  question_html?: string | null  // HTML version of question content
   question_image_url: string | null
   options: Record<string, string> | null
   correct_answer: string
@@ -39,6 +40,7 @@ export interface Question {
     headers: string[]
     rows: string[][]
   } | null
+  content_format?: string  // 'markdown' or 'html' - indicates primary format
   created_at: string
   updated_at: string
 }

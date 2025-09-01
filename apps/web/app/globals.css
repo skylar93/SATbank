@@ -60,6 +60,35 @@
   }
 }
 
+/* TipTap Editor Styles */
+.ProseMirror-selectednode {
+  outline: 3px solid #60a5fa;
+  border-radius: 4px;
+}
+
+/* Table selection handle */
+.tiptap table {
+  position: relative;
+}
+
+.tiptap table::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 16px;
+  height: 16px;
+  background-color: #60a5fa;
+  border-radius: 50%;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.tiptap table:hover::before {
+  opacity: 1;
+}
+
 /* Impersonation banner layout fixes */
 body.impersonation-active .flex.h-screen {
   padding-top: 44px;
