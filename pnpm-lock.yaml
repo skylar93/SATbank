@@ -96,6 +96,9 @@ importers:
       '@tiptap/core':
         specifier: ^3.3.0
         version: 3.3.0(@tiptap/pm@3.3.0)
+      '@tiptap/extension-bubble-menu':
+        specifier: ^3.3.0
+        version: 3.3.0(@tiptap/core@3.3.0)(@tiptap/pm@3.3.0)
       '@tiptap/extension-image':
         specifier: ^3.3.0
         version: 3.3.0(@tiptap/core@3.3.0)
@@ -2158,7 +2161,6 @@ packages:
       '@tiptap/core': 3.3.0(@tiptap/pm@3.3.0)
       '@tiptap/pm': 3.3.0
     dev: false
-    optional: true
 
   /@tiptap/extension-bullet-list@3.3.0(@tiptap/extension-list@3.3.0):
     resolution: {integrity: sha512-f8RFBip8MO4VJGdlQ1Bl5lITj/qRgMokeknyZL3vGxm34mHIovCXmPAqoPPFm5x7BEdlRO0Wv2U8QKuDQsdChw==}

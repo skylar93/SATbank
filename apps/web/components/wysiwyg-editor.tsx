@@ -24,7 +24,8 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
-  Sigma as MathIcon
+  Sigma as MathIcon,
+  Trash2
 } from 'lucide-react'
 import { useState } from 'react'
 import { ImageUpload } from './image-upload'
@@ -173,6 +174,48 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
           />
         )}
       </div>
+
+      {/* Table Operations - Show only when table is active */}
+      {editor?.isActive('table') && (
+        <>
+          <div className="w-px h-6 bg-red-300 mx-1" />
+          <button
+            onClick={() => editor.chain().focus().deleteTable().run()}
+            className="p-1.5 rounded hover:bg-red-100 transition-colors text-red-600"
+            title="Delete Table"
+          >
+            <Trash2 size={16} />
+          </button>
+          <button
+            onClick={() => editor.chain().focus().addRowBefore().run()}
+            className="px-2 py-1 text-xs rounded hover:bg-gray-100 transition-colors text-gray-600"
+            title="Add Row Above"
+          >
+            +R↑
+          </button>
+          <button
+            onClick={() => editor.chain().focus().addRowAfter().run()}
+            className="px-2 py-1 text-xs rounded hover:bg-gray-100 transition-colors text-gray-600"
+            title="Add Row Below"
+          >
+            +R↓
+          </button>
+          <button
+            onClick={() => editor.chain().focus().addColumnBefore().run()}
+            className="px-2 py-1 text-xs rounded hover:bg-gray-100 transition-colors text-gray-600"
+            title="Add Column Left"
+          >
+            +C←
+          </button>
+          <button
+            onClick={() => editor.chain().focus().addColumnAfter().run()}
+            className="px-2 py-1 text-xs rounded hover:bg-gray-100 transition-colors text-gray-600"
+            title="Add Column Right"
+          >
+            +C→
+          </button>
+        </>
+      )}
 
       {/* Image */}
       <button

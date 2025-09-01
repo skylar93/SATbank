@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { WysiwygEditor } from '../../../../components/wysiwyg-editor'
+import { ContentRenderer } from '../../../../components/content-renderer'
 
 export default function TestWysiwygPage() {
   const [content, setContent] = useState('')
@@ -160,10 +161,11 @@ export default function TestWysiwygPage() {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Rendered Preview:</h3>
             <div className="bg-gray-50 p-4 rounded border min-h-96">
-              <div 
-                className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: rawHtml || '<p class="text-gray-500">No content yet...</p>' }}
-              />
+              {rawHtml ? (
+                <ContentRenderer htmlContent={rawHtml} />
+              ) : (
+                <p className="text-gray-500">No content yet...</p>
+              )}
             </div>
           </div>
         </div>
