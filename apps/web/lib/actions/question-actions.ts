@@ -58,7 +58,6 @@ export async function updateQuestionWithDualFormat(data: UpdateQuestionData) {
       .update(updateData)
       .eq('id', data.id)
       .select()
-      .single()
 
     if (error) {
       console.error('❌ Supabase error details:', {
@@ -70,9 +69,13 @@ export async function updateQuestionWithDualFormat(data: UpdateQuestionData) {
       throw new Error(`Database error: ${error.message}`)
     }
 
+    if (!result || result.length === 0) {
+      throw new Error('No question found with the given ID')
+    }
+
     return {
       success: true,
-      data: result,
+      data: result[0],
       error: null
     }
   } catch (error) {

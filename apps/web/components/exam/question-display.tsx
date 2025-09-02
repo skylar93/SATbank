@@ -710,7 +710,7 @@ export function QuestionDisplay({
           return (
             <div className="space-y-2">
               {parsed.text && (
-                <div>{renderHtmlContent(parsed.text)}</div>
+                <div>{renderTextWithFormattingAndMath(parsed.text)}</div>
               )}
               {parsed.imageUrl && (
                 <img
@@ -756,7 +756,7 @@ export function QuestionDisplay({
         }
 
         // If parsed is a string or primitive, use it directly
-        return renderHtmlContent(String(parsed))
+        return renderTextWithFormattingAndMath(String(parsed))
       } catch (e) {
         // Not JSON, continue with regular text rendering
       }
@@ -785,8 +785,8 @@ export function QuestionDisplay({
       )
     }
 
-    // Regular text rendering - now using HTML
-    return renderHtmlContent(value)
+    // Regular text rendering - use markdown renderer for proper formatting
+    return renderTextWithFormattingAndMath(value)
   }
 
   const renderAnswerOptions = () => {
@@ -1121,7 +1121,7 @@ export function QuestionDisplay({
                             <div className="space-y-2">
                               {objValue.text && (
                                 <div>
-                                  {renderHtmlContent(objValue.text)}
+                                  {renderTextWithFormattingAndMath(objValue.text)}
                                 </div>
                               )}
                               {objValue.imageUrl && (
@@ -1707,7 +1707,7 @@ export function QuestionDisplay({
                 })()}
                 highlights={highlights}
                 onRemoveHighlight={onRemoveHighlight}
-                isHtml={localQuestion.content_format === 'html' && localQuestion.question_html && !isEmptyHtml(localQuestion.question_html)}
+                isHtml={!!(localQuestion.content_format === 'html' && localQuestion.question_html && !isEmptyHtml(localQuestion.question_html))}
               />
               {!isAdminPreview && questionContentRef && onAddHighlight && (
                 <FloatingHighlightButton
