@@ -1696,18 +1696,18 @@ export function QuestionDisplay({
             >
               <HighlightedTextRenderer
                 text={(() => {
-                  // Priority-based rendering: Use markdown format for existing markdown questions
-                  if (localQuestion.content_format === 'html' && localQuestion.question_html && localQuestion.question_html.trim() !== '<p></p>' && !isEmptyHtml(localQuestion.question_html)) {
-                    // This is a true HTML question - render as HTML
+                  // Simple priority-based rendering: HTML first, then fallback to markdown
+                  if (localQuestion.question_html && !isEmptyHtml(localQuestion.question_html)) {
+                    // HTML content exists and is not empty - render as HTML
                     return localQuestion.question_html
                   } else {
-                    // This is a markdown question - render using original markdown text (not converted)
+                    // No HTML or empty HTML - render markdown text
                     return localQuestion.question_text
                   }
                 })()}
                 highlights={highlights}
                 onRemoveHighlight={onRemoveHighlight}
-                isHtml={!!(localQuestion.content_format === 'html' && localQuestion.question_html && !isEmptyHtml(localQuestion.question_html))}
+                isHtml={!!(localQuestion.question_html && !isEmptyHtml(localQuestion.question_html))}
               />
               {!isAdminPreview && questionContentRef && onAddHighlight && (
                 <FloatingHighlightButton
