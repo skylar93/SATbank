@@ -23,8 +23,9 @@ export const renderHtmlContent = (htmlContent: string) => {
 
   return (
     <div
-      className="prose prose-sm max-w-none"
+      className="max-w-none [&_*]:!font-[inherit] text-gray-900 leading-relaxed"
       dangerouslySetInnerHTML={{ __html: htmlContent }}
+      style={{ fontFamily: 'inherit' }}
     />
   )
 }

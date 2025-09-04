@@ -197,6 +197,14 @@ function extractMainContentFromHtml(questionHTML) {
   // Remove any remaining answer choice blocks at the end
   content = content.replace(/(\n\s*[A-D][\.\)][\s\S]*?[A-D][\.\)][\s\S]*?)$/gi, '');
   
+  // Remove font-family inline styles to allow website's default font
+  content = content.replace(/font-family:\s*[^;]*;?\s*/gi, '');
+  
+  // Clean up style attributes: remove leading/trailing spaces and empty styles
+  content = content.replace(/style="\s+/gi, 'style="');
+  content = content.replace(/style="\s*"/gi, '');
+  content = content.replace(/style='\s*'/gi, '');
+  
   // Remove extra closing div tags that were left behind
   content = content.replace(/<\/div>\s*<\/div>\s*<\/div>/gi, '');
   content = content.replace(/<\/div>\s*<\/div>/gi, '');
