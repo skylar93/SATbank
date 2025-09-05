@@ -258,6 +258,14 @@ export function ExamsListClient() {
             >
               ＋ New Exam
             </Button>
+            <Link href="/admin/exams/create">
+              <Button
+                variant="outline"
+                className="border-purple-600 text-purple-600 hover:bg-purple-50"
+              >
+                ＋ New from Template
+              </Button>
+            </Link>
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">
                 {user?.profile?.full_name?.charAt(0) || 'A'}

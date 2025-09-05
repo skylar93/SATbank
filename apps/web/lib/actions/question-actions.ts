@@ -18,6 +18,7 @@ interface UpdateQuestionData {
 }
 
 export async function updateQuestionWithDualFormat(data: UpdateQuestionData) {
+  console.log('🚀 updateQuestionWithDualFormat called with:', data)
   try {
     // Prepare the update data
     const updateData: any = {
@@ -53,11 +54,17 @@ export async function updateQuestionWithDualFormat(data: UpdateQuestionData) {
     }
 
     // Update the question in the database
+    console.log('🔍 Attempting to update question with ID:', data.id)
+    console.log('🔍 Update data:', updateData)
+    
     const { data: result, error } = await supabase
       .from('questions')
       .update(updateData)
       .eq('id', data.id)
       .select()
+      
+    console.log('🔍 Supabase result:', result)
+    console.log('🔍 Supabase error:', error)
 
     if (error) {
       console.error('❌ Supabase error details:', {

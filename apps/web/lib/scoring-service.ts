@@ -13,8 +13,9 @@ export interface ScoringCurve {
 
 export interface FinalScores {
   overall: number
-  english: number
-  math: number
+  english?: number
+  math?: number
+  [key: string]: number | undefined
 }
 
 export class ScoringService {
@@ -61,7 +62,7 @@ export class ScoringService {
     )
   }
   /**
-   * Calculate final scaled scores for a completed exam attempt
+   * Calculate final scaled scores for a completed exam attempt using template-aware dynamic scoring
    * @param attemptId - UUID of the test attempt
    * @param useServiceRole - Whether to use service role client (default: false)
    * @returns Promise<FinalScores> - The calculated scaled scores
@@ -78,57 +79,99 @@ export class ScoringService {
           { auth: { autoRefreshToken: false, persistSession: false } }
         )
       : supabase
-    // Step 1: Get the exam_id for the given attemptId
-    const { data: attemptData, error: attemptError } = await client
-      .from('test_attempts')
-      .select('exam_id')
-      .eq('id', attemptId)
-      .maybeSingle()
 
-    if (attemptError)
-      throw new Error(`Failed to get attempt data: ${attemptError.message}`)
-    if (!attemptData) throw new Error(`Test attempt ${attemptId} not found`)
+    // Step 1: Fetch essential data in parallel
+    const [attemptResult, answersResult] = await Promise.all([
+      client
+        .from('test_attempts')
+        .select('exam_id, user_id')
+        .eq('id', attemptId)
+        .maybeSingle(),
+      client
+        .from('user_answers')
+        .select(
+          `
+          id,
+          user_answer,
+          is_correct,
+          time_spent_seconds,
+          questions:question_id!inner (
+            module_type,
+            points
+          )
+        `
+        )
+        .eq('attempt_id', attemptId),
+    ])
 
-    // Step 2: Get the scoring curve IDs from the exam
-    const { data: examData, error: examError } = await client
-      .from('exams')
-      .select('english_scoring_curve_id, math_scoring_curve_id')
-      .eq('id', attemptData.exam_id)
-      .maybeSingle()
-
-    if (examError)
-      throw new Error(`Failed to get exam data: ${examError.message}`)
-    if (
-      !examData?.english_scoring_curve_id ||
-      !examData?.math_scoring_curve_id
-    ) {
+    if (attemptResult.error) {
       throw new Error(
-        `Exam ${attemptData.exam_id} does not have scoring curves assigned`
+        `Failed to get attempt data: ${attemptResult.error.message}`
+      )
+    }
+    if (!attemptResult.data) {
+      throw new Error(`Test attempt ${attemptId} not found`)
+    }
+    if (answersResult.error) {
+      throw new Error(
+        `Failed to get user answers: ${answersResult.error.message}`
       )
     }
 
-    // Step 3: Get all user answers with question details (using inner join to ensure question data exists)
-    const { data: answers, error: answersError } = await client
-      .from('user_answers')
+    const attemptData = attemptResult.data
+    const answers = answersResult.data || []
+
+    // Step 2: Get the parent exam and its template
+    const { data: examData, error: examError } = await client
+      .from('exams')
       .select(
         `
         id,
-        user_answer,
-        is_correct,
-        time_spent_seconds,
-        questions:question_id!inner (
-          module_type,
-          points
-        )
+        template_id,
+        english_scoring_curve_id,
+        math_scoring_curve_id
       `
       )
-      .eq('attempt_id', attemptId)
+      .eq('id', attemptData.exam_id)
+      .maybeSingle()
 
-    if (answersError)
-      throw new Error(`Failed to get user answers: ${answersError.message}`)
+    if (examError) {
+      throw new Error(`Failed to get exam data: ${examError.message}`)
+    }
+    if (!examData) {
+      throw new Error(`Exam ${attemptData.exam_id} not found`)
+    }
+    if (!examData.template_id) {
+      throw new Error(
+        `Exam ${attemptData.exam_id} does not have a template assigned`
+      )
+    }
+
+    // Step 3: Fetch the "Blueprint" (Exam Template)
+    const { data: templateData, error: templateError } = await client
+      .from('exam_templates')
+      .select('id, name, scoring_groups')
+      .eq('id', examData.template_id)
+      .maybeSingle()
+
+    if (templateError) {
+      throw new Error(`Failed to get exam template: ${templateError.message}`)
+    }
+    if (!templateData) {
+      throw new Error(`Exam template ${examData.template_id} not found`)
+    }
+
+    const scoringGroups = templateData.scoring_groups as {
+      [key: string]: string[]
+    }
+    console.log('📋 Template info:', {
+      id: templateData.id,
+      name: templateData.name,
+      scoringGroups,
+    })
 
     // Validate that all answers have question data
-    const invalidAnswers = answers?.filter((a) => !this.validateAnswer(a)) || []
+    const invalidAnswers = answers.filter((a) => !this.validateAnswer(a))
     if (invalidAnswers.length > 0) {
       console.warn(
         `${invalidAnswers.length} answers have invalid question data:`,
@@ -139,12 +182,16 @@ export class ScoringService {
       )
     }
 
-    // Step 4: Calculate raw scores by subject
-    let englishRawScore = 0
-    let mathRawScore = 0
+    // Step 4: Calculate Raw Scores by Group
+    const rawScoresByGroup: { [key: string]: number } = {}
 
-    answers?.forEach((answer: any) => {
-      // Validate answer structure
+    // Initialize raw scores for each group
+    Object.keys(scoringGroups).forEach((group) => {
+      rawScoresByGroup[group] = 0
+    })
+
+    // Calculate raw scores
+    answers.forEach((answer: any) => {
       if (!this.validateAnswer(answer)) {
         console.warn('Invalid answer data, skipping:', answer)
         return
@@ -154,94 +201,108 @@ export class ScoringService {
         const moduleType = answer.questions.module_type.toLowerCase().trim()
         const points = Math.max(0, Number(answer.questions.points) || 1)
 
-        if (moduleType.includes('english')) {
-          englishRawScore += points
-        } else if (moduleType.includes('math')) {
-          mathRawScore += points
-        } else {
+        // Find which group this module_type belongs to
+        let groupFound = false
+        for (const [groupName, moduleTypes] of Object.entries(scoringGroups)) {
+          if (moduleTypes.includes(moduleType)) {
+            rawScoresByGroup[groupName] += points
+            groupFound = true
+            break
+          }
+        }
+
+        if (!groupFound) {
           console.warn(
-            'Unknown module type:',
-            moduleType,
-            'for answer:',
-            answer.id
+            `Module type '${moduleType}' not found in any scoring group. Available groups:`,
+            scoringGroups
           )
         }
       }
     })
 
-    // Step 5: Fetch scoring curves with names for debugging
-    const { data: englishCurve, error: englishCurveError } = await client
-      .from('scoring_curves')
-      .select('id, curve_name, curve_data')
-      .eq('id', examData.english_scoring_curve_id)
-      .maybeSingle()
+    console.log('📊 Raw scores by group:', rawScoresByGroup)
 
-    if (englishCurveError)
-      throw new Error(
-        `Failed to get English scoring curve: ${englishCurveError.message}`
-      )
-    if (!englishCurve)
-      throw new Error(
-        `English scoring curve ${examData.english_scoring_curve_id} not found`
-      )
+    // Step 5: Apply Scoring Curves Dynamically
+    const finalScores: FinalScores = { overall: 0 }
+    const curves: { [key: string]: any } = {}
 
-    const { data: mathCurve, error: mathCurveError } = await client
-      .from('scoring_curves')
-      .select('id, curve_name, curve_data')
-      .eq('id', examData.math_scoring_curve_id)
-      .maybeSingle()
+    // Fetch required scoring curves
+    const curvePromises: Promise<any>[] = []
 
-    if (mathCurveError)
-      throw new Error(
-        `Failed to get Math scoring curve: ${mathCurveError.message}`
-      )
-    if (!mathCurve)
-      throw new Error(
-        `Math scoring curve ${examData.math_scoring_curve_id} not found`
-      )
+    for (const groupName of Object.keys(scoringGroups)) {
+      let curveId: number | null = null
 
-    console.log('📋 English curve info:', {
-      id: englishCurve.id,
-      name: englishCurve.curve_name,
-    })
-    console.log('📋 Math curve info:', {
-      id: mathCurve.id,
-      name: mathCurve.curve_name,
-    })
+      if (groupName === 'english' && examData.english_scoring_curve_id) {
+        curveId = examData.english_scoring_curve_id
+      } else if (groupName === 'math' && examData.math_scoring_curve_id) {
+        curveId = examData.math_scoring_curve_id
+      }
 
-    // Step 6: Validate curve data and map raw scores to scaled scores
-    this.validateCurveData(englishCurve.curve_data)
-    this.validateCurveData(mathCurve.curve_data)
-
-    console.log(
-      `Raw scores calculated - English: ${englishRawScore}, Math: ${mathRawScore}`
-    )
-
-    const englishScaledScore = this.mapRawToScaled(
-      englishRawScore,
-      englishCurve.curve_data
-    )
-    const mathScaledScore = this.mapRawToScaled(
-      mathRawScore,
-      mathCurve.curve_data
-    )
-
-    console.log('⚖️ Scaled scores:')
-    console.log(
-      `  - English raw ${englishRawScore} → scaled ${englishScaledScore} (using curve: ${englishCurve.curve_name})`
-    )
-    console.log(
-      `  - Math raw ${mathRawScore} → scaled ${mathScaledScore} (using curve: ${mathCurve.curve_name})`
-    )
-
-    // Step 7: Calculate overall score
-    const overallScore = englishScaledScore + mathScaledScore
-
-    const finalScores = {
-      overall: overallScore,
-      english: englishScaledScore,
-      math: mathScaledScore,
+      if (curveId) {
+        curvePromises.push(
+          Promise.resolve(
+            client
+              .from('scoring_curves')
+              .select('id, curve_name, curve_data')
+              .eq('id', curveId)
+              .maybeSingle()
+              .then((result) => ({ groupName, result }))
+          )
+        )
+      } else {
+        console.warn(`No scoring curve found for group '${groupName}'`)
+      }
     }
+
+    // Wait for all curves to be fetched
+    const curveResults = await Promise.all(curvePromises)
+
+    for (const { groupName, result } of curveResults) {
+      if (result.error) {
+        throw new Error(
+          `Failed to get ${groupName} scoring curve: ${result.error.message}`
+        )
+      }
+      if (!result.data) {
+        console.warn(`${groupName} scoring curve not found, skipping group`)
+        continue
+      }
+
+      curves[groupName] = result.data
+    }
+
+    // Step 6: Calculate scaled scores for each group
+    for (const [groupName, rawScore] of Object.entries(rawScoresByGroup)) {
+      const curve = curves[groupName]
+
+      if (!curve) {
+        console.warn(`No curve available for group '${groupName}', skipping`)
+        continue
+      }
+
+      console.log(`📋 ${groupName} curve info:`, {
+        id: curve.id,
+        name: curve.curve_name,
+      })
+
+      // Validate curve data and map raw score to scaled score
+      this.validateCurveData(curve.curve_data)
+      const scaledScore = this.mapRawToScaled(rawScore, curve.curve_data)
+
+      finalScores[groupName] = scaledScore
+      console.log(
+        `⚖️ ${groupName}: raw ${rawScore} → scaled ${scaledScore} (using curve: ${curve.curve_name})`
+      )
+    }
+
+    // Step 7: Calculate Final Overall Score
+    let overallScore = 0
+    for (const [key, value] of Object.entries(finalScores)) {
+      if (key !== 'overall' && typeof value === 'number') {
+        overallScore += value
+      }
+    }
+    finalScores.overall = overallScore
 
     console.log('📊 Final scores object:', finalScores)
     return finalScores

@@ -538,24 +538,59 @@ export function QuestionDisplay({
 
     setSaving(true)
 
+    console.log('🔍 Question ID being saved:', question.id)
+    console.log('🔍 Question object:', question)
+
     try {
       // Get the content from the currently active editor
       const currentContent = currentEditorMode === 'html' 
         ? editForm.question_html 
         : editForm.question_text
 
-      // Use the server action to save with dual format
-      const result = await updateQuestionWithDualFormat({
-        id: question.id,
+      // Direct Supabase update for debugging
+      console.log('🔍 Updating directly with Supabase...')
+      const updateData: any = {
         question_type: editForm.question_type,
         options: editForm.options,
-        correct_answer: editForm.correct_answer,
-        correct_answers: editForm.correct_answers,
         explanation: editForm.explanation,
         table_data: editForm.table_data,
-        content_format: editForm.content_format as 'markdown' | 'html',
-        content: currentContent,
-      })
+        content_format: editForm.content_format,
+      }
+
+      if (editForm.question_type === 'grid_in') {
+        const cleanAnswers = (editForm.correct_answers || [])
+          .map((a: any) => String(a || '').trim())
+          .filter((a: string) => a.length > 0)
+        updateData.correct_answers = cleanAnswers.length > 0 ? cleanAnswers : ['']
+        updateData.correct_answer = cleanAnswers[0] || ''
+      } else {
+        updateData.correct_answer = editForm.correct_answer
+        updateData.correct_answers = null
+      }
+
+      if (editForm.content_format === 'html') {
+        updateData.question_html = currentContent
+        updateData.question_text = htmlToMarkdown(currentContent)
+      } else {
+        updateData.question_text = currentContent
+        updateData.question_html = markdownToHtml(currentContent)
+      }
+
+      console.log('🔍 Update data:', updateData)
+      const { data: supabaseResult, error } = await supabase
+        .from('questions')
+        .update(updateData)
+        .eq('id', question.id)
+        .select()
+        
+      console.log('🔍 Supabase result:', supabaseResult)
+      console.log('🔍 Supabase error:', error)
+
+      const result = {
+        success: !error,
+        data: supabaseResult?.[0] || null,
+        error: error?.message || null
+      }
 
       if (!result.success) {
         throw new Error(result.error || 'Failed to save question')

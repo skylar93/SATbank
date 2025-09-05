@@ -228,3 +228,77 @@ export async function addQuestionToExam(examId: string) {
     }
   }
 }
+
+export async function createExamFromModules(data: {
+  title: string
+  description: string
+  templateId: string
+  moduleAssignments: Record<string, string>
+}) {
+  const supabase = createServerActionClient<Database>({ cookies })
+  await checkAdminAuth(supabase)
+
+  try {
+    // 1. Create the parent exam record
+    const { data: newExam, error: examError } = await supabase
+      .from('exams')
+      .insert({
+        title: data.title,
+        description: data.description,
+        template_id: data.templateId,
+        module_composition: data.moduleAssignments,
+      })
+      .select()
+      .single()
+
+    if (examError) {
+      throw examError
+    }
+
+    const newExamId = newExam.id
+
+    // 2. Populate the exam_questions junction table
+    for (const [moduleType, sourceExamId] of Object.entries(data.moduleAssignments)) {
+      // Get all questions from the source module
+      const { data: sourceQuestions, error: questionsError } = await supabase
+        .from('questions')
+        .select('id, question_number')
+        .eq('exam_id', sourceExamId)
+        .eq('module_type', moduleType)
+        .order('question_number')
+
+      if (questionsError) {
+        throw questionsError
+      }
+
+      // Insert records into exam_questions junction table
+      const examQuestionRecords = sourceQuestions.map(question => ({
+        exam_id: newExamId,
+        question_id: question.id,
+        question_number: question.question_number,
+        module_type: moduleType,
+      }))
+
+      if (examQuestionRecords.length > 0) {
+        const { error: junctionError } = await supabase
+          .from('exam_questions')
+          .insert(examQuestionRecords)
+
+        if (junctionError) {
+          throw junctionError
+        }
+      }
+    }
+
+    // 3. Revalidate the admin exams page
+    revalidatePath('/admin/exams')
+
+    return { success: true, examId: newExamId }
+  } catch (error: any) {
+    console.error('Error creating exam from modules:', error)
+    return {
+      success: false,
+      error: `Failed to create exam: ${error.message}`,
+    }
+  }
+}

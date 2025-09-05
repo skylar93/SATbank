@@ -1,0 +1,302 @@
+{
+  "total_exams": 15,
+  "exams_by_type": {},
+  "module_distribution": {
+    "english1": 317,
+    "english2": 278,
+    "math1": 223,
+    "math2": 212
+  },
+  "questions_per_exam": {
+    "550e8400-e29b-41d4-a716-446655440000": {
+      "title": "Mock Test",
+      "total_questions": 15,
+      "by_module": {
+        "english1": 6,
+        "english2": 3,
+        "math1": 3,
+        "math2": 3
+      },
+      "time_limits": {
+        "math1": 4,
+        "math2": 6,
+        "english1": 5,
+        "english2": 3
+      }
+    },
+    "123e4567-e89b-12d3-a456-426614174000": {
+      "title": "Math Practice Module 1",
+      "total_questions": 22,
+      "by_module": {
+        "math1": 22
+      },
+      "time_limits": {
+        "math1": "35"
+      }
+    },
+    "6f4eb255-3d1a-4e4c-90f3-99364b63c91a": {
+      "title": "SAT 2024 DEC",
+      "total_questions": 98,
+      "by_module": {
+        "math1": 22,
+        "math2": 22,
+        "english2": 27,
+        "english1": 27
+      },
+      "time_limits": {
+        "math1": 35,
+        "math2": 35,
+        "english1": 32,
+        "english2": 32
+      }
+    },
+    "f47ac10b-58cc-4372-a567-0e02b2c3d479": {
+      "title": "SAT 2024 OCT C",
+      "total_questions": 98,
+      "by_module": {
+        "english1": 27,
+        "english2": 27,
+        "math1": 22,
+        "math2": 22
+      },
+      "time_limits": {
+        "math1": 35,
+        "math2": 35,
+        "english1": 32,
+        "english2": 32
+      }
+    },
+    "4796f645-9975-4872-b466-e3b5248dcc6c": {
+      "title": "SAT 2025 MAY B",
+      "total_questions": 98,
+      "by_module": {
+        "english2": 27,
+        "english1": 27,
+        "math1": 22,
+        "math2": 22
+      },
+      "time_limits": {
+        "math1": 35,
+        "math2": 35,
+        "english1": 32,
+        "english2": 32
+      }
+    },
+    "f8b2d4c1-9a3e-4f5c-b7d8-1e2a3b4c5d6e": {
+      "title": "SAT 2024 AUG USA B",
+      "total_questions": 98,
+      "by_module": {
+        "english2": 27,
+        "math2": 22,
+        "math1": 22,
+        "english1": 27
+      },
+      "time_limits": {
+        "math1": 35,
+        "math2": 35,
+        "english1": 32,
+        "english2": 32
+      }
+    },
+    "8d091615-1b91-40a5-bc3a-bd2c44618b02": {
+      "title": "Full Practice Test 1",
+      "total_questions": 98,
+      "by_module": {
+        "english2": 27,
+        "math2": 22,
+        "math1": 22,
+        "english1": 27
+      },
+      "time_limits": {
+        "math1": 35,
+        "math2": 35,
+        "english1": 32,
+        "english2": 32
+      }
+    },
+    "f47ac10b-58cc-4372-a567-0e02b2c3d391": {
+      "title": "SAT 2023 JUN INT",
+      "total_questions": 97,
+      "by_module": {
+        "english2": 27,
+        "english1": 26,
+        "math2": 22,
+        "math1": 22
+      },
+      "time_limits": {
+        "math1": 35,
+        "math2": 35,
+        "english1": 32,
+        "english2": 32
+      }
+    },
+    "550e6881-8930-4d5f-9c7a-1234567890ab": {
+      "title": "SAT 2024 JUNE USA",
+      "total_questions": 98,
+      "by_module": {
+        "english1": 27,
+        "math2": 22,
+        "english2": 27,
+        "math1": 22
+      },
+      "time_limits": {
+        "math1": 35,
+        "math2": 35,
+        "english1": 32,
+        "english2": 32
+      }
+    },
+    "b2c3d4e5-6789-abcd-ef01-23456789abcd": {
+      "title": "SAT 2024 NOV USB",
+      "total_questions": 98,
+      "by_module": {
+        "english2": 27,
+        "math2": 22,
+        "math1": 22,
+        "english1": 27
+      },
+      "time_limits": {
+        "math1": 35,
+        "math2": 35,
+        "english1": 32,
+        "english2": 32
+      }
+    },
+    "36380256-894d-43ea-aa98-4afc56efb964": {
+      "title": "English Module Practice 13",
+      "total_questions": 54,
+      "by_module": {
+        "english1": 27,
+        "english2": 27
+      },
+      "time_limits": {
+        "math1": 35,
+        "math2": 55,
+        "english1": 64,
+        "english2": 35
+      }
+    },
+    "0ffab8ab-2882-4339-b90f-c156abe09b32": {
+      "title": "SAT 2024 MAY INT B",
+      "total_questions": 76,
+      "by_module": {
+        "english1": 27,
+        "english2": 27,
+        "math2": 22
+      },
+      "time_limits": {
+        "math1": 35,
+        "math2": 55,
+        "english1": 64,
+        "english2": 35
+      }
+    },
+    "550e8400-e29b-41d4-a716-446655440001": {
+      "title": "SAT Practice Test - Module 1",
+      "total_questions": 53,
+      "by_module": {
+        "math1": 22,
+        "math2": 11,
+        "english1": 15,
+        "english2": 5
+      },
+      "time_limits": {
+        "math1": 35,
+        "math2": 55,
+        "english1": 64,
+        "english2": 35
+      }
+    },
+    "2ebdc9ec-7c01-47c5-8c43-9dddf6450cff": {
+      "title": "Mistake",
+      "total_questions": 0,
+      "by_module": {},
+      "time_limits": {
+        "math1": 2100,
+        "math2": 2100,
+        "english1": 2100,
+        "english2": 2100
+      }
+    },
+    "09eee297-8674-478c-921b-122a9d7f4452": {
+      "title": "Module 1 August 2023 (Auto Import)",
+      "total_questions": 27,
+      "by_module": {
+        "english1": 27
+      },
+      "time_limits": {
+        "math1": 0,
+        "math2": 0,
+        "english1": 64,
+        "english2": 0
+      }
+    }
+  },
+  "time_limits_analysis": {
+    "math1": [
+      4,
+      "35",
+      35,
+      35,
+      35,
+      35,
+      35,
+      35,
+      35,
+      35,
+      35,
+      35,
+      35,
+      2100,
+      0
+    ],
+    "math2": [
+      6,
+      35,
+      35,
+      35,
+      35,
+      35,
+      35,
+      35,
+      35,
+      55,
+      55,
+      55,
+      2100,
+      0
+    ],
+    "english1": [
+      5,
+      32,
+      32,
+      32,
+      32,
+      32,
+      32,
+      32,
+      32,
+      64,
+      64,
+      64,
+      2100,
+      64
+    ],
+    "english2": [
+      3,
+      32,
+      32,
+      32,
+      32,
+      32,
+      32,
+      32,
+      32,
+      35,
+      35,
+      35,
+      2100,
+      0
+    ]
+  }
+}

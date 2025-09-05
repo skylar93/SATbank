@@ -152,6 +152,8 @@ function extractMainContentFromHtml(questionHTML) {
   const optionWrapperIndex = content.indexOf('<div class="option-wrapper');
   if (optionWrapperIndex !== -1) {
     content = content.substring(0, optionWrapperIndex).trim();
+    // Add double line break to separate question from answer choices
+    content = content + '\n\n';
   } else {
     // Check for other patterns that indicate answer choices start
     const choiceStartPatterns = [
@@ -166,6 +168,8 @@ function extractMainContentFromHtml(questionHTML) {
       const index = content.toLowerCase().indexOf(pattern.toLowerCase());
       if (index !== -1) {
         content = content.substring(0, index).trim();
+        // Add double line break to separate question from answer choices
+        content = content + '\n\n';
         break;
       }
     }
@@ -210,8 +214,9 @@ function extractMainContentFromHtml(questionHTML) {
   content = content.replace(/<\/div>\s*<\/div>/gi, '');
   
   // Clean up excessive whitespace but preserve intentional spacing
-  content = content.replace(/\n\s*\n\s*\n/g, '\n\n'); // Max 2 consecutive newlines
-  content = content.replace(/^\s+|\s+$/g, ''); // Trim start/end
+  // Allow up to 2 consecutive newlines (preserve the double line break we just added)
+  content = content.replace(/\n\s*\n\s*\n+/g, '\n\n'); // Max 2 consecutive newlines
+  content = content.replace(/^\s+/, ''); // Trim start only, preserve trailing newlines
   
   // If content is still wrapped in a single div, unwrap it
   const singleDivMatch = content.match(/^<div[^>]*>(.*)<\/div>$/s);
@@ -322,7 +327,30 @@ function getTopicFromModuleType(moduleType) {
 
 // Create or get exam
 async function createOrGetExam(testId, testName, totalQuestions) {
-  const examTitle = `${testName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} (Auto Import)`;
+  // Format exam title: "August 2023 English1" (capitalize first letter of month and year, add module type)
+  const moduleType = mapModuleType(testId);
+  let formattedDate = testName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  
+  // Add module type to the title (English1, English2, Math1, Math2)
+  let moduleTypeName;
+  switch(moduleType) {
+    case 'english1':
+      moduleTypeName = 'English1';
+      break;
+    case 'english2':
+      moduleTypeName = 'English2';
+      break;
+    case 'math1':
+      moduleTypeName = 'Math1';
+      break;
+    case 'math2':
+      moduleTypeName = 'Math2';
+      break;
+    default:
+      moduleTypeName = 'English1';
+  }
+  
+  const examTitle = `${formattedDate} ${moduleTypeName}`;
   
   // Check if exam exists
   let { data: existingExam, error: examError } = await supabase
@@ -333,14 +361,13 @@ async function createOrGetExam(testId, testName, totalQuestions) {
     
   if (examError && examError.code === 'PGRST116') {
     // Create new exam
-    const moduleType = mapModuleType(testId);
     const timeLimit = moduleType.includes('english') ? 64 : 70; // English: 64min, Math: 70min
     
     const { data: newExam, error: createError } = await supabase
       .from('exams')
       .insert([{
         title: examTitle,
-        description: `Auto-imported from ${testId}`,
+        description: 'auto import',
         time_limits: {
           [moduleType]: timeLimit,
           english1: moduleType === 'english1' ? timeLimit : 0,
