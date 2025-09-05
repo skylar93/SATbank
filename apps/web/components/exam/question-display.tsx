@@ -16,10 +16,17 @@ import { parseTableFromMarkdown, buildTableMarkdown } from '../../lib/utils'
 import { HighlightedTextRenderer } from './HighlightedTextRenderer'
 import FloatingHighlightButton from './FloatingHighlightButton'
 import { AnswerRevealCard } from './AnswerRevealCard'
+import { ContentRenderer } from '../content-renderer'
 
 // HTML rendering function for content that is already in HTML format
 export const renderHtmlContent = (htmlContent: string) => {
   if (!htmlContent || typeof htmlContent !== 'string') return htmlContent
+
+  // Check if content contains LaTeX math expressions (data-math attributes)
+  if (htmlContent.includes('data-math')) {
+    // Use ContentRenderer to handle math rendering
+    return <ContentRenderer htmlContent={htmlContent} />
+  }
 
   return (
     <div
