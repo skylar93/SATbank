@@ -224,6 +224,44 @@ function extractMainContentFromHtml(questionHTML) {
     content = singleDivMatch[1].trim();
   }
   
+  // ENHANCED FORMATTING IMPROVEMENTS
+  
+  // 1. Add line breaks before question patterns (Which choice, Which answer, What, etc.)
+  // Look for questions that start with these patterns at the end of content
+  const questionPatterns = [
+    /(\s*)(Which\s+choice\s+[^?]*\?)/gi,
+    /(\s*)(Which\s+answer\s+[^?]*\?)/gi,
+    /(\s*)(Which\s+[^?]*\?)/gi,
+    /(\s*)(What\s+[^?]*\?)/gi,
+    /(\s*)(How\s+[^?]*\?)/gi,
+    /(\s*)(Why\s+[^?]*\?)/gi,
+    /(\s*)(Where\s+[^?]*\?)/gi,
+    /(\s*)(When\s+[^?]*\?)/gi
+  ];
+  
+  questionPatterns.forEach(pattern => {
+    content = content.replace(pattern, (match, whitespace, questionText) => {
+      // Add double line break before the question
+      return '\n\n' + questionText.trim();
+    });
+  });
+  
+  // 2. Convert underscores to proper HTML blank lines
+  // Replace sequences of underscores (5 or more) with HTML blank line spans
+  content = content.replace(/_{5,}/g, (match) => {
+    // Create a span with underscores to represent blank line, maintaining the length
+    return `<span class="blank-line" style="text-decoration: underline; letter-spacing: 2px;">${'&nbsp;'.repeat(Math.min(match.length, 20))}</span>`;
+  });
+  
+  // 3. Convert triple dashes to em dash
+  content = content.replace(/---/g, '—');
+  // Also convert double dashes to em dash as backup
+  content = content.replace(/--/g, '—');
+  
+  // Final cleanup: ensure we don't have too many consecutive line breaks
+  content = content.replace(/\n\s*\n\s*\n+/g, '\n\n');
+  content = content.trim();
+  
   return content || questionHTML; // Return original if cleaning failed
 }
 
@@ -301,9 +339,12 @@ function processQuestion(question, testId, examId) {
       question_type: question.questionType === 'grid_in' ? 'grid_in' : 'multiple_choice',
       question_html: isHtmlFormat ? questionHtmlContent : null,
       question_text: question.questionText || '', // Keep original text as fallback
+      question_markdown_backup: question.questionText || questionHtmlContent || 'No content available', // Required backup field
       options: shouldStoreOptions ? options : null,
+      options_markdown_backup: shouldStoreOptions ? options : null, // Backup for options if needed
       correct_answer: [correctAnswerLetter],
       explanation: question.explanation || null,
+      explanation_markdown_backup: question.explanation || null, // Backup for explanation
       difficulty_level: 'medium',
       topic_tags: [getTopicFromModuleType(moduleType)],
       question_image_url: isHtmlFormat ? null : mainImageUrl, // Don't duplicate image if already in HTML
