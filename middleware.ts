@@ -1,4 +1,4 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -9,10 +9,30 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+  let supabaseResponse = NextResponse.next({
+    request: req,
+  });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            req.cookies.set(name, value);
+            supabaseResponse.cookies.set(name, value, options);
+          });
+        },
+      },
+    }
+  );
 
   // This single line is crucial. It refreshes the session cookie on every navigation.
+  // Force refresh to ensure we have the latest session state
   const { data: { session } } = await supabase.auth.getSession();
 
   const { pathname } = req.nextUrl;
@@ -34,7 +54,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Allow the request to proceed.
-  return res;
+  return supabaseResponse;
 }
 
 // This config ensures the middleware runs on all paths except for static assets.

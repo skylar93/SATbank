@@ -530,6 +530,9 @@ async function createOrGetExam(testId, testName, totalQuestions) {
   const moduleType = mapModuleType(testId);
   let formattedDate = testName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   
+  // Remove "Module X" from the title since we'll add moduleTypeName instead
+  formattedDate = formattedDate.replace(/Module\s+\d+\s*/gi, '').trim();
+  
   // Add module type to the title (English1, English2, Math1, Math2)
   let moduleTypeName;
   switch(moduleType) {
@@ -562,6 +565,10 @@ async function createOrGetExam(testId, testName, totalQuestions) {
     // Create new exam
     const timeLimit = moduleType.includes('english') ? 64 : 70; // English: 64min, Math: 70min
     
+    // Create module composition object - this is CRITICAL for the frontend filter
+    const moduleComposition = {};
+    moduleComposition[moduleType] = true;
+    
     const { data: newExam, error: createError } = await supabase
       .from('exams')
       .insert([{
@@ -577,7 +584,9 @@ async function createOrGetExam(testId, testName, totalQuestions) {
         total_questions: totalQuestions,
         is_active: true,
         is_mock_exam: false,
-        is_custom_assignment: true,
+        is_module_source: true,  // CRITICAL: Must be true for frontend filtering
+        is_custom_assignment: false,  // Module sources are not custom assignments
+        module_composition: moduleComposition,  // CRITICAL: Required for compatibility check
         answer_check_mode: 'exam_end'
       }])
       .select()

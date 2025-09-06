@@ -25,6 +25,9 @@ interface RpcExamData {
   latest_attempt_visibility: boolean | null
   latest_attempt_visible_after: string | null
   total_attempts_count: number
+  template_id: string | null
+  is_custom_assignment: boolean
+  exam_type: 'original' | 'template' | 'custom'
 }
 
 // Transformed interface for UI consumption
@@ -37,6 +40,9 @@ interface ExamWithCurves {
   math_scoring_curve_id: number | null
   english_curve_name: string | null
   math_curve_name: string | null
+  template_id: string | null
+  is_custom_assignment: boolean
+  exam_type: 'original' | 'template' | 'custom'
   answer_release_setting?: {
     type: 'hidden' | 'immediate' | 'scheduled'
     scheduled_date?: Date
@@ -121,6 +127,9 @@ export function ExamsListClient() {
             math_scoring_curve_id: exam.math_curve_id,
             english_curve_name: exam.english_curve_name,
             math_curve_name: exam.math_curve_name,
+            template_id: exam.template_id,
+            is_custom_assignment: exam.is_custom_assignment,
+            exam_type: exam.exam_type,
             answer_release_setting: answerReleaseSetting,
           }
         }
@@ -213,6 +222,99 @@ export function ExamsListClient() {
   const handleExamCreated = (newExamId: string) => {
     setIsCreateModalOpen(false)
     router.push(`/admin/exams/${newExamId}/settings`)
+  }
+
+  const handleDeleteTemplate = async (examId: string, examTitle: string) => {
+    // Confirm deletion
+    const confirmed = confirm(
+      `Are you sure you want to delete the template exam "${examTitle}"?\n\n` +
+      `This action will:\n` +
+      `✓ Delete the template exam\n` +
+      `✓ Delete all associated test attempts\n` +
+      `✓ Preserve original questions safely\n\n` +
+      `This cannot be undone.`
+    )
+    
+    if (!confirmed) return
+
+    try {
+      const { data: exam, error: examError } = await supabase
+        .from('exams')
+        .select('template_id, is_custom_assignment')
+        .eq('id', examId)
+        .single()
+
+      if (examError) {
+        throw new Error('Failed to verify exam type')
+      }
+
+      // Safety check: Only allow deletion of template/custom exams
+      if (!exam.template_id && !exam.is_custom_assignment) {
+        alert('❌ Safety check failed: Only template exams can be deleted.')
+        return
+      }
+
+      // Additional safety check: Ensure no direct questions
+      const { data: directQuestions, error: questionsError } = await supabase
+        .from('questions')
+        .select('id')
+        .eq('exam_id', examId)
+        .limit(1)
+
+      if (questionsError) {
+        throw new Error('Failed to verify question ownership')
+      }
+
+      if (directQuestions && directQuestions.length > 0) {
+        alert('❌ Safety check failed: This exam has direct questions and cannot be deleted.')
+        return
+      }
+
+      // Delete in correct order: test_attempts → exam_questions → exams
+      console.log('🗑️ Starting safe template deletion...')
+
+      // 1. Delete test attempts (and user_answers cascade)
+      const { error: deleteAttemptsError } = await supabase
+        .from('test_attempts')
+        .delete()
+        .eq('exam_id', examId)
+
+      if (deleteAttemptsError) {
+        throw new Error(`Failed to delete test attempts: ${deleteAttemptsError.message}`)
+      }
+
+      // 2. Delete exam questions (connections only, preserves original questions)
+      const { error: deleteExamQuestionsError } = await supabase
+        .from('exam_questions')
+        .delete()
+        .eq('exam_id', examId)
+
+      if (deleteExamQuestionsError) {
+        throw new Error(`Failed to delete exam questions: ${deleteExamQuestionsError.message}`)
+      }
+
+      // 3. Delete the exam itself
+      const { error: deleteExamError } = await supabase
+        .from('exams')
+        .delete()
+        .eq('id', examId)
+
+      if (deleteExamError) {
+        throw new Error(`Failed to delete exam: ${deleteExamError.message}`)
+      }
+
+      console.log('✅ Template exam deleted successfully')
+      
+      // Show success message
+      alert(`✅ Template exam "${examTitle}" has been safely deleted.\n\nOriginal questions have been preserved.`)
+      
+      // Refresh the exam list
+      await fetchExamsOptimized()
+      
+    } catch (error) {
+      console.error('Error deleting template exam:', error)
+      alert(`❌ Failed to delete template exam: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
   }
 
   if (authLoading || loading) {
@@ -338,6 +440,7 @@ export function ExamsListClient() {
                       key={exam.id}
                       exam={exam}
                       openAnswerModal={openAnswerModal}
+                      onDeleteTemplate={handleDeleteTemplate}
                     />
                   ))}
                 </tbody>

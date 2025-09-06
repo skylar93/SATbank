@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { createClient } from './supabase/client'
 import type { AuthUser, UserProfile } from './auth'
 
 class AuthStateManager {
@@ -52,6 +52,7 @@ class AuthStateManager {
   ): Promise<{ data: UserProfile | null; error: any }> {
     for (let i = 0; i <= retries; i++) {
       try {
+        const supabase = createClient()
         const { data: profile, error: profileError } = await supabase
           .from('user_profiles')
           .select('*')
@@ -128,6 +129,7 @@ class AuthStateManager {
     try {
       // Step 1: Try to get session first (fastest)
       console.log('🔍 AuthStateManager: Checking session...')
+      const supabase = createClient()
       const {
         data: { session },
         error: sessionError,

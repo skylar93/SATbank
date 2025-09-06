@@ -1,7 +1,6 @@
 'use server'
 
-import { createServerActionClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 // Temporary local database type definition
 interface Database {
@@ -26,25 +25,60 @@ interface Database {
   }
 }
 
-// Helper function for admin check
-async function checkAdminAuth(supabase: any) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) {
-    throw new Error('Unauthorized: No user found.')
-  }
+/**
+ * Verifies the current user is an authenticated admin within a Server Action.
+ * Throws an error if not authorized.
+ * @returns The authenticated user object and a server-side Supabase client.
+ */
+async function verifyAdminAuth() {
+  console.log('🔍 verifyAdminAuth: Starting authentication check...')
+  
+  try {
+    const supabase = await createClient()
+    console.log('✅ verifyAdminAuth: Created Supabase server client')
 
-  const { data: profile } = await supabase
-    .from('user_profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-  if (profile?.role !== 'admin') {
-    throw new Error('Unauthorized: Admin role required.')
-  }
+    // Get the user directly - the server client should handle session automatically
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    
+    console.log('📋 verifyAdminAuth: Auth result:', {
+      hasUser: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      errorMessage: userError?.message
+    })
 
-  return user
+    if (userError || !user) {
+      console.log('❌ verifyAdminAuth: No user found or auth error')
+      throw new Error('로그인이 필요합니다.')
+    }
+
+    console.log('👤 verifyAdminAuth: User authenticated, checking admin role...')
+
+    // Verify the user's role from the database.
+    const { data: profile, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    console.log('👮 verifyAdminAuth: Role check result:', {
+      hasProfile: !!profile,
+      role: profile?.role,
+      errorMessage: profileError?.message
+    })
+
+    if (profileError || profile?.role !== 'admin') {
+      console.log('❌ verifyAdminAuth: Admin role verification failed')
+      throw new Error('관리자 권한이 필요합니다.')
+    }
+
+    console.log('🎉 verifyAdminAuth: Authentication and authorization successful!')
+    return { user, supabase }
+    
+  } catch (error) {
+    console.log('💥 verifyAdminAuth: Exception caught:', error)
+    throw error
+  }
 }
 
 export async function updateExamCurve(
@@ -52,8 +86,7 @@ export async function updateExamCurve(
   curveType: 'english' | 'math',
   curveId: number | null
 ) {
-  const supabase = createServerActionClient<Database>({ cookies })
-  await checkAdminAuth(supabase)
+  const { supabase } = await verifyAdminAuth()
 
   const updateData =
     curveType === 'english'
@@ -78,8 +111,7 @@ export async function updateAnswerVisibilityForAttempt(
   visibility: 'hidden' | 'immediate' | 'scheduled',
   releaseDate?: string | null
 ) {
-  const supabase = createServerActionClient<Database>({ cookies })
-  await checkAdminAuth(supabase)
+  const { supabase } = await verifyAdminAuth()
 
   let updateData: any
   if (visibility === 'hidden') {
@@ -106,7 +138,7 @@ export async function updateAnswerVisibilityForAttempt(
 }
 
 export async function createTestAttempt(attempt: any) {
-  const supabase = createServerActionClient<Database>({ cookies })
+  const supabase = await createClient()
 
   const {
     data: { user },
@@ -132,8 +164,7 @@ export async function createTestAttempt(attempt: any) {
 }
 
 export async function createExam(formData: FormData) {
-  const supabase = createServerActionClient<Database>({ cookies })
-  await checkAdminAuth(supabase)
+  const { supabase } = await verifyAdminAuth()
 
   const title = formData.get('title') as string
   const description = formData.get('description') as string
@@ -165,8 +196,7 @@ export async function createExam(formData: FormData) {
 }
 
 export async function addQuestionToExam(examId: string) {
-  const supabase = createServerActionClient<Database>({ cookies })
-  await checkAdminAuth(supabase)
+  const { supabase } = await verifyAdminAuth()
 
   try {
     // For simplicity, we'll add to the last module or a default one.
@@ -229,14 +259,16 @@ export async function addQuestionToExam(examId: string) {
   }
 }
 
-export async function createExamFromModules(data: {
-  title: string
-  description: string
-  templateId: string
-  moduleAssignments: Record<string, string>
-}) {
-  const supabase = createServerActionClient<Database>({ cookies })
-  await checkAdminAuth(supabase)
+
+export async function createExamFromModules(
+  data: {
+    title: string
+    description: string
+    templateId: string
+    moduleAssignments: Record<string, string>
+  }
+) {
+  const { supabase } = await verifyAdminAuth()
 
   try {
     // 1. Create the parent exam record
@@ -258,7 +290,10 @@ export async function createExamFromModules(data: {
     const newExamId = newExam.id
 
     // 2. Populate the exam_questions junction table
+    console.log('🔗 Processing module assignments:', data.moduleAssignments)
     for (const [moduleType, sourceExamId] of Object.entries(data.moduleAssignments)) {
+      console.log(`📝 Processing ${moduleType} from exam ${sourceExamId}`)
+      
       // Get all questions from the source module
       const { data: sourceQuestions, error: questionsError } = await supabase
         .from('questions')
@@ -267,8 +302,16 @@ export async function createExamFromModules(data: {
         .eq('module_type', moduleType)
         .order('question_number')
 
+      console.log(`📊 Found ${sourceQuestions?.length || 0} questions for ${moduleType}`)
+
       if (questionsError) {
+        console.log(`❌ Error fetching questions for ${moduleType}:`, questionsError)
         throw questionsError
+      }
+
+      if (!sourceQuestions || sourceQuestions.length === 0) {
+        console.log(`⚠️ No questions found for ${moduleType} in exam ${sourceExamId}`)
+        continue
       }
 
       // Insert records into exam_questions junction table
@@ -279,15 +322,18 @@ export async function createExamFromModules(data: {
         module_type: moduleType,
       }))
 
-      if (examQuestionRecords.length > 0) {
-        const { error: junctionError } = await supabase
-          .from('exam_questions')
-          .insert(examQuestionRecords)
+      console.log(`💾 Inserting ${examQuestionRecords.length} junction records for ${moduleType}`)
+      
+      const { error: junctionError } = await supabase
+        .from('exam_questions')
+        .insert(examQuestionRecords)
 
-        if (junctionError) {
-          throw junctionError
-        }
+      if (junctionError) {
+        console.log(`❌ Junction table insert error for ${moduleType}:`, junctionError)
+        throw junctionError
       }
+      
+      console.log(`✅ Successfully inserted ${examQuestionRecords.length} records for ${moduleType}`)
     }
 
     // 3. Revalidate the admin exams page

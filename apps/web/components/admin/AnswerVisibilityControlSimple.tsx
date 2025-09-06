@@ -46,6 +46,17 @@ export function AnswerVisibilityControl({
     const visibility = value as 'hidden' | 'immediate'
     startTransition(async () => {
       try {
+        // Debug: Check client-side session before calling server action
+        const { supabase } = await import('@/lib/supabase')
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        console.log('🔍 Client-side session check before server action:', {
+          hasSession: !!session,
+          sessionError: sessionError?.message,
+          accessToken: session?.access_token ? 'present' : 'missing',
+          userId: session?.user?.id,
+          userEmail: session?.user?.email
+        })
+
         const result = await updateAnswerVisibilityForAttempt(
           examId,
           visibility

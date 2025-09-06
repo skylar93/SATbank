@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
-import { supabase } from '../../../lib/supabase'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -33,14 +32,17 @@ export default function LoginPage() {
       // 1. Await the signIn function. It will return the user object on success.
       const loggedInUser = await signIn(email, password)
 
-      // 2. Based on the returned user's role, determine the correct destination.
+      // 2. Wait a brief moment for session to fully propagate to server
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      // 3. Based on the returned user's role, determine the correct destination.
       const redirectUrl = loggedInUser.profile?.role === 'admin'
         ? '/admin/dashboard'
         : '/student/dashboard'
 
-      // 3. Use the Next.js router to push the user to their dashboard.
-      //    This is a clean, client-side navigation.
-      router.push(redirectUrl)
+      // 4. Use window.location.href for a full page navigation to ensure
+      //    middleware runs and can properly detect the session
+      window.location.href = redirectUrl
 
     } catch (err: any) {
       setError(err.message || 'Login failed')

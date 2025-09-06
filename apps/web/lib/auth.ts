@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { createClient } from './supabase/client'
 import { authStateManager } from './auth-state-manager'
 
 export interface UserProfile {
@@ -30,6 +30,7 @@ export class AuthService {
   // Test database connectivity
   static async testConnection(): Promise<{ success: boolean; error?: string }> {
     try {
+      const supabase = createClient()
       const { data, error } = await supabase
         .from('user_profiles')
         .select('count', { count: 'exact', head: true })
@@ -45,6 +46,7 @@ export class AuthService {
   }
   // Sign up new user
   static async signUp(email: string, password: string, fullName: string) {
+    const supabase = createClient()
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -61,6 +63,7 @@ export class AuthService {
 
   // Sign in user
   static async signIn(email: string, password: string) {
+    const supabase = createClient()
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -73,9 +76,7 @@ export class AuthService {
   // Sign out user
   static async signOut() {
     try {
-      // Clear local storage first
-      localStorage.removeItem('sb-eoyzqdsxlweygsukjnef-auth-token')
-
+      const supabase = createClient()
       // Use global scope for complete logout across all devices
       const { error } = await supabase.auth.signOut({ scope: 'global' })
       if (error) {
@@ -96,6 +97,7 @@ export class AuthService {
   ): Promise<{ data: UserProfile | null; error: any }> {
     for (let i = 0; i <= retries; i++) {
       try {
+        const supabase = createClient()
         const { data: profile, error: profileError } = await supabase
           .from('user_profiles')
           .select('*')
@@ -138,6 +140,7 @@ export class AuthService {
     userId: string,
     updates: Partial<CreateUserProfile>
   ) {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('user_profiles')
       .update(updates)
@@ -151,6 +154,7 @@ export class AuthService {
 
   // Check if user is admin
   static async isAdmin(userId: string): Promise<boolean> {
+    const supabase = createClient()
     const { data, error } = await supabase.rpc('is_admin', { user_id: userId })
 
     if (error) throw error
@@ -163,6 +167,7 @@ export class AuthService {
     const unsubscribe = authStateManager.subscribe(callback)
 
     // Also listen to Supabase auth changes and forward to AuthStateManager
+    const supabase = createClient()
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {

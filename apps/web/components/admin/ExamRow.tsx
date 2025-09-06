@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
 import { CurveAssignmentControl } from './CurveAssignmentControlSimple'
 import { AnswerVisibilityControl } from './AnswerVisibilityControlSimple'
 import { supabase } from '@/lib/supabase'
@@ -22,6 +22,9 @@ interface ExamWithCurves {
   math_scoring_curve_id: number | null
   english_curve_name: string | null
   math_curve_name: string | null
+  template_id: string | null
+  is_custom_assignment: boolean
+  exam_type: 'original' | 'template' | 'custom'
   answer_release_setting?: {
     type: 'hidden' | 'immediate' | 'scheduled'
     scheduled_date?: Date
@@ -31,9 +34,10 @@ interface ExamWithCurves {
 interface ExamRowProps {
   exam: ExamWithCurves
   openAnswerModal: (examId: string, examTitle: string) => void
+  onDeleteTemplate?: (examId: string, examTitle: string) => void
 }
 
-export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
+export function ExamRow({ exam, openAnswerModal, onDeleteTemplate }: ExamRowProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [allCurves, setAllCurves] = useState<ScoringCurve[]>([])
 
@@ -78,8 +82,19 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
         </td>
         <td className="px-6 py-4">
           <div>
-            <div className="text-sm font-medium text-gray-900">
-              {exam.title}
+            <div className="flex items-center space-x-2">
+              <div className="text-sm font-medium text-gray-900">
+                {exam.title}
+              </div>
+              {exam.exam_type !== 'original' && (
+                <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${
+                  exam.exam_type === 'template' 
+                    ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                    : 'bg-orange-50 text-orange-700 border-orange-200'
+                }`}>
+                  {exam.exam_type === 'template' ? 'Template' : 'Custom'}
+                </span>
+              )}
             </div>
             {exam.description && (
               <div className="text-xs text-gray-600 mt-1 max-w-xs truncate">
@@ -135,6 +150,16 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
             >
               Preview & Edit
             </Link>
+            {/* Delete button - only for template/custom exams */}
+            {(exam.exam_type === 'template' || exam.exam_type === 'custom') && onDeleteTemplate && (
+              <button
+                onClick={() => onDeleteTemplate(exam.id, exam.title)}
+                className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full transition-all duration-200 border border-transparent hover:border-red-200"
+                title="Delete Template Exam"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            )}
           </div>
         </td>
       </tr>
@@ -223,6 +248,16 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
                   >
                     Preview & Edit Questions
                   </Link>
+                  {/* Delete button for templates/custom exams */}
+                  {(exam.exam_type === 'template' || exam.exam_type === 'custom') && onDeleteTemplate && (
+                    <button
+                      onClick={() => onDeleteTemplate(exam.id, exam.title)}
+                      className="flex items-center space-x-2 px-4 py-2 text-sm font-medium bg-gradient-to-r from-red-50 to-pink-50 text-red-700 rounded-lg border border-red-200 hover:from-red-100 hover:to-pink-100 transition-all duration-200 shadow-sm"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span>Delete Template</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
