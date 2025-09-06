@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { QuestionFilter } from '@/components/problem-bank/question-filter'
 import type { MistakeWithQuestion } from '@/lib/types'
+import { isEmptyHtml } from '@/lib/content-converter'
 
 interface FilterOptions {
   module: string
@@ -236,8 +237,22 @@ export function MistakeNotebookClient({
                             {getStatusBadge(mistake.status)}
                           </div>
                           <div className="text-sm text-gray-900 mb-2">
-                            {question.question_text.substring(0, 150)}
-                            {question.question_text.length > 150 && '...'}
+                            {(() => {
+                              // HTML-first rendering for question preview
+                              let content = ''
+                              if (question.question_html && !isEmptyHtml(question.question_html)) {
+                                content = question.question_html.length > 150
+                                  ? `${question.question_html.substring(0, 150)}...`
+                                  : question.question_html
+                                // For preview, show plain text to avoid HTML complexity
+                                return content.replace(/<[^>]*>/g, ' ').substring(0, 150) + (content.length > 150 ? '...' : '')
+                              } else {
+                                content = question.question_text.length > 150
+                                  ? `${question.question_text.substring(0, 150)}...`
+                                  : question.question_text
+                                return content
+                              }
+                            })()}
                           </div>
                           <div className="flex items-center text-xs text-gray-500 space-x-4">
                             <span>

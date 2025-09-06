@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { Question } from '../../lib/exam-service'
-import { renderTextWithFormattingAndMath } from './question-display'
+import { renderHtmlContent } from './question-display'
 import { CheckCircle, XCircle, ArrowRight } from 'lucide-react'
+import { isEmptyHtml } from '../../lib/content-converter'
 import { Button } from '../ui/button'
 
 interface AnswerRevealCardProps {
@@ -34,9 +35,23 @@ export function AnswerRevealCard({
         Object.entries(question.options).find(
           ([key, value]) => key === question.correct_answer
         )
-      return correctOption
-        ? `${question.correct_answer}. ${correctOption[1]}`
-        : question.correct_answer
+      
+      if (correctOption) {
+        let optionText = correctOption[1]
+        
+        // Handle JSON string options
+        if (typeof optionText === 'string' && optionText.startsWith('{')) {
+          try {
+            const parsed = JSON.parse(optionText)
+            optionText = parsed.text || optionText
+          } catch {
+            // Keep original if parsing fails
+          }
+        }
+        
+        return `${question.correct_answer}. ${optionText}`
+      }
+      return question.correct_answer
     }
     return question.correct_answer
   }
@@ -99,9 +114,11 @@ export function AnswerRevealCard({
             </h4>
             <div className="p-3 rounded-lg border bg-green-50 border-green-200">
               <div className="text-sm">
-                {renderTextWithFormattingAndMath(
-                  getCorrectAnswerDisplay() || 'Answer not available'
-                )}
+                {(() => {
+                  const correctAnswer = getCorrectAnswerDisplay() || 'Answer not available'
+                  // For simple text answers, just display as text
+                  return <span className="text-gray-900">{correctAnswer}</span>
+                })()}
               </div>
             </div>
           </div>
@@ -131,11 +148,22 @@ export function AnswerRevealCard({
             </div>
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="text-sm text-gray-700">
-                {renderTextWithFormattingAndMath(
-                  showDetailedExplanation || question.explanation.length <= 300
+                {(() => {
+                  const explanationContent = showDetailedExplanation || question.explanation.length <= 300
                     ? question.explanation
                     : question.explanation.substring(0, 300) + '...'
-                )}
+                  
+                  // Priority: HTML first, then fallback to markdown rendering
+                  if (question.explanation_html && !isEmptyHtml(question.explanation_html)) {
+                    const htmlContent = showDetailedExplanation || question.explanation_html.length <= 300
+                      ? question.explanation_html
+                      : question.explanation_html.substring(0, 300) + '...'
+                    return renderHtmlContent(htmlContent)
+                  } else {
+                    // Fallback to simple text rendering for now
+                    return <span className="text-gray-700">{explanationContent}</span>
+                  }
+                })()}
               </div>
             </div>
           </div>

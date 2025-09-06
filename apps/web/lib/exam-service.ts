@@ -31,9 +31,11 @@ export interface Question {
   question_html?: string | null  // HTML version of question content
   question_image_url: string | null
   options: Record<string, string> | null
+  options_html?: Record<string, string> | null  // HTML version of options
   correct_answer: string
   correct_answers: string[] | null
   explanation: string | null
+  explanation_html?: string | null  // HTML version of explanation
   points: number
   topic_tags: string[] | null
   table_data?: {

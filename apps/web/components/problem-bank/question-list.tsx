@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../contexts/auth-context'
 import { supabase } from '../../lib/supabase'
-import { renderTextWithFormattingAndMath } from '../exam/question-display'
+import { renderHtmlContent } from '../exam/question-display'
+import { isEmptyHtml } from '../../lib/content-converter'
 
 interface Question {
   id: string
@@ -14,9 +15,12 @@ interface Question {
   question_type: string
   difficulty_level: string
   question_text: string
+  question_html?: string | null
   options: any
+  options_html?: any
   correct_answer: string
   explanation: string
+  explanation_html?: string | null
   topic_tags: string[]
   is_incorrect?: boolean
   exam_title?: string | null
@@ -103,9 +107,9 @@ export function QuestionList({
 
       // For other objects, try to extract meaningful content
       if (value.content || value.text || value.value) {
-        return renderTextWithFormattingAndMath(
-          value.content || value.text || value.value
-        )
+        const textContent = value.content || value.text || value.value
+        // Simple text rendering for extracted content
+        return <span className="text-gray-900">{textContent}</span>
       }
 
       // If it has imageUrl and text properties (common option format)
@@ -113,7 +117,7 @@ export function QuestionList({
         return (
           <div className="space-y-1">
             {value.text && (
-              <div>{renderTextWithFormattingAndMath(value.text)}</div>
+              <div className="text-gray-900">{value.text}</div>
             )}
             {value.imageUrl && (
               <img
@@ -157,7 +161,7 @@ export function QuestionList({
           return (
             <div className="space-y-1">
               {parsed.text && (
-                <div>{renderTextWithFormattingAndMath(parsed.text)}</div>
+                <div className="text-gray-900">{parsed.text}</div>
               )}
               {parsed.imageUrl && (
                 <img
@@ -172,7 +176,7 @@ export function QuestionList({
 
         // If parsed but not recognized format, fall back to string rendering
         if (typeof parsed === 'string') {
-          return renderTextWithFormattingAndMath(parsed)
+          return <span className="text-gray-900">{parsed}</span>
         }
 
         // For other parsed objects, show a meaningful representation
@@ -182,8 +186,8 @@ export function QuestionList({
       }
     }
 
-    // Regular text rendering
-    return renderTextWithFormattingAndMath(value as string)
+    // Regular text rendering - just display as text for now
+    return <span className="text-gray-900">{value as string}</span>
   }
 
   const getDifficultyColor = (difficulty: string) => {
@@ -434,11 +438,24 @@ export function QuestionList({
                   </div>
 
                   {/* Question Preview */}
-                  <p className="text-gray-900 text-sm mb-2">
-                    {question.question_text.length > 150
-                      ? `${question.question_text.substring(0, 150)}...`
-                      : question.question_text}
-                  </p>
+                  <div className="text-gray-900 text-sm mb-2">
+                    {(() => {
+                      // HTML-first rendering for question preview
+                      let content = ''
+                      if (question.question_html && !isEmptyHtml(question.question_html)) {
+                        content = question.question_html.length > 150
+                          ? `${question.question_html.substring(0, 150)}...`
+                          : question.question_html
+                        // For preview, just show plain text to avoid HTML complexity
+                        return content.replace(/<[^>]*>/g, ' ').substring(0, 150) + (content.length > 150 ? '...' : '')
+                      } else {
+                        content = question.question_text.length > 150
+                          ? `${question.question_text.substring(0, 150)}...`
+                          : question.question_text
+                        return content
+                      }
+                    })()}
+                  </div>
 
                   {/* Topics */}
                   {question.topic_tags && question.topic_tags.length > 0 && (
@@ -483,9 +500,20 @@ export function QuestionList({
                       <h4 className="font-medium text-gray-900 mb-2">
                         Question:
                       </h4>
-                      <p className="text-gray-700 whitespace-pre-wrap">
-                        {question.question_text}
-                      </p>
+                      <div className="text-gray-700">
+                        {(() => {
+                          // HTML-first rendering for full question
+                          if (question.question_html && !isEmptyHtml(question.question_html)) {
+                            return renderHtmlContent(question.question_html)
+                          } else {
+                            return (
+                              <div className="whitespace-pre-wrap">
+                                {question.question_text}
+                              </div>
+                            )
+                          }
+                        })()}
+                      </div>
                     </div>
 
                     {/* Options (for multiple choice) */}
@@ -535,14 +563,26 @@ export function QuestionList({
                     )}
 
                     {/* Explanation */}
-                    {question.explanation && (
+                    {(question.explanation || (question.explanation_html && !isEmptyHtml(question.explanation_html))) && (
                       <div>
                         <h4 className="font-medium text-gray-900 mb-2">
                           Explanation:
                         </h4>
-                        <p className="text-gray-700 whitespace-pre-wrap">
-                          {question.explanation}
-                        </p>
+                        <div className="text-gray-700">
+                          {(() => {
+                            // HTML-first rendering for explanation
+                            if (question.explanation_html && !isEmptyHtml(question.explanation_html)) {
+                              return renderHtmlContent(question.explanation_html)
+                            } else if (question.explanation) {
+                              return (
+                                <div className="whitespace-pre-wrap">
+                                  {question.explanation}
+                                </div>
+                              )
+                            }
+                            return null
+                          })()}
+                        </div>
                       </div>
                     )}
                   </div>

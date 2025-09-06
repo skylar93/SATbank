@@ -120,6 +120,9 @@ function preprocessCustomMarkdown(text) {
   // Process LaTeX after handling center alignment (for content outside :: tags)
   text = processLatexMath(text);
   
+  // Handle em dash conversion (--- to —)
+  text = text.replace(/---/g, '—');
+  
   // Handle blank spaces (multiple underscores for fill-in-the-blank)
   // Convert sequences of 4+ underscores to proper blank spaces
   text = text.replace(/_{4,}/g, (match) => {
