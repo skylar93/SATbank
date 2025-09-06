@@ -285,24 +285,79 @@ function extractMainContentFromHtml(questionHTML) {
   // Remove the aggressive div removal that might be affecting lists
   
   // 3. Add line breaks before question patterns (Which choice, Which answer, What, etc.)
-  // Look for questions that start with these patterns at the end of content
+  // This is the MAIN FEATURE to separate passage from question with EXACTLY double line breaks
+  
+  // Clean up excessive whitespace first
+  content = content.replace(/\n\s*\n\s*\n+/g, '\n\n');
+  
+  // Enhanced question patterns - more comprehensive matching
   const questionPatterns = [
-    /(\s*)(Which\s+choice\s+[^?]*\?)/gi,
-    /(\s*)(Which\s+answer\s+[^?]*\?)/gi,
-    /(\s*)(Which\s+[^?]*\?)/gi,
-    /(\s*)(What\s+[^?]*\?)/gi,
-    /(\s*)(How\s+[^?]*\?)/gi,
-    /(\s*)(Why\s+[^?]*\?)/gi,
-    /(\s*)(Where\s+[^?]*\?)/gi,
-    /(\s*)(When\s+[^?]*\?)/gi
+    // Specific patterns first (more precise)
+    /(As used in [^,]*,\s*[^?]*\?)/gi,
+    /(Based on the [^,]*,\s*[^?]*\?)/gi,
+    /(According to [^,]*,\s*[^?]*\?)/gi,
+    /(In the context of [^,]*,\s*[^?]*\?)/gi,
+    
+    // Question starters
+    /(Which\s+choice\s+most\s+[^?]*\?)/gi,
+    /(Which\s+choice\s+best\s+[^?]*\?)/gi,
+    /(Which\s+choice\s+[^?]*completes[^?]*\?)/gi,
+    /(Which\s+choice\s+[^?]*\?)/gi,
+    /(Which\s+answer\s+[^?]*\?)/gi,
+    /(Which\s+statement\s+[^?]*\?)/gi,
+    /(Which\s+[^?]*\?)/gi,
+    
+    // Other question words
+    /(What\s+[^?]*\?)/gi,
+    /(How\s+[^?]*\?)/gi,
+    /(Why\s+[^?]*\?)/gi,
+    /(Where\s+[^?]*\?)/gi,
+    /(When\s+[^?]*\?)/gi
   ];
   
-  questionPatterns.forEach(pattern => {
-    content = content.replace(pattern, (match, whitespace, questionText) => {
-      // Add double line break before the question
-      return '\n\n' + questionText.trim();
-    });
-  });
+  // Find the FIRST question in content and add line breaks
+  let questionProcessed = false;
+  
+  for (const pattern of questionPatterns) {
+    if (questionProcessed) break;
+    
+    // Reset regex lastIndex
+    pattern.lastIndex = 0;
+    
+    const match = pattern.exec(content);
+    if (match) {
+      const fullMatch = match[0];
+      const matchIndex = match.index;
+      
+      // Get context before the question
+      const beforeMatch = content.substring(Math.max(0, matchIndex - 200), matchIndex);
+      
+      // Check if there are already line breaks
+      const hasExistingBreaks = /<br\s*\/?>\s*<br\s*\/?>\s*$/i.test(beforeMatch);
+      const endsWithParagraph = /<\/p>\s*$/i.test(beforeMatch);
+      const endsWithBlockquote = /<\/blockquote>\s*$/i.test(beforeMatch);
+      const endsWithDiv = /<\/div>\s*$/i.test(beforeMatch);
+      
+      // Only add breaks if needed
+      if (!hasExistingBreaks) {
+        let replacement;
+        
+        // Special handling for bullet point questions (notes format)
+        if (content.includes('student has taken the following notes') || 
+            content.includes('The student wants to')) {
+          // For notes questions, add minimal spacing to keep student part closer
+          replacement = '<br>' + fullMatch.trim();
+        } else {
+          // For regular questions, add SINGLE break (user prefers one line gap)
+          replacement = '<br>' + fullMatch.trim();
+        }
+        
+        // Replace the first occurrence only
+        content = content.substring(0, matchIndex) + replacement + content.substring(matchIndex + fullMatch.length);
+        questionProcessed = true;
+      }
+    }
+  }
   
   // 2. Convert underscores to proper HTML blank lines
   // Replace sequences of underscores (5 or more) with HTML blank line spans
@@ -321,6 +376,8 @@ function extractMainContentFromHtml(questionHTML) {
   for (const [placeholder, originalContent] of protectedContent.entries()) {
     content = content.replace(placeholder, originalContent);
   }
+  
+  // Question formatting removed - keeping original behavior
   
   // REDUCE INDENTATION AND ADD BULLET STYLING
   // Reduce blockquote indentation
