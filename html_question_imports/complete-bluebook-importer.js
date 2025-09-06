@@ -143,9 +143,50 @@ function extractMainContentFromHtml(questionHTML) {
   content = content.replace(/<meta[^>]*>/gi, '');
   content = content.replace(/<title[^>]*>.*?<\/title>/gi, '');
   
-  // Remove script and style tags completely (but keep their content if it's meaningful)
+  // Remove script tags but preserve essential styles
   content = content.replace(/<script[^>]*>.*?<\/script>/gis, '');
-  content = content.replace(/<style[^>]*>.*?<\/style>/gis, '');
+  
+  // Preserve list-related styles but remove other styles
+  content = content.replace(/<style[^>]*>(.*?)<\/style>/gis, (match, styleContent) => {
+    // Keep styles that are essential for lists and formatting
+    if (styleContent.includes('list-style') || styleContent.includes('ul ') || styleContent.includes('ol ') || styleContent.includes('li ')) {
+      return match;
+    }
+    // Remove other styles
+    return '';
+  });
+  
+  // PRESERVE LIST STRUCTURES BEFORE CLEANING
+  // Mark and protect important HTML structures that we want to keep
+  const protectedTags = ['blockquote', 'ul', 'ol', 'li', 'p', 'br', 'strong', 'em', 'sup', 'sub'];
+  const protectedContent = new Map();
+  let protectedIndex = 0;
+  
+  // Protect blockquotes with lists
+  content = content.replace(/<blockquote[^>]*>.*?<\/blockquote>/gis, (match) => {
+    if (match.includes('<ul>') || match.includes('<li>')) {
+      const placeholder = `__PROTECTED_BLOCKQUOTE_${protectedIndex}__`;
+      protectedContent.set(placeholder, match);
+      protectedIndex++;
+      return placeholder;
+    }
+    return match;
+  });
+  
+  // Protect standalone lists
+  content = content.replace(/<ul[^>]*>.*?<\/ul>/gis, (match) => {
+    const placeholder = `__PROTECTED_UL_${protectedIndex}__`;
+    protectedContent.set(placeholder, match);
+    protectedIndex++;
+    return placeholder;
+  });
+  
+  content = content.replace(/<ol[^>]*>.*?<\/ol>/gis, (match) => {
+    const placeholder = `__PROTECTED_OL_${protectedIndex}__`;
+    protectedContent.set(placeholder, match);
+    protectedIndex++;
+    return placeholder;
+  });
   
   // FIRST: Cut off everything from the first option-wrapper BEFORE removing div tags
   // This is the most reliable method - works for ALL question formats
@@ -226,7 +267,24 @@ function extractMainContentFromHtml(questionHTML) {
   
   // ENHANCED FORMATTING IMPROVEMENTS
   
-  // 1. Add line breaks before question patterns (Which choice, Which answer, What, etc.)
+  // 1. Preserve blockquote and list structures
+  // Convert blockquote with bullet points to proper HTML structure
+  content = content.replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gis, (match, blockquoteContent) => {
+    // Look for ul/li structure inside blockquote and preserve it
+    if (blockquoteContent.includes('<ul>') && blockquoteContent.includes('<li>')) {
+      return `<blockquote>${blockquoteContent}</blockquote>`;
+    }
+    // If it's just text with line breaks, convert to proper list
+    else if (blockquoteContent.includes('<li>') || blockquoteContent.trim().startsWith('•')) {
+      return `<blockquote>${blockquoteContent}</blockquote>`;
+    }
+    return match; // Keep original if no list structure
+  });
+  
+  // 2. Preserve ul/li structure - don't remove list tags
+  // Remove the aggressive div removal that might be affecting lists
+  
+  // 3. Add line breaks before question patterns (Which choice, Which answer, What, etc.)
   // Look for questions that start with these patterns at the end of content
   const questionPatterns = [
     /(\s*)(Which\s+choice\s+[^?]*\?)/gi,
@@ -257,6 +315,49 @@ function extractMainContentFromHtml(questionHTML) {
   content = content.replace(/---/g, '—');
   // Also convert double dashes to em dash as backup
   content = content.replace(/--/g, '—');
+  
+  // RESTORE PROTECTED CONTENT
+  // Restore all protected HTML structures after cleaning
+  for (const [placeholder, originalContent] of protectedContent.entries()) {
+    content = content.replace(placeholder, originalContent);
+  }
+  
+  // REDUCE INDENTATION AND ADD BULLET STYLING
+  // Reduce blockquote indentation
+  content = content.replace(/<blockquote([^>]*style="[^"]*margin-left:\s*\d+px[^"]*")([^>]*)>/gi, (match, styleAttr, otherAttrs) => {
+    // Replace large margin-left values with smaller ones
+    const reducedStyle = styleAttr.replace(/margin-left:\s*\d+px/gi, 'margin-left: 15px');
+    return `<blockquote${reducedStyle}${otherAttrs}>`;
+  });
+  
+  // Ensure ul tags have proper styling with reduced padding
+  content = content.replace(/<ul([^>]*)>/gi, (match, attributes) => {
+    // Check if style attribute already exists
+    if (attributes.includes('style=')) {
+      // Add list-style if not present and reduce padding
+      return match.replace(/style="([^"]*)"/, (styleMatch, existingStyles) => {
+        let newStyles = existingStyles;
+        if (!existingStyles.includes('list-style')) {
+          newStyles += '; list-style-type: disc';
+        }
+        // Override any existing padding-left with a smaller value
+        newStyles = newStyles.replace(/padding-left:\s*[^;]+/gi, '');
+        newStyles += '; padding-left: 15px; margin-left: 0px';
+        return `style="${newStyles}"`;
+      });
+    } else {
+      // Add new style attribute with reduced padding
+      return `<ul${attributes} style="list-style-type: disc; padding-left: 15px; margin-left: 0px;">`;
+    }
+  });
+  
+  // Ensure li tags have proper styling
+  content = content.replace(/<li([^>]*)>/gi, (match, attributes) => {
+    if (!attributes.includes('style=')) {
+      return `<li${attributes} style="margin-bottom: 0.3em;">`;
+    }
+    return match;
+  });
   
   // Final cleanup: ensure we don't have too many consecutive line breaks
   content = content.replace(/\n\s*\n\s*\n+/g, '\n\n');
