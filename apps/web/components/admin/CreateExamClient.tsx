@@ -40,6 +40,7 @@ export function CreateExamClient() {
   const [isCreating, setIsCreating] = useState(false)
   const [showEnglishOnly, setShowEnglishOnly] = useState(false)
   const [groupByDate, setGroupByDate] = useState(true)
+  const [timeLimits, setTimeLimits] = useState<Record<string, number>>({})
 
   // Fetch templates and modules
   useEffect(() => {
@@ -88,6 +89,27 @@ export function CreateExamClient() {
   const selectedTemplate = selectedTemplateId 
     ? allTemplates.find(t => t.id === selectedTemplateId)
     : null
+
+  // Initialize time limits when template is selected
+  useEffect(() => {
+    if (selectedTemplate) {
+      const defaultLimits: Record<string, number> = {}
+      // Set default times: English modules 35 minutes, Math modules 32 minutes
+      const requiredSlots = getRequiredModuleSlots()
+      requiredSlots.forEach(slot => {
+        if (slot.includes('english')) {
+          defaultLimits[slot] = 35
+        } else if (slot.includes('math')) {
+          defaultLimits[slot] = 32
+        } else {
+          defaultLimits[slot] = 30 // Default for other types
+        }
+      })
+      setTimeLimits(defaultLimits)
+    } else {
+      setTimeLimits({})
+    }
+  }, [selectedTemplate])
 
   // Helper functions for module filtering and grouping
   const extractDateFromTitle = (title: string): { year: number | null, month: number | null, date: string } => {
@@ -213,7 +235,8 @@ export function CreateExamClient() {
         title: title.trim(),
         description: description.trim(),
         templateId: selectedTemplateId,
-        moduleAssignments
+        moduleAssignments,
+        timeLimits
       })
 
       if (result.success) {
@@ -360,45 +383,66 @@ export function CreateExamClient() {
               const compatibleModules = getCompatibleModules(moduleType)
               
               return (
-                <div key={moduleType} className="space-y-2">
-                  <Label>{formatModuleSlotName(moduleType)} Slot *</Label>
-                  <Select 
-                    onValueChange={(value) => 
-                      setModuleAssignments(prev => ({ ...prev, [moduleType]: value }))
-                    }
-                    value={moduleAssignments[moduleType] || undefined}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={`Select module for ${formatModuleSlotName(moduleType)}...`} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {groupByDate ? (
-                        Object.entries(groupModulesByDate(compatibleModules)).map(([date, modules]) => (
-                          <div key={date}>
-                            <div className="px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 sticky top-0">
-                              {date === 'Unknown' ? 'No Date Found' : date}
+                <div key={moduleType} className="space-y-4 p-4 border rounded-lg">
+                  <div className="space-y-2">
+                    <Label>{formatModuleSlotName(moduleType)} Slot *</Label>
+                    <Select 
+                      onValueChange={(value) => 
+                        setModuleAssignments(prev => ({ ...prev, [moduleType]: value }))
+                      }
+                      value={moduleAssignments[moduleType] || undefined}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={`Select module for ${formatModuleSlotName(moduleType)}...`} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {groupByDate ? (
+                          Object.entries(groupModulesByDate(compatibleModules)).map(([date, modules]) => (
+                            <div key={date}>
+                              <div className="px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 sticky top-0">
+                                {date === 'Unknown' ? 'No Date Found' : date}
+                              </div>
+                              {modules.map((module) => (
+                                <SelectItem key={module.id} value={module.id} className="pl-4">
+                                  {module.title}
+                                </SelectItem>
+                              ))}
                             </div>
-                            {modules.map((module) => (
-                              <SelectItem key={module.id} value={module.id} className="pl-4">
-                                {module.title}
-                              </SelectItem>
-                            ))}
-                          </div>
-                        ))
-                      ) : (
-                        compatibleModules.map((module) => (
-                          <SelectItem key={module.id} value={module.id}>
-                            {module.title}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                  {compatibleModules.length === 0 && (
-                    <p className="text-sm text-orange-600">
-                      No compatible modules found for {formatModuleSlotName(moduleType)}
+                          ))
+                        ) : (
+                          compatibleModules.map((module) => (
+                            <SelectItem key={module.id} value={module.id}>
+                              {module.title}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    {compatibleModules.length === 0 && (
+                      <p className="text-sm text-orange-600">
+                        No compatible modules found for {formatModuleSlotName(moduleType)}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor={`time-${moduleType}`}>Time Duration (minutes)</Label>
+                    <Input
+                      id={`time-${moduleType}`}
+                      type="number"
+                      min="1"
+                      max="180"
+                      value={timeLimits[moduleType] || ''}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value) || 0
+                        setTimeLimits(prev => ({ ...prev, [moduleType]: value }))
+                      }}
+                      placeholder={moduleType.includes('english') ? '35' : moduleType.includes('math') ? '32' : '30'}
+                    />
+                    <p className="text-xs text-gray-500">
+                      Default: {moduleType.includes('english') ? '35' : moduleType.includes('math') ? '32' : '30'} minutes
                     </p>
-                  )}
+                  </div>
                 </div>
               )
             })}

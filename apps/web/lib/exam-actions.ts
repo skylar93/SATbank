@@ -233,20 +233,28 @@ export async function createExamFromModules(data: {
   description: string
   templateId: string
   moduleAssignments: Record<string, string>
+  timeLimits?: Record<string, number>
 }) {
   const supabase = createClient()
   await checkAdminAuth(supabase)
 
   try {
-    // 1. Create the parent exam record
+    // 1. Create the parent exam record with time limits
+    const examData: any = {
+      title: data.title,
+      description: data.description,
+      template_id: data.templateId,
+      module_composition: data.moduleAssignments,
+    }
+
+    // Add time limits if provided
+    if (data.timeLimits) {
+      examData.time_limits = data.timeLimits
+    }
+
     const { data: newExam, error: examError } = await supabase
       .from('exams')
-      .insert({
-        title: data.title,
-        description: data.description,
-        template_id: data.templateId,
-        module_composition: data.moduleAssignments,
-      })
+      .insert(examData)
       .select()
       .single()
 
