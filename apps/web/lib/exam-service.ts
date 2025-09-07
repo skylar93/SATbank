@@ -131,28 +131,10 @@ export class ExamService {
     )
   }
 
-  // Get available exams for a student (including mock exams and assigned exams)
+  // Get available exams for a student (only assigned exams)
   static async getAvailableExams(userId: string): Promise<Exam[]> {
-    // Get assigned exams
-    const assignedExams = await this.getAssignedExams(userId)
-
-    // Get mock exams (available to all students)
-    const { data: mockExams, error } = await supabase
-      .from('exams')
-      .select('*')
-      .eq('is_mock_exam', true)
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
-
-    if (error) throw error
-
-    // Combine and deduplicate exams
-    const allExams = [...assignedExams, ...(mockExams || [])]
-    const uniqueExams = allExams.filter(
-      (exam, index, self) => index === self.findIndex((e) => e.id === exam.id)
-    )
-
-    return uniqueExams
+    // Only return assigned exams - no automatic mock exam access
+    return await this.getAssignedExams(userId)
   }
 
   // Get exam by ID

@@ -228,6 +228,56 @@ export async function addQuestionToExam(examId: string) {
   }
 }
 
+export async function activateExam(examId: string) {
+  const supabase = createClient()
+  await checkAdminAuth(supabase)
+
+  const { error } = await supabase
+    .from('exams')
+    .update({ is_active: true })
+    .eq('id', examId)
+
+  if (error) {
+    return { success: false, message: error.message }
+  }
+
+  revalidatePath('/admin/exams')
+  return { success: true }
+}
+
+export async function assignExamToStudents(
+  examId: string, 
+  studentIds: string[], 
+  dueDate?: string
+) {
+  const supabase = createClient()
+  const admin = await checkAdminAuth(supabase)
+
+  try {
+    // Create assignment records for each student
+    const assignments = studentIds.map(studentId => ({
+      exam_id: examId,
+      student_id: studentId,
+      assigned_by: admin.id,
+      due_date: dueDate ? new Date(dueDate).toISOString() : null,
+      is_active: true,
+    }))
+
+    const { error } = await supabase
+      .from('exam_assignments')
+      .insert(assignments)
+
+    if (error) {
+      throw error
+    }
+
+    revalidatePath('/admin/exams')
+    return { success: true, assignedCount: studentIds.length }
+  } catch (error: any) {
+    return { success: false, message: error.message }
+  }
+}
+
 export async function createExamFromModules(data: {
   title: string
   description: string
@@ -245,6 +295,7 @@ export async function createExamFromModules(data: {
       description: data.description,
       template_id: data.templateId,
       module_composition: data.moduleAssignments,
+      is_active: false, // Start as inactive - requires manual activation/assignment
     }
 
     // Add time limits if provided
