@@ -57,6 +57,7 @@ export function ExamsListClient() {
   const [filteredExams, setFilteredExams] = useState<ExamWithCurves[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [updatingExams, setUpdatingExams] = useState<Set<string>>(new Set())
   const [modalState, setModalState] = useState<{
     isOpen: boolean
     examId: string
@@ -92,29 +93,23 @@ export function ExamsListClient() {
         (exam: RpcExamData) => {
           // Determine answer release setting based on RPC data
           let answerReleaseSetting
-          if (exam.latest_attempt_visibility === null) {
-            // No attempts exist: default to immediate release
-            answerReleaseSetting = {
-              type: 'immediate' as const,
-            }
-          } else if (!exam.latest_attempt_visibility) {
-            answerReleaseSetting = {
-              type: 'hidden' as const,
-            }
-          } else if (
-            exam.latest_attempt_visibility &&
-            !exam.latest_attempt_visible_after
-          ) {
-            answerReleaseSetting = {
-              type: 'immediate' as const,
-            }
-          } else if (
-            exam.latest_attempt_visibility &&
-            exam.latest_attempt_visible_after
-          ) {
+          const isVisible = exam.latest_attempt_visibility
+          const visibleAfter = exam.latest_attempt_visible_after
+
+          if (visibleAfter) {
+            // If a future date is set, it's always 'scheduled', regardless of the 'isVisible' flag
             answerReleaseSetting = {
               type: 'scheduled' as const,
-              scheduled_date: new Date(exam.latest_attempt_visible_after),
+              scheduled_date: new Date(visibleAfter),
+            }
+          } else if (isVisible === true) {
+            answerReleaseSetting = {
+              type: 'immediate' as const,
+            }
+          } else {
+            // isVisible is false or null
+            answerReleaseSetting = {
+              type: 'hidden' as const,
             }
           }
 
@@ -145,6 +140,7 @@ export function ExamsListClient() {
 
   // Apply filtering when data or search changes
   useEffect(() => {
+    console.log('🔄 Filtering exams, exams length:', exams.length)
     if (!searchTerm.trim()) {
       setFilteredExams(exams)
     } else {
@@ -155,6 +151,7 @@ export function ExamsListClient() {
       )
       setFilteredExams(filtered)
     }
+    console.log('✅ filteredExams updated')
   }, [exams, searchTerm])
 
   const handleAnswerVisibilityUpdate = async (
@@ -217,6 +214,104 @@ export function ExamsListClient() {
       examId: '',
       examTitle: '',
     })
+  }
+
+  // Handle inline visibility updates with optimistic updates
+  const handleInlineVisibilityUpdate = async (
+    examId: string,
+    visibility: 'hidden' | 'immediate' | 'scheduled',
+    releaseDate?: string | null
+  ) => {
+    console.log('🔄 handleInlineVisibilityUpdate called:', { examId, visibility, releaseDate })
+    
+    // Backup original state for potential revert
+    const originalExams = [...exams]
+    const originalFilteredExams = [...filteredExams]
+    
+    // 1. Optimistic Update: Update the local state immediately
+    const newExams = exams.map(exam => {
+      if (exam.id === examId) {
+        let newSetting
+        if (visibility === 'scheduled' && releaseDate) {
+          newSetting = {
+            type: 'scheduled' as const,
+            scheduled_date: new Date(releaseDate)
+          }
+        } else if (visibility === 'immediate') {
+          newSetting = { type: 'immediate' as const }
+        } else {
+          newSetting = { type: 'hidden' as const }
+        }
+        
+        return {
+          ...exam,
+          answer_release_setting: newSetting
+        }
+      }
+      return exam
+    })
+    
+    // Also update filteredExams directly
+    const newFilteredExams = filteredExams.map(exam => {
+      if (exam.id === examId) {
+        let newSetting
+        if (visibility === 'scheduled' && releaseDate) {
+          newSetting = {
+            type: 'scheduled' as const,
+            scheduled_date: new Date(releaseDate)
+          }
+        } else if (visibility === 'immediate') {
+          newSetting = { type: 'immediate' as const }
+        } else {
+          newSetting = { type: 'hidden' as const }
+        }
+        
+        return {
+          ...exam,
+          answer_release_setting: newSetting
+        }
+      }
+      return exam
+    })
+    
+    console.log('🎯 Setting optimistic update:', newExams.find(e => e.id === examId)?.answer_release_setting)
+    console.log('🎯 New filtered exam for ID:', newFilteredExams.find(e => e.id === examId)?.answer_release_setting)
+    
+    setExams(newExams)
+    setFilteredExams(newFilteredExams)
+    
+    console.log('✅ State updates called')
+
+    // Mark as updating
+    setUpdatingExams(prev => new Set(prev).add(examId))
+
+    try {
+      // 2. Call the Server Action
+      const { updateAnswerVisibilityForAttempt } = await import('@/lib/exam-actions')
+      const result = await updateAnswerVisibilityForAttempt(examId, visibility, releaseDate)
+
+      if (!result.success) {
+        // 3. Handle Failure: Revert to the original state
+        setExams(originalExams)
+        setFilteredExams(originalFilteredExams)
+        alert(`Failed to update: ${result.message}`)
+      } else {
+        // 4. On success, optimistic update was correct, no refetch needed
+        console.log('✅ Answer visibility updated successfully')
+      }
+    } catch (error) {
+      console.error('Error updating answer visibility:', error)
+      setExams(originalExams)
+      setFilteredExams(originalFilteredExams)
+      alert('Failed to update answer visibility. Please try again.')
+    } finally {
+      // Remove from updating set
+      setUpdatingExams(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(examId)
+        return newSet
+      })
+    }
   }
 
   const handleExamCreated = (newExamId: string) => {
@@ -441,6 +536,8 @@ export function ExamsListClient() {
                       exam={exam}
                       openAnswerModal={openAnswerModal}
                       onDeleteTemplate={handleDeleteTemplate}
+                      isUpdating={updatingExams.has(exam.id)}
+                      onVisibilityUpdate={handleInlineVisibilityUpdate}
                     />
                   ))}
                 </tbody>

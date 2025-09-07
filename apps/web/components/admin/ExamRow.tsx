@@ -35,9 +35,11 @@ interface ExamRowProps {
   exam: ExamWithCurves
   openAnswerModal: (examId: string, examTitle: string) => void
   onDeleteTemplate?: (examId: string, examTitle: string) => void
+  isUpdating?: boolean
+  onVisibilityUpdate?: (examId: string, visibility: 'hidden' | 'immediate' | 'scheduled', releaseDate?: string | null) => void
 }
 
-export function ExamRow({ exam, openAnswerModal, onDeleteTemplate }: ExamRowProps) {
+export function ExamRow({ exam, openAnswerModal, onDeleteTemplate, isUpdating, onVisibilityUpdate }: ExamRowProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [allCurves, setAllCurves] = useState<ScoringCurve[]>([])
 
@@ -129,6 +131,8 @@ export function ExamRow({ exam, openAnswerModal, onDeleteTemplate }: ExamRowProp
             <AnswerVisibilityControl
               examId={exam.id}
               currentVisibility={exam.answer_release_setting}
+              isUpdating={isUpdating}
+              onVisibilityChange={onVisibilityUpdate}
             />
           ) : (
             <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-500 rounded-full border border-gray-200">
@@ -220,6 +224,8 @@ export function ExamRow({ exam, openAnswerModal, onDeleteTemplate }: ExamRowProp
                         <AnswerVisibilityControl
                           examId={exam.id}
                           currentVisibility={exam.answer_release_setting}
+                          isUpdating={isUpdating}
+                          onVisibilityChange={onVisibilityUpdate}
                         />
                       </div>
                     ) : (

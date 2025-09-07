@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { updateAnswerVisibilityForAttempt } from '@/lib/exam-actions'
+import { useState } from 'react'
 import {
   Select,
   SelectContent,
@@ -25,71 +24,46 @@ interface AnswerVisibilityControlProps {
     type: 'hidden' | 'immediate' | 'scheduled'
     scheduled_date?: Date
   }
+  isUpdating?: boolean
+  onVisibilityChange?: (examId: string, visibility: 'hidden' | 'immediate' | 'scheduled', releaseDate?: string | null) => void
 }
 
 export function AnswerVisibilityControl({
   examId,
   currentVisibility,
+  isUpdating = false,
+  onVisibilityChange
 }: AnswerVisibilityControlProps) {
-  const [isPending, startTransition] = useTransition()
+  console.log('🔍 AnswerVisibilityControl render:', { 
+    examId, 
+    currentVisibility: JSON.stringify(currentVisibility), 
+    isUpdating,
+    timestamp: new Date().getTime()
+  })
+  
   const [showCalendar, setShowCalendar] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     currentVisibility.scheduled_date || new Date()
   )
 
   const handleVisibilityChange = (value: string) => {
+    console.log('👁️ AnswerVisibilityControl handleVisibilityChange:', { examId, value })
+    
     if (value === 'scheduled') {
       setShowCalendar(true)
       return
     }
 
     const visibility = value as 'hidden' | 'immediate'
-    startTransition(async () => {
-      try {
-        // Debug: Check client-side session before calling server action
-        const { supabase } = await import('@/lib/supabase')
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-        console.log('🔍 Client-side session check before server action:', {
-          hasSession: !!session,
-          sessionError: sessionError?.message,
-          accessToken: session?.access_token ? 'present' : 'missing',
-          userId: session?.user?.id,
-          userEmail: session?.user?.email
-        })
-
-        const result = await updateAnswerVisibilityForAttempt(
-          examId,
-          visibility
-        )
-        if (!result.success) {
-          alert(`Failed to update answer visibility: ${result.message}`)
-        }
-      } catch (error) {
-        console.error('Error updating answer visibility:', error)
-        alert('Failed to update answer visibility. Please try again.')
-      }
-    })
+    console.log('📞 Calling onVisibilityChange:', { examId, visibility })
+    onVisibilityChange?.(examId, visibility)
   }
 
   const handleScheduledRelease = (date: Date | undefined) => {
     if (date) {
       setSelectedDate(date)
-      startTransition(async () => {
-        try {
-          const result = await updateAnswerVisibilityForAttempt(
-            examId,
-            'scheduled',
-            date.toISOString()
-          )
-          if (!result.success) {
-            alert(`Failed to update answer visibility: ${result.message}`)
-          }
-          setShowCalendar(false)
-        } catch (error) {
-          console.error('Error updating answer visibility:', error)
-          alert('Failed to update answer visibility. Please try again.')
-        }
-      })
+      setShowCalendar(false)
+      onVisibilityChange?.(examId, 'scheduled', date.toISOString())
     }
   }
 
@@ -126,20 +100,19 @@ export function AnswerVisibilityControl({
     }
   }
 
-  const display = getDisplayContent()
-
   return (
     <div className="space-y-1">
       <div className="flex items-center space-x-2">
-        {isPending && <Loader2 className="h-3 w-3 animate-spin" />}
+        {isUpdating && <Loader2 className="h-3 w-3 animate-spin" />}
 
         <Select
+          key={`${examId}-${currentVisibility.type}`}
           value={currentVisibility.type}
           onValueChange={handleVisibilityChange}
-          disabled={isPending}
+          disabled={isUpdating}
         >
-          <SelectTrigger className={`w-auto h-auto ${display.style}`}>
-            <div className="flex items-center">{display.icon}</div>
+          <SelectTrigger className={`w-auto h-auto ${getDisplayContent().style}`}>
+            <div className="flex items-center">{getDisplayContent().icon}</div>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="immediate">
