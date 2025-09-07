@@ -83,16 +83,65 @@ export default function AdminReviewPage() {
         throw new Error('Failed to load attempt data')
       }
 
-      // Get all questions for this exam
-      const { data: questions, error: questionsError } = await supabase
-        .from('questions')
-        .select('*')
-        .eq('exam_id', attempt.exam_id)
-        .order('question_number')
-
-      if (questionsError) {
-        throw new Error('Failed to load questions')
+      // Smart detection: Determine which system this exam uses
+      const examSystem = attempt.exams.template_id ? 'template' : 'direct'
+      console.log('🔍 [Admin] Exam system detected:', examSystem)
+      console.log('🔍 [Admin] Template ID:', attempt.exams.template_id)
+      console.log('🔍 [Admin] Exam ID:', attempt.exam_id)
+      
+      let allQuestions: Question[] = []
+      
+      if (examSystem === 'template') {
+        // NEW SYSTEM: Template-based exam using exam_questions table
+        console.log('🔍 [Admin] Loading questions via exam_questions table')
+        const { data: examQuestions, error: examQuestionsError } = await supabase
+          .from('exam_questions')
+          .select(`
+            question_id,
+            module_type,
+            question_number,
+            questions(*)
+          `)
+          .eq('exam_id', attempt.exam_id)
+          .order('question_number')
+        
+        if (examQuestionsError) {
+          console.error('🚨 [Admin] exam_questions query error:', examQuestionsError)
+          throw new Error(`Failed to load questions from exam_questions: ${examQuestionsError.message}`)
+        }
+        
+        if (examQuestions) {
+          // Extract questions from the joined data
+          allQuestions = examQuestions
+            .filter(eq => eq.questions) // Filter out any null questions
+            .map(eq => ({
+              ...eq.questions,
+              // Add exam_questions metadata for context
+              _exam_question_number: eq.question_number,
+              _module_type: eq.module_type
+            }))
+          
+          console.log('🔍 [Admin] Template system loaded questions:', allQuestions.length)
+        }
+      } else {
+        // OLD SYSTEM: Direct exam_id connection in questions table
+        console.log('🔍 [Admin] Loading questions via direct exam_id connection')
+        const { data: questions, error: questionsError } = await supabase
+          .from('questions')
+          .select('*')
+          .eq('exam_id', attempt.exam_id)
+          .order('question_number')
+        
+        if (questionsError) {
+          console.error('🚨 [Admin] Direct questions query error:', questionsError)
+          throw new Error(`Failed to load questions directly: ${questionsError.message}`)
+        }
+        
+        allQuestions = questions || []
+        console.log('🔍 [Admin] Direct system loaded questions:', allQuestions.length)
       }
+
+      console.log('🔍 [Admin] Total questions loaded:', allQuestions.length)
 
       // Get user answers for this attempt
       const { data: userAnswers, error: answersError } = await supabase
@@ -108,7 +157,7 @@ export default function AdminReviewPage() {
       const reviewData: ReviewData = {
         attempt,
         exam: attempt.exams,
-        questions: questions || [],
+        questions: allQuestions,
         userAnswers: userAnswers || [],
       }
 

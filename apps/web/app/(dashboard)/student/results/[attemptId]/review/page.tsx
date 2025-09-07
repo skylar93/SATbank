@@ -144,36 +144,55 @@ export default function ReviewPage() {
       console.log('🔍 Test attempt data:', attempt)
       console.log('🔍 Exam ID from attempt:', attempt.exam_id)
 
-      // Get all questions for this exam from modules
-      console.log('🔍 Exam module_composition:', attempt.exams.module_composition)
+      // Smart detection: Determine which system this exam uses
+      const examSystem = attempt.exams.template_id ? 'template' : 'direct'
+      console.log('🔍 Exam system detected:', examSystem)
+      console.log('🔍 Template ID:', attempt.exams.template_id)
+      console.log('🔍 Module composition:', attempt.exams.module_composition)
       
       let allQuestions: Question[] = []
       
-      if (attempt.exams.module_composition) {
-        // For modular exams, get questions from each module
-        const moduleIds = Object.values(attempt.exams.module_composition).filter(id => id)
-        console.log('🔍 Module IDs:', moduleIds)
+      if (examSystem === 'template') {
+        // NEW SYSTEM: Template-based exam using exam_questions table
+        console.log('🔍 Loading questions via exam_questions table')
+        const { data: examQuestions, error: examQuestionsError } = await supabase
+          .from('exam_questions')
+          .select(`
+            question_id,
+            module_type,
+            question_number,
+            questions(*)
+          `)
+          .eq('exam_id', attempt.exam_id)
+          .order('question_number')
         
-        for (const moduleId of moduleIds) {
-          console.log('🔍 Fetching questions for module:', moduleId)
-          const { data: moduleQuestions, error: moduleError } = await supabase
-            .from('questions')
-            .select('*')
-            .eq('exam_id', moduleId)
-            .order('question_number')
+        if (examQuestionsError) {
+          console.error('🚨 exam_questions query error:', examQuestionsError)
+          throw new Error(`Failed to load questions from exam_questions: ${examQuestionsError.message}`)
+        }
+        
+        if (examQuestions) {
+          // Extract questions from the joined data
+          allQuestions = examQuestions
+            .filter(eq => eq.questions) // Filter out any null questions
+            .map(eq => ({
+              ...eq.questions,
+              // Add exam_questions metadata for context
+              _exam_question_number: eq.question_number,
+              _module_type: eq.module_type
+            }))
           
-          if (moduleError) {
-            console.error('🚨 Module questions error:', moduleError)
-            throw new Error(`Failed to load questions for module ${moduleId}: ${moduleError.message}`)
-          }
-          
-          if (moduleQuestions) {
-            allQuestions = [...allQuestions, ...moduleQuestions]
-          }
+          console.log('🔍 Template system loaded questions:', allQuestions.length)
+          console.log('🔍 Questions sample:', allQuestions.slice(0, 2).map(q => ({ 
+            id: q.id, 
+            question_number: q._exam_question_number, 
+            module: q._module_type,
+            original_exam_id: q.exam_id 
+          })))
         }
       } else {
-        // Fallback for non-modular exams
-        console.log('🔍 Fetching questions for exam_id:', attempt.exam_id)
+        // OLD SYSTEM: Direct exam_id connection in questions table
+        console.log('🔍 Loading questions via direct exam_id connection')
         const { data: questions, error: questionsError } = await supabase
           .from('questions')
           .select('*')
@@ -181,15 +200,20 @@ export default function ReviewPage() {
           .order('question_number')
         
         if (questionsError) {
-          console.error('🚨 Questions query error details:', questionsError)
-          throw new Error(`Failed to load questions: ${questionsError.message}`)
+          console.error('🚨 Direct questions query error:', questionsError)
+          throw new Error(`Failed to load questions directly: ${questionsError.message}`)
         }
         
         allQuestions = questions || []
+        console.log('🔍 Direct system loaded questions:', allQuestions.length)
+        console.log('🔍 Questions sample:', allQuestions.slice(0, 2).map(q => ({ 
+          id: q.id, 
+          question_number: q.question_number, 
+          exam_id: q.exam_id 
+        })))
       }
 
       console.log('🔍 Total questions loaded:', allQuestions.length)
-      console.log('🔍 Questions sample:', allQuestions.slice(0, 2).map(q => ({ id: q.id, question_number: q.question_number, exam_id: q.exam_id })))
 
       // Get user answers for this attempt
       const { data: userAnswers, error: answersError } = await supabase
