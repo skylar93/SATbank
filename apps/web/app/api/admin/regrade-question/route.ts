@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { createClient } from '@supabase/supabase-js'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { ScoringService } from '../../../../lib/scoring-service'
 
 interface RegradeQuestionRequest {
@@ -23,14 +22,9 @@ export async function POST(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SET' : 'MISSING'
   )
   try {
-    const cookieStore = cookies()
-    console.log(
-      'Available cookies:',
-      cookieStore.getAll().map((c) => c.name)
-    )
     console.log('Authorization header:', request.headers.get('authorization'))
 
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    const supabase = createClient()
 
     // Try to get access token from header if cookies don't work
     const authHeader = request.headers.get('authorization')
@@ -156,7 +150,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Temporarily use service role to bypass RLS for debugging
-    const supabaseService = createClient(supabaseUrl, serviceKey, {
+    const supabaseService = createSupabaseClient(supabaseUrl, serviceKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     })
 

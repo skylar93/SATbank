@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { renderHtmlContent } from '../exam/question-display'
 import { isEmptyHtml } from '../../lib/content-converter'
+import { ContentRenderer } from '../content-renderer'
 
 interface Question {
   id: string
@@ -529,17 +530,17 @@ export function EnhancedIncorrectAnswersSection({
                           // HTML-first rendering for question preview
                           let content = ''
                           if (question.question_html && !isEmptyHtml(question.question_html)) {
-                            content = question.question_html.length > 150
-                              ? `${question.question_html.substring(0, 150)}...`
-                              : question.question_html
-                            // For preview, show plain text to avoid HTML complexity
-                            return content.replace(/<[^>]*>/g, ' ').substring(0, 150) + (content.length > 150 ? '...' : '')
+                            content = question.question_html
                           } else {
-                            content = question.question_text.length > 150
-                              ? `${question.question_text.substring(0, 150)}...`
-                              : question.question_text
-                            return content
+                            content = question.question_text
                           }
+
+                          // Create a truncated preview for display
+                          const truncatedContent = content.length > 150 ? content.substring(0, 150) + '...' : content
+
+                          // For preview, show a simplified version without full rendering
+                          // Strip HTML tags for preview but preserve text content
+                          return truncatedContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
                         })()}
                       </div>
 
@@ -613,7 +614,12 @@ export function EnhancedIncorrectAnswersSection({
                           {(() => {
                             // HTML-first rendering for full question
                             if (question.question_html && !isEmptyHtml(question.question_html)) {
-                              return renderHtmlContent(question.question_html)
+                              // Check if content contains LaTeX math expressions
+                              if (question.question_html.includes('data-math')) {
+                                return <ContentRenderer htmlContent={question.question_html} />
+                              } else {
+                                return renderHtmlContent(question.question_html)
+                              }
                             } else {
                               return (
                                 <div className="whitespace-pre-wrap">
@@ -705,7 +711,12 @@ export function EnhancedIncorrectAnswersSection({
                             {(() => {
                               // HTML-first rendering for explanation
                               if (question.explanation_html && !isEmptyHtml(question.explanation_html)) {
-                                return renderHtmlContent(question.explanation_html)
+                                // Check if content contains LaTeX math expressions
+                                if (question.explanation_html.includes('data-math')) {
+                                  return <ContentRenderer htmlContent={question.explanation_html} />
+                                } else {
+                                  return renderHtmlContent(question.explanation_html)
+                                }
                               } else if (question.explanation) {
                                 return (
                                   <div className="whitespace-pre-wrap">

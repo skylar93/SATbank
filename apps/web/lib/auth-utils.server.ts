@@ -1,7 +1,6 @@
 'use server'
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClient } from './supabase/server'
 import { type Database } from '../../../packages/database-types/src/index'
 
 export interface AuthResult {
@@ -9,7 +8,7 @@ export interface AuthResult {
     id: string
     email?: string
   }
-  supabase: ReturnType<typeof createServerComponentClient<Database>>
+  supabase: ReturnType<typeof createClient>
 }
 
 /**
@@ -18,7 +17,7 @@ export interface AuthResult {
  * @returns Object containing user and supabase client
  */
 export async function verifyAdmin(): Promise<AuthResult> {
-  const supabase = createServerComponentClient<Database>({ cookies })
+  const supabase = createClient()
   const {
     data: { user },
     error: authError,
@@ -54,7 +53,7 @@ export async function verifyAdmin(): Promise<AuthResult> {
  * @returns Object containing user and supabase client
  */
 export async function verifyAuthenticated(): Promise<AuthResult> {
-  const supabase = createServerComponentClient<Database>({ cookies })
+  const supabase = createClient()
   const {
     data: { user },
     error,

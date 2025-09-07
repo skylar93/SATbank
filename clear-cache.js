@@ -1,0 +1,12 @@
+console.log('🧹 Clear browser cache and try again');
+console.log('1. Open http://localhost:3000');  
+console.log('2. Press F12 to open DevTools');
+console.log('3. Right-click refresh button → Empty Cache and Hard Reload');
+console.log('4. Login as admin@admin.sat');
+console.log('5. Go to /admin/students');
+console.log('6. Check Network tab for failed requests');
+console.log('');
+console.log('If it still shows 0 students, check:');
+console.log('- Console errors');
+console.log('- Network requests to /rest/v1/user_profiles');
+console.log('- Response data');

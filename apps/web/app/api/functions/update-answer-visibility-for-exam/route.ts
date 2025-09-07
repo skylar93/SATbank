@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { createClient } from '@supabase/supabase-js'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 interface UpdateVisibilityRequest {
   examId: string
@@ -11,8 +10,7 @@ interface UpdateVisibilityRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    const supabase = createClient()
 
     // Try to get access token from header if cookies don't work
     const authHeader = request.headers.get('authorization')
@@ -130,7 +128,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabaseService = createClient(supabaseUrl, serviceKey, {
+    const supabaseService = createSupabaseClient(supabaseUrl, serviceKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     })
 

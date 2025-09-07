@@ -1,42 +1,17 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { createClient } from '@supabase/supabase-js'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   console.log('🔥 API ROUTE: test-attempts POST started')
   
   try {
-    const cookieStore = cookies()
-    
-    // Debug: Log all cookies to see what's available
-    const allCookies = cookieStore.getAll()
-    console.log('🍪 API: Available cookies:', allCookies.map(c => ({ 
-      name: c.name, 
-      hasValue: !!c.value,
-      valueLength: c.value?.length || 0
-    })))
-    
-    // Look for Supabase auth cookies specifically
-    const authCookies = allCookies.filter(c => 
-      c.name.includes('supabase') || 
-      c.name.includes('sb-') || 
-      c.name.includes('auth')
-    )
-    console.log('🔐 API: Auth-related cookies:', authCookies.map(c => ({
-      name: c.name,
-      hasValue: !!c.value,
-      valuePreview: c.value?.substring(0, 50) + '...'
-    })))
-    
     // Check for Authorization header as alternative to cookies
     const authHeader = request.headers.get('authorization')
     console.log('🔑 API: Authorization header:', authHeader ? 'present' : 'missing')
     
-    // Create Supabase client with better error handling
-    const supabase = createRouteHandlerClient({ 
-      cookies: () => cookieStore
-    })
+    // Create Supabase client
+    const supabase = createClient()
     
     console.log('🔥 API: Supabase client created')
 
@@ -110,7 +85,7 @@ export async function POST(request: NextRequest) {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
       const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       
-      authenticatedSupabase = createClient(supabaseUrl, supabaseAnonKey, {
+      authenticatedSupabase = createSupabaseClient(supabaseUrl, supabaseAnonKey, {
         global: {
           headers: {
             Authorization: `Bearer ${token}`

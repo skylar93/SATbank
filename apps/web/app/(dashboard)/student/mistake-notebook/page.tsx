@@ -12,9 +12,12 @@ interface Question {
   question_type: string
   difficulty_level: string
   question_text: string
+  question_html?: string | null
   options: any
+  options_html?: any
   correct_answer: string
   explanation: string
+  explanation_html?: string | null
   topic_tags: string[]
   mistakeId?: string
   masteryStatus?: 'unmastered' | 'mastered'
@@ -61,9 +64,12 @@ export default function MistakeNotebookPage() {
             question_type,
             difficulty_level,
             question_text,
+            question_html,
             options,
+            options_html,
             correct_answer,
             explanation,
+            explanation_html,
             topic_tags
           )
         `

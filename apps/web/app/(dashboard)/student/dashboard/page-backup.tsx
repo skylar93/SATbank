@@ -1,6 +1,5 @@
 import { Suspense } from 'react'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
 import DashboardClient from '../../../../components/dashboard/DashboardClient'
 import { ExamService, type TestAttempt } from '../../../../lib/exam-service'
 import { AnalyticsService } from '../../../../lib/analytics-service'
@@ -51,7 +50,7 @@ function DashboardLoading() {
 async function getDashboardData(
   userId: string
 ): Promise<{ data: DashboardData; canShowResults: boolean }> {
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = createClient()
 
   try {
     // Try using the new RPC function first
@@ -154,7 +153,7 @@ async function fetchRecentAttempts(userId: string): Promise<TestAttempt[]> {
 }
 
 async function fetchPreviousMonthStats(userId: string) {
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = createClient()
   const now = new Date()
   const startOfPreviousMonth = new Date(
     now.getFullYear(),
@@ -207,7 +206,7 @@ async function fetchPreviousMonthStats(userId: string) {
 }
 
 async function fetchUserActivityDays(userId: string): Promise<string[]> {
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = createClient()
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
@@ -245,7 +244,7 @@ async function fetchUserActivityDays(userId: string): Promise<string[]> {
 async function fetchUserSubjectScores(
   userId: string
 ): Promise<{ reading: number; writing: number; math: number }> {
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = createClient()
 
   const { data: attempts, error } = await supabase
     .from('test_attempts')
@@ -338,7 +337,7 @@ async function fetchUserSubjectScores(
 }
 
 export default async function StudentDashboard() {
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = createClient()
 
   // Get the current user
   const {

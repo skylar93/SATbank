@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
 import { createExamFromModules } from '@/lib/exam-actions'
 import { toast } from 'sonner'
 
@@ -37,6 +38,8 @@ export function CreateExamClient() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
   const [moduleAssignments, setModuleAssignments] = useState<Record<string, string>>({})
   const [isCreating, setIsCreating] = useState(false)
+  const [showEnglishOnly, setShowEnglishOnly] = useState(false)
+  const [groupByDate, setGroupByDate] = useState(true)
 
   // Fetch templates and modules
   useEffect(() => {
@@ -86,12 +89,100 @@ export function CreateExamClient() {
     ? allTemplates.find(t => t.id === selectedTemplateId)
     : null
 
+  // Helper functions for module filtering and grouping
+  const extractDateFromTitle = (title: string): { year: number | null, month: number | null, date: string } => {
+    // Try to match patterns like "2024-03", "March 2024", etc.
+    const patterns = [
+      /(\d{4})-(\d{1,2})/,           // 2024-03
+      /(\d{4})\s*-\s*(\d{1,2})/,    // 2024 - 03
+      /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\s+(\d{4})/i, // March 2024
+      /(\d{4})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i      // 2024 March
+    ]
+
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    for (const pattern of patterns) {
+      const match = title.match(pattern)
+      if (match) {
+        if (pattern.toString().includes('Jan|Feb')) {
+          // Month name patterns
+          if (match[2]) {
+            // Pattern: Month Year
+            const monthIndex = monthNames.findIndex(m => match[1].toLowerCase().startsWith(m.toLowerCase()))
+            return {
+              year: parseInt(match[2]),
+              month: monthIndex !== -1 ? monthIndex + 1 : null,
+              date: `${match[2]}-${String(monthIndex + 1).padStart(2, '0')}`
+            }
+          } else {
+            // Pattern: Year Month
+            const monthIndex = monthNames.findIndex(m => match[2].toLowerCase().startsWith(m.toLowerCase()))
+            return {
+              year: parseInt(match[1]),
+              month: monthIndex !== -1 ? monthIndex + 1 : null,
+              date: `${match[1]}-${String(monthIndex + 1).padStart(2, '0')}`
+            }
+          }
+        } else {
+          // Numeric patterns
+          const year = parseInt(match[1])
+          const month = parseInt(match[2])
+          return {
+            year,
+            month,
+            date: `${year}-${String(month).padStart(2, '0')}`
+          }
+        }
+      }
+    }
+
+    return { year: null, month: null, date: 'Unknown' }
+  }
+
+  const hasEnglishSection = (module: ImportedModule): boolean => {
+    if (!module.module_composition) return false
+    return !!(module.module_composition.english1 || module.module_composition.english2)
+  }
+
+  const groupModulesByDate = (modules: ImportedModule[]) => {
+    const grouped: Record<string, ImportedModule[]> = {}
+    
+    modules.forEach(module => {
+      const { date } = extractDateFromTitle(module.title)
+      if (!grouped[date]) {
+        grouped[date] = []
+      }
+      grouped[date].push(module)
+    })
+
+    // Sort groups by date (most recent first)
+    const sortedGroups = Object.keys(grouped)
+      .sort((a, b) => {
+        if (a === 'Unknown') return 1
+        if (b === 'Unknown') return -1
+        return b.localeCompare(a)
+      })
+      .reduce((acc, date) => {
+        acc[date] = grouped[date].sort((a, b) => a.title.localeCompare(b.title))
+        return acc
+      }, {} as Record<string, ImportedModule[]>)
+
+    return sortedGroups
+  }
+
   const getCompatibleModules = (moduleType: string) => {
-    return allImportedModules.filter(module => {
+    let filteredModules = allImportedModules.filter(module => {
       if (!module.module_composition) return false
       // Check if the module_composition has the required module type set to true
       return module.module_composition[moduleType] === true
     })
+
+    // Apply English-only filter if enabled
+    if (showEnglishOnly) {
+      filteredModules = filteredModules.filter(hasEnglishSection)
+    }
+
+    return filteredModules
   }
 
   const getRequiredModuleSlots = () => {
@@ -238,6 +329,31 @@ export function CreateExamClient() {
             <p className="text-sm text-gray-600">
               Assign imported modules to each required slot for the selected template
             </p>
+            
+            {/* Filter Options */}
+            <div className="flex flex-wrap gap-4 pt-4 border-t">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="englishOnly" 
+                  checked={showEnglishOnly}
+                  onCheckedChange={(checked) => setShowEnglishOnly(checked === true)}
+                />
+                <Label htmlFor="englishOnly" className="text-sm">
+                  English sections only
+                </Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="groupByDate" 
+                  checked={groupByDate}
+                  onCheckedChange={(checked) => setGroupByDate(checked === true)}
+                />
+                <Label htmlFor="groupByDate" className="text-sm">
+                  Group by year/month
+                </Label>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             {getRequiredModuleSlots().map((moduleType) => {
@@ -256,11 +372,26 @@ export function CreateExamClient() {
                       <SelectValue placeholder={`Select module for ${formatModuleSlotName(moduleType)}...`} />
                     </SelectTrigger>
                     <SelectContent>
-                      {compatibleModules.map((module) => (
-                        <SelectItem key={module.id} value={module.id}>
-                          {module.title}
-                        </SelectItem>
-                      ))}
+                      {groupByDate ? (
+                        Object.entries(groupModulesByDate(compatibleModules)).map(([date, modules]) => (
+                          <div key={date}>
+                            <div className="px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 sticky top-0">
+                              {date === 'Unknown' ? 'No Date Found' : date}
+                            </div>
+                            {modules.map((module) => (
+                              <SelectItem key={module.id} value={module.id} className="pl-4">
+                                {module.title}
+                              </SelectItem>
+                            ))}
+                          </div>
+                        ))
+                      ) : (
+                        compatibleModules.map((module) => (
+                          <SelectItem key={module.id} value={module.id}>
+                            {module.title}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                   {compatibleModules.length === 0 && (

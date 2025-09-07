@@ -1,7 +1,6 @@
 'use server'
 
-import { createServerActionClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClient } from './supabase/server'
 import { revalidatePath } from 'next/cache'
 // Temporary local database type definition
 interface Database {
@@ -52,7 +51,7 @@ export async function updateExamCurve(
   curveType: 'english' | 'math',
   curveId: number | null
 ) {
-  const supabase = createServerActionClient<Database>({ cookies })
+  const supabase = createClient()
   await checkAdminAuth(supabase)
 
   const updateData =
@@ -78,7 +77,7 @@ export async function updateAnswerVisibilityForAttempt(
   visibility: 'hidden' | 'immediate' | 'scheduled',
   releaseDate?: string | null
 ) {
-  const supabase = createServerActionClient<Database>({ cookies })
+  const supabase = createClient()
   await checkAdminAuth(supabase)
 
   let updateData: any
@@ -106,7 +105,7 @@ export async function updateAnswerVisibilityForAttempt(
 }
 
 export async function createTestAttempt(attempt: any) {
-  const supabase = createServerActionClient<Database>({ cookies })
+  const supabase = createClient()
 
   const {
     data: { user },
@@ -132,7 +131,7 @@ export async function createTestAttempt(attempt: any) {
 }
 
 export async function createExam(formData: FormData) {
-  const supabase = createServerActionClient<Database>({ cookies })
+  const supabase = createClient()
   await checkAdminAuth(supabase)
 
   const title = formData.get('title') as string
@@ -165,7 +164,7 @@ export async function createExam(formData: FormData) {
 }
 
 export async function addQuestionToExam(examId: string) {
-  const supabase = createServerActionClient<Database>({ cookies })
+  const supabase = createClient()
   await checkAdminAuth(supabase)
 
   try {
@@ -235,7 +234,7 @@ export async function createExamFromModules(data: {
   templateId: string
   moduleAssignments: Record<string, string>
 }) {
-  const supabase = createServerActionClient<Database>({ cookies })
+  const supabase = createClient()
   await checkAdminAuth(supabase)
 
   try {
