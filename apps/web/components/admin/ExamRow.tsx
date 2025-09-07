@@ -22,9 +22,9 @@ interface ExamWithCurves {
   math_scoring_curve_id: number | null
   english_curve_name: string | null
   math_curve_name: string | null
-  template_id: string | null
-  is_custom_assignment: boolean
-  exam_type: 'original' | 'template' | 'custom'
+  template_id?: string | null
+  is_custom_assignment?: boolean
+  exam_type?: 'original' | 'template' | 'custom'
   answer_release_setting?: {
     type: 'hidden' | 'immediate' | 'scheduled'
     scheduled_date?: Date
@@ -88,7 +88,7 @@ export function ExamRow({ exam, openAnswerModal, onDeleteTemplate, isUpdating, o
               <div className="text-sm font-medium text-gray-900">
                 {exam.title}
               </div>
-              {exam.exam_type !== 'original' && (
+              {exam.exam_type && exam.exam_type !== 'original' && (
                 <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${
                   exam.exam_type === 'template' 
                     ? 'bg-blue-50 text-blue-700 border-blue-200' 
@@ -155,7 +155,7 @@ export function ExamRow({ exam, openAnswerModal, onDeleteTemplate, isUpdating, o
               Preview & Edit
             </Link>
             {/* Delete button - only for template/custom exams */}
-            {(exam.exam_type === 'template' || exam.exam_type === 'custom') && onDeleteTemplate && (
+            {exam.exam_type && (exam.exam_type === 'template' || exam.exam_type === 'custom') && onDeleteTemplate && (
               <button
                 onClick={() => onDeleteTemplate(exam.id, exam.title)}
                 className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full transition-all duration-200 border border-transparent hover:border-red-200"
@@ -255,7 +255,7 @@ export function ExamRow({ exam, openAnswerModal, onDeleteTemplate, isUpdating, o
                     Preview & Edit Questions
                   </Link>
                   {/* Delete button for templates/custom exams */}
-                  {(exam.exam_type === 'template' || exam.exam_type === 'custom') && onDeleteTemplate && (
+                  {exam.exam_type && (exam.exam_type === 'template' || exam.exam_type === 'custom') && onDeleteTemplate && (
                     <button
                       onClick={() => onDeleteTemplate(exam.id, exam.title)}
                       className="flex items-center space-x-2 px-4 py-2 text-sm font-medium bg-gradient-to-r from-red-50 to-pink-50 text-red-700 rounded-lg border border-red-200 hover:from-red-100 hover:to-pink-100 transition-all duration-200 shadow-sm"

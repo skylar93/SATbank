@@ -214,13 +214,15 @@ export class ExamService {
   // Get questions for exam module
   static async getQuestions(
     examId: string,
-    moduleType: ModuleType
+    moduleType: ModuleType,
+    supabaseClient?: any
   ): Promise<Question[]> {
     console.log(`🔍 getQuestions: Fetching questions for examId=${examId}, moduleType=${moduleType}`)
+    const client = supabaseClient || supabase
     
     // First try direct questions (for regular exams)
     console.log('🔍 getQuestions: Trying direct questions first...')
-    const { data: directQuestions, error: directError } = await supabase
+    const { data: directQuestions, error: directError } = await client
       .from('questions')
       .select('*')
       .eq('exam_id', examId)
@@ -242,7 +244,7 @@ export class ExamService {
 
     // If no direct questions, try linked questions (for mistake-based assignments)
     console.log('🔍 getQuestions: No direct questions found, trying linked questions...')
-    const { data: linkedQuestions, error: linkedError } = await supabase
+    const { data: linkedQuestions, error: linkedError } = await client
       .from('exam_questions')
       .select(
         `

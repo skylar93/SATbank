@@ -11,6 +11,7 @@ import {
 import { useAuth } from '../contexts/auth-context'
 import { checkAnswer } from '../lib/answer-checker'
 import { supabase } from '../lib/supabase'
+import { createClient } from '../lib/supabase/client'
 import { devLogger } from '../lib/logger'
 
 interface ExamAnswer {
@@ -63,11 +64,14 @@ export function useAdminPreviewState() {
         throw new Error('Exam not found')
       }
 
+      // Create authenticated client for admin preview
+      const authenticatedClient = createClient()
+
       // Load questions for all modules
       const moduleStates: ModuleState[] = []
 
       for (const moduleType of MODULE_ORDER) {
-        const questions = await ExamService.getQuestions(examId, moduleType)
+        const questions = await ExamService.getQuestions(examId, moduleType, authenticatedClient)
         const timeLimit = exam.time_limits[moduleType] || 60
 
         // Skip modules with no questions (don't add them to the array)

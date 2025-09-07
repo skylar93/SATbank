@@ -25,9 +25,9 @@ interface RpcExamData {
   latest_attempt_visibility: boolean | null
   latest_attempt_visible_after: string | null
   total_attempts_count: number
-  template_id: string | null
-  is_custom_assignment: boolean
-  exam_type: 'original' | 'template' | 'custom'
+  template_id?: string | null
+  is_custom_assignment?: boolean
+  exam_type?: 'original' | 'template' | 'custom'
 }
 
 // Transformed interface for UI consumption
@@ -40,9 +40,9 @@ interface ExamWithCurves {
   math_scoring_curve_id: number | null
   english_curve_name: string | null
   math_curve_name: string | null
-  template_id: string | null
-  is_custom_assignment: boolean
-  exam_type: 'original' | 'template' | 'custom'
+  template_id?: string | null
+  is_custom_assignment?: boolean
+  exam_type?: 'original' | 'template' | 'custom'
   answer_release_setting?: {
     type: 'hidden' | 'immediate' | 'scheduled'
     scheduled_date?: Date
@@ -93,23 +93,29 @@ export function ExamsListClient() {
         (exam: RpcExamData) => {
           // Determine answer release setting based on RPC data
           let answerReleaseSetting
-          const isVisible = exam.latest_attempt_visibility
-          const visibleAfter = exam.latest_attempt_visible_after
-
-          if (visibleAfter) {
-            // If a future date is set, it's always 'scheduled', regardless of the 'isVisible' flag
+          if (exam.latest_attempt_visibility === null) {
+            // No attempts exist: default to hidden (safer default)
             answerReleaseSetting = {
-              type: 'scheduled' as const,
-              scheduled_date: new Date(visibleAfter),
+              type: 'hidden' as const,
             }
-          } else if (isVisible === true) {
+          } else if (!exam.latest_attempt_visibility) {
+            answerReleaseSetting = {
+              type: 'hidden' as const,
+            }
+          } else if (
+            exam.latest_attempt_visibility &&
+            !exam.latest_attempt_visible_after
+          ) {
             answerReleaseSetting = {
               type: 'immediate' as const,
             }
-          } else {
-            // isVisible is false or null
+          } else if (
+            exam.latest_attempt_visibility &&
+            exam.latest_attempt_visible_after
+          ) {
             answerReleaseSetting = {
-              type: 'hidden' as const,
+              type: 'scheduled' as const,
+              scheduled_date: new Date(exam.latest_attempt_visible_after),
             }
           }
 
@@ -122,9 +128,9 @@ export function ExamsListClient() {
             math_scoring_curve_id: exam.math_curve_id,
             english_curve_name: exam.english_curve_name,
             math_curve_name: exam.math_curve_name,
-            template_id: exam.template_id,
-            is_custom_assignment: exam.is_custom_assignment,
-            exam_type: exam.exam_type,
+            template_id: exam.template_id || null,
+            is_custom_assignment: exam.is_custom_assignment || false,
+            exam_type: exam.exam_type || 'original',
             answer_release_setting: answerReleaseSetting,
           }
         }
