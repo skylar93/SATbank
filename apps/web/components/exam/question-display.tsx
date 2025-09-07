@@ -456,6 +456,15 @@ export function QuestionDisplay({
   onTryAgain,
   showCorrectAnswer = true,
 }: QuestionDisplayProps) {
+  // Early return if question is not provided
+  if (!question) {
+    return (
+      <div className="h-full flex items-center justify-center bg-white">
+        <div className="text-gray-500">Loading question...</div>
+      </div>
+    )
+  }
+
   const [isEditing, setIsEditing] = useState(false)
   const [localQuestion, setLocalQuestion] = useState(question)
   const [editForm, setEditForm] = useState({
@@ -478,6 +487,7 @@ export function QuestionDisplay({
   )
   
   // Get global editor mode from environment variable
+
   const getEditorMode = (): 'markdown' | 'dual' | 'html' => {
     return (process.env.NEXT_PUBLIC_EDITOR_MODE as 'markdown' | 'dual' | 'html') || 'markdown'
   }

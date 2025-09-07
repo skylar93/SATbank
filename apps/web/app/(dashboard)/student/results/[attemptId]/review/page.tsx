@@ -141,16 +141,55 @@ export default function ReviewPage() {
         throw new Error('Failed to load attempt data')
       }
 
-      // Get all questions for this exam
-      const { data: questions, error: questionsError } = await supabase
-        .from('questions')
-        .select('*')
-        .eq('exam_id', attempt.exam_id)
-        .order('question_number')
+      console.log('🔍 Test attempt data:', attempt)
+      console.log('🔍 Exam ID from attempt:', attempt.exam_id)
 
-      if (questionsError) {
-        throw new Error('Failed to load questions')
+      // Get all questions for this exam from modules
+      console.log('🔍 Exam module_composition:', attempt.exams.module_composition)
+      
+      let allQuestions: Question[] = []
+      
+      if (attempt.exams.module_composition) {
+        // For modular exams, get questions from each module
+        const moduleIds = Object.values(attempt.exams.module_composition).filter(id => id)
+        console.log('🔍 Module IDs:', moduleIds)
+        
+        for (const moduleId of moduleIds) {
+          console.log('🔍 Fetching questions for module:', moduleId)
+          const { data: moduleQuestions, error: moduleError } = await supabase
+            .from('questions')
+            .select('*')
+            .eq('exam_id', moduleId)
+            .order('question_number')
+          
+          if (moduleError) {
+            console.error('🚨 Module questions error:', moduleError)
+            throw new Error(`Failed to load questions for module ${moduleId}: ${moduleError.message}`)
+          }
+          
+          if (moduleQuestions) {
+            allQuestions = [...allQuestions, ...moduleQuestions]
+          }
+        }
+      } else {
+        // Fallback for non-modular exams
+        console.log('🔍 Fetching questions for exam_id:', attempt.exam_id)
+        const { data: questions, error: questionsError } = await supabase
+          .from('questions')
+          .select('*')
+          .eq('exam_id', attempt.exam_id)
+          .order('question_number')
+        
+        if (questionsError) {
+          console.error('🚨 Questions query error details:', questionsError)
+          throw new Error(`Failed to load questions: ${questionsError.message}`)
+        }
+        
+        allQuestions = questions || []
       }
+
+      console.log('🔍 Total questions loaded:', allQuestions.length)
+      console.log('🔍 Questions sample:', allQuestions.slice(0, 2).map(q => ({ id: q.id, question_number: q.question_number, exam_id: q.exam_id })))
 
       // Get user answers for this attempt
       const { data: userAnswers, error: answersError } = await supabase
@@ -166,7 +205,7 @@ export default function ReviewPage() {
       const reviewData: ReviewData = {
         attempt,
         exam: attempt.exams,
-        questions: questions || [],
+        questions: allQuestions,
         userAnswers: userAnswers || [],
       }
 
