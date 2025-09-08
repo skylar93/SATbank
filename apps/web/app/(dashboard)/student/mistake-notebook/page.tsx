@@ -142,28 +142,32 @@ export default function MistakeNotebookPage() {
   if (!user) return null
 
   return (
-    <div className="h-full bg-gray-50">
-      {/* Top Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Mistake Notebook
-            </h1>
-            <p className="text-gray-600">
-              Review your incorrectly answered questions and create custom
-              practice quizzes
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto py-8 px-4">
+        {/* Header Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Mistake Notebook
+              </h1>
+              <p className="text-gray-600">
+                Review your incorrectly answered questions and create custom practice quizzes
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-violet-500 rounded-xl flex items-center justify-center">
+              <span className="text-white text-xl">📝</span>
+            </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold text-lg">📝</span>
+
+          {/* Separator line */}
+          <div className="border-b border-gray-200 pb-6 mb-8">
+            <div className="text-sm text-gray-500">
+              Track your progress and master your mistakes
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="p-6">
         <EnhancedIncorrectAnswersSection
           questions={questions}
           loading={loading}

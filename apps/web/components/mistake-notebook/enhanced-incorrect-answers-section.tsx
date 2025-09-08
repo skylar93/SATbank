@@ -310,12 +310,12 @@ export function EnhancedIncorrectAnswersSection({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
         <div className="animate-pulse space-y-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="border border-gray-200 rounded-lg p-4">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+            <div key={i} className="border border-purple-200 rounded-xl p-4">
+              <div className="h-4 bg-purple-200 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-purple-200 rounded w-1/2"></div>
             </div>
           ))}
         </div>
@@ -325,32 +325,20 @@ export function EnhancedIncorrectAnswersSection({
 
   if (questions.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-6 text-center">
-        <div className="text-gray-400 mb-4">
-          <svg
-            className="mx-auto h-12 w-12"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-8 text-center">
+        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-purple-500 text-2xl">✅</span>
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">
           No incorrect answers yet!
         </h3>
-        <p className="text-gray-500 mb-4">
+        <p className="text-gray-600 mb-4">
           Great job! You haven't answered any questions incorrectly yet. Keep
           practicing to maintain your streak.
         </p>
         <Link
           href="/student/exams"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+          className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg"
         >
           Take Practice Exam
         </Link>
@@ -366,15 +354,42 @@ export function EnhancedIncorrectAnswersSection({
 
   return (
     <div className="space-y-6">
+      {/* Action Buttons Section */}
+      <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-2xl shadow-lg border border-purple-200 p-6 mb-8">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-violet-500 rounded-xl flex items-center justify-center">
+              <span className="text-white text-xl">🎯</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                Practice Your Mistakes
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Select specific questions or practice all mistakes to improve your performance
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={generatePracticeFromAll}
+              className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              Practice All →
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Header and Controls */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-lg font-medium text-gray-900">
-              Mistake Questions ({filteredQuestions.length}
+            <h3 className="text-lg font-semibold text-gray-900">
+              📚 Mistake Questions ({filteredQuestions.length}
               {masteryFilter !== 'all' ? ` of ${questions.length}` : ''})
             </h3>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-600 mt-1">
               Review and practice questions you've answered incorrectly
               {masteryFilter !== 'all' &&
                 ` • Showing ${masteryFilter} questions only`}
@@ -383,7 +398,7 @@ export function EnhancedIncorrectAnswersSection({
           <div className="flex items-center space-x-3">
             <button
               onClick={handleSelectAll}
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+              className="text-purple-600 hover:text-purple-800 text-sm font-medium"
             >
               {(() => {
                 const filteredIds = filteredQuestions.map((q) => q.id)
@@ -398,226 +413,157 @@ export function EnhancedIncorrectAnswersSection({
             <button
               onClick={createPracticeQuizFromSelected}
               disabled={selectedQuestions.length === 0}
-              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-md font-medium transition-colors"
+              className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-colors"
             >
-              Create Practice Quiz from Selected ({selectedQuestions.length})
-            </button>
-            <button
-              onClick={generatePracticeFromAll}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
-            >
-              Practice All Mistakes
+              Create Quiz ({selectedQuestions.length})
             </button>
             <button
               onClick={onRefresh}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100"
             >
-              Refresh
+              🔄
             </button>
           </div>
         </div>
 
         {/* Filter and Group Controls */}
-        <div className="flex flex-col space-y-3">
+        <div className="mt-6 pt-6 border-t border-purple-200">
           {/* Mastery Filter */}
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-700">Show:</span>
-            {[
-              { value: 'all', label: 'All Questions' },
-              { value: 'unmastered', label: 'Unmastered' },
-              { value: 'mastered', label: 'Mastered' },
-            ].map((option) => (
-              <button
-                key={option.value}
-                onClick={() => setMasteryFilter(option.value as any)}
-                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                  masteryFilter === option.value
-                    ? 'bg-green-100 text-green-800'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
+          <div className="mb-4">
+            <span className="text-sm font-medium text-gray-700 mr-4">Show:</span>
+            <div className="inline-flex space-x-1">
+              {[
+                { value: 'all', label: 'All Questions' },
+                { value: 'unmastered', label: 'Unmastered' },
+                { value: 'mastered', label: 'Mastered' },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setMasteryFilter(option.value as any)}
+                  className={`py-2 px-4 rounded-xl font-medium text-sm transition-all duration-200 ${
+                    masteryFilter === option.value
+                      ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'
+                      : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Group By Controls */}
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-700">Group by:</span>
-            {[
-              { value: 'recent', label: 'Most Recent' },
-              { value: 'module', label: 'Module' },
-              { value: 'difficulty', label: 'Difficulty' },
-              { value: 'topic', label: 'Topic' },
-            ].map((option) => (
-              <button
-                key={option.value}
-                onClick={() => setGroupBy(option.value as any)}
-                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                  groupBy === option.value
-                    ? 'bg-blue-100 text-blue-800'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
+          <div>
+            <span className="text-sm font-medium text-gray-700 mr-4">Group by:</span>
+            <div className="inline-flex space-x-1">
+              {[
+                { value: 'recent', label: 'Most Recent' },
+                { value: 'module', label: 'Module' },
+                { value: 'difficulty', label: 'Difficulty' },
+                { value: 'topic', label: 'Topic' },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setGroupBy(option.value as any)}
+                  className={`py-2 px-4 rounded-xl font-medium text-sm transition-all duration-200 ${
+                    groupBy === option.value
+                      ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'
+                      : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Grouped Questions */}
       {Object.entries(groupedQuestions).map(([groupName, groupQuestions]) => (
-        <div key={groupName} className="bg-white rounded-lg shadow">
-          <div className="p-4 bg-gray-50 border-b border-gray-200">
-            <h4 className="font-medium text-gray-900">
+        <div key={groupName} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100">
+          <div className="p-6 border-b border-purple-200">
+            <h4 className="text-lg font-semibold text-gray-900">
               {groupName} ({groupQuestions.length})
             </h4>
           </div>
 
-          <div className="p-4 space-y-4">
+          <div className="p-6 space-y-4">
             {groupQuestions.map((question) => (
               <div
                 key={question.id}
-                className="border border-red-200 rounded-lg p-4 bg-red-50"
+                className="border border-red-200 rounded-xl p-6 bg-red-50/20 hover:bg-red-50/40 transition-all duration-300"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-3 flex-1">
-                    {/* Checkbox for selection */}
-                    <input
-                      type="checkbox"
-                      checked={selectedQuestions.includes(question.id)}
-                      onChange={() => handleQuestionSelect(question.id)}
-                      className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <div className="flex-1">
-                      {/* Question Header */}
-                      <div className="flex items-center space-x-2 mb-2">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex-shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={selectedQuestions.includes(question.id)}
+                        onChange={() => handleQuestionSelect(question.id)}
+                        className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                      />
+                    </div>
+                    <div className="flex-shrink-0">
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium bg-red-500 shadow-red-200 shadow-lg"
+                      >
+                        ✗
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        Question {question.question_number} - {formatModuleName(question.module_type)}
+                      </div>
+                      <div className="flex items-center space-x-2 mt-1">
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getModuleColor(question.module_type)}`}
-                        >
-                          {formatModuleName(question.module_type)} #
-                          {question.question_number}
-                        </span>
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getDifficultyColor(question.difficulty_level)}`}
+                          className={`px-2 py-1 rounded text-xs font-medium ${getDifficultyColor(question.difficulty_level)}`}
                         >
                           {question.difficulty_level}
                         </span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        <span className="text-sm text-gray-500">
                           {formatQuestionType(question.question_type)}
                         </span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          Incorrect {question.incorrectAttempts?.length || 0}{' '}
-                          time(s)
-                        </span>
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          className={`px-2 py-1 rounded text-xs font-medium ${
                             question.masteryStatus === 'mastered'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-orange-100 text-orange-800'
+                              ? 'bg-purple-100 text-purple-800'
+                              : 'bg-red-100 text-red-800'
                           }`}
                         >
-                          {question.masteryStatus === 'mastered'
-                            ? '✓ Mastered'
-                            : '⚠ Unmastered'}
+                          {question.masteryStatus === 'mastered' ? '✓ Mastered' : '⚠ Needs Practice'}
                         </span>
                       </div>
-
-                      {/* Question Preview */}
-                      <div className="text-gray-900 text-sm mb-2">
-                        {(() => {
-                          // HTML-first rendering for question preview
-                          let content = ''
-                          if (question.question_html && !isEmptyHtml(question.question_html)) {
-                            content = question.question_html
-                          } else {
-                            content = question.question_text
-                          }
-
-                          // Create a truncated preview that preserves structure
-                          const truncatedContent = content.length > 150 ? content.substring(0, 150) + '...' : content
-
-                          // If HTML content contains math expressions, render properly
-                          if (question.question_html && !isEmptyHtml(question.question_html)) {
-                            if (question.question_html.includes('data-math')) {
-                              return (
-                                <div className="truncate">
-                                  <ContentRenderer htmlContent={truncatedContent} />
-                                </div>
-                              )
-                            } else {
-                              return (
-                                <div className="truncate" dangerouslySetInnerHTML={{ __html: truncatedContent }} />
-                              )
-                            }
-                          } else {
-                            // For plain text, just show it directly
-                            return <div className="truncate">{truncatedContent}</div>
-                          }
-                        })()}
-                      </div>
-
-                      {/* Latest Incorrect Answer */}
-                      {question.incorrectAttempts &&
-                        question.incorrectAttempts.length > 0 && (
-                          <div className="bg-white border border-red-200 rounded p-2 mb-2">
-                            <p className="text-xs text-gray-600 mb-1">
-                              Latest incorrect answer:{' '}
-                              <span className="font-medium text-red-600">
-                                {question.incorrectAttempts[0].user_answer}
-                              </span>
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {new Date(
-                                question.incorrectAttempts[0].answered_at
-                              ).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </p>
-                          </div>
-                        )}
-
-                      {/* Topics */}
-                      {question.topic_tags &&
-                        question.topic_tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
-                            {question.topic_tags.map((tag, index) => (
-                              <span
-                                key={index}
-                                className="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-50 text-blue-700"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
                     </div>
                   </div>
-
+                  
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => toggleQuestion(question.id)}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      className="text-purple-600 hover:text-purple-800 text-sm font-medium px-3 py-1 rounded-lg hover:bg-purple-50 transition-colors"
                     >
-                      {expandedQuestion === question.id ? 'Collapse' : 'Review'}
+                      {expandedQuestion === question.id ? 'Hide' : 'Review'}
                     </button>
-                    <Link
-                      href={`/student/practice/${question.id}`}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
-                    >
-                      Practice
-                    </Link>
                   </div>
                 </div>
 
+                {/* Topics */}
+                {question.topic_tags && question.topic_tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {question.topic_tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 {/* Expanded Question Details */}
                 {expandedQuestion === question.id && (
-                  <div className="mt-4 pt-4 border-t border-red-200">
+                  <div className="mt-4 pt-4 border-t border-purple-200">
                     <div className="space-y-4">
                       {/* Full Question */}
                       <div>
@@ -657,9 +603,9 @@ export function EnhancedIncorrectAnswersSection({
                                 ([key, value]) => (
                                   <div
                                     key={key}
-                                    className={`p-2 rounded ${
+                                    className={`p-2 rounded-lg ${
                                       key === question.correct_answer
-                                        ? 'bg-green-100 border border-green-300'
+                                        ? 'bg-purple-100 border border-purple-300'
                                         : question.incorrectAttempts?.some(
                                               (att) => att.user_answer === key
                                             )
@@ -685,7 +631,7 @@ export function EnhancedIncorrectAnswersSection({
                                       })()}
                                     </span>
                                     {key === question.correct_answer && (
-                                      <span className="ml-2 text-green-600 font-medium">
+                                      <span className="ml-2 text-purple-600 font-medium">
                                         (Correct)
                                       </span>
                                     )}
@@ -710,8 +656,8 @@ export function EnhancedIncorrectAnswersSection({
                             <h5 className="font-medium text-gray-900 mb-2">
                               Correct Answer:
                             </h5>
-                            <div className="p-2 rounded bg-green-100 border border-green-300">
-                              <span className="font-medium">
+                            <div className="p-2 rounded-lg bg-purple-100 border border-purple-300">
+                              <span className="font-medium text-purple-800">
                                 {question.correct_answer}
                               </span>
                             </div>
@@ -720,8 +666,8 @@ export function EnhancedIncorrectAnswersSection({
                             <h5 className="font-medium text-gray-900 mb-2">
                               Your Answer:
                             </h5>
-                            <div className="p-2 rounded bg-red-100 border border-red-300">
-                              <span className="font-medium">
+                            <div className="p-2 rounded-lg bg-red-100 border border-red-300">
+                              <span className="font-medium text-red-800">
                                 {question.incorrectAttempts?.[0]?.user_answer ||
                                   'N/A'}
                               </span>
@@ -736,25 +682,27 @@ export function EnhancedIncorrectAnswersSection({
                           <h5 className="font-medium text-gray-900 mb-2">
                             Explanation:
                           </h5>
-                          <div className="text-gray-700">
-                            {(() => {
-                              // HTML-first rendering for explanation
-                              if (question.explanation_html && !isEmptyHtml(question.explanation_html)) {
-                                // Check if content contains LaTeX math expressions
-                                if (question.explanation_html.includes('data-math')) {
-                                  return <ContentRenderer htmlContent={question.explanation_html} />
-                                } else {
-                                  return renderHtmlContent(question.explanation_html)
+                          <div className="p-3 bg-purple-50 rounded-lg">
+                            <div className="text-gray-800">
+                              {(() => {
+                                // HTML-first rendering for explanation
+                                if (question.explanation_html && !isEmptyHtml(question.explanation_html)) {
+                                  // Check if content contains LaTeX math expressions
+                                  if (question.explanation_html.includes('data-math')) {
+                                    return <ContentRenderer htmlContent={question.explanation_html} />
+                                  } else {
+                                    return renderHtmlContent(question.explanation_html)
+                                  }
+                                } else if (question.explanation) {
+                                  return (
+                                    <div className="whitespace-pre-wrap">
+                                      {question.explanation}
+                                    </div>
+                                  )
                                 }
-                              } else if (question.explanation) {
-                                return (
-                                  <div className="whitespace-pre-wrap">
-                                    {question.explanation}
-                                  </div>
-                                )
-                              }
-                              return null
-                            })()}
+                                return null
+                              })()}
+                            </div>
                           </div>
                         </div>
                       )}

@@ -80,6 +80,7 @@ function ExamPageContent() {
     goToQuestion,
     nextModule,
     completeExam,
+    completeReviewSession,
     timeExpired,
     handleTimeExpired: handleTimeExpiredFromHook,
     updateTimer,
@@ -161,6 +162,9 @@ function ExamPageContent() {
       return
     }
 
+    // Check for review mode
+    const reviewForAttemptId = searchParams.get('review_for')
+    
     console.log('ExamPage useEffect: Checking initialization conditions', {
       authLoading,
       user: !!user,
@@ -168,6 +172,7 @@ function ExamPageContent() {
       hasInitialized,
       loading,
       userProfile: user?.profile,
+      reviewForAttemptId,
       shouldInitialize:
         !authLoading && user && examId && !hasInitialized && !loading,
     })
@@ -182,9 +187,9 @@ function ExamPageContent() {
     const canInitialize = examId && !hasInitialized && !loading && user
 
     if (canInitialize && user) {
-      console.log('🚀 ExamPage useEffect: Starting exam initialization')
+      console.log(`🚀 ExamPage useEffect: Starting exam initialization ${reviewForAttemptId ? '(Review Mode)' : '(Normal Mode)'}`)
       setHasInitialized(true)
-      initializeExam(examId, user.id)
+      initializeExam(examId, user.id, reviewForAttemptId || undefined)
     } else if (!authLoading && !user) {
       // Not authenticated - redirect to dashboard
       console.log('❌ Not authenticated, redirecting to dashboard')
@@ -206,6 +211,7 @@ function ExamPageContent() {
     loading,
     initializeExam,
     router,
+    searchParams, // Add searchParams as dependency
   ])
 
   // Update current answer when question changes (but not when user is actively selecting)
@@ -394,9 +400,26 @@ function ExamPageContent() {
     console.log('📝 Submitting exam...')
 
     await saveCurrentAnswerImmediately() // Save immediately before exam completion
+    
+    // Check if this is review mode (no actual attempt record)
+    const reviewForAttemptId = searchParams.get('review_for')
+    
     try {
-      await completeExam()
-      router.push('/student/results')
+      if (reviewForAttemptId) {
+        // Review mode - calculate potential score and show modal
+        console.log('🎯 Completing review session')
+        const result = await completeReviewSession(reviewForAttemptId)
+        
+        // Show success modal with potential score
+        alert(`Great job! Your potential score would be ${result.potentialScore} (improvement: ${(result.improvement || 0) > 0 ? '+' : ''}${result.improvement || 0} from ${result.originalScore})`)
+        
+        // Redirect to the special review results page
+        router.push(`/student/results/${reviewForAttemptId}/second-chance-review`)
+      } else {
+        // Normal exam mode
+        await completeExam()
+        router.push('/student/results')
+      }
     } catch (error) {
       console.error('Failed to complete exam:', error)
       // Show error to user or handle accordingly

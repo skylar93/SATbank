@@ -623,6 +623,57 @@ export class ExamService {
     return data || []
   }
 
+  // Get incorrect questions for a specific attempt (for Second Chance review)
+  static async getIncorrectQuestionsForAttempt(attemptId: string): Promise<Question[]> {
+    console.log(`🔍 getIncorrectQuestionsForAttempt: Fetching incorrect questions for attemptId=${attemptId}`)
+    
+    // Get all incorrect answers for this attempt with question details
+    const { data: incorrectAnswers, error } = await supabase
+      .from('user_answers')
+      .select(`
+        question_id,
+        questions!inner (*)
+      `)
+      .eq('attempt_id', attemptId)
+      .eq('is_correct', false)
+
+    if (error) {
+      console.error('❌ getIncorrectQuestionsForAttempt: Query error:', error)
+      throw error
+    }
+
+    console.log(`✅ getIncorrectQuestionsForAttempt: Found ${incorrectAnswers?.length || 0} incorrect answers`)
+
+    if (!incorrectAnswers || incorrectAnswers.length === 0) {
+      return []
+    }
+
+    // Extract questions and sort by module_type and question_number (original order)
+    const questions = incorrectAnswers
+      .map((item: any) => item.questions)
+      .filter((question: Question | null) => question !== null) as Question[]
+
+    // Sort by module_type priority and then by question_number to maintain original exam order
+    const moduleOrder: Record<ModuleType, number> = {
+      english1: 1,
+      english2: 2, 
+      math1: 3,
+      math2: 4
+    }
+
+    questions.sort((a, b) => {
+      const moduleComparison = moduleOrder[a.module_type] - moduleOrder[b.module_type]
+      if (moduleComparison !== 0) {
+        return moduleComparison
+      }
+      return a.question_number - b.question_number
+    })
+
+    console.log(`✅ getIncorrectQuestionsForAttempt: Returning ${questions.length} questions in original order`)
+
+    return questions
+  }
+
   // Calculate and update scores
   static async calculateScore(
     attemptId: string

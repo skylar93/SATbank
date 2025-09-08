@@ -62,7 +62,8 @@ interface ExamState {
   currentQuestionStartTime: number // Track when current question was first viewed
 
   // Actions
-  initializeExam: (examId: string, userId: string) => Promise<void>
+  initializeExam: (examId: string, userId: string, reviewForAttemptId?: string) => Promise<void>
+  initializeReviewMode: (examId: string, userId: string, reviewForAttemptId: string) => Promise<void>
   startExam: () => Promise<void>
   setLocalAnswer: (answer: string) => void
   saveModuleAnswers: () => Promise<void>
@@ -71,6 +72,7 @@ interface ExamState {
   goToQuestion: (questionIndex: number) => void
   nextModule: () => Promise<void>
   completeExam: () => Promise<void>
+  completeReviewSession: (originalAttemptId: string) => Promise<{ success: boolean; potentialScore?: number; originalScore?: number; improvement?: number }>
   timeExpired: () => void
   handleTimeExpired: () => Promise<void>
   updateTimer: (remainingSeconds: number) => void
@@ -182,14 +184,20 @@ export const useExamStore = create<ExamState>((set, get) => ({
     set({ status: 'time_expired' })
   },
 
-  initializeExam: async (examId: string, userId: string) => {
+  initializeExam: async (examId: string, userId: string, reviewForAttemptId?: string) => {
     console.log(
       'initializeExam: Starting initialization for exam:',
       examId,
       'user:',
-      userId
+      userId,
+      reviewForAttemptId ? `(Review mode for attempt: ${reviewForAttemptId})` : '(Normal mode)'
     )
     set({ loading: true, error: null })
+
+    // Handle review mode (Second Chance)
+    if (reviewForAttemptId) {
+      return get().initializeReviewMode(examId, userId, reviewForAttemptId)
+    }
 
     try {
       // Get exam details
@@ -414,6 +422,60 @@ export const useExamStore = create<ExamState>((set, get) => ({
       console.log('initializeExam: Exam state set successfully')
     } catch (err: any) {
       console.error('initializeExam: Error occurred:', err)
+      set({ error: err.message, loading: false })
+    }
+  },
+
+  initializeReviewMode: async (examId: string, userId: string, reviewForAttemptId: string) => {
+    console.log('initializeReviewMode: Starting review mode initialization')
+    
+    try {
+      // Get original exam details
+      const exam = await ExamService.getExam(examId)
+      if (!exam) {
+        throw new Error('Exam not found')
+      }
+      console.log('initializeReviewMode: Exam found:', exam.title)
+
+      // Get incorrect questions for the original attempt
+      console.log('initializeReviewMode: Fetching incorrect questions...')
+      const incorrectQuestions = await ExamService.getIncorrectQuestionsForAttempt(reviewForAttemptId)
+      
+      if (incorrectQuestions.length === 0) {
+        throw new Error('No incorrect questions found for review')
+      }
+      
+      console.log(`initializeReviewMode: Found ${incorrectQuestions.length} questions to review`)
+
+      // Create a single "review" module containing all incorrect questions
+      const reviewModule: ModuleState = {
+        module: 'english1', // Use a dummy module type
+        questions: incorrectQuestions,
+        currentQuestionIndex: 0,
+        answers: {},
+        markedForReview: new Set(),
+        timeLimit: 999, // No time limit (999 minutes)
+        timeRemaining: 999 * 60, // Convert to seconds
+        completed: false,
+      }
+
+      console.log('initializeReviewMode: Setting review state...')
+      set({
+        exam,
+        attempt: null, // No actual attempt record for review mode
+        modules: [reviewModule],
+        currentModuleIndex: 0,
+        status: 'in_progress', // Start immediately in review mode
+        startedAt: new Date(),
+        existingAttempt: null,
+        showConflictModal: false,
+        loading: false,
+        highlightsByQuestion: {},
+        currentQuestionStartTime: Date.now(),
+      })
+      console.log('initializeReviewMode: Review state set successfully')
+    } catch (err: any) {
+      console.error('initializeReviewMode: Error occurred:', err)
       set({ error: err.message, loading: false })
     }
   },
@@ -681,6 +743,64 @@ export const useExamStore = create<ExamState>((set, get) => ({
       })
     } catch (err: any) {
       console.error('💥 Complete exam error:', err)
+      set({ error: err.message })
+      throw err
+    }
+  },
+
+  completeReviewSession: async (originalAttemptId: string) => {
+    console.log('🎯 Starting review session completion process...')
+    
+    const { modules } = get()
+    if (modules.length === 0) {
+      throw new Error('No review modules found')
+    }
+
+    const reviewModule = modules[0] // Review mode has only one module
+    
+    try {
+      // Collect all answers from the review session
+      const newAnswers = Object.entries(reviewModule.answers).map(([questionId, examAnswer]) => ({
+        questionId,
+        answer: examAnswer.answer
+      }))
+
+      console.log(`🚀 Calling calculate-potential-score Server Action for ${newAnswers.length} answers`)
+
+      // Call the Server Action - much simpler and more reliable than Edge Function
+      const { calculatePotentialScore } = await import('@/lib/exam-actions')
+      
+      const result = await calculatePotentialScore({
+        originalAttemptId,
+        newAnswers
+      })
+
+      if (!result.success) {
+        console.error('❌ Server Action failed:', result.error)
+        throw new Error(result.error || 'Failed to calculate potential score')
+      }
+
+      console.log('✅ Server Action succeeded:', result)
+
+      console.log('✅ Potential score calculated:', result)
+
+      set({
+        status: 'completed',
+        finalScores: {
+          overall: result.potentialScore || 0,
+          english: 0, // Not applicable for review mode
+          math: 0,    // Not applicable for review mode
+        }
+      })
+
+      return {
+        success: true,
+        potentialScore: result.potentialScore,
+        originalScore: result.originalScore,
+        improvement: result.improvement
+      }
+    } catch (err: any) {
+      console.error('💥 Complete review session error:', err)
       set({ error: err.message })
       throw err
     }

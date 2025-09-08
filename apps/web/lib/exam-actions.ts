@@ -278,6 +278,209 @@ export async function assignExamToStudents(
   }
 }
 
+interface CalculatePotentialScoreRequest {
+  originalAttemptId: string
+  newAnswers: Array<{
+    questionId: string
+    answer: string
+  }>
+}
+
+interface CalculatePotentialScoreResponse {
+  success: boolean
+  originalScore?: number
+  potentialScore?: number
+  improvement?: number
+  originalCorrect?: number
+  newCorrect?: number
+  totalQuestions?: number
+  message?: string
+  error?: string
+}
+
+export async function calculatePotentialScore(
+  request: CalculatePotentialScoreRequest
+): Promise<CalculatePotentialScoreResponse> {
+  try {
+    const supabase = createClient()
+    const { originalAttemptId, newAnswers } = request
+
+    console.log(`[calculate-potential-score] Processing for attempt ${originalAttemptId} with ${newAnswers.length} new answers`)
+
+    // 1. Get original attempt data and check if review was already taken
+    const { data: originalAttempt, error: attemptError } = await supabase
+      .from('test_attempts')
+      .select('*')
+      .eq('id', originalAttemptId)
+      .single()
+
+    if (attemptError || !originalAttempt) {
+      throw new Error('Original attempt not found')
+    }
+
+    if (originalAttempt.review_attempt_taken) {
+      throw new Error('Second chance has already been used for this attempt')
+    }
+
+    // 2. Get all original answers for this attempt
+    const { data: originalAnswers, error: originalAnswersError } = await supabase
+      .from('user_answers')
+      .select('question_id, user_answer, is_correct')
+      .eq('attempt_id', originalAttemptId)
+
+    if (originalAnswersError || !originalAnswers) {
+      console.error('[calculate-potential-score] Error fetching original answers:', originalAnswersError)
+      throw new Error('Failed to fetch original answers')
+    }
+
+    // 3. Get question details
+    const questionIds = originalAnswers.map(a => a.question_id)
+    const { data: questions, error: questionsError } = await supabase
+      .from('questions')
+      .select('id, correct_answer, correct_answers, question_type, points')
+      .in('id', questionIds)
+
+    if (questionsError || !questions) {
+      console.error('[calculate-potential-score] Error fetching questions:', questionsError)
+      throw new Error('Failed to fetch question details')
+    }
+
+    // Create a map for easier lookup
+    const questionMap = new Map()
+    questions.forEach(q => questionMap.set(q.id, q))
+
+    // 4. Calculate original score
+    const originalCorrect = originalAnswers.filter(a => a.is_correct).length
+    let originalRawScore = 0
+    
+    originalAnswers.forEach(answer => {
+      if (answer.is_correct) {
+        const question = questionMap.get(answer.question_id)
+        originalRawScore += (question?.points || 1)
+      }
+    })
+
+    console.log(`[calculate-potential-score] Original: ${originalCorrect}/${originalAnswers.length} correct, raw score: ${originalRawScore}`)
+
+    // 5. Check correctness of new answers
+    let newlyCorrectCount = 0
+    let newRawScoreIncrease = 0
+
+    for (const newAnswer of newAnswers) {
+      const originalAnswer = originalAnswers.find(a => a.question_id === newAnswer.questionId)
+      if (!originalAnswer) {
+        console.warn(`[calculate-potential-score] Question ${newAnswer.questionId} not found in original answers`)
+        continue
+      }
+
+      const question = questionMap.get(newAnswer.questionId)
+      if (!question) {
+        console.warn(`[calculate-potential-score] Question details for ${newAnswer.questionId} not found`)
+        continue
+      }
+
+      const isNewAnswerCorrect = checkAnswer(question, newAnswer.answer)
+      
+      // Only count if originally incorrect but now correct
+      if (!originalAnswer.is_correct && isNewAnswerCorrect) {
+        newlyCorrectCount++
+        newRawScoreIncrease += (question.points || 1)
+      }
+    }
+
+    const potentialCorrect = originalCorrect + newlyCorrectCount
+    const potentialRawScore = originalRawScore + newRawScoreIncrease
+
+    console.log(`[calculate-potential-score] Potential: ${potentialCorrect}/${originalAnswers.length} correct, raw score: ${potentialRawScore}`)
+
+    // 6. Convert raw scores to SAT scores
+    const originalSATScore = rawToSATScore(originalRawScore, originalAnswers.length)
+    const potentialSATScore = rawToSATScore(potentialRawScore, originalAnswers.length)
+    const improvement = potentialSATScore - originalSATScore
+
+    console.log(`[calculate-potential-score] SAT Scores - Original: ${originalSATScore}, Potential: ${potentialSATScore}, Improvement: ${improvement}`)
+
+    // 7. Mark review attempt as taken
+    const { error: updateError } = await supabase
+      .from('test_attempts')
+      .update({ review_attempt_taken: true })
+      .eq('id', originalAttemptId)
+
+    if (updateError) {
+      console.error('[calculate-potential-score] Failed to mark review as taken:', updateError)
+      throw new Error('Failed to mark review as taken')
+    }
+
+    // 8. Return results
+    const response: CalculatePotentialScoreResponse = {
+      success: true,
+      originalScore: originalSATScore,
+      potentialScore: potentialSATScore,
+      improvement,
+      originalCorrect,
+      newCorrect: potentialCorrect,
+      totalQuestions: originalAnswers.length,
+      message: improvement > 0 
+        ? `Great job! You improved by ${improvement} points!`
+        : improvement === 0
+        ? "Keep practicing! Your potential score remained the same."
+        : `Don't worry - learning is a process. Keep practicing!`
+    }
+
+    return response
+
+  } catch (error: any) {
+    console.error('[calculate-potential-score] Error:', error)
+    
+    return {
+      success: false,
+      error: error.message || 'Internal server error'
+    }
+  }
+}
+
+// Helper function to check if answer is correct
+function checkAnswer(question: any, userAnswer: string): boolean {
+  if (!userAnswer || !question.correct_answer) return false
+
+  if (question.question_type === 'grid_in') {
+    // For grid-in questions, check against all possible correct answers
+    const correctAnswers = question.correct_answers || [question.correct_answer]
+    return correctAnswers.some(
+      (correct: string) =>
+        String(correct).trim().toLowerCase() ===
+        String(userAnswer).trim().toLowerCase()
+    )
+  }
+
+  // For multiple choice, direct comparison
+  return (
+    String(question.correct_answer).trim().toLowerCase() ===
+    String(userAnswer).trim().toLowerCase()
+  )
+}
+
+// Simplified raw score to SAT score conversion
+function rawToSATScore(rawScore: number, totalQuestions: number): number {
+  // This is a simplified conversion - in production you'd use official SAT scoring tables
+  const percentage = rawScore / totalQuestions
+  
+  if (percentage >= 0.95) return 800
+  if (percentage >= 0.90) return 750
+  if (percentage >= 0.85) return 700
+  if (percentage >= 0.80) return 650
+  if (percentage >= 0.75) return 600
+  if (percentage >= 0.70) return 550
+  if (percentage >= 0.65) return 500
+  if (percentage >= 0.60) return 450
+  if (percentage >= 0.55) return 400
+  if (percentage >= 0.50) return 350
+  if (percentage >= 0.45) return 300
+  if (percentage >= 0.40) return 250
+  
+  return 200
+}
+
 export async function createExamFromModules(data: {
   title: string
   description: string
