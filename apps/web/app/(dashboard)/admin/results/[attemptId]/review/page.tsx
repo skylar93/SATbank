@@ -13,10 +13,15 @@ import type {
   Exam,
 } from '../../../../../../lib/exam-service'
 
+interface QuestionWithMetadata extends Question {
+  _exam_question_number?: number
+  _module_type?: string
+}
+
 interface ReviewData {
   attempt: TestAttempt & { exams: Exam }
   exam: Exam
-  questions: Question[]
+  questions: QuestionWithMetadata[]
   userAnswers: UserAnswer[]
 }
 
@@ -89,7 +94,7 @@ export default function AdminReviewPage() {
       console.log('🔍 [Admin] Template ID:', attempt.exams.template_id)
       console.log('🔍 [Admin] Exam ID:', attempt.exam_id)
       
-      let allQuestions: Question[] = []
+      let allQuestions: QuestionWithMetadata[] = []
       
       if (examSystem === 'template') {
         // NEW SYSTEM: Template-based exam using exam_questions table
@@ -115,7 +120,7 @@ export default function AdminReviewPage() {
           allQuestions = examQuestions
             .filter(eq => eq.questions) // Filter out any null questions
             .map(eq => ({
-              ...eq.questions,
+              ...(eq.questions as unknown as Question),
               // Add exam_questions metadata for context
               _exam_question_number: eq.question_number,
               _module_type: eq.module_type
