@@ -138,27 +138,73 @@ export class ExamService {
   }
 
   // Get available exams with completion status for a student
-  static async getAvailableExamsWithStatus(userId: string): Promise<(Exam & { completionStatus: 'not_started' | 'in_progress' | 'completed', completedAttemptId?: string })[]> {
+  static async getAvailableExamsWithStatus(userId: string): Promise<(Exam & { completionStatus: 'not_started' | 'in_progress' | 'completed', completedAttemptId?: string, isCurrentlyAssigned?: boolean })[]> {
     // Get assigned exams
     const assignedExams = await this.getAssignedExams(userId)
     
-    // Get completion status for each exam
+    // Get all completed exams by this user (including non-assigned ones)
+    const { data: completedAttempts, error: attemptsError } = await supabase
+      .from('test_attempts')
+      .select(`
+        id,
+        exam_id,
+        status,
+        completed_at,
+        exams (*)
+      `)
+      .eq('user_id', userId)
+      .eq('status', 'completed')
+      .order('created_at', { ascending: false })
+
+    if (attemptsError) {
+      console.error('Error fetching completed attempts:', attemptsError)
+    }
+
+    // Create a set of all unique exam IDs (assigned + completed)
+    const assignedExamIds = new Set(assignedExams.map(exam => exam.id))
+    const completedExamData = completedAttempts || []
+    const allExamIds = new Set([
+      ...assignedExamIds,
+      ...completedExamData.map(attempt => attempt.exam_id)
+    ])
+
+    // Create a map of exam_id -> most recent completed attempt
+    const completedAttemptsMap = new Map()
+    completedExamData.forEach(attempt => {
+      if (!completedAttemptsMap.has(attempt.exam_id) || 
+          attempt.completed_at > completedAttemptsMap.get(attempt.exam_id).completed_at) {
+        completedAttemptsMap.set(attempt.exam_id, attempt)
+      }
+    })
+
+    // Build the final list
     const examsWithStatus = await Promise.all(
-      assignedExams.map(async (exam) => {
-        // Get the most recent attempt for this exam
+      Array.from(allExamIds).map(async (examId) => {
+        let exam = assignedExams.find(e => e.id === examId)
+        const isCurrentlyAssigned = !!exam
+
+        // If not assigned, get exam data from completed attempt
+        if (!exam) {
+          const completedAttempt = completedAttemptsMap.get(examId)
+          exam = completedAttempt?.exams
+          if (!exam) return null
+        }
+
+        // Get the most recent attempt for this exam (not just completed ones)
         const { data: attempts, error } = await supabase
           .from('test_attempts')
           .select('id, status, completed_at')
           .eq('user_id', userId)
-          .eq('exam_id', exam.id)
+          .eq('exam_id', examId)
           .order('created_at', { ascending: false })
           .limit(1)
-
+        
         if (error) {
           console.error('Error fetching attempt status:', error)
           return {
             ...exam,
-            completionStatus: 'not_started' as const
+            completionStatus: 'not_started' as const,
+            isCurrentlyAssigned
           }
         }
 
@@ -167,19 +213,21 @@ export class ExamService {
         if (!latestAttempt) {
           return {
             ...exam,
-            completionStatus: 'not_started' as const
+            completionStatus: 'not_started' as const,
+            isCurrentlyAssigned
           }
         }
 
         return {
           ...exam,
           completionStatus: latestAttempt.status as 'not_started' | 'in_progress' | 'completed',
-          completedAttemptId: latestAttempt.status === 'completed' ? latestAttempt.id : undefined
+          completedAttemptId: latestAttempt.status === 'completed' ? latestAttempt.id : undefined,
+          isCurrentlyAssigned
         }
       })
     )
 
-    return examsWithStatus
+    return examsWithStatus.filter(exam => exam !== null)
   }
 
   // Get exam by ID

@@ -50,6 +50,8 @@ export default function AdminAssignmentsPage() {
   const [dueDate, setDueDate] = useState('')
   const [showResults, setShowResults] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [examSearchTerm, setExamSearchTerm] = useState('')
+  const [studentSearchTerm, setStudentSearchTerm] = useState('')
 
   // Edit assignment states
   const [showEditModal, setShowEditModal] = useState(false)
@@ -193,6 +195,8 @@ export default function AdminAssignmentsPage() {
       setSelectedStudents([])
       setDueDate('')
       setShowResults(true)
+      setExamSearchTerm('')
+      setStudentSearchTerm('')
       loadData()
     } catch (error) {
       console.error('Error creating assignment:', error)
@@ -264,6 +268,16 @@ export default function AdminAssignmentsPage() {
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
       assignment.exams?.title?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const filteredExams = exams.filter((exam) =>
+    exam.title.toLowerCase().includes(examSearchTerm.toLowerCase()) ||
+    exam.description?.toLowerCase().includes(examSearchTerm.toLowerCase())
+  )
+
+  const filteredStudents = students.filter((student) =>
+    student.full_name.toLowerCase().includes(studentSearchTerm.toLowerCase()) ||
+    student.email.toLowerCase().includes(studentSearchTerm.toLowerCase())
   )
 
   if (!user) return null
@@ -468,17 +482,40 @@ export default function AdminAssignmentsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Select Exams
                 </label>
+                <div className="mb-3">
+                  <div className="relative">
+                    <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search exams..."
+                      value={examSearchTerm}
+                      onChange={(e) => setExamSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                    />
+                  </div>
+                </div>
                 <div className="border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
-                  {exams.length === 0 ? (
+                  {filteredExams.length === 0 ? (
                     <div className="p-4 text-center text-gray-500">
                       <AcademicCapIcon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                      <p className="text-sm">No exams found</p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        Please create an exam first
-                      </p>
+                      {exams.length === 0 ? (
+                        <>
+                          <p className="text-sm">No exams found</p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Please create an exam first
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-sm">No matching exams</p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Try a different search term
+                          </p>
+                        </>
+                      )}
                     </div>
                   ) : (
-                    exams.map((exam) => (
+                    filteredExams.map((exam) => (
                       <label
                         key={exam.id}
                         className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
@@ -516,17 +553,40 @@ export default function AdminAssignmentsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Select Students
                 </label>
+                <div className="mb-3">
+                  <div className="relative">
+                    <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search students..."
+                      value={studentSearchTerm}
+                      onChange={(e) => setStudentSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                    />
+                  </div>
+                </div>
                 <div className="border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
-                  {students.length === 0 ? (
+                  {filteredStudents.length === 0 ? (
                     <div className="p-4 text-center text-gray-500">
                       <UserIcon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                      <p className="text-sm">No students found</p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        Students need to register first
-                      </p>
+                      {students.length === 0 ? (
+                        <>
+                          <p className="text-sm">No students found</p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Students need to register first
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-sm">No matching students</p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Try a different search term
+                          </p>
+                        </>
+                      )}
                     </div>
                   ) : (
-                    students.map((student) => (
+                    filteredStudents.map((student) => (
                       <label
                         key={student.id}
                         className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"

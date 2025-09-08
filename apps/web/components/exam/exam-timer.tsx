@@ -28,6 +28,9 @@ const ExamTimerComponent = function ExamTimer({
   // Use refs to store callbacks to prevent infinite re-renders
   const onTimeUpdateRef = useRef(onTimeUpdate)
   const onTimeExpiredRef = useRef(onTimeExpired)
+  
+  // Track actual start time to handle tab switching
+  const startTimeRef = useRef<number>(Date.now())
 
   // Update refs when callbacks change
   useEffect(() => {
@@ -37,7 +40,6 @@ const ExamTimerComponent = function ExamTimer({
   useEffect(() => {
     onTimeExpiredRef.current = onTimeExpired
   }, [onTimeExpired])
-
 
   // Determine timer color based on remaining time
   const getTimerColor = useCallback(
@@ -53,18 +55,53 @@ const ExamTimerComponent = function ExamTimer({
     [initialTimeSeconds]
   )
 
+  // Handle visibility changes to immediately update timer when tab becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && isRunning && !isPaused) {
+        // Tab became visible - immediately update timer with accurate time
+        const now = Date.now()
+        const totalElapsed = Math.floor((now - startTimeRef.current) / 1000)
+        const newRemainingSeconds = Math.max(0, initialTimeSeconds - totalElapsed)
+        setRemainingSeconds(newRemainingSeconds)
+        
+        console.log(`Tab became visible, updated timer to ${newRemainingSeconds} seconds remaining`)
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [isRunning, isPaused, initialTimeSeconds])
+
   useEffect(() => {
     if (isPaused || !isRunning) return
 
-    const interval = setInterval(() => {
-      setRemainingSeconds((prev) => {
-        const newTime = Math.max(0, prev - 1)
-        return newTime
-      })
-    }, 1000)
+    let animationFrameId: number
+    
+    const updateTimer = () => {
+      const now = Date.now()
+      const totalElapsed = Math.floor((now - startTimeRef.current) / 1000)
+      const newRemainingSeconds = Math.max(0, initialTimeSeconds - totalElapsed)
+      
+      setRemainingSeconds(newRemainingSeconds)
+      
+      // Continue updating
+      if (newRemainingSeconds > 0) {
+        animationFrameId = requestAnimationFrame(() => {
+          setTimeout(updateTimer, 1000)
+        })
+      }
+    }
 
-    return () => clearInterval(interval)
-  }, [isPaused, isRunning])
+    // Start the timer
+    updateTimer()
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+      }
+    }
+  }, [isPaused, isRunning, initialTimeSeconds])
 
   // Separate effect for callbacks to avoid setState during render
   useEffect(() => {
@@ -88,6 +125,8 @@ const ExamTimerComponent = function ExamTimer({
   useEffect(() => {
     setRemainingSeconds(initialTimeSeconds)
     setIsRunning(true)
+    // Reset start time for new module
+    startTimeRef.current = Date.now()
   }, [initialTimeSeconds])
 
   const timerColor = getTimerColor(remainingSeconds)

@@ -41,6 +41,7 @@ export function CreateExamClient() {
   const [showEnglishOnly, setShowEnglishOnly] = useState(false)
   const [groupByDate, setGroupByDate] = useState(true)
   const [timeLimits, setTimeLimits] = useState<Record<string, number>>({})
+  const [moduleSearchTerms, setModuleSearchTerms] = useState<Record<string, string>>({})
 
   // Fetch templates and modules
   useEffect(() => {
@@ -202,6 +203,14 @@ export function CreateExamClient() {
     // Apply English-only filter if enabled
     if (showEnglishOnly) {
       filteredModules = filteredModules.filter(hasEnglishSection)
+    }
+
+    // Apply search filter if search term exists for this module type
+    const searchTerm = moduleSearchTerms[moduleType]
+    if (searchTerm) {
+      filteredModules = filteredModules.filter(module =>
+        module.title.toLowerCase().includes(searchTerm.toLowerCase())
+      )
     }
 
     return filteredModules
@@ -386,6 +395,19 @@ export function CreateExamClient() {
                 <div key={moduleType} className="space-y-4 p-4 border rounded-lg">
                   <div className="space-y-2">
                     <Label>{formatModuleSlotName(moduleType)} Slot *</Label>
+                    <div className="space-y-2">
+                      <Input
+                        placeholder={`Search ${formatModuleSlotName(moduleType)} modules...`}
+                        value={moduleSearchTerms[moduleType] || ''}
+                        onChange={(e) => 
+                          setModuleSearchTerms(prev => ({ 
+                            ...prev, 
+                            [moduleType]: e.target.value 
+                          }))
+                        }
+                        className="text-sm"
+                      />
+                    </div>
                     <Select 
                       onValueChange={(value) => 
                         setModuleAssignments(prev => ({ ...prev, [moduleType]: value }))
@@ -420,7 +442,10 @@ export function CreateExamClient() {
                     </Select>
                     {compatibleModules.length === 0 && (
                       <p className="text-sm text-orange-600">
-                        No compatible modules found for {formatModuleSlotName(moduleType)}
+                        {moduleSearchTerms[moduleType] 
+                          ? `No modules found matching "${moduleSearchTerms[moduleType]}" for ${formatModuleSlotName(moduleType)}`
+                          : `No compatible modules found for ${formatModuleSlotName(moduleType)}`
+                        }
                       </p>
                     )}
                   </div>

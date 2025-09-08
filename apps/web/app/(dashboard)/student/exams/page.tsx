@@ -22,7 +22,8 @@ import {
 
 type ExamWithStatus = Exam & { 
   completionStatus: 'not_started' | 'in_progress' | 'completed', 
-  completedAttemptId?: string 
+  completedAttemptId?: string,
+  isCurrentlyAssigned?: boolean
 }
 
 export default function StudentExamsPage() {
@@ -31,7 +32,7 @@ export default function StudentExamsPage() {
   const [exams, setExams] = useState<ExamWithStatus[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [showCompletedExams, setShowCompletedExams] = useState(false)
+  const [showCompletedExams, setShowCompletedExams] = useState(true)
 
   useEffect(() => {
     if (user) {
@@ -433,13 +434,24 @@ export default function StudentExamsPage() {
                             </div>
 
                             {exam.completedAttemptId && (
-                              <Link
-                                href={`/student/results/${exam.completedAttemptId}`}
-                                className="inline-flex items-center bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
-                              >
-                                <EyeIcon className="w-5 h-5 mr-2" />
-                                View Results
-                              </Link>
+                              <div className="flex space-x-3">
+                                <Link
+                                  href={`/student/results/${exam.completedAttemptId}`}
+                                  className="inline-flex items-center bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+                                >
+                                  <EyeIcon className="w-5 h-5 mr-2" />
+                                  View Results
+                                </Link>
+                                {exam.isCurrentlyAssigned && (
+                                  <Link
+                                    href={`/student/exam/${exam.id}`}
+                                    className="inline-flex items-center bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+                                  >
+                                    <PlayIcon className="w-5 h-5 mr-2" />
+                                    Try Again
+                                  </Link>
+                                )}
+                              </div>
                             )}
                           </div>
                         </div>

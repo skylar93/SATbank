@@ -555,7 +555,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
   },
 
   nextQuestion: () => {
-    const { modules, currentModuleIndex } = get()
+    const { modules, currentModuleIndex, saveCurrentAnswerImmediately } = get()
     const currentModule = modules[currentModuleIndex]
     const nextQuestionIndex = currentModule.currentQuestionIndex + 1
 
@@ -563,6 +563,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
       // Should not happen - use nextModule instead
       return
     }
+
+    // Save current answer immediately before moving
+    saveCurrentAnswerImmediately()
 
     const newModules = [...modules]
     newModules[currentModuleIndex] = {
@@ -577,7 +580,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
   },
 
   previousQuestion: () => {
-    const { modules, currentModuleIndex } = get()
+    const { modules, currentModuleIndex, saveCurrentAnswerImmediately } = get()
     const currentModule = modules[currentModuleIndex]
     const prevQuestionIndex = currentModule.currentQuestionIndex - 1
 
@@ -585,6 +588,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
       // Can't go before first question in module
       return
     }
+
+    // Save current answer immediately before moving
+    saveCurrentAnswerImmediately()
 
     const newModules = [...modules]
     newModules[currentModuleIndex] = {
@@ -599,13 +605,16 @@ export const useExamStore = create<ExamState>((set, get) => ({
   },
 
   goToQuestion: (questionIndex: number) => {
-    const { modules, currentModuleIndex } = get()
+    const { modules, currentModuleIndex, saveCurrentAnswerImmediately } = get()
     const currentModule = modules[currentModuleIndex]
 
     if (questionIndex < 0 || questionIndex >= currentModule.questions.length) {
       // Invalid question index
       return
     }
+
+    // Save current answer immediately before moving
+    saveCurrentAnswerImmediately()
 
     const newModules = [...modules]
     newModules[currentModuleIndex] = {
