@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { debounce } from 'lodash-es'
 import {
   ExamService,
   type Question,
@@ -96,6 +95,30 @@ interface ExamState {
 }
 
 const MODULE_ORDER: ModuleType[] = ['english1', 'english2', 'math1', 'math2']
+
+// Native debounce implementation
+function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  delay: number
+): T & { cancel: () => void } {
+  let timeoutId: NodeJS.Timeout | null = null
+  
+  const debounced = ((...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+    timeoutId = setTimeout(() => func(...args), delay)
+  }) as T & { cancel: () => void }
+  
+  debounced.cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      timeoutId = null
+    }
+  }
+  
+  return debounced
+}
 
 // Real-time answer saving with debounce
 interface SaveAnswerPayload {
