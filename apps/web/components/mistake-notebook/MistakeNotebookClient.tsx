@@ -204,7 +204,7 @@ export function MistakeNotebookClient({
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredMistakes.map((mistake) => {
               const question = mistake.questions
               if (!question) return null
@@ -212,78 +212,111 @@ export function MistakeNotebookClient({
               return (
                 <div
                   key={mistake.id}
-                  className="bg-white rounded-lg shadow border border-gray-200"
+                  className="group bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-300 transition-all duration-200 hover:-translate-y-1"
                 >
-                  <div className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3 flex-1">
-                        <input
-                          type="checkbox"
-                          checked={selectedMistakes.includes(mistake.id)}
-                          onChange={() => handleMistakeToggle(mistake.id)}
-                          className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              {question.module_type.toUpperCase()}
-                            </span>
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                              {question.difficulty_level}
-                            </span>
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                              {question.question_type.replace('_', ' ')}
-                            </span>
-                            {getStatusBadge(mistake.status)}
-                          </div>
-                          <div className="text-sm text-gray-900 mb-2">
-                            {(() => {
-                              // HTML-first rendering for question preview
-                              let content = ''
-                              if (question.question_html && !isEmptyHtml(question.question_html)) {
-                                content = question.question_html.length > 150
-                                  ? `${question.question_html.substring(0, 150)}...`
-                                  : question.question_html
-                                // For preview, show plain text to avoid HTML complexity
-                                return content.replace(/<[^>]*>/g, ' ').substring(0, 150) + (content.length > 150 ? '...' : '')
-                              } else {
-                                content = question.question_text.length > 150
-                                  ? `${question.question_text.substring(0, 150)}...`
-                                  : question.question_text
-                                return content
-                              }
-                            })()}
-                          </div>
-                          <div className="flex items-center text-xs text-gray-500 space-x-4">
-                            <span>
-                              First mistake:{' '}
-                              {formatDate(mistake.first_mistaken_at)}
-                            </span>
-                            {mistake.last_reviewed_at && (
-                              <span>
-                                Last reviewed:{' '}
-                                {formatDate(mistake.last_reviewed_at)}
-                              </span>
-                            )}
-                            <span>
-                              Worth {question.points} point
-                              {question.points !== 1 ? 's' : ''}
-                            </span>
-                          </div>
-                          {question.topic_tags &&
-                            question.topic_tags.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-2">
-                                {question.topic_tags.map((tag: string) => (
-                                  <span
-                                    key={tag}
-                                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                        </div>
+                  {/* Card Header */}
+                  <div className="p-4 border-b border-gray-100">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-2">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500 text-white">
+                          Question {question.question_number || 'N/A'}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                          {question.module_type.replace('_', ' ').toUpperCase()}
+                        </span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={selectedMistakes.includes(mistake.id)}
+                        onChange={() => handleMistakeToggle(mistake.id)}
+                        className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                    </div>
+                    
+                    {/* Status and Difficulty */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                          question.difficulty_level === 'hard' 
+                            ? 'bg-red-100 text-red-700' 
+                            : question.difficulty_level === 'medium'
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-green-100 text-green-700'
+                        }`}>
+                          {question.difficulty_level}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                          {question.question_type.replace('_', ' ')}
+                        </span>
+                      </div>
+                      {getStatusBadge(mistake.status)}
+                    </div>
+                  </div>
+
+                  {/* Card Content - Question Preview */}
+                  <div className="p-4">
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-800 leading-relaxed line-clamp-4">
+                        {(() => {
+                          // HTML-first rendering for question preview
+                          let content = ''
+                          if (question.question_html && !isEmptyHtml(question.question_html)) {
+                            content = question.question_html
+                            // For preview, show plain text to avoid HTML complexity
+                            const cleanText = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+                            return cleanText.length > 120 ? `${cleanText.substring(0, 120)}...` : cleanText
+                          } else {
+                            content = question.question_text || 'No preview available'
+                            return content.length > 120 ? `${content.substring(0, 120)}...` : content
+                          }
+                        })()}
+                      </p>
+                    </div>
+
+                    {/* Topic Tags */}
+                    {question.topic_tags && question.topic_tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {question.topic_tags.slice(0, 3).map((tag: string) => (
+                          <span
+                            key={tag}
+                            className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-indigo-50 text-indigo-600 border border-indigo-200"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                        {question.topic_tags.length > 3 && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gray-50 text-gray-600">
+                            +{question.topic_tags.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Card Footer */}
+                  <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 rounded-b-xl">
+                    <div className="flex items-center justify-between text-xs text-gray-600">
+                      <div className="flex items-center space-x-2">
+                        <span className="flex items-center">
+                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                          </svg>
+                          {formatDate(mistake.first_mistaken_at)}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="flex items-center font-medium text-blue-600">
+                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                          {question.points} pt{question.points !== 1 ? 's' : ''}
+                        </span>
+                        <button 
+                          className="text-blue-600 hover:text-blue-800 font-medium opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => router.push(`/student/problem-bank/${question.id}`)}
+                        >
+                          Review →
+                        </button>
                       </div>
                     </div>
                   </div>

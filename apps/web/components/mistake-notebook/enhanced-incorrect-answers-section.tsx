@@ -488,13 +488,13 @@ export function EnhancedIncorrectAnswersSection({
             </h4>
           </div>
 
-          <div className="p-6 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 p-6">
             {groupQuestions.map((question) => (
               <div
                 key={question.id}
-                className="border border-red-200 rounded-xl p-6 bg-red-50/20 hover:bg-red-50/40 transition-all duration-300"
+                className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-red-200 hover:shadow-xl hover:border-purple-300 transition-all duration-200 hover:-translate-y-0.5"
               >
-                <div className="flex items-start justify-between mb-3">
+                <div className="flex items-start justify-between p-6 pb-4">
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
                       <input
@@ -506,9 +506,13 @@ export function EnhancedIncorrectAnswersSection({
                     </div>
                     <div className="flex-shrink-0">
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium bg-red-500 shadow-red-200 shadow-lg"
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium transition-all duration-300 ${
+                          question.masteryStatus === 'mastered'
+                            ? 'bg-purple-500 shadow-purple-200 shadow-lg'
+                            : 'bg-red-500 shadow-red-200 shadow-lg'
+                        }`}
                       >
-                        ✗
+                        {question.masteryStatus === 'mastered' ? '✓' : '✗'}
                       </div>
                     </div>
                     <div>
@@ -516,9 +520,7 @@ export function EnhancedIncorrectAnswersSection({
                         Question {question.question_number} - {formatModuleName(question.module_type)}
                       </div>
                       <div className="flex items-center space-x-2 mt-1">
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${getDifficultyColor(question.difficulty_level)}`}
-                        >
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${getDifficultyColor(question.difficulty_level)}`}>
                           {question.difficulty_level}
                         </span>
                         <span className="text-sm text-gray-500">
@@ -540,30 +542,69 @@ export function EnhancedIncorrectAnswersSection({
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => toggleQuestion(question.id)}
-                      className="text-purple-600 hover:text-purple-800 text-sm font-medium px-3 py-1 rounded-lg hover:bg-purple-50 transition-colors"
+                      className="text-purple-600 hover:text-purple-800 text-sm font-medium px-3 py-1 rounded-lg hover:bg-purple-50 transition-colors opacity-0 group-hover:opacity-100"
                     >
                       {expandedQuestion === question.id ? 'Hide' : 'Review'}
                     </button>
                   </div>
                 </div>
 
-                {/* Topics */}
-                {question.topic_tags && question.topic_tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {question.topic_tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                {/* Question Preview */}
+                <div className="px-6 pb-4">
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    {(() => {
+                      // HTML-first rendering for question preview
+                      let content = ''
+                      if (question.question_html && !isEmptyHtml(question.question_html)) {
+                        content = question.question_html
+                        // For preview, show plain text to avoid HTML complexity
+                        const cleanText = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+                        return cleanText.length > 120 ? `${cleanText.substring(0, 120)}...` : cleanText
+                      } else {
+                        content = question.question_text || 'No preview available'
+                        return content.length > 120 ? `${content.substring(0, 120)}...` : content
+                      }
+                    })()}
+                  </p>
+                </div>
+
+                {/* Topics and Footer */}
+                <div className="px-6 pb-6">
+                  {question.topic_tags && question.topic_tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {question.topic_tags.slice(0, 3).map((tag: string, index) => (
+                        <span
+                          key={index}
+                          className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {question.topic_tags.length > 3 && (
+                        <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                          +{question.topic_tags.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>
+                      First mistake: {question.firstMistakenAt ? new Date(question.firstMistakenAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                      }) : 'Unknown'}
+                    </span>
+                    <span>
+                      {question.incorrectAttempts?.length || 1} incorrect attempt{(question.incorrectAttempts?.length || 1) !== 1 ? 's' : ''}
+                    </span>
                   </div>
-                )}
+                </div>
 
                 {/* Expanded Question Details */}
                 {expandedQuestion === question.id && (
-                  <div className="mt-4 pt-4 border-t border-purple-200">
+                  <div className="border-t border-purple-200 bg-purple-50/30 rounded-b-2xl mx-0">
+                    <div className="p-6">
                     <div className="space-y-4">
                       {/* Full Question */}
                       <div>
@@ -746,6 +787,7 @@ export function EnhancedIncorrectAnswersSection({
                             </div>
                           </div>
                         )}
+                    </div>
                     </div>
                   </div>
                 )}
