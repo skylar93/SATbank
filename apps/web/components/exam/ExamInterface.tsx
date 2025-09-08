@@ -157,6 +157,8 @@ export function ExamInterface({
           onCheckAnswer={onCheckAnswer}
           onTryAgain={onTryAgain}
           showCorrectAnswer={shouldShowCorrectAnswer}
+          module={currentModule.module}
+          isPaused={status !== 'in_progress' || (timeExpiredRef.current ?? false)}
         />
       </div>
 

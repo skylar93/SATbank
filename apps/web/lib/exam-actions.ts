@@ -295,7 +295,7 @@ export async function createExamFromModules(data: {
       description: data.description,
       template_id: data.templateId,
       module_composition: data.moduleAssignments,
-      is_active: false, // Start as inactive - requires manual activation/assignment
+      is_active: true, // Start as active so it can be assigned immediately
     }
 
     // Add time limits if provided

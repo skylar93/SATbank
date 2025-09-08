@@ -17,6 +17,7 @@ import { HighlightedTextRenderer } from './HighlightedTextRenderer'
 import FloatingHighlightButton from './FloatingHighlightButton'
 import { AnswerRevealCard } from './AnswerRevealCard'
 import { ContentRenderer } from '../content-renderer'
+import { QuestionTimer } from './question-timer'
 
 // HTML rendering function for content that is already in HTML format
 export const renderHtmlContent = (htmlContent: string) => {
@@ -356,6 +357,8 @@ interface QuestionDisplayProps {
   onCheckAnswer?: () => void
   onTryAgain?: () => void
   showCorrectAnswer?: boolean
+  module?: Question['module_type']
+  isPaused?: boolean
 }
 
 // Helper function to parse correct answers for grid-in questions
@@ -455,6 +458,8 @@ export function QuestionDisplay({
   onCheckAnswer,
   onTryAgain,
   showCorrectAnswer = true,
+  module,
+  isPaused = false,
 }: QuestionDisplayProps) {
   // Early return if question is not provided
   if (!question) {
@@ -1330,18 +1335,27 @@ export function QuestionDisplay({
       <div className="flex-1 lg:w-1/2 p-6 lg:pr-3 border-b lg:border-b-0 lg:border-r border-gray-200 overflow-hidden">
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <h2
-              className="text-lg font-semibold text-gray-900 truncate"
-              title={
-                moduleDisplayName
+            <div className="flex items-center space-x-3">
+              <h2
+                className="text-lg font-semibold text-gray-900 truncate"
+                title={
+                  moduleDisplayName
+                    ? `${moduleDisplayName}: ${questionNumber} of ${totalQuestions}`
+                    : `Question ${questionNumber} of ${totalQuestions}`
+                }
+              >
+                {moduleDisplayName
                   ? `${moduleDisplayName}: ${questionNumber} of ${totalQuestions}`
-                  : `Question ${questionNumber} of ${totalQuestions}`
-              }
-            >
-              {moduleDisplayName
-                ? `${moduleDisplayName}: ${questionNumber} of ${totalQuestions}`
-                : `Question ${questionNumber} of ${totalQuestions}`}
-            </h2>
+                  : `Question ${questionNumber} of ${totalQuestions}`}
+              </h2>
+              {!isAdminPreview && module && (
+                <QuestionTimer
+                  module={module}
+                  questionId={question.id}
+                  isPaused={isPaused || disabled}
+                />
+              )}
+            </div>
             <div className="flex items-center space-x-2">
               {!isAdminPreview && !showExplanation && onToggleMarkForReview && (
                 <button
