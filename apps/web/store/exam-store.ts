@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import debounce from 'lodash-es/debounce'
+import { debounce } from 'lodash-es'
 import {
   ExamService,
   type Question,
