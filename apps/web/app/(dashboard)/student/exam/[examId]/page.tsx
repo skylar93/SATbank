@@ -94,6 +94,7 @@ function ExamPageContent() {
     forceCleanup,
     addHighlight,
     removeHighlight,
+    saveCurrentAnswerImmediately,
   } = useExamStore()
 
   // Create examState object for compatibility with existing code
@@ -357,29 +358,29 @@ function ExamPageContent() {
   ])
 
   // Handle previous question
-  const handlePrevious = () => {
-    saveCurrentAnswer()
+  const handlePrevious = async () => {
+    await saveCurrentAnswerImmediately() // Save immediately before navigation
     setIsUserSelecting(false)
     previousQuestion()
   }
 
   // Handle go to specific question
-  const handleGoToQuestion = (questionIndex: number) => {
-    saveCurrentAnswer()
+  const handleGoToQuestion = async (questionIndex: number) => {
+    await saveCurrentAnswerImmediately() // Save immediately before navigation
     setIsUserSelecting(false)
     goToQuestion(questionIndex)
   }
 
   // Handle next question
-  const handleNext = () => {
-    saveCurrentAnswer()
+  const handleNext = async () => {
+    await saveCurrentAnswerImmediately() // Save immediately before navigation
     setIsUserSelecting(false)
     nextQuestion()
   }
 
   // Handle module completion
   const handleSubmitModule = async () => {
-    saveCurrentAnswer()
+    await saveCurrentAnswerImmediately() // Save immediately before module completion
     try {
       await nextModule()
     } catch (error) {
@@ -392,7 +393,7 @@ function ExamPageContent() {
   const handleSubmitExam = async () => {
     console.log('📝 Submitting exam...')
 
-    saveCurrentAnswer()
+    await saveCurrentAnswerImmediately() // Save immediately before exam completion
     try {
       await completeExam()
       router.push('/student/results')
@@ -406,16 +407,21 @@ function ExamPageContent() {
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (status === 'in_progress' && !forcingExitRef.current) {
+        // Try to save current answer immediately (synchronous attempt)
+        saveCurrentAnswerImmediately().catch(console.error)
+        
+        // Note: With real-time saving, answers are mostly already saved, 
+        // so this message is now more accurate
         e.preventDefault()
         e.returnValue =
-          'You have an exam in progress. Your answers will be lost if you leave. Are you sure?'
+          'You have an exam in progress. Are you sure you want to leave?'
         return e.returnValue
       }
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [status])
+  }, [status, saveCurrentAnswerImmediately])
 
   // Cleanup effect when component unmounts during forced exit
   useEffect(() => {

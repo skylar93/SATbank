@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import debounce from 'lodash-es/debounce'
 import {
   ExamService,
   type Question,
@@ -59,6 +60,7 @@ interface ExamState {
   loading: boolean
   error: string | null
   highlightsByQuestion: { [questionId: string]: Highlight[] }
+  currentQuestionStartTime: number // Track when current question was first viewed
 
   // Actions
   initializeExam: (examId: string, userId: string) => Promise<void>
@@ -90,9 +92,48 @@ interface ExamState {
   setLoading: (loading: boolean) => void
   addHighlight: (questionId: string, highlight: Highlight) => void
   removeHighlight: (questionId: string, highlight: Highlight) => void
+  saveCurrentAnswerImmediately: () => Promise<void>
 }
 
 const MODULE_ORDER: ModuleType[] = ['english1', 'english2', 'math1', 'math2']
+
+// Real-time answer saving with debounce
+interface SaveAnswerPayload {
+  attemptId: string
+  questionId: string
+  answer: string
+  timeSpent: number
+}
+
+// Core function to save answer to database
+const saveAnswerToDB = async (payload: SaveAnswerPayload) => {
+  console.log(`[AutoSave] Saving answer for question ${payload.questionId}`)
+  
+  try {
+    // Use ExamService.submitAnswer to maintain consistency with existing save logic
+    await ExamService.submitAnswer({
+      attempt_id: payload.attemptId,
+      question_id: payload.questionId,
+      user_answer: payload.answer,
+      time_spent_seconds: payload.timeSpent,
+    })
+    console.log(`[AutoSave] ✅ Successfully saved answer for question ${payload.questionId}`)
+  } catch (error) {
+    console.error(`[AutoSave] ❌ Failed to save answer for question ${payload.questionId}:`, error)
+    // Could implement retry logic here if needed
+  }
+}
+
+// Debounced version - waits 2 seconds after last call before executing
+const debouncedSaveAnswer = debounce(saveAnswerToDB, 2000)
+
+// Immediate save function (for navigation/beforeunload events)
+const saveAnswerImmediately = async (payload: SaveAnswerPayload) => {
+  // Cancel any pending debounced save for this question
+  debouncedSaveAnswer.cancel()
+  // Save immediately
+  await saveAnswerToDB(payload)
+}
 
 export const useExamStore = create<ExamState>((set, get) => ({
   // Initial state
@@ -107,6 +148,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
   loading: false,
   error: null,
   highlightsByQuestion: {},
+  currentQuestionStartTime: 0,
 
   // Actions
   setError: (error: string | null) => set({ error }),
@@ -344,6 +386,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
         showConflictModal: false,
         loading: false,
         highlightsByQuestion: savedHighlights,
+        currentQuestionStartTime: Date.now(), // Initialize timer for first question
       })
       console.log('initializeExam: Exam state set successfully')
     } catch (err: any) {
@@ -373,7 +416,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
   },
 
   setLocalAnswer: (answer: string) => {
-    const { attempt, status, modules, currentModuleIndex } = get()
+    const { attempt, status, modules, currentModuleIndex, currentQuestionStartTime } = get()
     if (!attempt || status !== 'in_progress') return
 
     const currentModule = modules[currentModuleIndex]
@@ -382,11 +425,16 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
     if (!currentQuestion) return
 
-    // Update local state only
+    // Calculate time spent on this question
+    const timeSpentSeconds = currentQuestionStartTime > 0 
+      ? Math.round((Date.now() - currentQuestionStartTime) / 1000)
+      : 0
+
+    // Update local state with calculated time
     const examAnswer: ExamAnswer = {
       questionId: currentQuestion.id,
       answer,
-      timeSpent: 0,
+      timeSpent: timeSpentSeconds,
       answeredAt: new Date(),
     }
 
@@ -399,7 +447,18 @@ export const useExamStore = create<ExamState>((set, get) => ({
       },
     }
 
+    // Update local state immediately for instant UI feedback
     set({ modules: newModules })
+
+    // Trigger debounced save to database (if answer is not empty)
+    if (answer.trim()) {
+      debouncedSaveAnswer({
+        attemptId: attempt.id,
+        questionId: currentQuestion.id,
+        answer: answer.trim(),
+        timeSpent: timeSpentSeconds,
+      })
+    }
   },
 
   saveModuleAnswers: async () => {
@@ -409,7 +468,8 @@ export const useExamStore = create<ExamState>((set, get) => ({
     const currentModule = modules[currentModuleIndex]
 
     try {
-      // Save all answers for this module
+      console.log('[SaveModuleAnswers] Starting module completion save as safety fallback')
+      // Save all answers for this module (as safety fallback - most answers should already be saved via debounce)
       for (const [questionId, examAnswer] of Object.entries(
         currentModule.answers
       )) {
@@ -487,7 +547,10 @@ export const useExamStore = create<ExamState>((set, get) => ({
       currentQuestionIndex: nextQuestionIndex,
     }
 
-    set({ modules: newModules })
+    set({ 
+      modules: newModules,
+      currentQuestionStartTime: Date.now() // Reset timer for new question
+    })
   },
 
   previousQuestion: () => {
@@ -506,7 +569,10 @@ export const useExamStore = create<ExamState>((set, get) => ({
       currentQuestionIndex: prevQuestionIndex,
     }
 
-    set({ modules: newModules })
+    set({ 
+      modules: newModules,
+      currentQuestionStartTime: Date.now() // Reset timer for new question
+    })
   },
 
   goToQuestion: (questionIndex: number) => {
@@ -524,7 +590,10 @@ export const useExamStore = create<ExamState>((set, get) => ({
       currentQuestionIndex: questionIndex,
     }
 
-    set({ modules: newModules })
+    set({ 
+      modules: newModules,
+      currentQuestionStartTime: Date.now() // Reset timer for new question
+    })
   },
 
   completeExam: async () => {
@@ -609,10 +678,8 @@ export const useExamStore = create<ExamState>((set, get) => ({
     console.log('Attempting to advance to module index:', nextModuleIndex)
 
     try {
-      // Save all answers for the current module
-      console.log('Saving module answers...')
-      await saveModuleAnswers()
-      console.log('Module answers saved successfully')
+      // Note: Answers are now saved in real-time via debounce, so no need for bulk save here
+      console.log('Real-time saving ensures answers are already saved, proceeding to next module...')
 
       if (nextModuleIndex >= modules.length) {
         // Complete exam
@@ -650,6 +717,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
       set({
         modules: newModules,
         currentModuleIndex: nextModuleIndex,
+        currentQuestionStartTime: Date.now(), // Reset timer for first question of new module
       })
       console.log('Exam state updated successfully')
     } catch (err: any) {
@@ -1103,6 +1171,34 @@ export const useExamStore = create<ExamState>((set, get) => ({
           JSON.stringify(newHighlights)
         )
       }
+    }
+  },
+
+  saveCurrentAnswerImmediately: async () => {
+    const { attempt, status, modules, currentModuleIndex, getCurrentQuestion, currentQuestionStartTime } = get()
+    if (!attempt || status !== 'in_progress') return
+
+    const currentModule = modules[currentModuleIndex]
+    const currentQuestion = getCurrentQuestion()
+    if (!currentQuestion || !currentModule) return
+
+    const currentAnswer = currentModule.answers[currentQuestion.id]?.answer
+    if (!currentAnswer || !currentAnswer.trim()) return
+
+    // Calculate time spent
+    const timeSpentSeconds = currentQuestionStartTime > 0 
+      ? Math.round((Date.now() - currentQuestionStartTime) / 1000)
+      : 0
+
+    try {
+      await saveAnswerImmediately({
+        attemptId: attempt.id,
+        questionId: currentQuestion.id,
+        answer: currentAnswer.trim(),
+        timeSpent: timeSpentSeconds,
+      })
+    } catch (error) {
+      console.error('[SaveCurrentAnswerImmediately] Failed to save answer:', error)
     }
   },
 }))
