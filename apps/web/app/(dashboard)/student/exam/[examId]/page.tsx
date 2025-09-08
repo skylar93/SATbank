@@ -963,6 +963,8 @@ function ExamPageContent() {
           onCheckAnswer={handleCheckAnswer}
           onTryAgain={handleTryAgain}
           showCorrectAnswer={shouldShowCorrectAnswer}
+          module={currentModule.module}
+          isPaused={status !== 'in_progress' || timeExpiredRef.current}
         />
       </div>
 
