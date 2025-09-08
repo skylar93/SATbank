@@ -535,12 +535,26 @@ export function EnhancedIncorrectAnswersSection({
                             content = question.question_text
                           }
 
-                          // Create a truncated preview for display
+                          // Create a truncated preview that preserves structure
                           const truncatedContent = content.length > 150 ? content.substring(0, 150) + '...' : content
 
-                          // For preview, show a simplified version without full rendering
-                          // Strip HTML tags for preview but preserve text content
-                          return truncatedContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+                          // If HTML content contains math expressions, render properly
+                          if (question.question_html && !isEmptyHtml(question.question_html)) {
+                            if (question.question_html.includes('data-math')) {
+                              return (
+                                <div className="truncate">
+                                  <ContentRenderer htmlContent={truncatedContent} />
+                                </div>
+                              )
+                            } else {
+                              return (
+                                <div className="truncate" dangerouslySetInnerHTML={{ __html: truncatedContent }} />
+                              )
+                            }
+                          } else {
+                            // For plain text, just show it directly
+                            return <div className="truncate">{truncatedContent}</div>
+                          }
                         })()}
                       </div>
 
@@ -654,7 +668,22 @@ export function EnhancedIncorrectAnswersSection({
                                     }`}
                                   >
                                     <span className="font-medium">{key}.</span>{' '}
-                                    <span className="text-gray-900">{value as string}</span>
+                                    <span className="text-gray-900">
+                                      {(() => {
+                                        // Check if options_html exists and has this key
+                                        if (question.options_html && question.options_html[key] && !isEmptyHtml(question.options_html[key])) {
+                                          // If HTML content contains math expressions, render properly
+                                          if (question.options_html[key].includes('data-math')) {
+                                            return <ContentRenderer htmlContent={question.options_html[key]} />
+                                          } else {
+                                            return <span dangerouslySetInnerHTML={{ __html: question.options_html[key] }} />
+                                          }
+                                        } else {
+                                          // Fallback to regular text option
+                                          return value as string
+                                        }
+                                      })()}
+                                    </span>
                                     {key === question.correct_answer && (
                                       <span className="ml-2 text-green-600 font-medium">
                                         (Correct)
