@@ -137,6 +137,51 @@ export class ExamService {
     return await this.getAssignedExams(userId)
   }
 
+  // Get available exams with completion status for a student
+  static async getAvailableExamsWithStatus(userId: string): Promise<(Exam & { completionStatus: 'not_started' | 'in_progress' | 'completed', completedAttemptId?: string })[]> {
+    // Get assigned exams
+    const assignedExams = await this.getAssignedExams(userId)
+    
+    // Get completion status for each exam
+    const examsWithStatus = await Promise.all(
+      assignedExams.map(async (exam) => {
+        // Get the most recent attempt for this exam
+        const { data: attempts, error } = await supabase
+          .from('test_attempts')
+          .select('id, status, completed_at')
+          .eq('user_id', userId)
+          .eq('exam_id', exam.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+
+        if (error) {
+          console.error('Error fetching attempt status:', error)
+          return {
+            ...exam,
+            completionStatus: 'not_started' as const
+          }
+        }
+
+        const latestAttempt = attempts?.[0]
+        
+        if (!latestAttempt) {
+          return {
+            ...exam,
+            completionStatus: 'not_started' as const
+          }
+        }
+
+        return {
+          ...exam,
+          completionStatus: latestAttempt.status as 'not_started' | 'in_progress' | 'completed',
+          completedAttemptId: latestAttempt.status === 'completed' ? latestAttempt.id : undefined
+        }
+      })
+    )
+
+    return examsWithStatus
+  }
+
   // Get exam by ID
   static async getExam(examId: string): Promise<Exam | null> {
     const { data, error } = await supabase
