@@ -189,9 +189,19 @@ export default function ReviewPage() {
           exam: { 
             id: 'practice-session', 
             title: 'Practice Session',
-            module_composition: {},
-            time_limits: {},
-            template_id: null
+            description: null,
+            is_mock_exam: false,
+            is_active: true,
+            total_questions: allQuestions.length,
+            time_limits: {
+              english1: 32,
+              english2: 32,
+              math1: 35,
+              math2: 35
+            },
+            created_by: null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
           },
           questions: allQuestions,
           userAnswers: practiceAnswers || [],
