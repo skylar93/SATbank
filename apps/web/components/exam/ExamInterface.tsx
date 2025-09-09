@@ -106,14 +106,14 @@ export function ExamInterface({
               onClick={onExitAttempt}
               className="text-gray-500 hover:text-gray-700 text-sm"
             >
-              ← Exit Exam
+              ← {exam.title.includes('Practice') ? 'Exit Practice' : 'Exit Exam'}
             </button>
             <ReferenceSheetModal />
             <h1 className="text-xl font-semibold text-gray-900">
               {exam.title}
             </h1>
             <span className="text-sm text-gray-500">
-              {currentModule.module.replace(/(\d)/, ' $1').toUpperCase()}
+              {(currentModule.module as string) === 'practice' ? 'Practice Mode' : currentModule.module.replace(/(\d)/, ' $1').toUpperCase()}
             </span>
           </div>
 

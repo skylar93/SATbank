@@ -86,17 +86,20 @@ export default function ReviewPage() {
     if (!user || !attemptId) return
 
     try {
-      // Get the test attempt to find the exam ID
+      // Get the test attempt to find the exam ID and check if it's practice mode
       const { data: attemptData, error: attemptError } = await supabase
         .from('test_attempts')
-        .select('exam_id')
+        .select('exam_id, is_practice_mode')
         .eq('id', attemptId)
         .eq('user_id', user.id)
         .single()
 
       if (attemptError) throw attemptError
 
-      if (attemptData?.exam_id) {
+      // For practice sessions, always allow results to be shown
+      if (attemptData?.is_practice_mode) {
+        setCanShowResults(true)
+      } else if (attemptData?.exam_id) {
         const canShow = await ExamService.canShowResults(
           user.id,
           attemptData.exam_id
@@ -131,12 +134,13 @@ export default function ReviewPage() {
       }
 
       // Get the test attempt with exam information and answer visibility fields
+      // For practice sessions, we use a left join since they might not have an exam_id
       const { data: attempt, error: attemptError } = await supabase
         .from('test_attempts')
         .select(
           `
           *,
-          exams!inner(*)
+          exams(*)
         `
         )
         .eq('id', attemptId)
@@ -148,14 +152,60 @@ export default function ReviewPage() {
 
       console.log('🔍 Test attempt data:', attempt)
       console.log('🔍 Exam ID from attempt:', attempt.exam_id)
+      console.log('🔍 Is practice mode:', attempt.is_practice_mode)
 
-      // Smart detection: Determine which system this exam uses
-      const examSystem = attempt.exams.template_id ? 'template' : 'direct'
-      console.log('🔍 Exam system detected:', examSystem)
-      console.log('🔍 Template ID:', attempt.exams.template_id)
-      console.log('🔍 Module composition:', attempt.exams.module_composition)
-      
       let allQuestions: QuestionWithMetadata[] = []
+      
+      // Handle practice sessions differently
+      if (attempt.is_practice_mode) {
+        console.log('🔍 Loading questions for practice session')
+        // For practice sessions, get questions from user_answers
+        const { data: practiceAnswers, error: answersError } = await supabase
+          .from('user_answers')
+          .select(`
+            *,
+            questions(*)
+          `)
+          .eq('attempt_id', attemptId)
+          .order('question_id')
+
+        if (answersError) {
+          throw new Error('Failed to load practice session answers')
+        }
+
+        allQuestions = practiceAnswers
+          ?.filter(ua => ua.questions)
+          .map((ua, index) => ({
+            ...(ua.questions as unknown as Question),
+            _exam_question_number: index + 1,
+            _module_type: 'practice'
+          })) || []
+          
+        console.log('🔍 Practice mode loaded questions:', allQuestions.length)
+        
+        // For practice mode, we already have user answers, so we'll use them directly
+        const reviewData: ReviewData = {
+          attempt,
+          exam: { 
+            id: 'practice-session', 
+            title: 'Practice Session',
+            module_composition: {},
+            time_limits: {},
+            template_id: null
+          },
+          questions: allQuestions,
+          userAnswers: practiceAnswers || [],
+        }
+
+        setReviewData(reviewData)
+        return // Early return for practice sessions
+      } else {
+        // Handle regular exam sessions
+        // Smart detection: Determine which system this exam uses
+        const examSystem = attempt.exams?.template_id ? 'template' : 'direct'
+        console.log('🔍 Exam system detected:', examSystem)
+        console.log('🔍 Template ID:', attempt.exams?.template_id)
+        console.log('🔍 Module composition:', attempt.exams?.module_composition)
       
       if (examSystem === 'template') {
         // NEW SYSTEM: Template-based exam using exam_questions table
@@ -216,6 +266,7 @@ export default function ReviewPage() {
           question_number: q.question_number, 
           exam_id: q.exam_id 
         })))
+        }
       }
 
       console.log('🔍 Total questions loaded:', allQuestions.length)
@@ -233,7 +284,13 @@ export default function ReviewPage() {
 
       const reviewData: ReviewData = {
         attempt,
-        exam: attempt.exams,
+        exam: attempt.exams || { 
+          id: 'practice-session', 
+          title: 'Practice Session',
+          module_composition: {},
+          time_limits: {},
+          template_id: null
+        },
         questions: allQuestions,
         userAnswers: userAnswers || [],
       }

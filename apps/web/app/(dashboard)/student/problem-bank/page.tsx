@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../../contexts/auth-context'
 import { QuestionFilter } from '../../../../components/problem-bank/question-filter'
 import { QuestionList } from '../../../../components/problem-bank/question-list'
@@ -45,6 +46,13 @@ interface FilterOptions {
 
 export default function ProblemBank() {
   const { user } = useAuth()
+  const router = useRouter()
+  
+  // Redirect to mistake notebook temporarily
+  useEffect(() => {
+    router.push('/student/mistake-notebook')
+  }, [router])
+  
   // Use the centralized Supabase client
   const [questions, setQuestions] = useState<Question[]>([])
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([])

@@ -23,7 +23,7 @@ const ExamTimerComponent = function ExamTimer({
   isPaused = false,
 }: ExamTimerProps) {
   const [remainingSeconds, setRemainingSeconds] = useState(initialTimeSeconds)
-  const [isRunning, setIsRunning] = useState(true)
+  const [isRunning, setIsRunning] = useState(initialTimeSeconds > 0) // Don't start timer if no time limit
 
   // Use refs to store callbacks to prevent infinite re-renders
   const onTimeUpdateRef = useRef(onTimeUpdate)
@@ -74,7 +74,7 @@ const ExamTimerComponent = function ExamTimer({
   }, [isRunning, isPaused, initialTimeSeconds])
 
   useEffect(() => {
-    if (isPaused || !isRunning) return
+    if (isPaused || !isRunning || initialTimeSeconds <= 0) return // Don't run timer if no time limit
 
     let animationFrameId: number
     
@@ -109,7 +109,7 @@ const ExamTimerComponent = function ExamTimer({
       onTimeUpdateRef.current(remainingSeconds)
     }
 
-    if (remainingSeconds === 0 && isRunning) {
+    if (remainingSeconds === 0 && isRunning && initialTimeSeconds > 0) { // Only expire if there was a time limit
       console.log('Timer reached 0, calling onTimeExpired')
       setIsRunning(false)
       if (onTimeExpiredRef.current) {
@@ -119,15 +119,31 @@ const ExamTimerComponent = function ExamTimer({
         console.error('onTimeExpired callback not found!')
       }
     }
-  }, [remainingSeconds, isRunning])
+  }, [remainingSeconds, isRunning, initialTimeSeconds])
 
   // Reset timer when initialTimeSeconds changes (new module)
   useEffect(() => {
     setRemainingSeconds(initialTimeSeconds)
-    setIsRunning(true)
+    setIsRunning(initialTimeSeconds > 0) // Only start timer if there's a time limit
     // Reset start time for new module
     startTimeRef.current = Date.now()
   }, [initialTimeSeconds])
+
+  // Don't render timer if no time limit
+  if (initialTimeSeconds <= 0) {
+    return (
+      <div className="flex items-center space-x-3">
+        <div className="px-4 py-2 rounded-lg border-2 bg-gray-50 text-gray-600 border-gray-200">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 rounded-full bg-current"></div>
+            <span className="font-mono text-lg font-bold">
+              No Time Limit
+            </span>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const timerColor = getTimerColor(remainingSeconds)
   const isLowTime = remainingSeconds <= initialTimeSeconds * 0.15 // Warning when < 15% time left
@@ -155,7 +171,7 @@ const ExamTimerComponent = function ExamTimer({
         </div>
       )}
 
-      {remainingSeconds === 0 && (
+      {remainingSeconds === 0 && initialTimeSeconds > 0 && (
         <div className="text-sm text-red-700 font-bold">TIME'S UP</div>
       )}
     </div>

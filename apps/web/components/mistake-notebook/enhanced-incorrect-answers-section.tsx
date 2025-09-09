@@ -241,7 +241,7 @@ export function EnhancedIncorrectAnswersSection({
         questions: selectedQuestions,
         settings: {
           shuffleQuestions: false,
-          showExplanations: true,
+          showExplanations: false, // Disabled to match exam behavior
           timeLimit: 0,
           isMistakeReview: true,
         },
@@ -289,7 +289,7 @@ export function EnhancedIncorrectAnswersSection({
         questions: questions.map((q) => q.id),
         settings: {
           shuffleQuestions: true,
-          showExplanations: true,
+          showExplanations: false, // Disabled to match exam behavior
           timeLimit: 0,
           isMistakeReview: true,
         },
@@ -519,21 +519,27 @@ export function EnhancedIncorrectAnswersSection({
                       <div className="font-medium text-gray-900">
                         Question {question.question_number} - {formatModuleName(question.module_type)}
                       </div>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${getDifficultyColor(question.difficulty_level)}`}>
+                      <div className="flex items-center gap-1.5 mt-2 flex-nowrap">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border flex-shrink-0 ${
+                          question.difficulty_level === 'hard' 
+                            ? 'bg-rose-50 text-rose-700 border-rose-200' 
+                            : question.difficulty_level === 'medium'
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        }`}>
                           {question.difficulty_level}
                         </span>
-                        <span className="text-sm text-gray-500">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 flex-shrink-0">
                           {formatQuestionType(question.question_type)}
                         </span>
                         <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border flex-shrink-0 ${
                             question.masteryStatus === 'mastered'
-                              ? 'bg-purple-100 text-purple-800'
-                              : 'bg-red-100 text-red-800'
+                              ? 'bg-violet-50 text-violet-700 border-violet-200'
+                              : 'bg-orange-50 text-orange-700 border-orange-200'
                           }`}
                         >
-                          {question.masteryStatus === 'mastered' ? '✓ Mastered' : '⚠ Needs Practice'}
+                          {question.masteryStatus === 'mastered' ? '✓ Mastered' : '⚠ Practice'}
                         </span>
                       </div>
                     </div>
@@ -571,18 +577,19 @@ export function EnhancedIncorrectAnswersSection({
                 {/* Topics and Footer */}
                 <div className="px-6 pb-6">
                   {question.topic_tags && question.topic_tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-3">
+                    <div className="flex flex-wrap gap-1.5 mb-3">
                       {question.topic_tags.slice(0, 3).map((tag: string, index) => (
                         <span
                           key={index}
-                          className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs"
+                          className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-colors"
                         >
+                          <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-1.5"></span>
                           {tag}
                         </span>
                       ))}
                       {question.topic_tags.length > 3 && (
-                        <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
-                          +{question.topic_tags.length - 3} more
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200">
+                          +{question.topic_tags.length - 3}
                         </span>
                       )}
                     </div>

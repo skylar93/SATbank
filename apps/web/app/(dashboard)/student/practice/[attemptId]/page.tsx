@@ -1,11 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '../../../../../contexts/auth-context'
-import { Navigation } from '../../../../../components/navigation'
-import { QuestionDisplay } from '../../../../../components/exam/question-display'
-import { ExamTimer } from '../../../../../components/exam/exam-timer'
+import { ExamInterface } from '../../../../../components/exam/ExamInterface'
 import { supabase } from '../../../../../lib/supabase'
 import { Question } from '../../../../../lib/exam-service'
 
@@ -43,9 +41,11 @@ export default function PracticeSession() {
   const [loading, setLoading] = useState(true)
   const [sessionStartTime, setSessionStartTime] = useState<number>(Date.now())
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now())
-  const [showExplanation, setShowExplanation] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
   const [timeExpired, setTimeExpired] = useState(false)
+  const timeExpiredRef = useRef(false)
+  const questionContentRef = useRef<HTMLDivElement>(null)
+  const [highlightsByQuestion, setHighlightsByQuestion] = useState<Record<string, any[]>>({})
 
   useEffect(() => {
     if (user && attemptId) {
@@ -61,9 +61,9 @@ export default function PracticeSession() {
       const practiceDataStr = localStorage.getItem(`practice_${attemptId}`)
       if (!practiceDataStr) {
         console.error(
-          'Practice session not found. Redirecting to problem bank.'
+          'Practice session not found. Redirecting to mistake notebook.'
         )
-        router.push('/student/problem-bank')
+        router.push('/student/mistake-notebook')
         return
       }
 
@@ -105,7 +105,7 @@ export default function PracticeSession() {
     } catch (error) {
       console.error('Error initializing practice session:', error)
       console.error('Failed to start practice session. Please try again.')
-      router.push('/student/problem-bank')
+      router.push('/student/mistake-notebook')
     } finally {
       setLoading(false)
     }
@@ -119,7 +119,7 @@ export default function PracticeSession() {
       const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000)
       const isCorrect = answer === currentQuestion.correct_answer
 
-      // Store answer locally
+      // Store answer locally (similar to exam mode)
       const userAnswer: UserAnswer = {
         question_id: currentQuestion.id,
         user_answer: answer,
@@ -131,7 +131,7 @@ export default function PracticeSession() {
         (prev) => new Map(prev.set(currentQuestion.id, userAnswer))
       )
 
-      // Save to database
+      // Save to database immediately (practice mode saves answers as they go)
       try {
         const { error } = await supabase.from('user_answers').upsert({
           attempt_id: attemptId,
@@ -146,25 +146,18 @@ export default function PracticeSession() {
         console.error('Error saving answer:', error)
       }
 
-      // Show explanation if enabled
-      if (practiceSettings.showExplanations && currentQuestion.explanation) {
-        setShowExplanation(true)
-      } else {
-        goToNextQuestion()
-      }
+      // Auto-advance to next question (like exam mode)
+      goToNextQuestion()
     },
     [
       currentQuestionIndex,
       questions,
       attemptId,
       questionStartTime,
-      practiceSettings.showExplanations,
     ]
   )
 
   const goToNextQuestion = useCallback(() => {
-    setShowExplanation(false)
-
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1)
       setQuestionStartTime(Date.now())
@@ -175,11 +168,17 @@ export default function PracticeSession() {
 
   const completePracticeSession = async () => {
     try {
+      // Ensure all answers are processed before calculating score
+      const allAnswers = Array.from(userAnswers.values())
+      console.log('🔍 Practice completion - total answers:', allAnswers.length)
+      console.log('🔍 Practice completion - total questions:', questions.length)
+      
       const totalTimeSpent = Math.floor((Date.now() - sessionStartTime) / 1000)
-      const correctAnswers = Array.from(userAnswers.values()).filter(
-        (a) => a.is_correct
-      ).length
-      const totalScore = Math.round((correctAnswers / questions.length) * 100)
+      const correctAnswers = allAnswers.filter((a) => a.is_correct).length
+      console.log('🔍 Practice completion - correct answers:', correctAnswers)
+      
+      const totalScore = questions.length > 0 ? Math.round((correctAnswers / questions.length) * 100) : 0
+      console.log('🔍 Practice completion - calculated score:', totalScore)
 
       // Update attempt status
       const { error: updateError } = await supabase
@@ -223,7 +222,8 @@ export default function PracticeSession() {
         }
       }
 
-      setIsComplete(true)
+      // Redirect directly to review page instead of showing simple completion screen
+      router.push(`/student/results/${attemptId}/review`)
 
       // Clean up localStorage
       localStorage.removeItem(`practice_${attemptId}`)
@@ -233,6 +233,7 @@ export default function PracticeSession() {
   }
 
   const handleTimeExpired = useCallback(() => {
+    timeExpiredRef.current = true
     setTimeExpired(true)
     completePracticeSession()
   }, [])
@@ -241,7 +242,6 @@ export default function PracticeSession() {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prev) => prev - 1)
       setQuestionStartTime(Date.now())
-      setShowExplanation(false)
     }
   }
 
@@ -249,8 +249,60 @@ export default function PracticeSession() {
     if (index >= 0 && index < questions.length) {
       setCurrentQuestionIndex(index)
       setQuestionStartTime(Date.now())
-      setShowExplanation(false)
     }
+  }
+
+  // Transform questions into module format for ExamInterface
+  const currentModule = {
+    module: 'practice' as any,
+    questions,
+    currentQuestionIndex,
+    timeRemaining: practiceSettings.timeLimit > 0 ? practiceSettings.timeLimit * 60 : -1, // -1 indicates no time limit
+    answers: Object.fromEntries(
+      Array.from(userAnswers.entries()).map(([questionId, answer]) => [
+        questionId,
+        { answer: answer.user_answer, isCorrect: answer.is_correct }
+      ])
+    )
+  }
+
+  const modules = [currentModule]
+  const currentQuestion = questions[currentQuestionIndex]
+  const currentAnswer = userAnswers.get(currentQuestion?.id || '')?.user_answer || ''
+
+  // Helper functions for ExamInterface
+  const getAnsweredQuestions = () => {
+    const answeredSet = new Set<number>()
+    questions.forEach((question, index) => {
+      const answer = userAnswers.get(question.id)
+      if (answer && answer.user_answer && answer.user_answer.trim() !== '') {
+        answeredSet.add(index + 1) // Convert to 1-based indexing
+      }
+    })
+    return answeredSet
+  }
+
+  const getMarkedQuestions = () => {
+    // For practice mode, we don't have marking functionality yet
+    return []
+  }
+
+  const handleExitAttempt = () => {
+    router.push('/student/mistake-notebook')
+  }
+
+  const addHighlight = (questionId: string, highlight: any) => {
+    setHighlightsByQuestion(prev => ({
+      ...prev,
+      [questionId]: [...(prev[questionId] || []), highlight]
+    }))
+  }
+
+  const removeHighlight = (questionId: string, highlight: any) => {
+    setHighlightsByQuestion(prev => ({
+      ...prev,
+      [questionId]: (prev[questionId] || []).filter(h => h !== highlight)
+    }))
   }
 
   if (!user) return null
@@ -274,7 +326,6 @@ export default function PracticeSession() {
 
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
         <div className="max-w-4xl mx-auto py-8 px-4">
           <div className="bg-white rounded-lg shadow-lg p-8 text-center">
             <div className="mb-6">
@@ -338,13 +389,13 @@ export default function PracticeSession() {
 
             <div className="space-y-4">
               <button
-                onClick={() => router.push('/student/problem-bank')}
+                onClick={() => router.push('/student/mistake-notebook')}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors mr-4"
               >
-                Back to Problem Bank
+                Back to Mistake Notebook
               </button>
               <button
-                onClick={() => router.push(`/student/results/${attemptId}`)}
+                onClick={() => router.push(`/student/results/${attemptId}/review`)}
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium transition-colors"
               >
                 View Detailed Results
@@ -356,174 +407,41 @@ export default function PracticeSession() {
     )
   }
 
-  const currentQuestion = questions[currentQuestionIndex]
-  const currentAnswer = userAnswers.get(currentQuestion?.id || '')
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-
-      <div className="max-w-6xl mx-auto py-4 px-4">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">
-                Practice Session
-              </h1>
-              <p className="text-sm text-gray-600">
-                Question {currentQuestionIndex + 1} of {questions.length}
-                {practiceSettings.isMistakeReview &&
-                  ' • Reviewing Incorrect Answers'}
-              </p>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              {practiceSettings.timeLimit > 0 && (
-                <ExamTimer
-                  initialTimeSeconds={practiceSettings.timeLimit * 60}
-                  onTimeExpired={handleTimeExpired}
-                />
-              )}
-              <div className="text-sm text-gray-600">
-                Score:{' '}
-                {
-                  Array.from(userAnswers.values()).filter((a) => a.is_correct)
-                    .length
-                }
-                /{userAnswers.size}
-              </div>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mt-4">
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{
-                  width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`,
-                }}
-              ></div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-          {/* Question Navigation Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-4 sticky top-4">
-              <h3 className="font-medium text-gray-900 mb-3">Questions</h3>
-              <div className="grid grid-cols-5 lg:grid-cols-1 gap-2">
-                {questions.map((_, index) => {
-                  const hasAnswer = userAnswers.has(questions[index]?.id || '')
-                  const isCorrect = userAnswers.get(
-                    questions[index]?.id || ''
-                  )?.is_correct
-
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => jumpToQuestion(index)}
-                      className={`p-2 text-xs rounded transition-colors ${
-                        index === currentQuestionIndex
-                          ? 'bg-blue-600 text-white'
-                          : hasAnswer
-                            ? isCorrect
-                              ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                              : 'bg-red-100 text-red-800 hover:bg-red-200'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {index + 1}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Question Content */}
-          <div className="lg:col-span-3">
-            {currentQuestion && (
-              <div className="bg-white rounded-lg shadow-sm">
-                {showExplanation && currentQuestion.explanation ? (
-                  <div className="p-6">
-                    <div className="mb-4">
-                      <div
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                          currentAnswer?.is_correct
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {currentAnswer?.is_correct
-                          ? '✓ Correct!'
-                          : '✗ Incorrect'}
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="font-medium text-gray-900 mb-2">
-                          Your Answer:
-                        </h3>
-                        <p className="text-gray-700">
-                          {currentAnswer?.user_answer}
-                        </p>
-                      </div>
-
-                      <div>
-                        <h3 className="font-medium text-gray-900 mb-2">
-                          Correct Answer:
-                        </h3>
-                        <p className="text-green-700 font-medium">
-                          {currentQuestion.correct_answer}
-                        </p>
-                      </div>
-
-                      <div>
-                        <h3 className="font-medium text-gray-900 mb-2">
-                          Explanation:
-                        </h3>
-                        <p className="text-gray-700 whitespace-pre-wrap">
-                          {currentQuestion.explanation}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between mt-6 pt-4 border-t border-gray-200">
-                      <button
-                        onClick={goToPreviousQuestion}
-                        disabled={currentQuestionIndex === 0}
-                        className="px-4 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        ← Previous
-                      </button>
-                      <button
-                        onClick={goToNextQuestion}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors"
-                      >
-                        {currentQuestionIndex === questions.length - 1
-                          ? 'Finish Practice'
-                          : 'Next Question →'}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <QuestionDisplay
-                    question={currentQuestion}
-                    questionNumber={currentQuestionIndex + 1}
-                    totalQuestions={questions.length}
-                    userAnswer={currentAnswer?.user_answer}
-                    onAnswerChange={handleAnswer}
-                  />
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    <ExamInterface
+      exam={{ id: attemptId, title: 'Practice Session' }}
+      currentModule={currentModule}
+      currentQuestion={currentQuestion}
+      currentAnswer={currentAnswer || ''}
+      status={isComplete || timeExpired ? 'completed' : 'in_progress'}
+      modules={modules}
+      currentModuleIndex={0}
+      timeExpiredRef={timeExpiredRef}
+      questionContentRef={questionContentRef}
+      highlightsByQuestion={highlightsByQuestion}
+      answerCheckMode={'exam_end'}
+      showAnswerReveal={false}
+      answerRevealData={null}
+      shouldShowCorrectAnswer={false}
+      onAnswerChange={handleAnswer}
+      onNext={goToNextQuestion}
+      onPrevious={goToPreviousQuestion}
+      onGoToQuestion={jumpToQuestion}
+      onSubmitModule={completePracticeSession}
+      onSubmitExam={completePracticeSession}
+      onTimeExpired={handleTimeExpired}
+      onTimeUpdate={() => {}}
+      onExitAttempt={handleExitAttempt}
+      onCheckAnswer={() => {}} // No-op for practice mode
+      onAnswerRevealContinue={() => {}} // No-op for practice mode
+      onTryAgain={() => {}} // No-op for practice mode
+      getCurrentAnswer={() => userAnswers.get(currentQuestion?.id || '')}
+      isMarkedForReview={() => false}
+      toggleMarkForReview={() => {}}
+      getMarkedQuestions={getMarkedQuestions}
+      addHighlight={addHighlight}
+      removeHighlight={removeHighlight}
+      getAnsweredQuestions={getAnsweredQuestions}
+    />
   )
 }
