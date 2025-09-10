@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
       answer_check_mode:
         visibilityOption === 'per_question' ? 'per_question' : 'exam_end',
       default_answers_visible: updateData.answers_visible,
-      default_answers_visible_after: updateData.answers_visible_after,
+      default_answers_visible_after: updateData.answers_visible_after ?? null,
     }
 
     const { error: examError } = await supabaseService

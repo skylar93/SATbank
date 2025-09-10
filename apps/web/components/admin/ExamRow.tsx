@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight, Settings, Eye } from 'lucide-react'
 import { CurveAssignmentControl } from './CurveAssignmentControlSimple'
 import { AnswerVisibilityControl } from './AnswerVisibilityControlSimple'
 import { supabase } from '@/lib/supabase'
@@ -125,15 +125,17 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
           <div className="flex items-center space-x-2">
             <Link
               href={`/admin/exams/${exam.id}/settings`}
-              className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full border border-blue-200 hover:from-blue-200 hover:to-purple-200 transition-all duration-200 shadow-sm"
+              className="p-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full border border-blue-200 hover:from-blue-200 hover:to-purple-200 transition-all duration-200 shadow-sm"
+              title="Settings"
             >
-              Settings
+              <Settings className="h-4 w-4" />
             </Link>
             <Link
               href={`/admin/exams/${exam.id}/preview`}
-              className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 rounded-full border border-emerald-200 hover:from-emerald-200 hover:to-teal-200 transition-all duration-200 shadow-sm"
+              className="p-2 bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 rounded-full border border-emerald-200 hover:from-emerald-200 hover:to-teal-200 transition-all duration-200 shadow-sm"
+              title="Preview & Edit"
             >
-              Preview & Edit
+              <Eye className="h-4 w-4" />
             </Link>
           </div>
         </td>
