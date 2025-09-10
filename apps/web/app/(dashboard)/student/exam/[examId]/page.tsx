@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback, Suspense } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '../../../../../contexts/auth-context'
 import { useExamStore } from '../../../../../store/exam-store'
-import { ExamService, type Question } from '../../../../../lib/exam-service'
+import { ExamService } from '../../../../../lib/exam-service'
 import { ExamTimer } from '../../../../../components/exam/exam-timer'
 import { QuestionDisplay } from '../../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../../components/exam/exam-navigation'
@@ -15,7 +15,6 @@ import {
   BookOpenIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline'
-import { AnswerRevealCard } from '../../../../../components/exam/AnswerRevealCard'
 
 function ExamPageContent() {
   const params = useParams()
@@ -24,38 +23,7 @@ function ExamPageContent() {
   const { user, loading: authLoading } = useAuth()
   const examId = params.examId as string
 
-  // Debug logging for preview mode issues (disabled)
-  // console.log('🔍 ExamPage Debug:', {
-  //   examId,
-  //   user: user?.email,
-  //   userProfile: user?.profile,
-  //   userRole: user?.profile?.role,
-  //   authLoading,
-  //   hasUser: !!user,
-  //   hasProfile: !!user?.profile,
-  //   timestamp: new Date().toISOString()
-  // })
-
-  // Handle invalid examId - but only after auth is loaded
-  if (!examId || examId === 'null' || examId === 'undefined') {
-    if (!authLoading) {
-      // If in preview mode, redirect to admin panel instead of student dashboard
-      router.push('/student/dashboard')
-      return <div>Redirecting...</div>
-    } else {
-      // Still loading auth, show loading state
-      return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading...</p>
-          </div>
-        </div>
-      )
-    }
-  }
-
-  // Get state and actions from Zustand store
+  // Get state and actions from Zustand store (must be called before any returns)
   const {
     // State
     exam,
@@ -63,10 +31,8 @@ function ExamPageContent() {
     modules,
     currentModuleIndex,
     status,
-    startedAt,
     existingAttempt,
     showConflictModal,
-    finalScores,
     loading,
     error,
     highlightsByQuestion,
@@ -85,7 +51,6 @@ function ExamPageContent() {
     handleTimeExpired: handleTimeExpiredFromHook,
     updateTimer,
     getCurrentQuestion,
-    getCurrentAnswer,
     toggleMarkForReview,
     isMarkedForReview,
     getMarkedQuestions,
@@ -97,19 +62,6 @@ function ExamPageContent() {
     removeHighlight,
     saveCurrentAnswerImmediately,
   } = useExamStore()
-
-  // Create examState object for compatibility with existing code
-  const examState = {
-    exam,
-    attempt,
-    modules,
-    currentModuleIndex,
-    status,
-    startedAt,
-    existingAttempt,
-    showConflictModal,
-    finalScores,
-  }
 
   const [showStartScreen, setShowStartScreen] = useState(true)
   const [currentAnswer, setCurrentAnswer] = useState('')
@@ -306,12 +258,6 @@ function ExamPageContent() {
     }
   }
 
-  // Save current answer locally before navigation
-  const saveCurrentAnswer = () => {
-    if (currentAnswer.trim()) {
-      setLocalAnswer(currentAnswer)
-    }
-  }
 
   // Handle timer expiration with immediate state change
   const handleTimeExpired = useCallback(() => {
@@ -337,6 +283,9 @@ function ExamPageContent() {
 
       const advanceModule = async () => {
         try {
+          // Small delay to show the "Time's Up" message briefly
+          await new Promise((resolve) => setTimeout(resolve, 1500))
+
           console.log('Calling handleTimeExpiredFromHook...')
           await handleTimeExpiredFromHook()
           console.log('Successfully advanced module')
@@ -410,7 +359,7 @@ function ExamPageContent() {
       if (reviewForAttemptId) {
         // Review mode - calculate potential score and show modal
         console.log('🎯 Completing review session')
-        const result = await completeReviewSession(reviewForAttemptId)
+        await completeReviewSession(reviewForAttemptId)
 
         // Redirect directly to the second-chance-review page (no popup needed)
         router.push(
@@ -922,6 +871,23 @@ function ExamPageContent() {
         </div>
       </div>
     )
+  }
+
+  // Handle invalid examId
+  if (!examId || examId === 'null' || examId === 'undefined') {
+    if (!authLoading) {
+      router.push('/student/dashboard')
+      return <div>Redirecting...</div>
+    } else {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      )
+    }
   }
 
   const isLastQuestion =

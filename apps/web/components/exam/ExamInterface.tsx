@@ -199,9 +199,22 @@ export function ExamInterface({
         examTitle={exam.title}
         examId={exam.id}
         onHighlight={(text, range) => {
-          // Integrate with existing highlight functionality if needed
-          // This connects the vocabulary bubble menu with the existing highlighting system
-          console.log('Text selected for highlighting:', text)
+          // Calculate text offsets within the question content container
+          if (!questionContentRef.current) return
+
+          const preSelectionRange = document.createRange()
+          preSelectionRange.selectNodeContents(questionContentRef.current)
+          preSelectionRange.setEnd(range.startContainer, range.startOffset)
+          const start = preSelectionRange.toString().length
+          const end = start + text.length
+
+          // Create a highlight object and add it to the current question
+          const highlight = {
+            start,
+            end,
+            text,
+          }
+          addHighlight(currentQuestion.id, highlight)
         }}
       />
     </div>

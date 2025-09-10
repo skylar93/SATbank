@@ -113,7 +113,10 @@ const ExamTimerComponent = function ExamTimer({
   // Separate effect for callbacks to avoid setState during render
   useEffect(() => {
     // Only call onTimeUpdate if the time has actually changed
-    if (onTimeUpdateRef.current && prevRemainingSecondsRef.current !== remainingSeconds) {
+    if (
+      onTimeUpdateRef.current &&
+      prevRemainingSecondsRef.current !== remainingSeconds
+    ) {
       onTimeUpdateRef.current(remainingSeconds)
       prevRemainingSecondsRef.current = remainingSeconds
     }

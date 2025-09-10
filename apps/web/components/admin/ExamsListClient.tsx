@@ -94,11 +94,17 @@ export function ExamsListClient() {
               answerReleaseSetting = {
                 type: 'hidden' as const,
               }
-            } else if (exam.default_answers_visible && !exam.default_answers_visible_after) {
+            } else if (
+              exam.default_answers_visible &&
+              !exam.default_answers_visible_after
+            ) {
               answerReleaseSetting = {
                 type: 'immediate' as const,
               }
-            } else if (exam.default_answers_visible && exam.default_answers_visible_after) {
+            } else if (
+              exam.default_answers_visible &&
+              exam.default_answers_visible_after
+            ) {
               answerReleaseSetting = {
                 type: 'scheduled' as const,
                 scheduled_date: new Date(exam.default_answers_visible_after),

@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Update exam's answer check mode and default answer visibility settings
-    const examUpdateData: { 
+    const examUpdateData: {
       answer_check_mode: string
       default_answers_visible: boolean
       default_answers_visible_after: string | null

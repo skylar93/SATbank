@@ -430,10 +430,10 @@ export async function calculatePotentialScore(
     // 7. Mark review attempt as taken and store the calculated scores
     const { error: updateError } = await supabase
       .from('test_attempts')
-      .update({ 
+      .update({
         review_attempt_taken: true,
         review_potential_score: potentialSATScore,
-        review_improvement: improvement
+        review_improvement: improvement,
       })
       .eq('id', originalAttemptId)
 
@@ -535,7 +535,10 @@ export async function deleteInProgressExamAttempt(examId: string) {
     .single()
 
   if (findError || !attempt) {
-    return { success: false, message: 'No in-progress attempt found to delete.' }
+    return {
+      success: false,
+      message: 'No in-progress attempt found to delete.',
+    }
   }
 
   // Delete associated user_answers first (foreign key constraint)
@@ -545,7 +548,10 @@ export async function deleteInProgressExamAttempt(examId: string) {
     .eq('attempt_id', attempt.id)
 
   if (answersError) {
-    return { success: false, message: `Failed to delete answers: ${answersError.message}` }
+    return {
+      success: false,
+      message: `Failed to delete answers: ${answersError.message}`,
+    }
   }
 
   // Delete the test attempt
@@ -555,10 +561,16 @@ export async function deleteInProgressExamAttempt(examId: string) {
     .eq('id', attempt.id)
 
   if (attemptError) {
-    return { success: false, message: `Failed to delete attempt: ${attemptError.message}` }
+    return {
+      success: false,
+      message: `Failed to delete attempt: ${attemptError.message}`,
+    }
   }
 
-  return { success: true, message: 'In-progress exam attempt deleted successfully.' }
+  return {
+    success: true,
+    message: 'In-progress exam attempt deleted successfully.',
+  }
 }
 
 export async function createExamFromModules(data: {

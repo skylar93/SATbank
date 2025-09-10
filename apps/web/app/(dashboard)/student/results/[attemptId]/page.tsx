@@ -354,7 +354,8 @@ export default function DetailedResultsPage() {
                         Second Chance Review Completed!
                       </h3>
                       <p className="text-gray-600 text-sm">
-                        You've completed your second chance attempt. View your potential score improvement and detailed review.
+                        You've completed your second chance attempt. View your
+                        potential score improvement and detailed review.
                         <br />
                         <span className="text-green-700 font-medium">
                           See how you would have scored with correct answers

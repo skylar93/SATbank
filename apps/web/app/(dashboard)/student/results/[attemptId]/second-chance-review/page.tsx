@@ -56,7 +56,7 @@ export default function SecondChanceReviewPage() {
   const loadReviewData = async () => {
     try {
       console.log('Loading second chance review data for attempt:', attemptId)
-      
+
       // Get original attempt info
       const { data: attempt, error: attemptError } = await supabase
         .from('test_attempts')
@@ -80,11 +80,11 @@ export default function SecondChanceReviewPage() {
         console.error('Error fetching attempt data:', attemptError)
         throw attemptError
       }
-      
+
       console.log('Attempt data loaded:', {
         id: attempt.id,
         review_attempt_taken: attempt.review_attempt_taken,
-        exam_id: attempt.exam_id
+        exam_id: attempt.exam_id,
       })
 
       if (!attempt.review_attempt_taken) {
@@ -92,9 +92,11 @@ export default function SecondChanceReviewPage() {
           attemptId,
           userId: user!.id,
           review_attempt_taken: attempt.review_attempt_taken,
-          exam_id: attempt.exam_id
+          exam_id: attempt.exam_id,
         })
-        throw new Error('Second chance review has not been completed yet. Please complete the second chance attempt first by clicking "Retry Mistakes" from your results page.')
+        throw new Error(
+          'Second chance review has not been completed yet. Please complete the second chance attempt first by clicking "Retry Mistakes" from your results page.'
+        )
       }
 
       setAttemptInfo({
@@ -186,53 +188,61 @@ export default function SecondChanceReviewPage() {
   }
 
   if (error || !attemptInfo) {
-    const isSecondChanceNotCompleted = error?.includes('Second chance review has not been completed yet')
-    
+    const isSecondChanceNotCompleted = error?.includes(
+      'Second chance review has not been completed yet'
+    )
+
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-6xl mx-auto py-8 px-4">
-          <div className={`border rounded-lg p-8 text-center ${
-            isSecondChanceNotCompleted 
-              ? 'bg-amber-50 border-amber-200' 
-              : 'bg-red-50 border-red-200'
-          }`}>
-            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
-              isSecondChanceNotCompleted 
-                ? 'bg-amber-100' 
-                : 'bg-red-100'
-            }`}>
-              <span className={`text-2xl ${
-                isSecondChanceNotCompleted 
-                  ? 'text-amber-500' 
-                  : 'text-red-500'
-              }`}>
+          <div
+            className={`border rounded-lg p-8 text-center ${
+              isSecondChanceNotCompleted
+                ? 'bg-amber-50 border-amber-200'
+                : 'bg-red-50 border-red-200'
+            }`}
+          >
+            <div
+              className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+                isSecondChanceNotCompleted ? 'bg-amber-100' : 'bg-red-100'
+              }`}
+            >
+              <span
+                className={`text-2xl ${
+                  isSecondChanceNotCompleted ? 'text-amber-500' : 'text-red-500'
+                }`}
+              >
                 {isSecondChanceNotCompleted ? '🎯' : '❌'}
               </span>
             </div>
-            <h3 className={`text-lg font-medium mb-2 ${
-              isSecondChanceNotCompleted 
-                ? 'text-amber-900' 
-                : 'text-red-900'
-            }`}>
-              {isSecondChanceNotCompleted ? 'Second Chance Not Completed' : 'Error Loading Review'}
+            <h3
+              className={`text-lg font-medium mb-2 ${
+                isSecondChanceNotCompleted ? 'text-amber-900' : 'text-red-900'
+              }`}
+            >
+              {isSecondChanceNotCompleted
+                ? 'Second Chance Not Completed'
+                : 'Error Loading Review'}
             </h3>
-            <p className={`mb-6 ${
-              isSecondChanceNotCompleted 
-                ? 'text-amber-700' 
-                : 'text-red-700'
-            }`}>
+            <p
+              className={`mb-6 ${
+                isSecondChanceNotCompleted ? 'text-amber-700' : 'text-red-700'
+              }`}
+            >
               {error || 'Review not found'}
             </p>
             <div className="space-y-3">
               <Link
                 href={`/student/results/${attemptId}`}
                 className={`inline-block px-6 py-3 rounded-lg font-medium transition-colors ${
-                  isSecondChanceNotCompleted 
-                    ? 'bg-amber-600 hover:bg-amber-700 text-white' 
+                  isSecondChanceNotCompleted
+                    ? 'bg-amber-600 hover:bg-amber-700 text-white'
                     : 'bg-red-600 hover:bg-red-700 text-white'
                 }`}
               >
-                {isSecondChanceNotCompleted ? 'Go to Results & Take Second Chance' : 'Back to This Result'}
+                {isSecondChanceNotCompleted
+                  ? 'Go to Results & Take Second Chance'
+                  : 'Back to This Result'}
               </Link>
               <div>
                 <Link
@@ -292,31 +302,43 @@ export default function SecondChanceReviewPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    Great job! 
+                    Great job!
                   </h3>
                   <p className="text-gray-600 text-sm">
                     Your potential score improvement
                   </p>
                 </div>
               </div>
-              
+
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600 text-sm">Original Score:</span>
-                  <span className="text-lg font-semibold text-gray-900">{attemptInfo.original_score}</span>
+                  <span className="text-lg font-semibold text-gray-900">
+                    {attemptInfo.original_score}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm">Potential Score:</span>
-                  <span className="text-xl font-bold text-green-600">{attemptInfo.potential_score}</span>
+                  <span className="text-gray-600 text-sm">
+                    Potential Score:
+                  </span>
+                  <span className="text-xl font-bold text-green-600">
+                    {attemptInfo.potential_score}
+                  </span>
                 </div>
                 <div className="border-t border-green-200 pt-3">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600 text-sm">Improvement:</span>
-                    <span className={`text-lg font-bold ${
-                      (attemptInfo.improvement || 0) > 0 ? 'text-green-600' : 
-                      (attemptInfo.improvement || 0) < 0 ? 'text-red-500' : 'text-gray-500'
-                    }`}>
-                      {(attemptInfo.improvement || 0) > 0 ? '+' : ''}{attemptInfo.improvement || 0}
+                    <span
+                      className={`text-lg font-bold ${
+                        (attemptInfo.improvement || 0) > 0
+                          ? 'text-green-600'
+                          : (attemptInfo.improvement || 0) < 0
+                            ? 'text-red-500'
+                            : 'text-gray-500'
+                      }`}
+                    >
+                      {(attemptInfo.improvement || 0) > 0 ? '+' : ''}
+                      {attemptInfo.improvement || 0}
                     </span>
                   </div>
                 </div>
@@ -339,15 +361,15 @@ export default function SecondChanceReviewPage() {
                 </p>
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <p className="text-gray-600 text-sm">
                 You've completed your second chance review. The answers and
                 explanations below will help you understand your mistakes.
               </p>
               <p className="text-amber-700 font-medium text-sm">
-                Note: This review does not affect your official score or
-                mistake bank.
+                Note: This review does not affect your official score or mistake
+                bank.
               </p>
             </div>
           </div>

@@ -60,15 +60,19 @@ export default function StudentExamsPage() {
   }
 
   const handleDeleteInProgressExam = async (examId: string) => {
-    if (!confirm('정말로 진행 중인 시험을 삭제하시겠습니까? 지금까지의 답안이 모두 사라집니다.')) {
+    if (
+      !confirm(
+        '정말로 진행 중인 시험을 삭제하시겠습니까? 지금까지의 답안이 모두 사라집니다.'
+      )
+    ) {
       return
     }
 
-    setDeletingExams(prev => new Set(prev).add(examId))
-    
+    setDeletingExams((prev) => new Set(prev).add(examId))
+
     try {
       const result = await deleteInProgressExamAttempt(examId)
-      
+
       if (result.success) {
         // Reload exams to reflect changes
         await loadExams()
@@ -78,7 +82,7 @@ export default function StudentExamsPage() {
     } catch (err: any) {
       setError(`Error deleting exam: ${err.message}`)
     } finally {
-      setDeletingExams(prev => {
+      setDeletingExams((prev) => {
         const newSet = new Set(prev)
         newSet.delete(examId)
         return newSet
@@ -352,10 +356,12 @@ export default function StudentExamsPage() {
                                 ? 'Continue Exam'
                                 : 'Start Exam'}
                             </Link>
-                            
+
                             {exam.completionStatus === 'in_progress' && (
                               <button
-                                onClick={() => handleDeleteInProgressExam(exam.id)}
+                                onClick={() =>
+                                  handleDeleteInProgressExam(exam.id)
+                                }
                                 disabled={deletingExams.has(exam.id)}
                                 className="inline-flex items-center bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white px-4 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
                                 title="진행 중인 시험 삭제"

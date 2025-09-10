@@ -24,9 +24,8 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
     const handleResize = () => {
       if (window.innerWidth < 768) {
         setIsSidebarOpen(false)
-      } else {
-        setIsSidebarOpen(true)
       }
+      // Remove the else clause to prevent auto-opening on desktop resize
     }
 
     handleResize()
