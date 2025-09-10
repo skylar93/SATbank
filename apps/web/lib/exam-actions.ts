@@ -515,6 +515,52 @@ function rawToSATScore(rawScore: number, totalQuestions: number): number {
   return 200
 }
 
+export async function deleteInProgressExamAttempt(examId: string) {
+  const supabase = createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    throw new Error('Unauthorized: No user found.')
+  }
+
+  // Find the in-progress attempt for this user and exam
+  const { data: attempt, error: findError } = await supabase
+    .from('test_attempts')
+    .select('id, status')
+    .eq('exam_id', examId)
+    .eq('user_id', user.id)
+    .eq('status', 'in_progress')
+    .single()
+
+  if (findError || !attempt) {
+    return { success: false, message: 'No in-progress attempt found to delete.' }
+  }
+
+  // Delete associated user_answers first (foreign key constraint)
+  const { error: answersError } = await supabase
+    .from('user_answers')
+    .delete()
+    .eq('attempt_id', attempt.id)
+
+  if (answersError) {
+    return { success: false, message: `Failed to delete answers: ${answersError.message}` }
+  }
+
+  // Delete the test attempt
+  const { error: attemptError } = await supabase
+    .from('test_attempts')
+    .delete()
+    .eq('id', attempt.id)
+
+  if (attemptError) {
+    return { success: false, message: `Failed to delete attempt: ${attemptError.message}` }
+  }
+
+  return { success: true, message: 'In-progress exam attempt deleted successfully.' }
+}
+
 export async function createExamFromModules(data: {
   title: string
   description: string

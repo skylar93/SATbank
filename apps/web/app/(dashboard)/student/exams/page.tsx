@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../contexts/auth-context'
 import { ExamService, type Exam } from '../../../../lib/exam-service'
+import { deleteInProgressExamAttempt } from '../../../../lib/exam-actions'
 import { StatsCard } from '../../../../components/modern-charts'
 import {
   AcademicCapIcon,
@@ -18,6 +19,7 @@ import {
   MagnifyingGlassIcon,
   ChevronDownIcon,
   EyeIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline'
 
 type ExamWithStatus = Exam & {
@@ -33,6 +35,7 @@ export default function StudentExamsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showCompletedExams, setShowCompletedExams] = useState(true)
+  const [deletingExams, setDeletingExams] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (user) {
@@ -53,6 +56,33 @@ export default function StudentExamsPage() {
       setError(err.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDeleteInProgressExam = async (examId: string) => {
+    if (!confirm('정말로 진행 중인 시험을 삭제하시겠습니까? 지금까지의 답안이 모두 사라집니다.')) {
+      return
+    }
+
+    setDeletingExams(prev => new Set(prev).add(examId))
+    
+    try {
+      const result = await deleteInProgressExamAttempt(examId)
+      
+      if (result.success) {
+        // Reload exams to reflect changes
+        await loadExams()
+      } else {
+        setError(result.message || 'Failed to delete exam attempt')
+      }
+    } catch (err: any) {
+      setError(`Error deleting exam: ${err.message}`)
+    } finally {
+      setDeletingExams(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(examId)
+        return newSet
+      })
     }
   }
 
@@ -312,15 +342,33 @@ export default function StudentExamsPage() {
                             </div>
                           </div>
 
-                          <Link
-                            href={`/student/exam/${exam.id}`}
-                            className="inline-flex items-center bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
-                          >
-                            <PlayIcon className="w-5 h-5 mr-2" />
-                            {exam.completionStatus === 'in_progress'
-                              ? 'Continue Exam'
-                              : 'Start Exam'}
-                          </Link>
+                          <div className="flex space-x-3">
+                            <Link
+                              href={`/student/exam/${exam.id}`}
+                              className="inline-flex items-center bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+                            >
+                              <PlayIcon className="w-5 h-5 mr-2" />
+                              {exam.completionStatus === 'in_progress'
+                                ? 'Continue Exam'
+                                : 'Start Exam'}
+                            </Link>
+                            
+                            {exam.completionStatus === 'in_progress' && (
+                              <button
+                                onClick={() => handleDeleteInProgressExam(exam.id)}
+                                disabled={deletingExams.has(exam.id)}
+                                className="inline-flex items-center bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white px-4 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
+                                title="진행 중인 시험 삭제"
+                              >
+                                {deletingExams.has(exam.id) ? (
+                                  <div className="w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                  <TrashIcon className="w-5 h-5 mr-2" />
+                                )}
+                                Delete
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}
