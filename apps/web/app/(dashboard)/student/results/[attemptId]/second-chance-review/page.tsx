@@ -31,6 +31,9 @@ interface AttemptInfo {
   total_score: number
   completed_at: string
   exam_title: string
+  potential_score?: number
+  original_score?: number
+  improvement?: number
 }
 
 export default function SecondChanceReviewPage() {
@@ -64,6 +67,8 @@ export default function SecondChanceReviewPage() {
           total_score,
           completed_at,
           review_attempt_taken,
+          review_potential_score,
+          review_improvement,
           exams!inner (title)
         `
         )
@@ -98,6 +103,9 @@ export default function SecondChanceReviewPage() {
         total_score: attempt.total_score,
         completed_at: attempt.completed_at,
         exam_title: (attempt.exams as any).title,
+        potential_score: attempt.review_potential_score,
+        original_score: attempt.total_score,
+        improvement: attempt.review_improvement,
       })
 
       // Get all incorrect questions with original answers
@@ -273,24 +281,73 @@ export default function SecondChanceReviewPage() {
           </div>
         </div>
 
-        {/* Success Banner */}
-        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-lg border border-amber-200 p-6 mb-8">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
-              <span className="text-white text-xl">✨</span>
+        {/* Score Results & Success Banner */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Score Improvement Card */}
+          {attemptInfo.potential_score !== undefined && (
+            <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 rounded-2xl shadow-lg border border-green-200 p-6">
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                  <span className="text-white text-xl">🎯</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Great job! 
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    Your potential score improvement
+                  </p>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 text-sm">Original Score:</span>
+                  <span className="text-lg font-semibold text-gray-900">{attemptInfo.original_score}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 text-sm">Potential Score:</span>
+                  <span className="text-xl font-bold text-green-600">{attemptInfo.potential_score}</span>
+                </div>
+                <div className="border-t border-green-200 pt-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600 text-sm">Improvement:</span>
+                    <span className={`text-lg font-bold ${
+                      (attemptInfo.improvement || 0) > 0 ? 'text-green-600' : 
+                      (attemptInfo.improvement || 0) < 0 ? 'text-red-500' : 'text-gray-500'
+                    }`}>
+                      {(attemptInfo.improvement || 0) > 0 ? '+' : ''}{attemptInfo.improvement || 0}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                Great Learning Experience!
-              </h3>
+          )}
+
+          {/* Learning Experience Card */}
+          <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 rounded-2xl shadow-lg border border-amber-200 p-6">
+            <div className="flex items-center space-x-4 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
+                <span className="text-white text-xl">✨</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Learning Complete!
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Review your mistakes below
+                </p>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
               <p className="text-gray-600 text-sm">
                 You've completed your second chance review. The answers and
                 explanations below will help you understand your mistakes.
-                <br />
-                <span className="text-amber-700 font-medium">
-                  Note: This review does not affect your official score or
-                  mistake bank.
-                </span>
+              </p>
+              <p className="text-amber-700 font-medium text-sm">
+                Note: This review does not affect your official score or
+                mistake bank.
               </p>
             </div>
           </div>

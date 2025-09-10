@@ -308,39 +308,71 @@ export default function DetailedResultsPage() {
           </div>
         </div>
 
-        {/* Second Chance Section - Only show if review hasn't been taken and there are incorrect answers */}
-        {attemptData &&
-          !attemptData.review_attempt_taken &&
-          questionAnalysis?.some((q) => !q.isCorrect) && (
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-lg border border-amber-200 p-6 mb-8">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
-                    <span className="text-white text-xl">🎯</span>
+        {/* Second Chance Section - Show different content based on review status */}
+        {attemptData && questionAnalysis?.some((q) => !q.isCorrect) && (
+          <>
+            {!attemptData.review_attempt_taken ? (
+              /* Show Second Chance button if not taken yet */
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-lg border border-amber-200 p-6 mb-8">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
+                      <span className="text-white text-xl">🎯</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                        Take a Second Chance
+                      </h3>
+                      <p className="text-gray-600 text-sm">
+                        Review your mistakes and try them again. Get a potential
+                        score showing your improvement.
+                        <br />
+                        <span className="text-amber-700 font-medium">
+                          One chance only - no score changes to your record
+                        </span>
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      Take a Second Chance
-                    </h3>
-                    <p className="text-gray-600 text-sm">
-                      Review your mistakes and try them again. Get a potential
-                      score showing your improvement.
-                      <br />
-                      <span className="text-amber-700 font-medium">
-                        One chance only - no score changes to your record
-                      </span>
-                    </p>
-                  </div>
+                  <Link
+                    href={`/student/exam/${attemptData.exam_id}?review_for=${attemptId}`}
+                    className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  >
+                    Retry Mistakes →
+                  </Link>
                 </div>
-                <Link
-                  href={`/student/exam/${attemptData.exam_id}?review_for=${attemptId}`}
-                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  Retry Mistakes →
-                </Link>
               </div>
-            </div>
-          )}
+            ) : (
+              /* Show Second Chance Review link if already completed */
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl shadow-lg border border-green-200 p-6 mb-8">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                      <span className="text-white text-xl">🎉</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                        Second Chance Review Completed!
+                      </h3>
+                      <p className="text-gray-600 text-sm">
+                        You've completed your second chance attempt. View your potential score improvement and detailed review.
+                        <br />
+                        <span className="text-green-700 font-medium">
+                          See how you would have scored with correct answers
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href={`/student/results/${attemptId}/second-chance-review`}
+                    className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  >
+                    View Review →
+                  </Link>
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Score Overview Card */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-8">

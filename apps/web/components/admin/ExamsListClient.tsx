@@ -25,6 +25,8 @@ interface RpcExamData {
   latest_attempt_visibility: boolean | null
   latest_attempt_visible_after: string | null
   total_attempts_count: number
+  default_answers_visible: boolean
+  default_answers_visible_after: string | null
 }
 
 // Transformed interface for UI consumption
@@ -87,9 +89,20 @@ export function ExamsListClient() {
           // Determine answer release setting based on RPC data
           let answerReleaseSetting
           if (exam.latest_attempt_visibility === null) {
-            // No attempts exist: default to immediate release
-            answerReleaseSetting = {
-              type: 'immediate' as const,
+            // No attempts exist: use exam default settings
+            if (!exam.default_answers_visible) {
+              answerReleaseSetting = {
+                type: 'hidden' as const,
+              }
+            } else if (exam.default_answers_visible && !exam.default_answers_visible_after) {
+              answerReleaseSetting = {
+                type: 'immediate' as const,
+              }
+            } else if (exam.default_answers_visible && exam.default_answers_visible_after) {
+              answerReleaseSetting = {
+                type: 'scheduled' as const,
+                scheduled_date: new Date(exam.default_answers_visible_after),
+              }
             }
           } else if (!exam.latest_attempt_visibility) {
             answerReleaseSetting = {

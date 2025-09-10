@@ -412,12 +412,7 @@ function ExamPageContent() {
         console.log('🎯 Completing review session')
         const result = await completeReviewSession(reviewForAttemptId)
 
-        // Show success modal with potential score
-        alert(
-          `Great job! Your potential score would be ${result.potentialScore} (improvement: ${(result.improvement || 0) > 0 ? '+' : ''}${result.improvement || 0} from ${result.originalScore})`
-        )
-
-        // Redirect to the special review results page
+        // Redirect directly to the second-chance-review page (no popup needed)
         router.push(
           `/student/results/${reviewForAttemptId}/second-chance-review`
         )

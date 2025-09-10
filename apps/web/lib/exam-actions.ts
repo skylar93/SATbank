@@ -427,10 +427,14 @@ export async function calculatePotentialScore(
       `[calculate-potential-score] SAT Scores - Original: ${originalSATScore}, Potential: ${potentialSATScore}, Improvement: ${improvement}`
     )
 
-    // 7. Mark review attempt as taken
+    // 7. Mark review attempt as taken and store the calculated scores
     const { error: updateError } = await supabase
       .from('test_attempts')
-      .update({ review_attempt_taken: true })
+      .update({ 
+        review_attempt_taken: true,
+        review_potential_score: potentialSATScore,
+        review_improvement: improvement
+      })
       .eq('id', originalAttemptId)
 
     if (updateError) {

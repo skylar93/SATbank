@@ -132,10 +132,16 @@ export async function POST(request: NextRequest) {
       auth: { autoRefreshToken: false, persistSession: false },
     })
 
-    // Update exam's answer check mode
-    const examUpdateData: { answer_check_mode: string } = {
+    // Update exam's answer check mode and default answer visibility settings
+    const examUpdateData: { 
+      answer_check_mode: string
+      default_answers_visible: boolean
+      default_answers_visible_after: string | null
+    } = {
       answer_check_mode:
         visibilityOption === 'per_question' ? 'per_question' : 'exam_end',
+      default_answers_visible: updateData.answers_visible,
+      default_answers_visible_after: updateData.answers_visible_after,
     }
 
     const { error: examError } = await supabaseService
