@@ -564,7 +564,12 @@ export const useExamStore = create<ExamState>((set, get) => ({
       currentModuleIndex,
       currentQuestionStartTime,
     } = get()
-    if (!attempt || status !== 'in_progress') return
+    
+    // Allow operation in review mode (attempt is null) or normal in_progress mode
+    const isReviewMode = !attempt && status === 'in_progress'
+    const isNormalMode = attempt && status === 'in_progress'
+    
+    if (!isReviewMode && !isNormalMode) return
 
     const currentModule = modules[currentModuleIndex]
     const currentQuestion =
@@ -598,8 +603,8 @@ export const useExamStore = create<ExamState>((set, get) => ({
     // Update local state immediately for instant UI feedback
     set({ modules: newModules })
 
-    // Trigger debounced save to database (if answer is not empty)
-    if (answer.trim()) {
+    // Only trigger database save in normal mode (not review mode)
+    if (attempt && answer.trim()) {
       debouncedSaveAnswer({
         attemptId: attempt.id,
         questionId: currentQuestion.id,
@@ -611,7 +616,18 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
   saveModuleAnswers: async () => {
     const { attempt, status, modules, currentModuleIndex } = get()
-    if (!attempt || status !== 'in_progress') return
+    
+    // Allow operation in review mode (attempt is null) or normal in_progress mode
+    const isReviewMode = !attempt && status === 'in_progress'
+    const isNormalMode = attempt && status === 'in_progress'
+    
+    if (!isReviewMode && !isNormalMode) return
+    
+    // Skip database operations in review mode
+    if (isReviewMode) return
+
+    // At this point, we know attempt is not null (we're in normal mode)
+    if (!attempt) return
 
     const currentModule = modules[currentModuleIndex]
 
@@ -1412,7 +1428,12 @@ export const useExamStore = create<ExamState>((set, get) => ({
       getCurrentQuestion,
       currentQuestionStartTime,
     } = get()
-    if (!attempt || status !== 'in_progress') return
+    
+    // Allow operation in review mode (attempt is null) or normal in_progress mode
+    const isReviewMode = !attempt && status === 'in_progress'
+    const isNormalMode = attempt && status === 'in_progress'
+    
+    if (!isReviewMode && !isNormalMode) return
 
     const currentModule = modules[currentModuleIndex]
     const currentQuestion = getCurrentQuestion()
@@ -1427,18 +1448,21 @@ export const useExamStore = create<ExamState>((set, get) => ({
         ? Math.round((Date.now() - currentQuestionStartTime) / 1000)
         : 0
 
-    try {
-      await saveAnswerImmediately({
-        attemptId: attempt.id,
-        questionId: currentQuestion.id,
-        answer: currentAnswer.trim(),
-        timeSpent: timeSpentSeconds,
-      })
-    } catch (error) {
-      console.error(
-        '[SaveCurrentAnswerImmediately] Failed to save answer:',
-        error
-      )
+    // Only save to database in normal mode (not review mode)
+    if (attempt) {
+      try {
+        await saveAnswerImmediately({
+          attemptId: attempt.id,
+          questionId: currentQuestion.id,
+          answer: currentAnswer.trim(),
+          timeSpent: timeSpentSeconds,
+        })
+      } catch (error) {
+        console.error(
+          '[SaveCurrentAnswerImmediately] Failed to save answer:',
+          error
+        )
+      }
     }
   },
 }))

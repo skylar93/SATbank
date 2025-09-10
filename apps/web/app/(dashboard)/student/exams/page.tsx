@@ -471,15 +471,13 @@ export default function StudentExamsPage() {
                                   <EyeIcon className="w-5 h-5 mr-2" />
                                   View Results
                                 </Link>
-                                {exam.isCurrentlyAssigned && (
-                                  <Link
-                                    href={`/student/exam/${exam.id}`}
-                                    className="inline-flex items-center bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
-                                  >
-                                    <PlayIcon className="w-5 h-5 mr-2" />
-                                    Try Again
-                                  </Link>
-                                )}
+                                <Link
+                                  href={`/student/exam/${exam.id}`}
+                                  className="inline-flex items-center bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+                                >
+                                  <PlayIcon className="w-5 h-5 mr-2" />
+                                  Try Again
+                                </Link>
                               </div>
                             )}
                           </div>

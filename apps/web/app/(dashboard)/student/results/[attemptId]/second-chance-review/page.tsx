@@ -52,6 +52,8 @@ export default function SecondChanceReviewPage() {
 
   const loadReviewData = async () => {
     try {
+      console.log('Loading second chance review data for attempt:', attemptId)
+      
       // Get original attempt info
       const { data: attempt, error: attemptError } = await supabase
         .from('test_attempts')
@@ -69,10 +71,25 @@ export default function SecondChanceReviewPage() {
         .eq('user_id', user!.id)
         .single()
 
-      if (attemptError) throw attemptError
+      if (attemptError) {
+        console.error('Error fetching attempt data:', attemptError)
+        throw attemptError
+      }
+      
+      console.log('Attempt data loaded:', {
+        id: attempt.id,
+        review_attempt_taken: attempt.review_attempt_taken,
+        exam_id: attempt.exam_id
+      })
 
       if (!attempt.review_attempt_taken) {
-        throw new Error('Second chance has not been completed for this attempt')
+        console.error('Second chance review access denied:', {
+          attemptId,
+          userId: user!.id,
+          review_attempt_taken: attempt.review_attempt_taken,
+          exam_id: attempt.exam_id
+        })
+        throw new Error('Second chance review has not been completed yet. Please complete the second chance attempt first by clicking "Retry Mistakes" from your results page.')
       }
 
       setAttemptInfo({
@@ -91,13 +108,13 @@ export default function SecondChanceReviewPage() {
           question_id,
           user_answer,
           is_correct,
-          questions!inner (*)
+          questions!inner (
+            *
+          )
         `
         )
         .eq('attempt_id', attemptId)
         .eq('is_correct', false)
-        .order('questions.module_type')
-        .order('questions.question_number')
 
       if (answersError) throw answersError
 
@@ -108,6 +125,16 @@ export default function SecondChanceReviewPage() {
           wasOriginallyCorrect: answer.is_correct,
         })
       )
+
+      // Sort questions by module type and question number
+      reviewQuestions.sort((a, b) => {
+        // First sort by module type
+        if (a.module_type !== b.module_type) {
+          return a.module_type.localeCompare(b.module_type)
+        }
+        // Then sort by question number
+        return a.question_number - b.question_number
+      })
 
       setQuestions(reviewQuestions)
     } catch (err: any) {
@@ -151,20 +178,63 @@ export default function SecondChanceReviewPage() {
   }
 
   if (error || !attemptInfo) {
+    const isSecondChanceNotCompleted = error?.includes('Second chance review has not been completed yet')
+    
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-6xl mx-auto py-8 px-4">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
-            <h3 className="text-lg font-medium text-red-900 mb-2">
-              Error Loading Review
+          <div className={`border rounded-lg p-8 text-center ${
+            isSecondChanceNotCompleted 
+              ? 'bg-amber-50 border-amber-200' 
+              : 'bg-red-50 border-red-200'
+          }`}>
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+              isSecondChanceNotCompleted 
+                ? 'bg-amber-100' 
+                : 'bg-red-100'
+            }`}>
+              <span className={`text-2xl ${
+                isSecondChanceNotCompleted 
+                  ? 'text-amber-500' 
+                  : 'text-red-500'
+              }`}>
+                {isSecondChanceNotCompleted ? '🎯' : '❌'}
+              </span>
+            </div>
+            <h3 className={`text-lg font-medium mb-2 ${
+              isSecondChanceNotCompleted 
+                ? 'text-amber-900' 
+                : 'text-red-900'
+            }`}>
+              {isSecondChanceNotCompleted ? 'Second Chance Not Completed' : 'Error Loading Review'}
             </h3>
-            <p className="text-red-700 mb-4">{error || 'Review not found'}</p>
-            <Link
-              href="/student/results"
-              className="inline-block bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              Back to Results
-            </Link>
+            <p className={`mb-6 ${
+              isSecondChanceNotCompleted 
+                ? 'text-amber-700' 
+                : 'text-red-700'
+            }`}>
+              {error || 'Review not found'}
+            </p>
+            <div className="space-y-3">
+              <Link
+                href={`/student/results/${attemptId}`}
+                className={`inline-block px-6 py-3 rounded-lg font-medium transition-colors ${
+                  isSecondChanceNotCompleted 
+                    ? 'bg-amber-600 hover:bg-amber-700 text-white' 
+                    : 'bg-red-600 hover:bg-red-700 text-white'
+                }`}
+              >
+                {isSecondChanceNotCompleted ? 'Go to Results & Take Second Chance' : 'Back to This Result'}
+              </Link>
+              <div>
+                <Link
+                  href="/student/results"
+                  className="text-gray-600 hover:text-gray-800 text-sm transition-colors"
+                >
+                  ← Back to All Results
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>

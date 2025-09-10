@@ -1031,9 +1031,8 @@ function ExamPageContent() {
               Exit Exam?
             </h3>
             <p className="text-gray-600 mb-6">
-              You have an exam in progress. If you exit now, your current
-              answers will be lost and will not be saved until you complete the
-              current module.
+              Your progress has been automatically saved. You can resume this
+              exam later from where you left off.
             </p>
             <div className="flex space-x-4">
               <button
@@ -1051,7 +1050,7 @@ function ExamPageContent() {
                 }}
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
-                Exit Anyway
+                Exit Exam
               </button>
             </div>
           </div>

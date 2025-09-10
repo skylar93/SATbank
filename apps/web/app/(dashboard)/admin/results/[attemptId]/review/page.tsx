@@ -34,12 +34,6 @@ export default function AdminReviewPage() {
 
   const attemptId = params.attemptId as string
 
-  useEffect(() => {
-    if (user && attemptId) {
-      checkAdminAccess()
-    }
-  }, [user, attemptId, checkAdminAccess])
-
   const checkAdminAccess = useCallback(async () => {
     if (!user) return
 
@@ -67,6 +61,12 @@ export default function AdminReviewPage() {
       setLoading(false)
     }
   }, [user, attemptId])
+
+  useEffect(() => {
+    if (user && attemptId) {
+      checkAdminAccess()
+    }
+  }, [user, attemptId, checkAdminAccess])
 
   const loadReviewData = async () => {
     if (!user) return

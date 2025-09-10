@@ -82,7 +82,7 @@ const ExamTimerComponent = function ExamTimer({
   useEffect(() => {
     if (isPaused || !isRunning || initialTimeSeconds <= 0) return // Don't run timer if no time limit
 
-    let animationFrameId: number
+    let timeoutId: NodeJS.Timeout
 
     const updateTimer = () => {
       const now = Date.now()
@@ -93,26 +93,29 @@ const ExamTimerComponent = function ExamTimer({
 
       // Continue updating
       if (newRemainingSeconds > 0) {
-        animationFrameId = requestAnimationFrame(() => {
-          setTimeout(updateTimer, 1000)
-        })
+        timeoutId = setTimeout(updateTimer, 1000)
       }
     }
 
     // Start the timer
-    updateTimer()
+    timeoutId = setTimeout(updateTimer, 1000)
 
     return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId)
+      if (timeoutId) {
+        clearTimeout(timeoutId)
       }
     }
   }, [isPaused, isRunning, initialTimeSeconds])
 
+  // Track previous remaining seconds to prevent unnecessary updates
+  const prevRemainingSecondsRef = useRef<number>(remainingSeconds)
+
   // Separate effect for callbacks to avoid setState during render
   useEffect(() => {
-    if (onTimeUpdateRef.current) {
+    // Only call onTimeUpdate if the time has actually changed
+    if (onTimeUpdateRef.current && prevRemainingSecondsRef.current !== remainingSeconds) {
       onTimeUpdateRef.current(remainingSeconds)
+      prevRemainingSecondsRef.current = remainingSeconds
     }
 
     if (remainingSeconds === 0 && isRunning && initialTimeSeconds > 0) {
@@ -134,6 +137,8 @@ const ExamTimerComponent = function ExamTimer({
     setIsRunning(initialTimeSeconds > 0) // Only start timer if there's a time limit
     // Reset start time for new module
     startTimeRef.current = Date.now()
+    // Reset previous time reference
+    prevRemainingSecondsRef.current = initialTimeSeconds
   }, [initialTimeSeconds])
 
   // Don't render timer if no time limit
