@@ -1,6 +1,6 @@
 /**
  * Spaced Repetition System (SRS) Configuration
- * 
+ *
  * These constants define the behavior of the SRS algorithm used for vocabulary learning.
  * Adjusting these values will affect how the system schedules reviews and tracks mastery.
  */

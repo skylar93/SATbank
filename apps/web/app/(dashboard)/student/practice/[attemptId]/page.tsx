@@ -45,7 +45,9 @@ export default function PracticeSession() {
   const [timeExpired, setTimeExpired] = useState(false)
   const timeExpiredRef = useRef(false)
   const questionContentRef = useRef<HTMLDivElement>(null)
-  const [highlightsByQuestion, setHighlightsByQuestion] = useState<Record<string, any[]>>({})
+  const [highlightsByQuestion, setHighlightsByQuestion] = useState<
+    Record<string, any[]>
+  >({})
 
   useEffect(() => {
     if (user && attemptId) {
@@ -149,12 +151,7 @@ export default function PracticeSession() {
       // Auto-advance to next question (like exam mode)
       goToNextQuestion()
     },
-    [
-      currentQuestionIndex,
-      questions,
-      attemptId,
-      questionStartTime,
-    ]
+    [currentQuestionIndex, questions, attemptId, questionStartTime]
   )
 
   const goToNextQuestion = useCallback(() => {
@@ -172,15 +169,18 @@ export default function PracticeSession() {
       const allAnswers = Array.from(userAnswers.values())
       console.log('🔍 Practice completion - total answers:', allAnswers.length)
       console.log('🔍 Practice completion - total questions:', questions.length)
-      
+
       const totalTimeSpent = Math.floor((Date.now() - sessionStartTime) / 1000)
       const correctAnswers = allAnswers.filter((a) => a.is_correct).length
       console.log('🔍 Practice completion - correct answers:', correctAnswers)
-      
-      const totalScore = questions.length > 0 ? Math.round((correctAnswers / questions.length) * 100) : 0
+
+      const totalScore =
+        questions.length > 0
+          ? Math.round((correctAnswers / questions.length) * 100)
+          : 0
       console.log('🔍 Practice completion - calculated score:', totalScore)
 
-      // Update attempt status
+      // Update attempt status and automatically release answers for practice sessions
       const { error: updateError } = await supabase
         .from('test_attempts')
         .update({
@@ -188,6 +188,8 @@ export default function PracticeSession() {
           completed_at: new Date().toISOString(),
           total_score: totalScore,
           time_spent: { total: totalTimeSpent },
+          answers_visible: true,
+          answers_visible_after: new Date().toISOString(),
         })
         .eq('id', attemptId)
 
@@ -257,18 +259,20 @@ export default function PracticeSession() {
     module: 'practice' as any,
     questions,
     currentQuestionIndex,
-    timeRemaining: practiceSettings.timeLimit > 0 ? practiceSettings.timeLimit * 60 : -1, // -1 indicates no time limit
+    timeRemaining:
+      practiceSettings.timeLimit > 0 ? practiceSettings.timeLimit * 60 : -1, // -1 indicates no time limit
     answers: Object.fromEntries(
       Array.from(userAnswers.entries()).map(([questionId, answer]) => [
         questionId,
-        { answer: answer.user_answer, isCorrect: answer.is_correct }
+        { answer: answer.user_answer, isCorrect: answer.is_correct },
       ])
-    )
+    ),
   }
 
   const modules = [currentModule]
   const currentQuestion = questions[currentQuestionIndex]
-  const currentAnswer = userAnswers.get(currentQuestion?.id || '')?.user_answer || ''
+  const currentAnswer =
+    userAnswers.get(currentQuestion?.id || '')?.user_answer || ''
 
   // Helper functions for ExamInterface
   const getAnsweredQuestions = () => {
@@ -292,16 +296,16 @@ export default function PracticeSession() {
   }
 
   const addHighlight = (questionId: string, highlight: any) => {
-    setHighlightsByQuestion(prev => ({
+    setHighlightsByQuestion((prev) => ({
       ...prev,
-      [questionId]: [...(prev[questionId] || []), highlight]
+      [questionId]: [...(prev[questionId] || []), highlight],
     }))
   }
 
   const removeHighlight = (questionId: string, highlight: any) => {
-    setHighlightsByQuestion(prev => ({
+    setHighlightsByQuestion((prev) => ({
       ...prev,
-      [questionId]: (prev[questionId] || []).filter(h => h !== highlight)
+      [questionId]: (prev[questionId] || []).filter((h) => h !== highlight),
     }))
   }
 
@@ -395,7 +399,9 @@ export default function PracticeSession() {
                 Back to Mistake Notebook
               </button>
               <button
-                onClick={() => router.push(`/student/results/${attemptId}/review`)}
+                onClick={() =>
+                  router.push(`/student/results/${attemptId}/review`)
+                }
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium transition-colors"
               >
                 View Detailed Results

@@ -1,13 +1,13 @@
 // apps/web/components/tiptap-extensions/MathInlineComponent.tsx
-'use client';
-import { NodeViewWrapper } from '@tiptap/react';
-import { InlineMath } from 'react-katex';
-import 'katex/dist/katex.min.css';
+'use client'
+import { NodeViewWrapper } from '@tiptap/react'
+import { InlineMath } from 'react-katex'
+import 'katex/dist/katex.min.css'
 
 export const MathInlineComponent = (props: any) => {
-  const latex = props.node.attrs['data-math'];
+  const latex = props.node.attrs['data-math']
   // The `selected` prop is automatically passed by Tiptap
-  const { selected } = props;
+  const { selected } = props
 
   return (
     <NodeViewWrapper
@@ -17,5 +17,5 @@ export const MathInlineComponent = (props: any) => {
     >
       <InlineMath math={latex} />
     </NodeViewWrapper>
-  );
-};
+  )
+}

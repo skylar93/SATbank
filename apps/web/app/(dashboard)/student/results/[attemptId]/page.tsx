@@ -49,7 +49,9 @@ export default function DetailedResultsPage() {
       // Get the test attempt with answer visibility fields
       const { data: attempt, error } = await supabase
         .from('test_attempts')
-        .select('id, answers_visible, answers_visible_after, exam_id, review_attempt_taken')
+        .select(
+          'id, answers_visible, answers_visible_after, exam_id, review_attempt_taken'
+        )
         .eq('id', attemptId)
         .eq('user_id', user.id)
         .single()
@@ -307,33 +309,38 @@ export default function DetailedResultsPage() {
         </div>
 
         {/* Second Chance Section - Only show if review hasn't been taken and there are incorrect answers */}
-        {attemptData && !attemptData.review_attempt_taken && questionAnalysis?.some(q => !q.isCorrect) && (
-          <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-lg border border-amber-200 p-6 mb-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
-                  <span className="text-white text-xl">🎯</span>
+        {attemptData &&
+          !attemptData.review_attempt_taken &&
+          questionAnalysis?.some((q) => !q.isCorrect) && (
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-lg border border-amber-200 p-6 mb-8">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
+                    <span className="text-white text-xl">🎯</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                      Take a Second Chance
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      Review your mistakes and try them again. Get a potential
+                      score showing your improvement.
+                      <br />
+                      <span className="text-amber-700 font-medium">
+                        One chance only - no score changes to your record
+                      </span>
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                    Take a Second Chance
-                  </h3>
-                  <p className="text-gray-600 text-sm">
-                    Review your mistakes and try them again. Get a potential score showing your improvement.
-                    <br />
-                    <span className="text-amber-700 font-medium">One chance only - no score changes to your record</span>
-                  </p>
-                </div>
+                <Link
+                  href={`/student/exam/${attemptData.exam_id}?review_for=${attemptId}`}
+                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  Retry Mistakes →
+                </Link>
               </div>
-              <Link
-                href={`/student/exam/${attemptData.exam_id}?review_for=${attemptId}`}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                Retry Mistakes →
-              </Link>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Score Overview Card */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6 mb-8">

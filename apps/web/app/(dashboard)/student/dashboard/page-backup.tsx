@@ -347,7 +347,9 @@ export default async function StudentDashboard() {
 
   // Middleware handles authentication, so we can assume user exists here
   if (userError || !user) {
-    throw new Error('User not authenticated - this should not happen with middleware')
+    throw new Error(
+      'User not authenticated - this should not happen with middleware'
+    )
   }
 
   // Fetch dashboard data on server

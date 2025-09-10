@@ -164,7 +164,7 @@ function ExamPageContent() {
 
     // Check for review mode
     const reviewForAttemptId = searchParams.get('review_for')
-    
+
     console.log('ExamPage useEffect: Checking initialization conditions', {
       authLoading,
       user: !!user,
@@ -187,7 +187,9 @@ function ExamPageContent() {
     const canInitialize = examId && !hasInitialized && !loading && user
 
     if (canInitialize && user) {
-      console.log(`🚀 ExamPage useEffect: Starting exam initialization ${reviewForAttemptId ? '(Review Mode)' : '(Normal Mode)'}`)
+      console.log(
+        `🚀 ExamPage useEffect: Starting exam initialization ${reviewForAttemptId ? '(Review Mode)' : '(Normal Mode)'}`
+      )
       setHasInitialized(true)
       initializeExam(examId, user.id, reviewForAttemptId || undefined)
     } else if (!authLoading && !user) {
@@ -400,21 +402,25 @@ function ExamPageContent() {
     console.log('📝 Submitting exam...')
 
     await saveCurrentAnswerImmediately() // Save immediately before exam completion
-    
+
     // Check if this is review mode (no actual attempt record)
     const reviewForAttemptId = searchParams.get('review_for')
-    
+
     try {
       if (reviewForAttemptId) {
         // Review mode - calculate potential score and show modal
         console.log('🎯 Completing review session')
         const result = await completeReviewSession(reviewForAttemptId)
-        
+
         // Show success modal with potential score
-        alert(`Great job! Your potential score would be ${result.potentialScore} (improvement: ${(result.improvement || 0) > 0 ? '+' : ''}${result.improvement || 0} from ${result.originalScore})`)
-        
+        alert(
+          `Great job! Your potential score would be ${result.potentialScore} (improvement: ${(result.improvement || 0) > 0 ? '+' : ''}${result.improvement || 0} from ${result.originalScore})`
+        )
+
         // Redirect to the special review results page
-        router.push(`/student/results/${reviewForAttemptId}/second-chance-review`)
+        router.push(
+          `/student/results/${reviewForAttemptId}/second-chance-review`
+        )
       } else {
         // Normal exam mode
         await completeExam()
@@ -432,8 +438,8 @@ function ExamPageContent() {
       if (status === 'in_progress' && !forcingExitRef.current) {
         // Try to save current answer immediately (synchronous attempt)
         saveCurrentAnswerImmediately().catch(console.error)
-        
-        // Note: With real-time saving, answers are mostly already saved, 
+
+        // Note: With real-time saving, answers are mostly already saved,
         // so this message is now more accurate
         e.preventDefault()
         e.returnValue =

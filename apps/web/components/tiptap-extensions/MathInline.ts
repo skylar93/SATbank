@@ -1,7 +1,7 @@
 // apps/web/components/tiptap-extensions/MathInline.ts
-import { Node, mergeAttributes } from '@tiptap/core';
-import { ReactNodeViewRenderer } from '@tiptap/react';
-import { MathInlineComponent } from './MathInlineComponent';
+import { Node, mergeAttributes } from '@tiptap/core'
+import { ReactNodeViewRenderer } from '@tiptap/react'
+import { MathInlineComponent } from './MathInlineComponent'
 
 export default Node.create({
   name: 'mathInline',
@@ -14,7 +14,7 @@ export default Node.create({
       'data-math': {
         default: '',
       },
-    };
+    }
   },
 
   parseHTML() {
@@ -22,16 +22,16 @@ export default Node.create({
       {
         tag: 'span[data-math][data-inline="true"]',
       },
-    ];
+    ]
   },
 
   renderHTML({ HTMLAttributes }) {
     // This is how it will be saved in the database
-    return ['span', mergeAttributes(HTMLAttributes, { 'data-inline': 'true' })];
+    return ['span', mergeAttributes(HTMLAttributes, { 'data-inline': 'true' })]
   },
 
   addNodeView() {
     // This tells Tiptap to use a React component to render this node in the editor
-    return ReactNodeViewRenderer(MathInlineComponent);
+    return ReactNodeViewRenderer(MathInlineComponent)
   },
-});
+})

@@ -28,7 +28,7 @@ const ExamTimerComponent = function ExamTimer({
   // Use refs to store callbacks to prevent infinite re-renders
   const onTimeUpdateRef = useRef(onTimeUpdate)
   const onTimeExpiredRef = useRef(onTimeExpired)
-  
+
   // Track actual start time to handle tab switching
   const startTimeRef = useRef<number>(Date.now())
 
@@ -62,29 +62,35 @@ const ExamTimerComponent = function ExamTimer({
         // Tab became visible - immediately update timer with accurate time
         const now = Date.now()
         const totalElapsed = Math.floor((now - startTimeRef.current) / 1000)
-        const newRemainingSeconds = Math.max(0, initialTimeSeconds - totalElapsed)
+        const newRemainingSeconds = Math.max(
+          0,
+          initialTimeSeconds - totalElapsed
+        )
         setRemainingSeconds(newRemainingSeconds)
-        
-        console.log(`Tab became visible, updated timer to ${newRemainingSeconds} seconds remaining`)
+
+        console.log(
+          `Tab became visible, updated timer to ${newRemainingSeconds} seconds remaining`
+        )
       }
     }
 
     document.addEventListener('visibilitychange', handleVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+    return () =>
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [isRunning, isPaused, initialTimeSeconds])
 
   useEffect(() => {
     if (isPaused || !isRunning || initialTimeSeconds <= 0) return // Don't run timer if no time limit
 
     let animationFrameId: number
-    
+
     const updateTimer = () => {
       const now = Date.now()
       const totalElapsed = Math.floor((now - startTimeRef.current) / 1000)
       const newRemainingSeconds = Math.max(0, initialTimeSeconds - totalElapsed)
-      
+
       setRemainingSeconds(newRemainingSeconds)
-      
+
       // Continue updating
       if (newRemainingSeconds > 0) {
         animationFrameId = requestAnimationFrame(() => {
@@ -109,7 +115,8 @@ const ExamTimerComponent = function ExamTimer({
       onTimeUpdateRef.current(remainingSeconds)
     }
 
-    if (remainingSeconds === 0 && isRunning && initialTimeSeconds > 0) { // Only expire if there was a time limit
+    if (remainingSeconds === 0 && isRunning && initialTimeSeconds > 0) {
+      // Only expire if there was a time limit
       console.log('Timer reached 0, calling onTimeExpired')
       setIsRunning(false)
       if (onTimeExpiredRef.current) {
@@ -136,9 +143,7 @@ const ExamTimerComponent = function ExamTimer({
         <div className="px-4 py-2 rounded-lg border-2 bg-gray-50 text-gray-600 border-gray-200">
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 rounded-full bg-current"></div>
-            <span className="font-mono text-lg font-bold">
-              No Time Limit
-            </span>
+            <span className="font-mono text-lg font-bold">No Time Limit</span>
           </div>
         </div>
       </div>

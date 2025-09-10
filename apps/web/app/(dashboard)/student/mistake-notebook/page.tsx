@@ -152,7 +152,8 @@ export default function MistakeNotebookPage() {
                 Mistake Notebook
               </h1>
               <p className="text-gray-600">
-                Review your incorrectly answered questions and create custom practice quizzes
+                Review your incorrectly answered questions and create custom
+                practice quizzes
               </p>
             </div>
             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-violet-500 rounded-xl flex items-center justify-center">

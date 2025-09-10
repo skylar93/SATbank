@@ -10,22 +10,22 @@ import TableHeader from '@tiptap/extension-table-header'
 import TableCell from '@tiptap/extension-table-cell'
 import { CustomImage } from './tiptap-extensions/CustomImage'
 import MathInline from './tiptap-extensions/MathInline'
-import { 
-  Bold, 
-  Italic, 
-  UnderlineIcon, 
-  CornerDownLeft, 
-  List, 
-  ListOrdered, 
-  Quote, 
-  Minus, 
+import {
+  Bold,
+  Italic,
+  UnderlineIcon,
+  CornerDownLeft,
+  List,
+  ListOrdered,
+  Quote,
+  Minus,
   Table as TableIcon,
   ImageIcon,
   AlignLeft,
   AlignCenter,
   AlignRight,
   Sigma as MathIcon,
-  Trash2
+  Trash2,
 } from 'lucide-react'
 import { useState } from 'react'
 import { ImageUpload } from './image-upload'
@@ -47,7 +47,11 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
   }
 
   const insertTable = (rows: number, cols: number) => {
-    editor.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run()
+    editor
+      .chain()
+      .focus()
+      .insertTable({ rows, cols, withHeaderRow: true })
+      .run()
   }
 
   return (
@@ -56,17 +60,21 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
-          editor.isActive('bold') ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+          editor.isActive('bold')
+            ? 'bg-blue-100 text-blue-600'
+            : 'text-gray-600'
         }`}
         title="Bold"
       >
         <Bold size={16} />
       </button>
-      
+
       <button
         onClick={() => editor.chain().focus().toggleItalic().run()}
         className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
-          editor.isActive('italic') ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+          editor.isActive('italic')
+            ? 'bg-blue-100 text-blue-600'
+            : 'text-gray-600'
         }`}
         title="Italic"
       >
@@ -76,7 +84,9 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
       <button
         onClick={() => editor.chain().focus().toggleUnderline().run()}
         className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
-          editor.isActive('underline') ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+          editor.isActive('underline')
+            ? 'bg-blue-100 text-blue-600'
+            : 'text-gray-600'
         }`}
         title="Underline"
       >
@@ -89,7 +99,9 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
       <button
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         className={`px-2 py-1 text-sm rounded hover:bg-gray-100 transition-colors ${
-          editor.isActive('heading', { level: 2 }) ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+          editor.isActive('heading', { level: 2 })
+            ? 'bg-blue-100 text-blue-600'
+            : 'text-gray-600'
         }`}
         title="Heading"
       >
@@ -99,7 +111,9 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
       <button
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
         className={`px-2 py-1 text-sm rounded hover:bg-gray-100 transition-colors ${
-          editor.isActive('heading', { level: 3 }) ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+          editor.isActive('heading', { level: 3 })
+            ? 'bg-blue-100 text-blue-600'
+            : 'text-gray-600'
         }`}
         title="Subheading"
       >
@@ -112,7 +126,9 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
       <button
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
-          editor.isActive('bulletList') ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+          editor.isActive('bulletList')
+            ? 'bg-blue-100 text-blue-600'
+            : 'text-gray-600'
         }`}
         title="Bullet List"
       >
@@ -122,7 +138,9 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
       <button
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
-          editor.isActive('orderedList') ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+          editor.isActive('orderedList')
+            ? 'bg-blue-100 text-blue-600'
+            : 'text-gray-600'
         }`}
         title="Ordered List"
       >
@@ -135,7 +153,9 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
       <button
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
-          editor.isActive('blockquote') ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+          editor.isActive('blockquote')
+            ? 'bg-blue-100 text-blue-600'
+            : 'text-gray-600'
         }`}
         title="Quote"
       >
@@ -163,7 +183,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
         >
           <TableIcon size={16} />
         </button>
-        
+
         {showTableSelector && (
           <TableSelector
             onTableSelect={(rows, cols) => {
@@ -232,7 +252,9 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
       <button
         onClick={() => editor.chain().focus().setTextAlign('left').run()}
         className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
-          editor.isActive({ textAlign: 'left' }) ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+          editor.isActive({ textAlign: 'left' })
+            ? 'bg-blue-100 text-blue-600'
+            : 'text-gray-600'
         }`}
         title="Align Left"
       >
@@ -242,7 +264,9 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
       <button
         onClick={() => editor.chain().focus().setTextAlign('center').run()}
         className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
-          editor.isActive({ textAlign: 'center' }) ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+          editor.isActive({ textAlign: 'center' })
+            ? 'bg-blue-100 text-blue-600'
+            : 'text-gray-600'
         }`}
         title="Align Center"
       >
@@ -252,7 +276,9 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
       <button
         onClick={() => editor.chain().focus().setTextAlign('right').run()}
         className={`p-1.5 rounded hover:bg-gray-100 transition-colors ${
-          editor.isActive({ textAlign: 'right' }) ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+          editor.isActive({ textAlign: 'right' })
+            ? 'bg-blue-100 text-blue-600'
+            : 'text-gray-600'
         }`}
         title="Align Right"
       >
@@ -286,7 +312,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Upload Image</h3>
-            <ImageUpload 
+            <ImageUpload
               onUploadSuccess={addImage}
               onCancel={() => setShowImageUpload(false)}
             />
@@ -305,8 +331,8 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
         isOpen={isMathModalOpen}
         onClose={() => setIsMathModalOpen(false)}
         onInsert={(latex, isBlock) => {
-          insertMath(editor, latex, !isBlock);
-          setIsMathModalOpen(false);
+          insertMath(editor, latex, !isBlock)
+          setIsMathModalOpen(false)
         }}
       />
     </div>
@@ -322,13 +348,13 @@ interface WysiwygEditorProps {
   rows?: number
 }
 
-export function WysiwygEditor({ 
-  content, 
-  onChange, 
-  placeholder = "Enter text...",
-  className = "",
+export function WysiwygEditor({
+  content,
+  onChange,
+  placeholder = 'Enter text...',
+  className = '',
   compact = false,
-  rows = 6
+  rows = 6,
 }: WysiwygEditorProps) {
   const editor = useEditor({
     extensions: [
@@ -382,7 +408,8 @@ export function WysiwygEditor({
       }),
       TableHeader.configure({
         HTMLAttributes: {
-          class: 'border border-gray-300 bg-gray-50 px-4 py-2 text-left font-semibold',
+          class:
+            'border border-gray-300 bg-gray-50 px-4 py-2 text-left font-semibold',
         },
       }),
       TableCell.configure({
@@ -412,7 +439,9 @@ export function WysiwygEditor({
   }
 
   return (
-    <div className={`border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 ${className}`}>
+    <div
+      className={`border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 ${className}`}
+    >
       <Toolbar editor={editor} />
       <EditorContent editor={editor} />
       {compact && (

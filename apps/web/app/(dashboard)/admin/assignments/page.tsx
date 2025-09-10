@@ -270,14 +270,18 @@ export default function AdminAssignmentsPage() {
       assignment.exams?.title?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const filteredExams = exams.filter((exam) =>
-    exam.title.toLowerCase().includes(examSearchTerm.toLowerCase()) ||
-    exam.description?.toLowerCase().includes(examSearchTerm.toLowerCase())
+  const filteredExams = exams.filter(
+    (exam) =>
+      exam.title.toLowerCase().includes(examSearchTerm.toLowerCase()) ||
+      exam.description?.toLowerCase().includes(examSearchTerm.toLowerCase())
   )
 
-  const filteredStudents = students.filter((student) =>
-    student.full_name.toLowerCase().includes(studentSearchTerm.toLowerCase()) ||
-    student.email.toLowerCase().includes(studentSearchTerm.toLowerCase())
+  const filteredStudents = students.filter(
+    (student) =>
+      student.full_name
+        .toLowerCase()
+        .includes(studentSearchTerm.toLowerCase()) ||
+      student.email.toLowerCase().includes(studentSearchTerm.toLowerCase())
   )
 
   if (!user) return null

@@ -35,10 +35,10 @@ export function AnswerRevealCard({
         Object.entries(question.options).find(
           ([key, value]) => key === question.correct_answer
         )
-      
+
       if (correctOption) {
         let optionText = correctOption[1]
-        
+
         // Handle JSON string options
         if (typeof optionText === 'string' && optionText.startsWith('{')) {
           try {
@@ -48,7 +48,7 @@ export function AnswerRevealCard({
             // Keep original if parsing fails
           }
         }
-        
+
         return `${question.correct_answer}. ${optionText}`
       }
       return question.correct_answer
@@ -115,7 +115,8 @@ export function AnswerRevealCard({
             <div className="p-3 rounded-lg border bg-green-50 border-green-200">
               <div className="text-sm">
                 {(() => {
-                  const correctAnswer = getCorrectAnswerDisplay() || 'Answer not available'
+                  const correctAnswer =
+                    getCorrectAnswerDisplay() || 'Answer not available'
                   // For simple text answers, just display as text
                   return <span className="text-gray-900">{correctAnswer}</span>
                 })()}
@@ -149,19 +150,30 @@ export function AnswerRevealCard({
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="text-sm text-gray-700">
                 {(() => {
-                  const explanationContent = showDetailedExplanation || question.explanation.length <= 300
-                    ? question.explanation
-                    : question.explanation.substring(0, 300) + '...'
-                  
+                  const explanationContent =
+                    showDetailedExplanation ||
+                    question.explanation.length <= 300
+                      ? question.explanation
+                      : question.explanation.substring(0, 300) + '...'
+
                   // Priority: HTML first, then fallback to markdown rendering
-                  if (question.explanation_html && !isEmptyHtml(question.explanation_html)) {
-                    const htmlContent = showDetailedExplanation || question.explanation_html.length <= 300
-                      ? question.explanation_html
-                      : question.explanation_html.substring(0, 300) + '...'
+                  if (
+                    question.explanation_html &&
+                    !isEmptyHtml(question.explanation_html)
+                  ) {
+                    const htmlContent =
+                      showDetailedExplanation ||
+                      question.explanation_html.length <= 300
+                        ? question.explanation_html
+                        : question.explanation_html.substring(0, 300) + '...'
                     return renderHtmlContent(htmlContent)
                   } else {
                     // Fallback to simple text rendering for now
-                    return <span className="text-gray-700">{explanationContent}</span>
+                    return (
+                      <span className="text-gray-700">
+                        {explanationContent}
+                      </span>
+                    )
                   }
                 })()}
               </div>

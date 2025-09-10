@@ -114,7 +114,7 @@ export async function createTestAttempt(attempt: any) {
     console.log('🚨 No user found in createTestAttempt')
     throw new Error('Unauthorized: No user found.')
   }
-  
+
   console.log('✅ User found in createTestAttempt:', user.id)
 
   const { data, error } = await supabase
@@ -246,8 +246,8 @@ export async function activateExam(examId: string) {
 }
 
 export async function assignExamToStudents(
-  examId: string, 
-  studentIds: string[], 
+  examId: string,
+  studentIds: string[],
   dueDate?: string
 ) {
   const supabase = createClient()
@@ -255,7 +255,7 @@ export async function assignExamToStudents(
 
   try {
     // Create assignment records for each student
-    const assignments = studentIds.map(studentId => ({
+    const assignments = studentIds.map((studentId) => ({
       exam_id: examId,
       student_id: studentId,
       assigned_by: admin.id,
@@ -305,7 +305,9 @@ export async function calculatePotentialScore(
     const supabase = createClient()
     const { originalAttemptId, newAnswers } = request
 
-    console.log(`[calculate-potential-score] Processing for attempt ${originalAttemptId} with ${newAnswers.length} new answers`)
+    console.log(
+      `[calculate-potential-score] Processing for attempt ${originalAttemptId} with ${newAnswers.length} new answers`
+    )
 
     // 1. Get original attempt data and check if review was already taken
     const { data: originalAttempt, error: attemptError } = await supabase
@@ -323,82 +325,107 @@ export async function calculatePotentialScore(
     }
 
     // 2. Get all original answers for this attempt
-    const { data: originalAnswers, error: originalAnswersError } = await supabase
-      .from('user_answers')
-      .select('question_id, user_answer, is_correct')
-      .eq('attempt_id', originalAttemptId)
+    const { data: originalAnswers, error: originalAnswersError } =
+      await supabase
+        .from('user_answers')
+        .select('question_id, user_answer, is_correct')
+        .eq('attempt_id', originalAttemptId)
 
     if (originalAnswersError || !originalAnswers) {
-      console.error('[calculate-potential-score] Error fetching original answers:', originalAnswersError)
+      console.error(
+        '[calculate-potential-score] Error fetching original answers:',
+        originalAnswersError
+      )
       throw new Error('Failed to fetch original answers')
     }
 
     // 3. Get question details
-    const questionIds = originalAnswers.map(a => a.question_id)
+    const questionIds = originalAnswers.map((a) => a.question_id)
     const { data: questions, error: questionsError } = await supabase
       .from('questions')
       .select('id, correct_answer, correct_answers, question_type, points')
       .in('id', questionIds)
 
     if (questionsError || !questions) {
-      console.error('[calculate-potential-score] Error fetching questions:', questionsError)
+      console.error(
+        '[calculate-potential-score] Error fetching questions:',
+        questionsError
+      )
       throw new Error('Failed to fetch question details')
     }
 
     // Create a map for easier lookup
     const questionMap = new Map()
-    questions.forEach(q => questionMap.set(q.id, q))
+    questions.forEach((q) => questionMap.set(q.id, q))
 
     // 4. Calculate original score
-    const originalCorrect = originalAnswers.filter(a => a.is_correct).length
+    const originalCorrect = originalAnswers.filter((a) => a.is_correct).length
     let originalRawScore = 0
-    
-    originalAnswers.forEach(answer => {
+
+    originalAnswers.forEach((answer) => {
       if (answer.is_correct) {
         const question = questionMap.get(answer.question_id)
-        originalRawScore += (question?.points || 1)
+        originalRawScore += question?.points || 1
       }
     })
 
-    console.log(`[calculate-potential-score] Original: ${originalCorrect}/${originalAnswers.length} correct, raw score: ${originalRawScore}`)
+    console.log(
+      `[calculate-potential-score] Original: ${originalCorrect}/${originalAnswers.length} correct, raw score: ${originalRawScore}`
+    )
 
     // 5. Check correctness of new answers
     let newlyCorrectCount = 0
     let newRawScoreIncrease = 0
 
     for (const newAnswer of newAnswers) {
-      const originalAnswer = originalAnswers.find(a => a.question_id === newAnswer.questionId)
+      const originalAnswer = originalAnswers.find(
+        (a) => a.question_id === newAnswer.questionId
+      )
       if (!originalAnswer) {
-        console.warn(`[calculate-potential-score] Question ${newAnswer.questionId} not found in original answers`)
+        console.warn(
+          `[calculate-potential-score] Question ${newAnswer.questionId} not found in original answers`
+        )
         continue
       }
 
       const question = questionMap.get(newAnswer.questionId)
       if (!question) {
-        console.warn(`[calculate-potential-score] Question details for ${newAnswer.questionId} not found`)
+        console.warn(
+          `[calculate-potential-score] Question details for ${newAnswer.questionId} not found`
+        )
         continue
       }
 
       const isNewAnswerCorrect = checkAnswer(question, newAnswer.answer)
-      
+
       // Only count if originally incorrect but now correct
       if (!originalAnswer.is_correct && isNewAnswerCorrect) {
         newlyCorrectCount++
-        newRawScoreIncrease += (question.points || 1)
+        newRawScoreIncrease += question.points || 1
       }
     }
 
     const potentialCorrect = originalCorrect + newlyCorrectCount
     const potentialRawScore = originalRawScore + newRawScoreIncrease
 
-    console.log(`[calculate-potential-score] Potential: ${potentialCorrect}/${originalAnswers.length} correct, raw score: ${potentialRawScore}`)
+    console.log(
+      `[calculate-potential-score] Potential: ${potentialCorrect}/${originalAnswers.length} correct, raw score: ${potentialRawScore}`
+    )
 
     // 6. Convert raw scores to SAT scores
-    const originalSATScore = rawToSATScore(originalRawScore, originalAnswers.length)
-    const potentialSATScore = rawToSATScore(potentialRawScore, originalAnswers.length)
+    const originalSATScore = rawToSATScore(
+      originalRawScore,
+      originalAnswers.length
+    )
+    const potentialSATScore = rawToSATScore(
+      potentialRawScore,
+      originalAnswers.length
+    )
     const improvement = potentialSATScore - originalSATScore
 
-    console.log(`[calculate-potential-score] SAT Scores - Original: ${originalSATScore}, Potential: ${potentialSATScore}, Improvement: ${improvement}`)
+    console.log(
+      `[calculate-potential-score] SAT Scores - Original: ${originalSATScore}, Potential: ${potentialSATScore}, Improvement: ${improvement}`
+    )
 
     // 7. Mark review attempt as taken
     const { error: updateError } = await supabase
@@ -407,7 +434,10 @@ export async function calculatePotentialScore(
       .eq('id', originalAttemptId)
 
     if (updateError) {
-      console.error('[calculate-potential-score] Failed to mark review as taken:', updateError)
+      console.error(
+        '[calculate-potential-score] Failed to mark review as taken:',
+        updateError
+      )
       throw new Error('Failed to mark review as taken')
     }
 
@@ -420,21 +450,21 @@ export async function calculatePotentialScore(
       originalCorrect,
       newCorrect: potentialCorrect,
       totalQuestions: originalAnswers.length,
-      message: improvement > 0 
-        ? `Great job! You improved by ${improvement} points!`
-        : improvement === 0
-        ? "Keep practicing! Your potential score remained the same."
-        : `Don't worry - learning is a process. Keep practicing!`
+      message:
+        improvement > 0
+          ? `Great job! You improved by ${improvement} points!`
+          : improvement === 0
+            ? 'Keep practicing! Your potential score remained the same.'
+            : `Don't worry - learning is a process. Keep practicing!`,
     }
 
     return response
-
   } catch (error: any) {
     console.error('[calculate-potential-score] Error:', error)
-    
+
     return {
       success: false,
-      error: error.message || 'Internal server error'
+      error: error.message || 'Internal server error',
     }
   }
 }
@@ -464,20 +494,20 @@ function checkAnswer(question: any, userAnswer: string): boolean {
 function rawToSATScore(rawScore: number, totalQuestions: number): number {
   // This is a simplified conversion - in production you'd use official SAT scoring tables
   const percentage = rawScore / totalQuestions
-  
+
   if (percentage >= 0.95) return 800
-  if (percentage >= 0.90) return 750
+  if (percentage >= 0.9) return 750
   if (percentage >= 0.85) return 700
-  if (percentage >= 0.80) return 650
+  if (percentage >= 0.8) return 650
   if (percentage >= 0.75) return 600
-  if (percentage >= 0.70) return 550
+  if (percentage >= 0.7) return 550
   if (percentage >= 0.65) return 500
-  if (percentage >= 0.60) return 450
+  if (percentage >= 0.6) return 450
   if (percentage >= 0.55) return 400
-  if (percentage >= 0.50) return 350
+  if (percentage >= 0.5) return 350
   if (percentage >= 0.45) return 300
-  if (percentage >= 0.40) return 250
-  
+  if (percentage >= 0.4) return 250
+
   return 200
 }
 
@@ -519,7 +549,9 @@ export async function createExamFromModules(data: {
     const newExamId = newExam.id
 
     // 2. Populate the exam_questions junction table
-    for (const [moduleType, sourceExamId] of Object.entries(data.moduleAssignments)) {
+    for (const [moduleType, sourceExamId] of Object.entries(
+      data.moduleAssignments
+    )) {
       // Get all questions from the source module
       const { data: sourceQuestions, error: questionsError } = await supabase
         .from('questions')
@@ -533,7 +565,7 @@ export async function createExamFromModules(data: {
       }
 
       // Insert records into exam_questions junction table
-      const examQuestionRecords = sourceQuestions.map(question => ({
+      const examQuestionRecords = sourceQuestions.map((question) => ({
         exam_id: newExamId,
         question_id: question.id,
         question_number: question.question_number,

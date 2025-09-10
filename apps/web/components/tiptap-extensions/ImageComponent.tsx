@@ -1,10 +1,10 @@
 // apps/web/components/tiptap-extensions/ImageComponent.tsx
-'use client';
-import { NodeViewWrapper } from '@tiptap/react';
+'use client'
+import { NodeViewWrapper } from '@tiptap/react'
 
 export const ImageComponent = (props: any) => {
-  const { src, alt } = props.node.attrs;
-  const { selected } = props;
+  const { src, alt } = props.node.attrs
+  const { selected } = props
 
   return (
     <NodeViewWrapper as="span" className="inline-block">
@@ -15,5 +15,5 @@ export const ImageComponent = (props: any) => {
                     ${selected ? 'ring-2 ring-blue-500' : 'border-gray-200'}`}
       />
     </NodeViewWrapper>
-  );
-};
+  )
+}

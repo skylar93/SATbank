@@ -155,17 +155,19 @@ export default function ReviewPage() {
       console.log('🔍 Is practice mode:', attempt.is_practice_mode)
 
       let allQuestions: QuestionWithMetadata[] = []
-      
+
       // Handle practice sessions differently
       if (attempt.is_practice_mode) {
         console.log('🔍 Loading questions for practice session')
         // For practice sessions, get questions from user_answers
         const { data: practiceAnswers, error: answersError } = await supabase
           .from('user_answers')
-          .select(`
+          .select(
+            `
             *,
             questions(*)
-          `)
+          `
+          )
           .eq('attempt_id', attemptId)
           .order('question_id')
 
@@ -173,21 +175,22 @@ export default function ReviewPage() {
           throw new Error('Failed to load practice session answers')
         }
 
-        allQuestions = practiceAnswers
-          ?.filter(ua => ua.questions)
-          .map((ua, index) => ({
-            ...(ua.questions as unknown as Question),
-            _exam_question_number: index + 1,
-            _module_type: 'practice'
-          })) || []
-          
+        allQuestions =
+          practiceAnswers
+            ?.filter((ua) => ua.questions)
+            .map((ua, index) => ({
+              ...(ua.questions as unknown as Question),
+              _exam_question_number: index + 1,
+              _module_type: 'practice',
+            })) || []
+
         console.log('🔍 Practice mode loaded questions:', allQuestions.length)
-        
+
         // For practice mode, we already have user answers, so we'll use them directly
         const reviewData: ReviewData = {
           attempt,
-          exam: { 
-            id: 'practice-session', 
+          exam: {
+            id: 'practice-session',
             title: 'Practice Session',
             description: null,
             is_mock_exam: false,
@@ -197,11 +200,11 @@ export default function ReviewPage() {
               english1: 32,
               english2: 32,
               math1: 35,
-              math2: 35
+              math2: 35,
             },
             created_by: null,
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           },
           questions: allQuestions,
           userAnswers: practiceAnswers || [],
@@ -216,66 +219,82 @@ export default function ReviewPage() {
         console.log('🔍 Exam system detected:', examSystem)
         console.log('🔍 Template ID:', attempt.exams?.template_id)
         console.log('🔍 Module composition:', attempt.exams?.module_composition)
-      
-      if (examSystem === 'template') {
-        // NEW SYSTEM: Template-based exam using exam_questions table
-        console.log('🔍 Loading questions via exam_questions table')
-        const { data: examQuestions, error: examQuestionsError } = await supabase
-          .from('exam_questions')
-          .select(`
+
+        if (examSystem === 'template') {
+          // NEW SYSTEM: Template-based exam using exam_questions table
+          console.log('🔍 Loading questions via exam_questions table')
+          const { data: examQuestions, error: examQuestionsError } =
+            await supabase
+              .from('exam_questions')
+              .select(
+                `
             question_id,
             module_type,
             question_number,
             questions(*)
-          `)
-          .eq('exam_id', attempt.exam_id)
-          .order('question_number')
-        
-        if (examQuestionsError) {
-          console.error('🚨 exam_questions query error:', examQuestionsError)
-          throw new Error(`Failed to load questions from exam_questions: ${examQuestionsError.message}`)
-        }
-        
-        if (examQuestions) {
-          // Extract questions from the joined data
-          allQuestions = examQuestions
-            .filter(eq => eq.questions) // Filter out any null questions
-            .map(eq => ({
-              ...(eq.questions as unknown as Question),
-              // Add exam_questions metadata for context
-              _exam_question_number: eq.question_number,
-              _module_type: eq.module_type
+          `
+              )
+              .eq('exam_id', attempt.exam_id)
+              .order('question_number')
+
+          if (examQuestionsError) {
+            console.error('🚨 exam_questions query error:', examQuestionsError)
+            throw new Error(
+              `Failed to load questions from exam_questions: ${examQuestionsError.message}`
+            )
+          }
+
+          if (examQuestions) {
+            // Extract questions from the joined data
+            allQuestions = examQuestions
+              .filter((eq) => eq.questions) // Filter out any null questions
+              .map((eq) => ({
+                ...(eq.questions as unknown as Question),
+                // Add exam_questions metadata for context
+                _exam_question_number: eq.question_number,
+                _module_type: eq.module_type,
+              }))
+
+            console.log(
+              '🔍 Template system loaded questions:',
+              allQuestions.length
+            )
+            console.log(
+              '🔍 Questions sample:',
+              allQuestions.slice(0, 2).map((q) => ({
+                id: q.id,
+                question_number: q._exam_question_number,
+                module: q._module_type,
+                original_exam_id: q.exam_id,
+              }))
+            )
+          }
+        } else {
+          // OLD SYSTEM: Direct exam_id connection in questions table
+          console.log('🔍 Loading questions via direct exam_id connection')
+          const { data: questions, error: questionsError } = await supabase
+            .from('questions')
+            .select('*')
+            .eq('exam_id', attempt.exam_id)
+            .order('question_number')
+
+          if (questionsError) {
+            console.error('🚨 Direct questions query error:', questionsError)
+            throw new Error(
+              `Failed to load questions directly: ${questionsError.message}`
+            )
+          }
+
+          allQuestions = questions || []
+          console.log('🔍 Direct system loaded questions:', allQuestions.length)
+          console.log(
+            '🔍 Questions sample:',
+            allQuestions.slice(0, 2).map((q) => ({
+              id: q.id,
+              question_number: q.question_number,
+              exam_id: q.exam_id,
             }))
-          
-          console.log('🔍 Template system loaded questions:', allQuestions.length)
-          console.log('🔍 Questions sample:', allQuestions.slice(0, 2).map(q => ({ 
-            id: q.id, 
-            question_number: q._exam_question_number, 
-            module: q._module_type,
-            original_exam_id: q.exam_id 
-          })))
-        }
-      } else {
-        // OLD SYSTEM: Direct exam_id connection in questions table
-        console.log('🔍 Loading questions via direct exam_id connection')
-        const { data: questions, error: questionsError } = await supabase
-          .from('questions')
-          .select('*')
-          .eq('exam_id', attempt.exam_id)
-          .order('question_number')
-        
-        if (questionsError) {
-          console.error('🚨 Direct questions query error:', questionsError)
-          throw new Error(`Failed to load questions directly: ${questionsError.message}`)
-        }
-        
-        allQuestions = questions || []
-        console.log('🔍 Direct system loaded questions:', allQuestions.length)
-        console.log('🔍 Questions sample:', allQuestions.slice(0, 2).map(q => ({ 
-          id: q.id, 
-          question_number: q.question_number, 
-          exam_id: q.exam_id 
-        })))
+          )
         }
       }
 
@@ -294,12 +313,12 @@ export default function ReviewPage() {
 
       const reviewData: ReviewData = {
         attempt,
-        exam: attempt.exams || { 
-          id: 'practice-session', 
+        exam: attempt.exams || {
+          id: 'practice-session',
           title: 'Practice Session',
           module_composition: {},
           time_limits: {},
-          template_id: null
+          template_id: null,
         },
         questions: allQuestions,
         userAnswers: userAnswers || [],

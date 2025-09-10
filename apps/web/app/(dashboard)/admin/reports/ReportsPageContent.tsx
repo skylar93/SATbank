@@ -34,20 +34,20 @@ export default function ReportsPageContent() {
   }, [])
 
   useEffect(() => {
-    console.log('🔄 ReportsPageContent: Auth state changed', {
-      authLoading,
-      user: !!user,
-      isAdmin,
-    })
+    // console.log('🔄 ReportsPageContent: Auth state changed', {
+    //   authLoading,
+    //   user: !!user,
+    //   isAdmin,
+    // })
 
     if (!authLoading && user && isAdmin) {
-      console.log(
-        '🔄 ReportsPageContent: Loading report data for admin:',
-        user.email
-      )
+      // console.log(
+      //   '🔄 ReportsPageContent: Loading report data for admin:',
+      //   user.email
+      // )
       loadReportData()
     } else if (!authLoading && (!user || !isAdmin)) {
-      console.log('🔄 ReportsPageContent: Not authorized, redirecting to login')
+      // console.log('🔄 ReportsPageContent: Not authorized, redirecting to login')
       router.push('/login')
     }
   }, [user, authLoading, isAdmin, router])
@@ -66,9 +66,11 @@ export default function ReportsPageContent() {
       }
 
       setAttempts(data || [])
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading report data:', err)
-      setError(err.message || 'Failed to load report data')
+      setError(
+        err instanceof Error ? err.message : 'Failed to load report data'
+      )
     } finally {
       setLoading(false)
     }

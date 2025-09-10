@@ -8,8 +8,14 @@ interface TableSelectorProps {
 }
 
 export function TableSelector({ onTableSelect, onClose }: TableSelectorProps) {
-  const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null)
-  const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null)
+  const [hoveredCell, setHoveredCell] = useState<{
+    row: number
+    col: number
+  } | null>(null)
+  const [selectedCell, setSelectedCell] = useState<{
+    row: number
+    col: number
+  } | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const maxRows = 10
@@ -17,7 +23,10 @@ export function TableSelector({ onTableSelect, onClose }: TableSelectorProps) {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         onClose()
       }
     }
@@ -51,14 +60,14 @@ export function TableSelector({ onTableSelect, onClose }: TableSelectorProps) {
   }
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg p-3 z-50"
     >
       <div className="text-sm text-gray-600 mb-2 text-center min-h-[20px]">
         {getTablePreview() || 'Select table size'}
       </div>
-      
+
       <div className="grid grid-cols-10 gap-1 w-max">
         {Array.from({ length: maxRows }, (_, row) =>
           Array.from({ length: maxCols }, (_, col) => (
@@ -67,9 +76,10 @@ export function TableSelector({ onTableSelect, onClose }: TableSelectorProps) {
               className={`
                 w-5 h-5 border border-gray-300 cursor-pointer transition-colors 
                 flex-shrink-0 flex-grow-0 aspect-square
-                ${isCellHighlighted(row, col) 
-                  ? 'bg-blue-200 border-blue-400' 
-                  : 'bg-white hover:bg-gray-100'
+                ${
+                  isCellHighlighted(row, col)
+                    ? 'bg-blue-200 border-blue-400'
+                    : 'bg-white hover:bg-gray-100'
                 }
               `}
               onMouseEnter={() => handleCellHover(row, col)}
@@ -79,7 +89,7 @@ export function TableSelector({ onTableSelect, onClose }: TableSelectorProps) {
           ))
         )}
       </div>
-      
+
       <div className="mt-3 text-xs text-gray-500 text-center">
         Hover and click to select table size
       </div>

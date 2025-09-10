@@ -53,7 +53,6 @@ function DashboardLoading() {
 async function getDashboardData(
   userId: string
 ): Promise<{ data: DashboardData; canShowResults: boolean }> {
-
   try {
     // Try using the new RPC function first
     const { data: rpcData, error: rpcError } = await supabase.rpc(
@@ -244,7 +243,6 @@ async function fetchUserActivityDays(userId: string): Promise<string[]> {
 async function fetchUserSubjectScores(
   userId: string
 ): Promise<{ reading: number; writing: number; math: number }> {
-
   const { data: attempts, error } = await supabase
     .from('test_attempts')
     .select('*')

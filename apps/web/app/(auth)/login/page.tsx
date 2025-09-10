@@ -1,10 +1,8 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
-import { supabase } from '../../../lib/supabase'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -25,7 +23,7 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (user) return // Prevent duplicate login
-    
+
     setLoading(true)
     setError('')
 
@@ -34,16 +32,16 @@ export default function LoginPage() {
       const loggedInUser = await signIn(email, password)
 
       // 2. Based on the returned user's role, determine the correct destination.
-      const redirectUrl = loggedInUser.profile?.role === 'admin'
-        ? '/admin/dashboard'
-        : '/student/dashboard'
+      const redirectUrl =
+        loggedInUser.profile?.role === 'admin'
+          ? '/admin/dashboard'
+          : '/student/dashboard'
 
       // 3. Use the Next.js router to push the user to their dashboard.
       //    This is a clean, client-side navigation.
       router.push(redirectUrl)
-
-    } catch (err: any) {
-      setError(err.message || 'Login failed')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Login failed')
       setLoading(false) // Only set loading to false if an error occurs.
     }
     // On success, we don't set loading to false because the component will unmount.
@@ -114,8 +112,12 @@ export default function LoginPage() {
           {user && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-4">
               <div className="text-sm text-yellow-800">
-                <p><strong>Already logged in as:</strong> {user.email}</p>
-                <p><strong>Role:</strong> {user.profile?.role}</p>
+                <p>
+                  <strong>Already logged in as:</strong> {user.email}
+                </p>
+                <p>
+                  <strong>Role:</strong> {user.profile?.role}
+                </p>
                 <button
                   onClick={() => signOut()}
                   className="mt-2 text-red-600 hover:text-red-800 underline"
@@ -132,7 +134,11 @@ export default function LoginPage() {
               disabled={loading || authLoading || !!user}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {user ? 'Already signed in' : loading || authLoading ? 'Signing in...' : 'Sign in'}
+              {user
+                ? 'Already signed in'
+                : loading || authLoading
+                  ? 'Signing in...'
+                  : 'Sign in'}
             </button>
           </div>
         </form>

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../contexts/auth-context'
 
@@ -15,7 +14,6 @@ export default function SignupPage() {
   const [error, setError] = useState('')
 
   const { signUp } = useAuth()
-  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,8 +29,8 @@ export default function SignupPage() {
     try {
       await signUp(email, password, fullName)
       // Redirect will be handled by middleware
-    } catch (err: any) {
-      setError(err.message || 'Signup failed')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Signup failed')
     } finally {
       setLoading(false)
     }

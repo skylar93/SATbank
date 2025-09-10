@@ -366,7 +366,8 @@ export function EnhancedIncorrectAnswersSection({
                 Practice Your Mistakes
               </h3>
               <p className="text-gray-600 text-sm">
-                Select specific questions or practice all mistakes to improve your performance
+                Select specific questions or practice all mistakes to improve
+                your performance
               </p>
             </div>
           </div>
@@ -430,7 +431,9 @@ export function EnhancedIncorrectAnswersSection({
         <div className="mt-6 pt-6 border-t border-purple-200">
           {/* Mastery Filter */}
           <div className="mb-4">
-            <span className="text-sm font-medium text-gray-700 mr-4">Show:</span>
+            <span className="text-sm font-medium text-gray-700 mr-4">
+              Show:
+            </span>
             <div className="inline-flex space-x-1">
               {[
                 { value: 'all', label: 'All Questions' },
@@ -454,7 +457,9 @@ export function EnhancedIncorrectAnswersSection({
 
           {/* Group By Controls */}
           <div>
-            <span className="text-sm font-medium text-gray-700 mr-4">Group by:</span>
+            <span className="text-sm font-medium text-gray-700 mr-4">
+              Group by:
+            </span>
             <div className="inline-flex space-x-1">
               {[
                 { value: 'recent', label: 'Most Recent' },
@@ -481,7 +486,10 @@ export function EnhancedIncorrectAnswersSection({
 
       {/* Grouped Questions */}
       {Object.entries(groupedQuestions).map(([groupName, groupQuestions]) => (
-        <div key={groupName} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100">
+        <div
+          key={groupName}
+          className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100"
+        >
           <div className="p-6 border-b border-purple-200">
             <h4 className="text-lg font-semibold text-gray-900">
               {groupName} ({groupQuestions.length})
@@ -517,16 +525,19 @@ export function EnhancedIncorrectAnswersSection({
                     </div>
                     <div>
                       <div className="font-medium text-gray-900">
-                        Question {question.question_number} - {formatModuleName(question.module_type)}
+                        Question {question.question_number} -{' '}
+                        {formatModuleName(question.module_type)}
                       </div>
                       <div className="flex items-center gap-1.5 mt-2 flex-nowrap">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border flex-shrink-0 ${
-                          question.difficulty_level === 'hard' 
-                            ? 'bg-rose-50 text-rose-700 border-rose-200' 
-                            : question.difficulty_level === 'medium'
-                            ? 'bg-amber-50 text-amber-700 border-amber-200'
-                            : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        }`}>
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border flex-shrink-0 ${
+                            question.difficulty_level === 'hard'
+                              ? 'bg-rose-50 text-rose-700 border-rose-200'
+                              : question.difficulty_level === 'medium'
+                                ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          }`}
+                        >
                           {question.difficulty_level}
                         </span>
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 flex-shrink-0">
@@ -539,12 +550,14 @@ export function EnhancedIncorrectAnswersSection({
                               : 'bg-orange-50 text-orange-700 border-orange-200'
                           }`}
                         >
-                          {question.masteryStatus === 'mastered' ? '✓ Mastered' : '⚠ Practice'}
+                          {question.masteryStatus === 'mastered'
+                            ? '✓ Mastered'
+                            : '⚠ Practice'}
                         </span>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => toggleQuestion(question.id)}
@@ -561,14 +574,25 @@ export function EnhancedIncorrectAnswersSection({
                     {(() => {
                       // HTML-first rendering for question preview
                       let content = ''
-                      if (question.question_html && !isEmptyHtml(question.question_html)) {
+                      if (
+                        question.question_html &&
+                        !isEmptyHtml(question.question_html)
+                      ) {
                         content = question.question_html
                         // For preview, show plain text to avoid HTML complexity
-                        const cleanText = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
-                        return cleanText.length > 120 ? `${cleanText.substring(0, 120)}...` : cleanText
+                        const cleanText = content
+                          .replace(/<[^>]*>/g, ' ')
+                          .replace(/\s+/g, ' ')
+                          .trim()
+                        return cleanText.length > 120
+                          ? `${cleanText.substring(0, 120)}...`
+                          : cleanText
                       } else {
-                        content = question.question_text || 'No preview available'
-                        return content.length > 120 ? `${content.substring(0, 120)}...` : content
+                        content =
+                          question.question_text || 'No preview available'
+                        return content.length > 120
+                          ? `${content.substring(0, 120)}...`
+                          : content
                       }
                     })()}
                   </p>
@@ -578,15 +602,17 @@ export function EnhancedIncorrectAnswersSection({
                 <div className="px-6 pb-6">
                   {question.topic_tags && question.topic_tags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-3">
-                      {question.topic_tags.slice(0, 3).map((tag: string, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-colors"
-                        >
-                          <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-1.5"></span>
-                          {tag}
-                        </span>
-                      ))}
+                      {question.topic_tags
+                        .slice(0, 3)
+                        .map((tag: string, index) => (
+                          <span
+                            key={index}
+                            className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-colors"
+                          >
+                            <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-1.5"></span>
+                            {tag}
+                          </span>
+                        ))}
                       {question.topic_tags.length > 3 && (
                         <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200">
                           +{question.topic_tags.length - 3}
@@ -594,16 +620,26 @@ export function EnhancedIncorrectAnswersSection({
                       )}
                     </div>
                   )}
-                  
+
                   <div className="flex items-center justify-between text-xs text-gray-500">
                     <span>
-                      First mistake: {question.firstMistakenAt ? new Date(question.firstMistakenAt).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric'
-                      }) : 'Unknown'}
+                      First mistake:{' '}
+                      {question.firstMistakenAt
+                        ? new Date(question.firstMistakenAt).toLocaleDateString(
+                            'en-US',
+                            {
+                              month: 'short',
+                              day: 'numeric',
+                            }
+                          )
+                        : 'Unknown'}
                     </span>
                     <span>
-                      {question.incorrectAttempts?.length || 1} incorrect attempt{(question.incorrectAttempts?.length || 1) !== 1 ? 's' : ''}
+                      {question.incorrectAttempts?.length || 1} incorrect
+                      attempt
+                      {(question.incorrectAttempts?.length || 1) !== 1
+                        ? 's'
+                        : ''}
                     </span>
                   </div>
                 </div>
@@ -612,189 +648,244 @@ export function EnhancedIncorrectAnswersSection({
                 {expandedQuestion === question.id && (
                   <div className="border-t border-purple-200 bg-purple-50/30 rounded-b-2xl mx-0">
                     <div className="p-6">
-                    <div className="space-y-4">
-                      {/* Full Question */}
-                      <div>
-                        <h5 className="font-medium text-gray-900 mb-2">
-                          Question:
-                        </h5>
-                        <div className="text-gray-700">
-                          {(() => {
-                            // HTML-first rendering for full question
-                            if (question.question_html && !isEmptyHtml(question.question_html)) {
-                              // Check if content contains LaTeX math expressions
-                              if (question.question_html.includes('data-math')) {
-                                return <ContentRenderer htmlContent={question.question_html} />
-                              } else {
-                                return renderHtmlContent(question.question_html)
-                              }
-                            } else {
-                              return (
-                                <div className="whitespace-pre-wrap">
-                                  {question.question_text}
-                                </div>
-                              )
-                            }
-                          })()}
-                        </div>
-                      </div>
-
-                      {/* Options and Correct Answer */}
-                      {question.question_type === 'multiple_choice' &&
-                        question.options && (
-                          <div>
-                            <h5 className="font-medium text-gray-900 mb-2">
-                              Options:
-                            </h5>
-                            <div className="space-y-1">
-                              {Object.entries(question.options).map(
-                                ([key, value]) => (
-                                  <div
-                                    key={key}
-                                    className={`p-2 rounded-lg ${
-                                      key === question.correct_answer
-                                        ? 'bg-purple-100 border border-purple-300'
-                                        : question.incorrectAttempts?.some(
-                                              (att) => att.user_answer === key
-                                            )
-                                          ? 'bg-red-100 border border-red-300'
-                                          : 'bg-gray-50'
-                                    }`}
-                                  >
-                                    <span className="font-medium">{key}.</span>{' '}
-                                    <span className="text-gray-900">
-                                      {(() => {
-                                        // Check if options_html exists and has this key
-                                        if (question.options_html && question.options_html[key] && !isEmptyHtml(question.options_html[key])) {
-                                          // If HTML content contains math expressions, render properly
-                                          if (question.options_html[key].includes('data-math')) {
-                                            return <ContentRenderer htmlContent={question.options_html[key]} />
-                                          } else {
-                                            return <span dangerouslySetInnerHTML={{ __html: question.options_html[key] }} />
-                                          }
-                                        } else {
-                                          // Fallback to regular text option
-                                          return value as string
-                                        }
-                                      })()}
-                                    </span>
-                                    {key === question.correct_answer && (
-                                      <span className="ml-2 text-purple-600 font-medium">
-                                        (Correct)
-                                      </span>
-                                    )}
-                                    {question.incorrectAttempts?.some(
-                                      (att) => att.user_answer === key
-                                    ) && (
-                                      <span className="ml-2 text-red-600 font-medium">
-                                        (Your Answer)
-                                      </span>
-                                    )}
-                                  </div>
-                                )
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                      {/* Grid-in answer */}
-                      {question.question_type === 'grid_in' && (
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <h5 className="font-medium text-gray-900 mb-2">
-                              Correct Answer:
-                            </h5>
-                            <div className="p-2 rounded-lg bg-purple-100 border border-purple-300">
-                              <span className="font-medium text-purple-800">
-                                {question.correct_answer}
-                              </span>
-                            </div>
-                          </div>
-                          <div>
-                            <h5 className="font-medium text-gray-900 mb-2">
-                              Your Answer:
-                            </h5>
-                            <div className="p-2 rounded-lg bg-red-100 border border-red-300">
-                              <span className="font-medium text-red-800">
-                                {question.incorrectAttempts?.[0]?.user_answer ||
-                                  'N/A'}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Explanation */}
-                      {(question.explanation || (question.explanation_html && !isEmptyHtml(question.explanation_html))) && (
+                      <div className="space-y-4">
+                        {/* Full Question */}
                         <div>
                           <h5 className="font-medium text-gray-900 mb-2">
-                            Explanation:
+                            Question:
                           </h5>
-                          <div className="p-3 bg-purple-50 rounded-lg">
-                            <div className="text-gray-800">
-                              {(() => {
-                                // HTML-first rendering for explanation
-                                if (question.explanation_html && !isEmptyHtml(question.explanation_html)) {
-                                  // Check if content contains LaTeX math expressions
-                                  if (question.explanation_html.includes('data-math')) {
-                                    return <ContentRenderer htmlContent={question.explanation_html} />
-                                  } else {
-                                    return renderHtmlContent(question.explanation_html)
-                                  }
-                                } else if (question.explanation) {
+                          <div className="text-gray-700">
+                            {(() => {
+                              // HTML-first rendering for full question
+                              if (
+                                question.question_html &&
+                                !isEmptyHtml(question.question_html)
+                              ) {
+                                // Check if content contains LaTeX math expressions
+                                if (
+                                  question.question_html.includes('data-math')
+                                ) {
                                   return (
-                                    <div className="whitespace-pre-wrap">
-                                      {question.explanation}
-                                    </div>
+                                    <ContentRenderer
+                                      htmlContent={question.question_html}
+                                    />
+                                  )
+                                } else {
+                                  return renderHtmlContent(
+                                    question.question_html
                                   )
                                 }
-                                return null
-                              })()}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* All Incorrect Attempts */}
-                      {question.incorrectAttempts &&
-                        question.incorrectAttempts.length > 1 && (
-                          <div>
-                            <h5 className="font-medium text-gray-900 mb-2">
-                              All Incorrect Attempts:
-                            </h5>
-                            <div className="space-y-2">
-                              {question.incorrectAttempts.map(
-                                (attempt, index) => (
-                                  <div
-                                    key={attempt.id}
-                                    className="bg-red-50 border border-red-200 rounded p-2"
-                                  >
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-sm">
-                                        <span className="font-medium">
-                                          Answer:
-                                        </span>{' '}
-                                        {attempt.user_answer}
-                                      </span>
-                                      <span className="text-xs text-gray-500">
-                                        {new Date(
-                                          attempt.answered_at
-                                        ).toLocaleDateString('en-US', {
-                                          year: 'numeric',
-                                          month: 'short',
-                                          day: 'numeric',
-                                          hour: '2-digit',
-                                          minute: '2-digit',
-                                        })}
-                                      </span>
-                                    </div>
+                              } else {
+                                return (
+                                  <div className="whitespace-pre-wrap">
+                                    {question.question_text}
                                   </div>
                                 )
-                              )}
+                              }
+                            })()}
+                          </div>
+                        </div>
+
+                        {/* Options and Correct Answer */}
+                        {question.question_type === 'multiple_choice' &&
+                          question.options && (
+                            <div>
+                              <h5 className="font-medium text-gray-900 mb-2">
+                                Options:
+                              </h5>
+                              <div className="space-y-1">
+                                {Object.entries(question.options).map(
+                                  ([key, value]) => (
+                                    <div
+                                      key={key}
+                                      className={`p-2 rounded-lg ${
+                                        key === question.correct_answer
+                                          ? 'bg-purple-100 border border-purple-300'
+                                          : question.incorrectAttempts?.some(
+                                                (att) => att.user_answer === key
+                                              )
+                                            ? 'bg-red-100 border border-red-300'
+                                            : 'bg-gray-50'
+                                      }`}
+                                    >
+                                      <span className="font-medium">
+                                        {key}.
+                                      </span>{' '}
+                                      <span className="text-gray-900">
+                                        {(() => {
+                                          // Check if options_html exists and has this key
+                                          if (
+                                            question.options_html &&
+                                            question.options_html[key] &&
+                                            !isEmptyHtml(
+                                              question.options_html[key]
+                                            )
+                                          ) {
+                                            // If HTML content contains math expressions, render properly
+                                            if (
+                                              question.options_html[
+                                                key
+                                              ].includes('data-math')
+                                            ) {
+                                              return (
+                                                <ContentRenderer
+                                                  htmlContent={
+                                                    question.options_html[key]
+                                                  }
+                                                />
+                                              )
+                                            } else {
+                                              return (
+                                                <span
+                                                  dangerouslySetInnerHTML={{
+                                                    __html:
+                                                      question.options_html[
+                                                        key
+                                                      ],
+                                                  }}
+                                                />
+                                              )
+                                            }
+                                          } else {
+                                            // Fallback to regular text option
+                                            return value as string
+                                          }
+                                        })()}
+                                      </span>
+                                      {key === question.correct_answer && (
+                                        <span className="ml-2 text-purple-600 font-medium">
+                                          (Correct)
+                                        </span>
+                                      )}
+                                      {question.incorrectAttempts?.some(
+                                        (att) => att.user_answer === key
+                                      ) && (
+                                        <span className="ml-2 text-red-600 font-medium">
+                                          (Your Answer)
+                                        </span>
+                                      )}
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                        {/* Grid-in answer */}
+                        {question.question_type === 'grid_in' && (
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <h5 className="font-medium text-gray-900 mb-2">
+                                Correct Answer:
+                              </h5>
+                              <div className="p-2 rounded-lg bg-purple-100 border border-purple-300">
+                                <span className="font-medium text-purple-800">
+                                  {question.correct_answer}
+                                </span>
+                              </div>
+                            </div>
+                            <div>
+                              <h5 className="font-medium text-gray-900 mb-2">
+                                Your Answer:
+                              </h5>
+                              <div className="p-2 rounded-lg bg-red-100 border border-red-300">
+                                <span className="font-medium text-red-800">
+                                  {question.incorrectAttempts?.[0]
+                                    ?.user_answer || 'N/A'}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         )}
-                    </div>
+
+                        {/* Explanation */}
+                        {(question.explanation ||
+                          (question.explanation_html &&
+                            !isEmptyHtml(question.explanation_html))) && (
+                          <div>
+                            <h5 className="font-medium text-gray-900 mb-2">
+                              Explanation:
+                            </h5>
+                            <div className="p-3 bg-purple-50 rounded-lg">
+                              <div className="text-gray-800">
+                                {(() => {
+                                  // HTML-first rendering for explanation
+                                  if (
+                                    question.explanation_html &&
+                                    !isEmptyHtml(question.explanation_html)
+                                  ) {
+                                    // Check if content contains LaTeX math expressions
+                                    if (
+                                      question.explanation_html.includes(
+                                        'data-math'
+                                      )
+                                    ) {
+                                      return (
+                                        <ContentRenderer
+                                          htmlContent={
+                                            question.explanation_html
+                                          }
+                                        />
+                                      )
+                                    } else {
+                                      return renderHtmlContent(
+                                        question.explanation_html
+                                      )
+                                    }
+                                  } else if (question.explanation) {
+                                    return (
+                                      <div className="whitespace-pre-wrap">
+                                        {question.explanation}
+                                      </div>
+                                    )
+                                  }
+                                  return null
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* All Incorrect Attempts */}
+                        {question.incorrectAttempts &&
+                          question.incorrectAttempts.length > 1 && (
+                            <div>
+                              <h5 className="font-medium text-gray-900 mb-2">
+                                All Incorrect Attempts:
+                              </h5>
+                              <div className="space-y-2">
+                                {question.incorrectAttempts.map(
+                                  (attempt, index) => (
+                                    <div
+                                      key={attempt.id}
+                                      className="bg-red-50 border border-red-200 rounded p-2"
+                                    >
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-sm">
+                                          <span className="font-medium">
+                                            Answer:
+                                          </span>{' '}
+                                          {attempt.user_answer}
+                                        </span>
+                                        <span className="text-xs text-gray-500">
+                                          {new Date(
+                                            attempt.answered_at
+                                          ).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                          })}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                            </div>
+                          )}
+                      </div>
                     </div>
                   </div>
                 )}

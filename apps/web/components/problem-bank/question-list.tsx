@@ -116,9 +116,7 @@ export function QuestionList({
       if (value.imageUrl || value.text) {
         return (
           <div className="space-y-1">
-            {value.text && (
-              <div className="text-gray-900">{value.text}</div>
-            )}
+            {value.text && <div className="text-gray-900">{value.text}</div>}
             {value.imageUrl && (
               <img
                 src={value.imageUrl}
@@ -442,16 +440,24 @@ export function QuestionList({
                     {(() => {
                       // HTML-first rendering for question preview
                       let content = ''
-                      if (question.question_html && !isEmptyHtml(question.question_html)) {
-                        content = question.question_html.length > 150
-                          ? `${question.question_html.substring(0, 150)}...`
-                          : question.question_html
+                      if (
+                        question.question_html &&
+                        !isEmptyHtml(question.question_html)
+                      ) {
+                        content =
+                          question.question_html.length > 150
+                            ? `${question.question_html.substring(0, 150)}...`
+                            : question.question_html
                         // For preview, just show plain text to avoid HTML complexity
-                        return content.replace(/<[^>]*>/g, ' ').substring(0, 150) + (content.length > 150 ? '...' : '')
+                        return (
+                          content.replace(/<[^>]*>/g, ' ').substring(0, 150) +
+                          (content.length > 150 ? '...' : '')
+                        )
                       } else {
-                        content = question.question_text.length > 150
-                          ? `${question.question_text.substring(0, 150)}...`
-                          : question.question_text
+                        content =
+                          question.question_text.length > 150
+                            ? `${question.question_text.substring(0, 150)}...`
+                            : question.question_text
                         return content
                       }
                     })()}
@@ -503,7 +509,10 @@ export function QuestionList({
                       <div className="text-gray-700">
                         {(() => {
                           // HTML-first rendering for full question
-                          if (question.question_html && !isEmptyHtml(question.question_html)) {
+                          if (
+                            question.question_html &&
+                            !isEmptyHtml(question.question_html)
+                          ) {
                             return renderHtmlContent(question.question_html)
                           } else {
                             return (
@@ -563,7 +572,9 @@ export function QuestionList({
                     )}
 
                     {/* Explanation */}
-                    {(question.explanation || (question.explanation_html && !isEmptyHtml(question.explanation_html))) && (
+                    {(question.explanation ||
+                      (question.explanation_html &&
+                        !isEmptyHtml(question.explanation_html))) && (
                       <div>
                         <h4 className="font-medium text-gray-900 mb-2">
                           Explanation:
@@ -571,8 +582,13 @@ export function QuestionList({
                         <div className="text-gray-700">
                           {(() => {
                             // HTML-first rendering for explanation
-                            if (question.explanation_html && !isEmptyHtml(question.explanation_html)) {
-                              return renderHtmlContent(question.explanation_html)
+                            if (
+                              question.explanation_html &&
+                              !isEmptyHtml(question.explanation_html)
+                            ) {
+                              return renderHtmlContent(
+                                question.explanation_html
+                              )
                             } else if (question.explanation) {
                               return (
                                 <div className="whitespace-pre-wrap">

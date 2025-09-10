@@ -232,17 +232,19 @@ export function MistakeNotebookClient({
                         className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                       />
                     </div>
-                    
+
                     {/* Status and Difficulty */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                          question.difficulty_level === 'hard' 
-                            ? 'bg-red-100 text-red-700' 
-                            : question.difficulty_level === 'medium'
-                            ? 'bg-yellow-100 text-yellow-700'
-                            : 'bg-green-100 text-green-700'
-                        }`}>
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                            question.difficulty_level === 'hard'
+                              ? 'bg-red-100 text-red-700'
+                              : question.difficulty_level === 'medium'
+                                ? 'bg-yellow-100 text-yellow-700'
+                                : 'bg-green-100 text-green-700'
+                          }`}
+                        >
                           {question.difficulty_level}
                         </span>
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
@@ -260,14 +262,25 @@ export function MistakeNotebookClient({
                         {(() => {
                           // HTML-first rendering for question preview
                           let content = ''
-                          if (question.question_html && !isEmptyHtml(question.question_html)) {
+                          if (
+                            question.question_html &&
+                            !isEmptyHtml(question.question_html)
+                          ) {
                             content = question.question_html
                             // For preview, show plain text to avoid HTML complexity
-                            const cleanText = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
-                            return cleanText.length > 120 ? `${cleanText.substring(0, 120)}...` : cleanText
+                            const cleanText = content
+                              .replace(/<[^>]*>/g, ' ')
+                              .replace(/\s+/g, ' ')
+                              .trim()
+                            return cleanText.length > 120
+                              ? `${cleanText.substring(0, 120)}...`
+                              : cleanText
                           } else {
-                            content = question.question_text || 'No preview available'
-                            return content.length > 120 ? `${content.substring(0, 120)}...` : content
+                            content =
+                              question.question_text || 'No preview available'
+                            return content.length > 120
+                              ? `${content.substring(0, 120)}...`
+                              : content
                           }
                         })()}
                       </p>
@@ -298,22 +311,36 @@ export function MistakeNotebookClient({
                     <div className="flex items-center justify-between text-xs text-gray-600">
                       <div className="flex items-center space-x-2">
                         <span className="flex items-center">
-                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                          <svg
+                            className="w-3 h-3 mr-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                           {formatDate(mistake.first_mistaken_at)}
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <span className="flex items-center font-medium text-blue-600">
-                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <svg
+                            className="w-3 h-3 mr-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                           </svg>
                           {question.points} pt{question.points !== 1 ? 's' : ''}
                         </span>
-                        <button 
+                        <button
                           className="text-blue-600 hover:text-blue-800 font-medium opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => router.push(`/student/problem-bank/${question.id}`)}
+                          onClick={() =>
+                            router.push(`/student/problem-bank/${question.id}`)
+                          }
                         >
                           Review →
                         </button>

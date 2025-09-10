@@ -7,7 +7,12 @@ import { InlineMath, BlockMath } from 'react-katex'
 import { supabase } from '../../lib/supabase'
 import { WysiwygEditor } from '../wysiwyg-editor'
 import { RichTextEditor } from '../rich-text-editor'
-import { markdownToHtml, htmlToMarkdown, isEmptyHtml, isEmptyMarkdown } from '../../lib/content-converter'
+import {
+  markdownToHtml,
+  htmlToMarkdown,
+  isEmptyHtml,
+  isEmptyMarkdown,
+} from '../../lib/content-converter'
 import { updateQuestionWithDualFormat } from '../../lib/actions/question-actions'
 import { ImageUpload } from '../image-upload'
 import { HelpCircle } from 'lucide-react'
@@ -485,22 +490,25 @@ export function QuestionDisplay({
   })
   const [saving, setSaving] = useState(false)
   const [showFormattingHelp, setShowFormattingHelp] = useState(false)
-  
+
   // Dual Mode state
-  const [currentEditorMode, setCurrentEditorMode] = useState<'markdown' | 'html'>(
-    (question.content_format as 'markdown' | 'html') || 'markdown'
-  )
-  
+  const [currentEditorMode, setCurrentEditorMode] = useState<
+    'markdown' | 'html'
+  >((question.content_format as 'markdown' | 'html') || 'markdown')
+
   // Get global editor mode from environment variable
 
   const getEditorMode = (): 'markdown' | 'dual' | 'html' => {
-    return (process.env.NEXT_PUBLIC_EDITOR_MODE as 'markdown' | 'dual' | 'html') || 'markdown'
+    return (
+      (process.env.NEXT_PUBLIC_EDITOR_MODE as 'markdown' | 'dual' | 'html') ||
+      'markdown'
+    )
   }
-  
+
   // Function to switch between editors (converts content)
   const switchEditor = (targetMode: 'markdown' | 'html') => {
     if (currentEditorMode === targetMode) return
-    
+
     let convertedContent = ''
     if (targetMode === 'html' && currentEditorMode === 'markdown') {
       // Convert markdown to HTML
@@ -508,7 +516,7 @@ export function QuestionDisplay({
       setEditForm({
         ...editForm,
         question_html: convertedContent,
-        content_format: 'html'
+        content_format: 'html',
       })
     } else if (targetMode === 'markdown' && currentEditorMode === 'html') {
       // Convert HTML to markdown
@@ -516,10 +524,10 @@ export function QuestionDisplay({
       setEditForm({
         ...editForm,
         question_text: convertedContent,
-        content_format: 'markdown'
+        content_format: 'markdown',
       })
     }
-    
+
     setCurrentEditorMode(targetMode)
   }
 
@@ -565,9 +573,10 @@ export function QuestionDisplay({
 
     try {
       // Get the content from the currently active editor
-      const currentContent = currentEditorMode === 'html' 
-        ? editForm.question_html 
-        : editForm.question_text
+      const currentContent =
+        currentEditorMode === 'html'
+          ? editForm.question_html
+          : editForm.question_text
 
       // Direct Supabase update for debugging
       console.log('🔍 Updating directly with Supabase...')
@@ -583,7 +592,8 @@ export function QuestionDisplay({
         const cleanAnswers = (editForm.correct_answers || [])
           .map((a: any) => String(a || '').trim())
           .filter((a: string) => a.length > 0)
-        updateData.correct_answers = cleanAnswers.length > 0 ? cleanAnswers : ['']
+        updateData.correct_answers =
+          cleanAnswers.length > 0 ? cleanAnswers : ['']
         updateData.correct_answer = cleanAnswers[0] || ''
       } else {
         updateData.correct_answer = editForm.correct_answer
@@ -604,14 +614,14 @@ export function QuestionDisplay({
         .update(updateData)
         .eq('id', question.id)
         .select()
-        
+
       console.log('🔍 Supabase result:', supabaseResult)
       console.log('🔍 Supabase error:', error)
 
       const result = {
         success: !error,
         data: supabaseResult?.[0] || null,
-        error: error?.message || null
+        error: error?.message || null,
       }
 
       if (!result.success) {
@@ -693,7 +703,9 @@ export function QuestionDisplay({
       table_data: localQuestion.table_data || null,
       content_format: localQuestion.content_format || 'markdown',
     })
-    setCurrentEditorMode((localQuestion.content_format as 'markdown' | 'html') || 'markdown')
+    setCurrentEditorMode(
+      (localQuestion.content_format as 'markdown' | 'html') || 'markdown'
+    )
     setIsEditing(false)
   }
 
@@ -1179,7 +1191,9 @@ export function QuestionDisplay({
                             <div className="space-y-2">
                               {objValue.text && (
                                 <div>
-                                  {renderTextWithFormattingAndMath(objValue.text)}
+                                  {renderTextWithFormattingAndMath(
+                                    objValue.text
+                                  )}
                                 </div>
                               )}
                               {objValue.imageUrl && (
@@ -1455,7 +1469,9 @@ export function QuestionDisplay({
                     {currentEditorMode === 'markdown' && (
                       <button
                         type="button"
-                        onClick={() => setShowFormattingHelp(!showFormattingHelp)}
+                        onClick={() =>
+                          setShowFormattingHelp(!showFormattingHelp)
+                        }
                         className="flex-shrink-0 p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
                         title="Formatting Help"
                       >
@@ -1463,7 +1479,7 @@ export function QuestionDisplay({
                       </button>
                     )}
                   </div>
-                  
+
                   {/* Editor Mode Controls */}
                   {(() => {
                     const editorMode = getEditorMode()
@@ -1475,8 +1491,8 @@ export function QuestionDisplay({
                             type="button"
                             onClick={() => switchEditor('markdown')}
                             className={`px-2 py-1 text-xs rounded transition-colors ${
-                              currentEditorMode === 'markdown' 
-                                ? 'bg-blue-600 text-white' 
+                              currentEditorMode === 'markdown'
+                                ? 'bg-blue-600 text-white'
                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                             }`}
                           >
@@ -1486,8 +1502,8 @@ export function QuestionDisplay({
                             type="button"
                             onClick={() => switchEditor('html')}
                             className={`px-2 py-1 text-xs rounded transition-colors ${
-                              currentEditorMode === 'html' 
-                                ? 'bg-blue-600 text-white' 
+                              currentEditorMode === 'html'
+                                ? 'bg-blue-600 text-white'
                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                             }`}
                           >
@@ -1530,14 +1546,14 @@ export function QuestionDisplay({
 
                 {(() => {
                   const editorMode = getEditorMode()
-                  
+
                   // Determine which editor to show based on global and current mode
-                  const shouldShowHtmlEditor = 
-                    editorMode === 'html' || 
+                  const shouldShowHtmlEditor =
+                    editorMode === 'html' ||
                     (editorMode === 'dual' && currentEditorMode === 'html')
-                    
-                  const shouldShowMarkdownEditor = 
-                    editorMode === 'markdown' || 
+
+                  const shouldShowMarkdownEditor =
+                    editorMode === 'markdown' ||
                     (editorMode === 'dual' && currentEditorMode === 'markdown')
 
                   if (shouldShowHtmlEditor) {
@@ -1545,20 +1561,28 @@ export function QuestionDisplay({
                       <WysiwygEditor
                         content={editForm.question_html}
                         onChange={(value) =>
-                          setEditForm({ ...editForm, question_html: value, content_format: 'html' })
+                          setEditForm({
+                            ...editForm,
+                            question_html: value,
+                            content_format: 'html',
+                          })
                         }
                         placeholder="Enter question text..."
                         rows={8}
                       />
                     )
                   }
-                  
+
                   if (shouldShowMarkdownEditor) {
                     return (
                       <RichTextEditor
                         value={editForm.question_text}
                         onChange={(value) =>
-                          setEditForm({ ...editForm, question_text: value, content_format: 'markdown' })
+                          setEditForm({
+                            ...editForm,
+                            question_text: value,
+                            content_format: 'markdown',
+                          })
                         }
                         placeholder="Enter question text..."
                         rows={8}
@@ -1566,7 +1590,7 @@ export function QuestionDisplay({
                       />
                     )
                   }
-                  
+
                   // Fallback
                   return null
                 })()}
@@ -1764,7 +1788,10 @@ export function QuestionDisplay({
               <HighlightedTextRenderer
                 text={(() => {
                   // Simple priority-based rendering: HTML first, then fallback to markdown
-                  if (localQuestion.question_html && !isEmptyHtml(localQuestion.question_html)) {
+                  if (
+                    localQuestion.question_html &&
+                    !isEmptyHtml(localQuestion.question_html)
+                  ) {
                     // HTML content exists and is not empty - render as HTML
                     return localQuestion.question_html
                   } else {
@@ -1774,7 +1801,12 @@ export function QuestionDisplay({
                 })()}
                 highlights={highlights}
                 onRemoveHighlight={onRemoveHighlight}
-                isHtml={!!(localQuestion.question_html && !isEmptyHtml(localQuestion.question_html))}
+                isHtml={
+                  !!(
+                    localQuestion.question_html &&
+                    !isEmptyHtml(localQuestion.question_html)
+                  )
+                }
               />
               {!isAdminPreview && questionContentRef && onAddHighlight && (
                 <FloatingHighlightButton

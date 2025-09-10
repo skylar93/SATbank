@@ -62,8 +62,16 @@ interface ExamState {
   currentQuestionStartTime: number // Track when current question was first viewed
 
   // Actions
-  initializeExam: (examId: string, userId: string, reviewForAttemptId?: string) => Promise<void>
-  initializeReviewMode: (examId: string, userId: string, reviewForAttemptId: string) => Promise<void>
+  initializeExam: (
+    examId: string,
+    userId: string,
+    reviewForAttemptId?: string
+  ) => Promise<void>
+  initializeReviewMode: (
+    examId: string,
+    userId: string,
+    reviewForAttemptId: string
+  ) => Promise<void>
   startExam: () => Promise<void>
   setLocalAnswer: (answer: string) => void
   saveModuleAnswers: () => Promise<void>
@@ -72,7 +80,12 @@ interface ExamState {
   goToQuestion: (questionIndex: number) => void
   nextModule: () => Promise<void>
   completeExam: () => Promise<void>
-  completeReviewSession: (originalAttemptId: string) => Promise<{ success: boolean; potentialScore?: number; originalScore?: number; improvement?: number }>
+  completeReviewSession: (originalAttemptId: string) => Promise<{
+    success: boolean
+    potentialScore?: number
+    originalScore?: number
+    improvement?: number
+  }>
   timeExpired: () => void
   handleTimeExpired: () => Promise<void>
   updateTimer: (remainingSeconds: number) => void
@@ -104,21 +117,21 @@ function debounce<T extends (...args: any[]) => any>(
   delay: number
 ): T & { cancel: () => void } {
   let timeoutId: NodeJS.Timeout | null = null
-  
+
   const debounced = ((...args: Parameters<T>) => {
     if (timeoutId) {
       clearTimeout(timeoutId)
     }
     timeoutId = setTimeout(() => func(...args), delay)
   }) as T & { cancel: () => void }
-  
+
   debounced.cancel = () => {
     if (timeoutId) {
       clearTimeout(timeoutId)
       timeoutId = null
     }
   }
-  
+
   return debounced
 }
 
@@ -133,7 +146,7 @@ interface SaveAnswerPayload {
 // Core function to save answer to database
 const saveAnswerToDB = async (payload: SaveAnswerPayload) => {
   console.log(`[AutoSave] Saving answer for question ${payload.questionId}`)
-  
+
   try {
     // Use ExamService.submitAnswer to maintain consistency with existing save logic
     await ExamService.submitAnswer({
@@ -142,9 +155,14 @@ const saveAnswerToDB = async (payload: SaveAnswerPayload) => {
       user_answer: payload.answer,
       time_spent_seconds: payload.timeSpent,
     })
-    console.log(`[AutoSave] ✅ Successfully saved answer for question ${payload.questionId}`)
+    console.log(
+      `[AutoSave] ✅ Successfully saved answer for question ${payload.questionId}`
+    )
   } catch (error) {
-    console.error(`[AutoSave] ❌ Failed to save answer for question ${payload.questionId}:`, error)
+    console.error(
+      `[AutoSave] ❌ Failed to save answer for question ${payload.questionId}:`,
+      error
+    )
     // Could implement retry logic here if needed
   }
 }
@@ -184,13 +202,19 @@ export const useExamStore = create<ExamState>((set, get) => ({
     set({ status: 'time_expired' })
   },
 
-  initializeExam: async (examId: string, userId: string, reviewForAttemptId?: string) => {
+  initializeExam: async (
+    examId: string,
+    userId: string,
+    reviewForAttemptId?: string
+  ) => {
     console.log(
       'initializeExam: Starting initialization for exam:',
       examId,
       'user:',
       userId,
-      reviewForAttemptId ? `(Review mode for attempt: ${reviewForAttemptId})` : '(Normal mode)'
+      reviewForAttemptId
+        ? `(Review mode for attempt: ${reviewForAttemptId})`
+        : '(Normal mode)'
     )
     set({ loading: true, error: null })
 
@@ -252,7 +276,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
       // Check if there's impersonation data
       const impersonationData = localStorage.getItem('impersonation_data')
       let targetUserId = userId
-      
+
       if (impersonationData) {
         try {
           const impersonationParsed = JSON.parse(impersonationData)
@@ -267,53 +291,71 @@ export const useExamStore = create<ExamState>((set, get) => ({
       // Use API route instead of server action for better reliability
       // First, ensure we have a fresh session
       console.log('initializeExam: Checking client session before API call...')
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-      
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession()
+
       console.log('initializeExam: Client session check:', {
         hasSession: !!session,
         sessionError,
         userEmail: session?.user?.email,
-        accessToken: session?.access_token ? 'present' : 'missing'
+        accessToken: session?.access_token ? 'present' : 'missing',
       })
-      
+
       if (sessionError) {
         console.error('initializeExam: Session error:', sessionError)
         // Try to refresh the session
-        const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession()
-        console.log('initializeExam: Refresh attempt:', { 
-          success: !!refreshedSession, 
-          error: refreshError 
+        const {
+          data: { session: refreshedSession },
+          error: refreshError,
+        } = await supabase.auth.refreshSession()
+        console.log('initializeExam: Refresh attempt:', {
+          success: !!refreshedSession,
+          error: refreshError,
         })
-        
+
         if (refreshError || !refreshedSession) {
           throw new Error('Authentication failed - please log in again')
         }
       }
-      
+
       if (!session) {
         console.error('initializeExam: No session found, attempting refresh...')
-        const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession()
-        
+        const {
+          data: { session: refreshedSession },
+          error: refreshError,
+        } = await supabase.auth.refreshSession()
+
         if (refreshError || !refreshedSession) {
-          throw new Error('Authentication required - please refresh the page and log in again')
+          throw new Error(
+            'Authentication required - please refresh the page and log in again'
+          )
         }
         console.log('initializeExam: Session refreshed successfully')
       }
 
-      console.log('initializeExam: Session validated before API call, user:', session?.user?.email || 'unknown')
+      console.log(
+        'initializeExam: Session validated before API call, user:',
+        session?.user?.email || 'unknown'
+      )
 
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
-      
+
       // Add Authorization header with access token
       if (session?.access_token) {
         headers['Authorization'] = `Bearer ${session.access_token}`
-        console.log('initializeExam: Added Authorization header with access token')
+        console.log(
+          'initializeExam: Added Authorization header with access token'
+        )
       } else {
-        console.warn('initializeExam: No access token available for Authorization header')
+        console.warn(
+          'initializeExam: No access token available for Authorization header'
+        )
       }
-      
+
       if (impersonationData) {
         headers['x-impersonation-data'] = impersonationData
       }
@@ -335,7 +377,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
       }
 
       const attempt = await response.json()
-      
+
       console.log('initializeExam: Test attempt created:', attempt.id)
 
       // Load questions for all modules
@@ -372,11 +414,18 @@ export const useExamStore = create<ExamState>((set, get) => ({
             timeRemaining: timeLimit * 60, // Convert to seconds
             completed: false,
           })
-          
-          console.log(`✅ initializeExam: Successfully added module ${moduleType} with ${questions.length} questions`)
+
+          console.log(
+            `✅ initializeExam: Successfully added module ${moduleType} with ${questions.length} questions`
+          )
         } catch (error: any) {
-          console.error(`❌ initializeExam: Error loading questions for module ${moduleType}:`, error)
-          throw new Error(`Failed to load questions for ${moduleType}: ${error.message}`)
+          console.error(
+            `❌ initializeExam: Error loading questions for module ${moduleType}:`,
+            error
+          )
+          throw new Error(
+            `Failed to load questions for ${moduleType}: ${error.message}`
+          )
         }
       }
 
@@ -426,9 +475,13 @@ export const useExamStore = create<ExamState>((set, get) => ({
     }
   },
 
-  initializeReviewMode: async (examId: string, userId: string, reviewForAttemptId: string) => {
+  initializeReviewMode: async (
+    examId: string,
+    userId: string,
+    reviewForAttemptId: string
+  ) => {
     console.log('initializeReviewMode: Starting review mode initialization')
-    
+
     try {
       // Get original exam details
       const exam = await ExamService.getExam(examId)
@@ -439,13 +492,16 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
       // Get incorrect questions for the original attempt
       console.log('initializeReviewMode: Fetching incorrect questions...')
-      const incorrectQuestions = await ExamService.getIncorrectQuestionsForAttempt(reviewForAttemptId)
-      
+      const incorrectQuestions =
+        await ExamService.getIncorrectQuestionsForAttempt(reviewForAttemptId)
+
       if (incorrectQuestions.length === 0) {
         throw new Error('No incorrect questions found for review')
       }
-      
-      console.log(`initializeReviewMode: Found ${incorrectQuestions.length} questions to review`)
+
+      console.log(
+        `initializeReviewMode: Found ${incorrectQuestions.length} questions to review`
+      )
 
       // Create a single "review" module containing all incorrect questions
       const reviewModule: ModuleState = {
@@ -501,7 +557,13 @@ export const useExamStore = create<ExamState>((set, get) => ({
   },
 
   setLocalAnswer: (answer: string) => {
-    const { attempt, status, modules, currentModuleIndex, currentQuestionStartTime } = get()
+    const {
+      attempt,
+      status,
+      modules,
+      currentModuleIndex,
+      currentQuestionStartTime,
+    } = get()
     if (!attempt || status !== 'in_progress') return
 
     const currentModule = modules[currentModuleIndex]
@@ -511,9 +573,10 @@ export const useExamStore = create<ExamState>((set, get) => ({
     if (!currentQuestion) return
 
     // Calculate time spent on this question
-    const timeSpentSeconds = currentQuestionStartTime > 0 
-      ? Math.round((Date.now() - currentQuestionStartTime) / 1000)
-      : 0
+    const timeSpentSeconds =
+      currentQuestionStartTime > 0
+        ? Math.round((Date.now() - currentQuestionStartTime) / 1000)
+        : 0
 
     // Update local state with calculated time
     const examAnswer: ExamAnswer = {
@@ -553,7 +616,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
     const currentModule = modules[currentModuleIndex]
 
     try {
-      console.log('[SaveModuleAnswers] Starting module completion save as safety fallback')
+      console.log(
+        '[SaveModuleAnswers] Starting module completion save as safety fallback'
+      )
       // Save all answers for this module (as safety fallback - most answers should already be saved via debounce)
       for (const [questionId, examAnswer] of Object.entries(
         currentModule.answers
@@ -635,9 +700,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
       currentQuestionIndex: nextQuestionIndex,
     }
 
-    set({ 
+    set({
       modules: newModules,
-      currentQuestionStartTime: Date.now() // Reset timer for new question
+      currentQuestionStartTime: Date.now(), // Reset timer for new question
     })
   },
 
@@ -660,9 +725,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
       currentQuestionIndex: prevQuestionIndex,
     }
 
-    set({ 
+    set({
       modules: newModules,
-      currentQuestionStartTime: Date.now() // Reset timer for new question
+      currentQuestionStartTime: Date.now(), // Reset timer for new question
     })
   },
 
@@ -684,9 +749,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
       currentQuestionIndex: questionIndex,
     }
 
-    set({ 
+    set({
       modules: newModules,
-      currentQuestionStartTime: Date.now() // Reset timer for new question
+      currentQuestionStartTime: Date.now(), // Reset timer for new question
     })
   },
 
@@ -750,29 +815,33 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
   completeReviewSession: async (originalAttemptId: string) => {
     console.log('🎯 Starting review session completion process...')
-    
+
     const { modules } = get()
     if (modules.length === 0) {
       throw new Error('No review modules found')
     }
 
     const reviewModule = modules[0] // Review mode has only one module
-    
+
     try {
       // Collect all answers from the review session
-      const newAnswers = Object.entries(reviewModule.answers).map(([questionId, examAnswer]) => ({
-        questionId,
-        answer: examAnswer.answer
-      }))
+      const newAnswers = Object.entries(reviewModule.answers).map(
+        ([questionId, examAnswer]) => ({
+          questionId,
+          answer: examAnswer.answer,
+        })
+      )
 
-      console.log(`🚀 Calling calculate-potential-score Server Action for ${newAnswers.length} answers`)
+      console.log(
+        `🚀 Calling calculate-potential-score Server Action for ${newAnswers.length} answers`
+      )
 
       // Call the Server Action - much simpler and more reliable than Edge Function
       const { calculatePotentialScore } = await import('@/lib/exam-actions')
-      
+
       const result = await calculatePotentialScore({
         originalAttemptId,
-        newAnswers
+        newAnswers,
       })
 
       if (!result.success) {
@@ -789,15 +858,15 @@ export const useExamStore = create<ExamState>((set, get) => ({
         finalScores: {
           overall: result.potentialScore || 0,
           english: 0, // Not applicable for review mode
-          math: 0,    // Not applicable for review mode
-        }
+          math: 0, // Not applicable for review mode
+        },
       })
 
       return {
         success: true,
         potentialScore: result.potentialScore,
         originalScore: result.originalScore,
-        improvement: result.improvement
+        improvement: result.improvement,
       }
     } catch (err: any) {
       console.error('💥 Complete review session error:', err)
@@ -831,7 +900,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
     try {
       // Note: Answers are now saved in real-time via debounce, so no need for bulk save here
-      console.log('Real-time saving ensures answers are already saved, proceeding to next module...')
+      console.log(
+        'Real-time saving ensures answers are already saved, proceeding to next module...'
+      )
 
       if (nextModuleIndex >= modules.length) {
         // Complete exam
@@ -1168,18 +1239,24 @@ export const useExamStore = create<ExamState>((set, get) => ({
       await ExamService.deleteTestAttempt(existingAttempt.id)
 
       // Get current session for Authorization header
-      const { data: { session } } = await supabase.auth.getSession()
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
-      
+
       // Add Authorization header with access token
       if (session?.access_token) {
         headers['Authorization'] = `Bearer ${session.access_token}`
-        console.log('discardAndStartNew: Added Authorization header with access token')
+        console.log(
+          'discardAndStartNew: Added Authorization header with access token'
+        )
       } else {
-        console.warn('discardAndStartNew: No access token available for Authorization header')
+        console.warn(
+          'discardAndStartNew: No access token available for Authorization header'
+        )
       }
 
       // Create new test attempt
@@ -1327,7 +1404,14 @@ export const useExamStore = create<ExamState>((set, get) => ({
   },
 
   saveCurrentAnswerImmediately: async () => {
-    const { attempt, status, modules, currentModuleIndex, getCurrentQuestion, currentQuestionStartTime } = get()
+    const {
+      attempt,
+      status,
+      modules,
+      currentModuleIndex,
+      getCurrentQuestion,
+      currentQuestionStartTime,
+    } = get()
     if (!attempt || status !== 'in_progress') return
 
     const currentModule = modules[currentModuleIndex]
@@ -1338,9 +1422,10 @@ export const useExamStore = create<ExamState>((set, get) => ({
     if (!currentAnswer || !currentAnswer.trim()) return
 
     // Calculate time spent
-    const timeSpentSeconds = currentQuestionStartTime > 0 
-      ? Math.round((Date.now() - currentQuestionStartTime) / 1000)
-      : 0
+    const timeSpentSeconds =
+      currentQuestionStartTime > 0
+        ? Math.round((Date.now() - currentQuestionStartTime) / 1000)
+        : 0
 
     try {
       await saveAnswerImmediately({
@@ -1350,7 +1435,10 @@ export const useExamStore = create<ExamState>((set, get) => ({
         timeSpent: timeSpentSeconds,
       })
     } catch (error) {
-      console.error('[SaveCurrentAnswerImmediately] Failed to save answer:', error)
+      console.error(
+        '[SaveCurrentAnswerImmediately] Failed to save answer:',
+        error
+      )
     }
   },
 }))

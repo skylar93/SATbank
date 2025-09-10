@@ -55,14 +55,16 @@ export default function SecondChanceReviewPage() {
       // Get original attempt info
       const { data: attempt, error: attemptError } = await supabase
         .from('test_attempts')
-        .select(`
+        .select(
+          `
           id,
           exam_id,
           total_score,
           completed_at,
           review_attempt_taken,
           exams!inner (title)
-        `)
+        `
+        )
         .eq('id', attemptId)
         .eq('user_id', user!.id)
         .single()
@@ -78,18 +80,20 @@ export default function SecondChanceReviewPage() {
         exam_id: attempt.exam_id,
         total_score: attempt.total_score,
         completed_at: attempt.completed_at,
-        exam_title: (attempt.exams as any).title
+        exam_title: (attempt.exams as any).title,
       })
 
       // Get all incorrect questions with original answers
       const { data: incorrectAnswers, error: answersError } = await supabase
         .from('user_answers')
-        .select(`
+        .select(
+          `
           question_id,
           user_answer,
           is_correct,
           questions!inner (*)
-        `)
+        `
+        )
         .eq('attempt_id', attemptId)
         .eq('is_correct', false)
         .order('questions.module_type')
@@ -97,11 +101,13 @@ export default function SecondChanceReviewPage() {
 
       if (answersError) throw answersError
 
-      const reviewQuestions: QuestionReview[] = incorrectAnswers.map((answer: any) => ({
-        ...answer.questions,
-        originalAnswer: answer.user_answer,
-        wasOriginallyCorrect: answer.is_correct
-      }))
+      const reviewQuestions: QuestionReview[] = incorrectAnswers.map(
+        (answer: any) => ({
+          ...answer.questions,
+          originalAnswer: answer.user_answer,
+          wasOriginallyCorrect: answer.is_correct,
+        })
+      )
 
       setQuestions(reviewQuestions)
     } catch (err: any) {
@@ -176,7 +182,8 @@ export default function SecondChanceReviewPage() {
                 Second Chance Review Complete! 🎉
               </h1>
               <p className="text-gray-600">
-                You've now seen the correct answers and explanations for your mistakes
+                You've now seen the correct answers and explanations for your
+                mistakes
               </p>
             </div>
             <Link
@@ -207,10 +214,12 @@ export default function SecondChanceReviewPage() {
                 Great Learning Experience!
               </h3>
               <p className="text-gray-600 text-sm">
-                You've completed your second chance review. The answers and explanations below will help you understand your mistakes.
+                You've completed your second chance review. The answers and
+                explanations below will help you understand your mistakes.
                 <br />
                 <span className="text-amber-700 font-medium">
-                  Note: This review does not affect your official score or mistake bank.
+                  Note: This review does not affect your official score or
+                  mistake bank.
                 </span>
               </p>
             </div>
@@ -224,7 +233,8 @@ export default function SecondChanceReviewPage() {
               📚 Complete Question Review ({questions.length} questions)
             </h3>
             <p className="text-gray-600 mt-1">
-              Review each question with your original answer, correct answer, and detailed explanations
+              Review each question with your original answer, correct answer,
+              and detailed explanations
             </p>
           </div>
 
@@ -241,20 +251,22 @@ export default function SecondChanceReviewPage() {
                     </div>
                     <div>
                       <div className="font-medium text-gray-900">
-                        Question {question.question_number} - {getModuleDisplayName(question.module_type)}
+                        Question {question.question_number} -{' '}
+                        {getModuleDisplayName(question.module_type)}
                       </div>
-                      {question.topic_tags && question.topic_tags.length > 0 && (
-                        <div className="flex gap-1 mt-1">
-                          {question.topic_tags.map((tag, tagIndex) => (
-                            <span
-                              key={tagIndex}
-                              className="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
+                      {question.topic_tags &&
+                        question.topic_tags.length > 0 && (
+                          <div className="flex gap-1 mt-1">
+                            {question.topic_tags.map((tag, tagIndex) => (
+                              <span
+                                key={tagIndex}
+                                className="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                     </div>
                   </div>
                 </div>
@@ -263,14 +275,18 @@ export default function SecondChanceReviewPage() {
                 <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200">
                   <h4 className="font-medium text-gray-900 mb-2">Question:</h4>
                   {question.question_html ? (
-                    <div dangerouslySetInnerHTML={{ __html: question.question_html }} />
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: question.question_html,
+                      }}
+                    />
                   ) : (
                     <p className="text-gray-800">{question.question_text}</p>
                   )}
                   {question.question_image_url && (
-                    <img 
-                      src={question.question_image_url} 
-                      alt="Question image" 
+                    <img
+                      src={question.question_image_url}
+                      alt="Question image"
                       className="mt-3 max-w-full h-auto rounded"
                     />
                   )}
@@ -279,11 +295,16 @@ export default function SecondChanceReviewPage() {
                 {/* Options (if multiple choice) */}
                 {question.options && (
                   <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200">
-                    <h4 className="font-medium text-gray-900 mb-2">Answer Choices:</h4>
+                    <h4 className="font-medium text-gray-900 mb-2">
+                      Answer Choices:
+                    </h4>
                     <div className="grid grid-cols-1 gap-2">
-                      {Object.entries(question.options_html || question.options).map(([key, value]) => (
+                      {Object.entries(
+                        question.options_html || question.options
+                      ).map(([key, value]) => (
                         <div key={key} className="text-gray-700">
-                          <strong>{key}.</strong> {question.options_html ? (
+                          <strong>{key}.</strong>{' '}
+                          {question.options_html ? (
                             <span dangerouslySetInnerHTML={{ __html: value }} />
                           ) : (
                             value
@@ -297,13 +318,17 @@ export default function SecondChanceReviewPage() {
                 {/* Answer Comparison */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div className="p-4 bg-red-50 rounded-lg border border-red-200">
-                    <h4 className="font-medium text-red-800 mb-2">Your Original Answer:</h4>
+                    <h4 className="font-medium text-red-800 mb-2">
+                      Your Original Answer:
+                    </h4>
                     <div className="text-red-700 font-medium">
                       {question.originalAnswer || 'No answer'}
                     </div>
                   </div>
                   <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                    <h4 className="font-medium text-green-800 mb-2">Correct Answer:</h4>
+                    <h4 className="font-medium text-green-800 mb-2">
+                      Correct Answer:
+                    </h4>
                     <div className="text-green-700 font-medium">
                       {Array.isArray(question.correct_answers)
                         ? question.correct_answers.join(', ')
@@ -315,11 +340,15 @@ export default function SecondChanceReviewPage() {
                 {/* Explanation */}
                 {question.explanation && (
                   <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <h4 className="font-medium text-blue-800 mb-2">Explanation:</h4>
+                    <h4 className="font-medium text-blue-800 mb-2">
+                      Explanation:
+                    </h4>
                     {question.explanation_html ? (
-                      <div 
-                        className="text-blue-700" 
-                        dangerouslySetInnerHTML={{ __html: question.explanation_html }} 
+                      <div
+                        className="text-blue-700"
+                        dangerouslySetInnerHTML={{
+                          __html: question.explanation_html,
+                        }}
                       />
                     ) : (
                       <p className="text-blue-700">{question.explanation}</p>

@@ -30,15 +30,28 @@ export async function POST(request: NextRequest) {
             .single()
 
           if (profileError || !userProfile || userProfile.role !== 'admin') {
-            return NextResponse.json({ error: 'Unauthorized: Admin access required for impersonation' }, { status: 401 })
+            return NextResponse.json(
+              {
+                error: 'Unauthorized: Admin access required for impersonation',
+              },
+              { status: 401 }
+            )
           }
 
           targetUserId = impersonationData.target_user.id
-          console.log('API: Admin', user.email, 'submitting answer for impersonated user:', targetUserId)
+          console.log(
+            'API: Admin',
+            user.email,
+            'submitting answer for impersonated user:',
+            targetUserId
+          )
         }
       } catch (error) {
         console.error('Failed to parse impersonation data:', error)
-        return NextResponse.json({ error: 'Invalid impersonation data' }, { status: 400 })
+        return NextResponse.json(
+          { error: 'Invalid impersonation data' },
+          { status: 400 }
+        )
       }
     }
 
@@ -51,11 +64,17 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (attemptError || !attemptData) {
-      return NextResponse.json({ error: 'Test attempt not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Test attempt not found' },
+        { status: 404 }
+      )
     }
 
     if (attemptData.user_id !== targetUserId) {
-      return NextResponse.json({ error: 'Unauthorized: Test attempt does not belong to user' }, { status: 403 })
+      return NextResponse.json(
+        { error: 'Unauthorized: Test attempt does not belong to user' },
+        { status: 403 }
+      )
     }
 
     const { data, error } = await supabase

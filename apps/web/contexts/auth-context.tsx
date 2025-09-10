@@ -75,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for impersonation changes via storage events
     const handleStorageChange = (e: StorageEvent) => {
       if (!isMounted || e.key !== 'impersonation_data') return
-      
+
       const impersonationUser = getImpersonationUser()
       if (impersonationUser) {
         setUser(impersonationUser)
@@ -90,7 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribeFromStateManager = authStateManager.subscribe(
       async (stateChangedUser) => {
         if (!isMounted) return
-        
+
         // Check for impersonation first, it takes precedence
         const impersonationUser = getImpersonationUser()
         if (impersonationUser) {
@@ -156,15 +156,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Immediately try to get user data
       const currentUser = await AuthService.getCurrentUser()
-      
+
       if (!currentUser) {
-        throw new Error("Login succeeded but failed to fetch user data.")
+        throw new Error('Login succeeded but failed to fetch user data.')
       }
 
       setUser(currentUser)
       setLoading(false)
       return currentUser
-
     } catch (err: any) {
       setError(err.message)
       setLoading(false)

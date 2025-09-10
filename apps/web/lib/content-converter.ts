@@ -1,24 +1,24 @@
-import { marked } from 'marked';
-import TurndownService from 'turndown';
+import { marked } from 'marked'
+import TurndownService from 'turndown'
 
 // Configure marked with custom options for consistent rendering
 marked.setOptions({
   breaks: true, // Convert line breaks to <br> tags
-  gfm: true,    // Enable GitHub Flavored Markdown
-});
+  gfm: true, // Enable GitHub Flavored Markdown
+})
 
 // Configure TurndownService with custom options
 const turndownService = new TurndownService({
   headingStyle: 'atx',
   bulletListMarker: '-',
   codeBlockStyle: 'fenced',
-});
+})
 
 // Add custom rules for better conversion
 turndownService.addRule('preserveLineBreaks', {
   filter: 'br',
-  replacement: () => '\n\n'
-});
+  replacement: () => '\n\n',
+})
 
 /**
  * Converts markdown text to HTML
@@ -27,15 +27,15 @@ turndownService.addRule('preserveLineBreaks', {
  */
 export function markdownToHtml(markdown: string): string {
   if (!markdown || markdown.trim() === '') {
-    return '<p></p>';
+    return '<p></p>'
   }
-  
+
   try {
-    const html = marked.parse(markdown);
-    return typeof html === 'string' ? html : html.toString();
+    const html = marked.parse(markdown)
+    return typeof html === 'string' ? html : html.toString()
   } catch (error) {
-    console.error('Error converting markdown to HTML:', error);
-    return `<p>Error converting content: ${markdown}</p>`;
+    console.error('Error converting markdown to HTML:', error)
+    return `<p>Error converting content: ${markdown}</p>`
   }
 }
 
@@ -46,14 +46,14 @@ export function markdownToHtml(markdown: string): string {
  */
 export function htmlToMarkdown(html: string): string {
   if (!html || html.trim() === '' || html.trim() === '<p></p>') {
-    return '';
+    return ''
   }
-  
+
   try {
-    return turndownService.turndown(html);
+    return turndownService.turndown(html)
   } catch (error) {
-    console.error('Error converting HTML to markdown:', error);
-    return `Error converting content: ${html}`;
+    console.error('Error converting HTML to markdown:', error)
+    return `Error converting content: ${html}`
   }
 }
 
@@ -66,7 +66,7 @@ export function sanitizeContent(content: string): string {
   return content
     .replace(/<p><\/p>/g, '') // Remove empty paragraphs
     .replace(/^\s+|\s+$/g, '') // Trim whitespace
-    .replace(/\n{3,}/g, '\n\n'); // Limit consecutive newlines
+    .replace(/\n{3,}/g, '\n\n') // Limit consecutive newlines
 }
 
 /**
@@ -75,11 +75,11 @@ export function sanitizeContent(content: string): string {
  * @returns true if content is empty or only contains empty tags
  */
 export function isEmptyHtml(html: string): boolean {
-  if (!html || html.trim() === '') return true;
-  
+  if (!html || html.trim() === '') return true
+
   // Remove all HTML tags and check if any text remains
-  const textContent = html.replace(/<[^>]*>/g, '').trim();
-  return textContent === '';
+  const textContent = html.replace(/<[^>]*>/g, '').trim()
+  return textContent === ''
 }
 
 /**
@@ -88,5 +88,5 @@ export function isEmptyHtml(html: string): boolean {
  * @returns true if content is empty
  */
 export function isEmptyMarkdown(markdown: string): boolean {
-  return !markdown || markdown.trim() === '';
+  return !markdown || markdown.trim() === ''
 }

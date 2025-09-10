@@ -1,7 +1,13 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
 import { useExamStore } from '@/store/exam-store'
 import { supabase } from '@/lib/supabase'
-import { setupTestData, cleanupTestData, signInAsTestUser, getCorrectAnswerForQuestion, type TestData } from './test-utils'
+import {
+  setupTestData,
+  cleanupTestData,
+  signInAsTestUser,
+  getCorrectAnswerForQuestion,
+  type TestData,
+} from './test-utils'
 
 describe('Exam Submission Integration Test', () => {
   let testData: TestData
@@ -28,7 +34,7 @@ describe('Exam Submission Integration Test', () => {
 
     // 1. Initialize the exam
     await store.initializeExam(testData.exam.id, testData.user.id)
-    
+
     // Verify exam initialization
     expect(store.exam).not.toBeNull()
     expect(store.exam?.id).toBe(testData.exam.id)
@@ -43,24 +49,34 @@ describe('Exam Submission Integration Test', () => {
     const attemptId = store.attempt!.id
 
     // 3. Answer questions in each module
-    for (let moduleIndex = 0; moduleIndex < store.modules.length; moduleIndex++) {
+    for (
+      let moduleIndex = 0;
+      moduleIndex < store.modules.length;
+      moduleIndex++
+    ) {
       const currentModule = store.modules[moduleIndex]
-      console.log(`Testing module: ${currentModule.module} with ${currentModule.questions.length} questions`)
+      console.log(
+        `Testing module: ${currentModule.module} with ${currentModule.questions.length} questions`
+      )
 
       // Answer all questions in the current module
-      for (let questionIndex = 0; questionIndex < currentModule.questions.length; questionIndex++) {
+      for (
+        let questionIndex = 0;
+        questionIndex < currentModule.questions.length;
+        questionIndex++
+      ) {
         // Navigate to the specific question
         store.goToQuestion(questionIndex)
-        
+
         const currentQuestion = store.getCurrentQuestion()
         expect(currentQuestion).not.toBeNull()
-        
+
         // Get the correct answer for this question
         const correctAnswer = getCorrectAnswerForQuestion(currentQuestion!)
-        
+
         // Set the answer
         store.setLocalAnswer(correctAnswer)
-        
+
         // Verify answer was set
         expect(store.getCurrentAnswer()).toBe(correctAnswer)
       }
@@ -107,15 +123,15 @@ describe('Exam Submission Integration Test', () => {
 
     expect(answersError).toBeNull()
     expect(userAnswers).not.toBeNull()
-    
+
     // Should have answers for all questions across all modules
-    const totalQuestions = Object.values(testData.questions)
-      .flat()
-      .length
+    const totalQuestions = Object.values(testData.questions).flat().length
     expect(userAnswers!.length).toBe(totalQuestions)
 
     // All answers should be marked as correct
-    const correctAnswersCount = userAnswers!.filter(answer => answer.is_correct).length
+    const correctAnswersCount = userAnswers!.filter(
+      (answer) => answer.is_correct
+    ).length
     expect(correctAnswersCount).toBe(totalQuestions)
   }, 60000) // Increase timeout for this comprehensive test
 
@@ -174,7 +190,7 @@ describe('Exam Submission Integration Test', () => {
 
     // Handle the expiration (this should advance to next module or complete exam)
     await store.handleTimeExpired()
-    
+
     // Since it's the first module, it should advance to the next module
     if (store.modules.length > 1) {
       expect(store.currentModuleIndex).toBe(1)

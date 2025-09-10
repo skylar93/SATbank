@@ -27,12 +27,16 @@ export function insertMath(editor: any, math: string, inline: boolean = true) {
     console.log('Block math not implemented yet')
     return
   }
-  
+
   const cleanMath = cleanLatex(math)
 
   // Insert using our custom mathInline node instead of HTML
-  editor.chain().focus().insertContent({
-    type: 'mathInline',
-    attrs: { 'data-math': cleanMath },
-  }).run()
+  editor
+    .chain()
+    .focus()
+    .insertContent({
+      type: 'mathInline',
+      attrs: { 'data-math': cleanMath },
+    })
+    .run()
 }

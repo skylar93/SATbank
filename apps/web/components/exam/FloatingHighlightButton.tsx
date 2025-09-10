@@ -82,35 +82,38 @@ export default function FloatingHighlightButton({
       const buttonWidth = 40
       const buttonHeight = 40
       const offset = 8
-      
+
       // Get the cursor position (end of selection)
       const tempRange = document.createRange()
       tempRange.setStart(range.endContainer, range.endOffset)
       tempRange.setEnd(range.endContainer, range.endOffset)
       const cursorRect = tempRange.getBoundingClientRect()
-      
+
       const containerWidth = containerElement.offsetWidth
       const containerHeight = containerElement.offsetHeight
-      
+
       // Default position: right and below the cursor
       let buttonX = cursorRect.right - containerRect.left + offset
       let buttonY = rect.bottom - containerRect.top + offset
-      
+
       // Simple horizontal boundary check
       if (buttonX + buttonWidth > containerWidth) {
         // Position to the left of selection if no space on the right
         buttonX = rect.left - containerRect.left - buttonWidth - offset
       }
-      
+
       // Simple vertical boundary check - only move up if absolutely necessary
       if (buttonY + buttonHeight > containerHeight) {
         // Only move above selection if there's no other choice
         buttonY = rect.top - containerRect.top - buttonHeight - offset
       }
-      
+
       // Final boundary enforcement (keep within container)
       buttonX = Math.max(5, Math.min(buttonX, containerWidth - buttonWidth - 5))
-      buttonY = Math.max(5, Math.min(buttonY, containerHeight - buttonHeight - 5))
+      buttonY = Math.max(
+        5,
+        Math.min(buttonY, containerHeight - buttonHeight - 5)
+      )
 
       setPosition({
         x: buttonX,
@@ -127,7 +130,7 @@ export default function FloatingHighlightButton({
       if (buttonRef.current && buttonRef.current.contains(e.target as Node)) {
         return
       }
-      
+
       // Give user more time to move to the button
       hideTimeoutRef.current = setTimeout(() => {
         if (!isHoveringRef.current) {
@@ -142,9 +145,9 @@ export default function FloatingHighlightButton({
         const buttonRect = buttonRef.current.getBoundingClientRect()
         const distance = Math.sqrt(
           Math.pow(e.clientX - (buttonRect.left + buttonRect.width / 2), 2) +
-          Math.pow(e.clientY - (buttonRect.top + buttonRect.height / 2), 2)
+            Math.pow(e.clientY - (buttonRect.top + buttonRect.height / 2), 2)
         )
-        
+
         // If user is close to button (within 50px), keep it visible
         if (distance < 50 && hideTimeoutRef.current) {
           clearTimeout(hideTimeoutRef.current)

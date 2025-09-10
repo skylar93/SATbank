@@ -6,6 +6,7 @@ import { QuestionDisplay } from './question-display'
 import { ExamNavigation } from './exam-navigation'
 import { ReferenceSheetModal } from './ReferenceSheetModal'
 import { TimeExpiredOverlay } from './TimeExpiredOverlay'
+import { SelectionBubbleMenu } from './SelectionBubbleMenu'
 import { ModuleType } from '../../lib/exam-service'
 
 interface ExamInterfaceProps {
@@ -106,14 +107,17 @@ export function ExamInterface({
               onClick={onExitAttempt}
               className="text-gray-500 hover:text-gray-700 text-sm"
             >
-              ← {exam.title.includes('Practice') ? 'Exit Practice' : 'Exit Exam'}
+              ←{' '}
+              {exam.title.includes('Practice') ? 'Exit Practice' : 'Exit Exam'}
             </button>
             <ReferenceSheetModal />
             <h1 className="text-xl font-semibold text-gray-900">
               {exam.title}
             </h1>
             <span className="text-sm text-gray-500">
-              {(currentModule.module as string) === 'practice' ? 'Practice Mode' : currentModule.module.replace(/(\d)/, ' $1').toUpperCase()}
+              {(currentModule.module as string) === 'practice'
+                ? 'Practice Mode'
+                : currentModule.module.replace(/(\d)/, ' $1').toUpperCase()}
             </span>
           </div>
 
@@ -158,7 +162,9 @@ export function ExamInterface({
           onTryAgain={onTryAgain}
           showCorrectAnswer={shouldShowCorrectAnswer}
           module={currentModule.module}
-          isPaused={status !== 'in_progress' || (timeExpiredRef.current ?? false)}
+          isPaused={
+            status !== 'in_progress' || (timeExpiredRef.current ?? false)
+          }
         />
       </div>
 
@@ -187,6 +193,17 @@ export function ExamInterface({
           isLastModule={currentModuleIndex >= modules.length - 1}
         />
       )}
+
+      {/* Selection Bubble Menu for Vocabulary */}
+      <SelectionBubbleMenu
+        examTitle={exam.title}
+        examId={exam.id}
+        onHighlight={(text, range) => {
+          // Integrate with existing highlight functionality if needed
+          // This connects the vocabulary bubble menu with the existing highlighting system
+          console.log('Text selected for highlighting:', text)
+        }}
+      />
     </div>
   )
 }

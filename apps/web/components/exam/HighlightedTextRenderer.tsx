@@ -1,5 +1,8 @@
 'use client'
-import { renderHtmlContent, renderTextWithFormattingAndMath } from './question-display'
+import {
+  renderHtmlContent,
+  renderTextWithFormattingAndMath,
+} from './question-display'
 
 interface Highlight {
   start: number
@@ -22,7 +25,11 @@ export function HighlightedTextRenderer({
 }: Props) {
   // If no highlights, render as HTML or markdown based on flag
   if (!highlights || highlights.length === 0) {
-    return isHtml ? renderHtmlContent(text) : <>{renderTextWithFormattingAndMath(text)}</>
+    return isHtml ? (
+      renderHtmlContent(text)
+    ) : (
+      <>{renderTextWithFormattingAndMath(text)}</>
+    )
   }
 
   // For now, if content is HTML and has highlights, fall back to simple HTML rendering

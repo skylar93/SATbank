@@ -1,7 +1,12 @@
 'use server'
 
 import { supabase } from '../supabase'
-import { markdownToHtml, htmlToMarkdown, isEmptyHtml, isEmptyMarkdown } from '../content-converter'
+import {
+  markdownToHtml,
+  htmlToMarkdown,
+  isEmptyHtml,
+  isEmptyMarkdown,
+} from '../content-converter'
 
 interface UpdateQuestionData {
   id: string
@@ -14,7 +19,7 @@ interface UpdateQuestionData {
   explanation?: string | null
   table_data?: any
   content_format: 'markdown' | 'html'
-  content: string  // The content from the active editor
+  content: string // The content from the active editor
 }
 
 export async function updateQuestionWithDualFormat(data: UpdateQuestionData) {
@@ -56,13 +61,13 @@ export async function updateQuestionWithDualFormat(data: UpdateQuestionData) {
     // Update the question in the database
     console.log('🔍 Attempting to update question with ID:', data.id)
     console.log('🔍 Update data:', updateData)
-    
+
     const { data: result, error } = await supabase
       .from('questions')
       .update(updateData)
       .eq('id', data.id)
       .select()
-      
+
     console.log('🔍 Supabase result:', result)
     console.log('🔍 Supabase error:', error)
 
@@ -83,14 +88,14 @@ export async function updateQuestionWithDualFormat(data: UpdateQuestionData) {
     return {
       success: true,
       data: result[0],
-      error: null
+      error: null,
     }
   } catch (error) {
     console.error('❌ Unexpected error updating question:', error)
     return {
       success: false,
       data: null,
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : String(error),
     }
   }
 }
