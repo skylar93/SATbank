@@ -12,6 +12,16 @@ import { ReferenceSheetModal } from '../../../../../components/exam/ReferenceShe
 import { TimeExpiredOverlay } from '../../../../../components/exam/TimeExpiredOverlay'
 import { SelectionBubbleMenu } from '../../../../../components/exam/SelectionBubbleMenu'
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '../../../../../components/ui/dialog'
+import { Button } from '../../../../../components/ui/button'
+import { Card, CardContent } from '../../../../../components/ui/card'
+import {
   AcademicCapIcon,
   BookOpenIcon,
   ClockIcon,
@@ -258,7 +268,6 @@ function ExamPageContent() {
       }
     }
   }
-
 
   // Handle timer expiration with immediate state change
   const handleTimeExpired = useCallback(() => {
@@ -548,70 +557,90 @@ function ExamPageContent() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="flex items-center justify-center min-h-screen">
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-lg mx-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                {existingAttempt.status === 'expired'
-                  ? 'Previous Exam Attempt Found'
-                  : 'Existing Exam Attempt Found'}
-              </h3>
-              <p className="text-gray-600 mb-4">
-                {existingAttempt.status === 'expired'
-                  ? 'You have a previous exam attempt that was not completed. You can continue from where you left off or start fresh:'
-                  : 'You already have an ongoing exam attempt for this test. You can either:'}
-              </p>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <h4 className="font-medium text-blue-900 mb-2">
-                  Current attempt details:
-                </h4>
-                <ul className="text-sm text-blue-800 space-y-1">
-                  <li>
-                    • Status:{' '}
-                    {existingAttempt.status.replace('_', ' ').toUpperCase()}
-                  </li>
-                  <li>
-                    • Current Module:{' '}
-                    {existingAttempt.current_module
-                      ?.replace(/(\d)/, ' $1')
-                      .toUpperCase()}
-                  </li>
-                  {existingAttempt.started_at && (
-                    <li>
-                      • Started:{' '}
-                      {new Date(existingAttempt.started_at).toLocaleString()}
+          <Dialog open={showConflictModal} onOpenChange={() => closeConflictModal(router)}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>
+                  {existingAttempt.status === 'expired'
+                    ? 'Previous Exam Attempt Found'
+                    : 'Existing Exam Attempt Found'}
+                </DialogTitle>
+                <DialogDescription>
+                  {existingAttempt.status === 'expired'
+                    ? 'You have a previous exam attempt that was not completed. You can continue from where you left off or start fresh.'
+                    : 'You already have an ongoing exam attempt for this test. You can either:'}
+                </DialogDescription>
+              </DialogHeader>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <h4 className="font-medium text-sm text-foreground mb-3">
+                    Current attempt details:
+                  </h4>
+                  <ul className="text-sm text-muted-foreground space-y-2">
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                      Status:{' '}
+                      <span className="font-medium">
+                        {existingAttempt.status.replace('_', ' ').toUpperCase()}
+                      </span>
                     </li>
-                  )}
-                </ul>
-              </div>
-              <div className="flex space-x-4">
-                <button
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                      Current Module:{' '}
+                      <span className="font-medium">
+                        {existingAttempt.current_module
+                          ?.replace(/(\d)/, ' $1')
+                          .toUpperCase()}
+                      </span>
+                    </li>
+                    {existingAttempt.started_at && (
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                        Started:{' '}
+                        <span className="font-medium">
+                          {new Date(existingAttempt.started_at).toLocaleString()}
+                        </span>
+                      </li>
+                    )}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <DialogFooter className="flex-col sm:flex-col gap-2">
+                <Button
                   onClick={continueExistingAttempt}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
                   disabled={loading}
+                  size="lg"
+                  className="w-full"
                 >
                   {loading
                     ? 'Loading...'
                     : existingAttempt.status === 'expired'
                       ? 'Continue from Previous Attempt'
                       : 'Continue Existing Attempt'}
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => user && discardAndStartNew(user.id)}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
                   disabled={loading}
+                  variant="destructive"
+                  size="lg"
+                  className="w-full"
                 >
                   {loading ? 'Loading...' : 'Discard & Start New'}
-                </button>
-              </div>
-              <button
-                onClick={() => closeConflictModal(router)}
-                className="w-full mt-3 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition-colors"
-                disabled={loading}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+                </Button>
+                <Button
+                  onClick={() => closeConflictModal(router)}
+                  disabled={loading}
+                  variant="outline"
+                  size="lg"
+                  className="w-full"
+                >
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     )
@@ -1010,38 +1039,38 @@ function ExamPageContent() {
       />
 
       {/* Exit Confirmation Modal */}
-      {showExitConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Exit Exam?
-            </h3>
-            <p className="text-gray-600 mb-6">
+      <Dialog open={showExitConfirm} onOpenChange={handleCancelExit}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Exit Exam?</DialogTitle>
+            <DialogDescription>
               Your progress has been automatically saved. You can resume this
               exam later from where you left off.
-            </p>
-            <div className="flex space-x-4">
-              <button
-                onClick={handleCancelExit}
-                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition-colors"
-              >
-                Continue Exam
-              </button>
-              <button
-                onClick={(e) => {
-                  console.log('🚪 Exit Anyway button clicked')
-                  e.preventDefault()
-                  e.stopPropagation()
-                  handleConfirmExit()
-                }}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Exit Exam
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              onClick={handleCancelExit}
+              variant="outline"
+              className="w-full"
+            >
+              Continue Exam
+            </Button>
+            <Button
+              onClick={(e) => {
+                console.log('🚪 Exit Anyway button clicked')
+                e.preventDefault()
+                e.stopPropagation()
+                handleConfirmExit()
+              }}
+              variant="destructive"
+              className="w-full"
+            >
+              Exit Exam
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

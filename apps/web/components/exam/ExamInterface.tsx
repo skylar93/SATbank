@@ -165,6 +165,8 @@ export function ExamInterface({
           isPaused={
             status !== 'in_progress' || (timeExpiredRef.current ?? false)
           }
+          examTitle={exam.title}
+          examId={exam.id}
         />
       </div>
 
@@ -194,8 +196,8 @@ export function ExamInterface({
         />
       )}
 
-      {/* Selection Bubble Menu for Vocabulary */}
-      <SelectionBubbleMenu
+      {/* Selection Bubble Menu for Vocabulary - TEMPORARILY DISABLED */}
+      {/* <SelectionBubbleMenu
         examTitle={exam.title}
         examId={exam.id}
         onHighlight={(text, range) => {
@@ -216,7 +218,7 @@ export function ExamInterface({
           }
           addHighlight(currentQuestion.id, highlight)
         }}
-      />
+      /> */}
     </div>
   )
 }

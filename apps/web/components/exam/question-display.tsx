@@ -364,6 +364,8 @@ interface QuestionDisplayProps {
   showCorrectAnswer?: boolean
   module?: Question['module_type']
   isPaused?: boolean
+  examTitle?: string
+  examId?: string
 }
 
 // Helper function to parse correct answers for grid-in questions
@@ -465,6 +467,8 @@ export function QuestionDisplay({
   showCorrectAnswer = true,
   module,
   isPaused = false,
+  examTitle,
+  examId,
 }: QuestionDisplayProps) {
   // Early return if question is not provided
   if (!question) {
@@ -1812,6 +1816,8 @@ export function QuestionDisplay({
                 <FloatingHighlightButton
                   containerRef={questionContentRef}
                   onHighlight={onAddHighlight}
+                  examTitle={examTitle}
+                  examId={examId}
                 />
               )}
             </div>

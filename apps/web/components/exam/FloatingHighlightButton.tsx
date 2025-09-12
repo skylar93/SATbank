@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Highlighter } from 'lucide-react'
+import { Highlighter, Languages } from 'lucide-react'
+import { autoAddToVocab } from '@/lib/dictionary-actions'
+import { useAuth } from '@/contexts/auth-context'
 
 interface Highlight {
   start: number
@@ -12,12 +14,17 @@ interface Highlight {
 interface FloatingHighlightButtonProps {
   containerRef: React.RefObject<HTMLElement>
   onHighlight: (highlight: Highlight) => void
+  examTitle?: string
+  examId?: string
 }
 
 export default function FloatingHighlightButton({
   containerRef,
   onHighlight,
+  examTitle,
+  examId,
 }: FloatingHighlightButtonProps) {
+  const { user } = useAuth()
   const [isVisible, setIsVisible] = useState(false)
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [selectedText, setSelectedText] = useState('')
@@ -25,9 +32,19 @@ export default function FloatingHighlightButton({
     start: number
     end: number
   } | null>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
+  const buttonRef = useRef<HTMLDivElement>(null)
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isHoveringRef = useRef(false)
+  const [isAddingVocab, setIsAddingVocab] = useState(false)
+  const [feedbackMessage, setFeedbackMessage] = useState<{
+    text: string
+    type: 'success' | 'error'
+  } | null>(null)
+
+  const showFeedback = (text: string, type: 'success' | 'error') => {
+    setFeedbackMessage({ text, type })
+    setTimeout(() => setFeedbackMessage(null), 3000)
+  }
 
   useEffect(() => {
     const handleSelectionChange = () => {
@@ -78,8 +95,8 @@ export default function FloatingHighlightButton({
       const rect = range.getBoundingClientRect()
       const containerRect = containerElement.getBoundingClientRect()
 
-      // Simple and natural positioning algorithm
-      const buttonWidth = 40
+      // Simple and natural positioning algorithm - adjusted for two buttons
+      const buttonWidth = 90 // Width for both buttons together
       const buttonHeight = 40
       const offset = 8
 
@@ -184,6 +201,53 @@ export default function FloatingHighlightButton({
     }
   }
 
+  const handleAddToVocab = async () => {
+    if (!user) {
+      showFeedback('Please sign in to add vocabulary', 'error')
+      return
+    }
+
+    if (!selectedText) return
+
+    // Basic validation for selected text
+    const cleanText = selectedText.trim()
+    if (cleanText.length < 2 || cleanText.length > 50) {
+      showFeedback('Please select a word between 2-50 characters', 'error')
+      return
+    }
+
+    // Check if it's a reasonable word (no excessive punctuation or numbers)
+    if (/^[^a-zA-Z]*$/.test(cleanText) || cleanText.split(' ').length > 3) {
+      showFeedback('Please select a valid word or short phrase', 'error')
+      return
+    }
+
+    setIsAddingVocab(true)
+
+    try {
+      const result = await autoAddToVocab(
+        cleanText,
+        examTitle,
+        examId
+      )
+
+      if (result.success) {
+        showFeedback(result.message, 'success')
+        
+        // Clear selection
+        window.getSelection()?.removeAllRanges()
+        setIsVisible(false)
+      } else {
+        showFeedback(result.message, 'error')
+      }
+    } catch (error) {
+      console.error('Error adding vocabulary:', error)
+      showFeedback('Failed to add vocabulary. Please try again.', 'error')
+    } finally {
+      setIsAddingVocab(false)
+    }
+  }
+
   const handleMouseEnter = () => {
     isHoveringRef.current = true
     // Clear any pending hide timeout when hovering
@@ -204,19 +268,58 @@ export default function FloatingHighlightButton({
   if (!isVisible || !containerRef.current) return null
 
   return (
-    <button
-      ref={buttonRef}
-      onClick={handleHighlight}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className="absolute z-50 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 p-2 rounded-full shadow-lg transition-all duration-200 ease-in-out transform hover:scale-110"
-      style={{
-        left: position.x,
-        top: position.y,
-      }}
-      title="Highlight selected text"
-    >
-      <Highlighter size={16} />
-    </button>
+    <>
+      <div
+        ref={buttonRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className="absolute z-50 flex space-x-2 transition-all duration-200 ease-in-out"
+        style={{
+          left: position.x,
+          top: position.y,
+        }}
+      >
+        {/* Highlight Button */}
+        <button
+          onClick={handleHighlight}
+          className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 p-2 rounded-full shadow-lg transition-all duration-200 ease-in-out transform hover:scale-110"
+          title="Highlight selected text"
+        >
+          <Highlighter size={16} />
+        </button>
+
+        {/* Add to Vocab Button */}
+        <button
+          onClick={handleAddToVocab}
+          disabled={isAddingVocab}
+          className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-2 rounded-full shadow-lg transition-all duration-200 ease-in-out transform hover:scale-110"
+          title={`Add "${selectedText}" to vocabulary`}
+        >
+          {isAddingVocab ? (
+            <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+          ) : (
+            <Languages size={16} />
+          )}
+        </button>
+      </div>
+
+      {/* Feedback Toast */}
+      {feedbackMessage && (
+        <div
+          className={`fixed top-4 right-4 z-[9999] px-4 py-2 rounded-lg shadow-lg max-w-sm transition-all duration-300 animate-in slide-in-from-right-4 ${
+            feedbackMessage.type === 'success'
+              ? 'bg-green-100 border border-green-300 text-green-800'
+              : 'bg-red-100 border border-red-300 text-red-800'
+          }`}
+        >
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-medium">
+              {feedbackMessage.type === 'success' ? '✅' : '❌'}
+            </span>
+            <span className="text-sm">{feedbackMessage.text}</span>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

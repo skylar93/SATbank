@@ -957,6 +957,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
         modules: newModules,
         currentModuleIndex: nextModuleIndex,
         currentQuestionStartTime: Date.now(), // Reset timer for first question of new module
+        status: 'in_progress', // Reset status from 'time_expired' back to 'in_progress'
       })
       console.log('Exam state updated successfully')
     } catch (err: any) {
