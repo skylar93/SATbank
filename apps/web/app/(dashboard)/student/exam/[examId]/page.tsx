@@ -10,7 +10,6 @@ import { QuestionDisplay } from '../../../../../components/exam/question-display
 import { ExamNavigation } from '../../../../../components/exam/exam-navigation'
 import { ReferenceSheetModal } from '../../../../../components/exam/ReferenceSheetModal'
 import { TimeExpiredOverlay } from '../../../../../components/exam/TimeExpiredOverlay'
-import { SelectionBubbleMenu } from '../../../../../components/exam/SelectionBubbleMenu'
 import {
   Dialog,
   DialogContent,
@@ -1014,29 +1013,6 @@ function ExamPageContent() {
         />
       )}
 
-      {/* Selection Bubble Menu for Vocabulary */}
-      <SelectionBubbleMenu
-        examTitle={exam.title}
-        examId={exam.id}
-        onHighlight={(text, range) => {
-          // Calculate text offsets within the question content container
-          if (!questionContentRef.current) return
-
-          const preSelectionRange = document.createRange()
-          preSelectionRange.selectNodeContents(questionContentRef.current)
-          preSelectionRange.setEnd(range.startContainer, range.startOffset)
-          const start = preSelectionRange.toString().length
-          const end = start + text.length
-
-          // Create a highlight object and add it to the current question
-          const highlight = {
-            start,
-            end,
-            text,
-          }
-          addHighlight(currentQuestion.id, highlight)
-        }}
-      />
 
       {/* Exit Confirmation Modal */}
       <Dialog open={showExitConfirm} onOpenChange={handleCancelExit}>

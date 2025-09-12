@@ -6,7 +6,6 @@ import { QuestionDisplay } from './question-display'
 import { ExamNavigation } from './exam-navigation'
 import { ReferenceSheetModal } from './ReferenceSheetModal'
 import { TimeExpiredOverlay } from './TimeExpiredOverlay'
-import { SelectionBubbleMenu } from './SelectionBubbleMenu'
 import { ModuleType } from '../../lib/exam-service'
 
 interface ExamInterfaceProps {
@@ -133,7 +132,7 @@ export function ExamInterface({
       </div>
 
       {/* Main Question Area */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-visible relative">
         <QuestionDisplay
           question={currentQuestion}
           questionNumber={currentModule.currentQuestionIndex + 1}
@@ -196,29 +195,6 @@ export function ExamInterface({
         />
       )}
 
-      {/* Selection Bubble Menu for Vocabulary - TEMPORARILY DISABLED */}
-      {/* <SelectionBubbleMenu
-        examTitle={exam.title}
-        examId={exam.id}
-        onHighlight={(text, range) => {
-          // Calculate text offsets within the question content container
-          if (!questionContentRef.current) return
-
-          const preSelectionRange = document.createRange()
-          preSelectionRange.selectNodeContents(questionContentRef.current)
-          preSelectionRange.setEnd(range.startContainer, range.startOffset)
-          const start = preSelectionRange.toString().length
-          const end = start + text.length
-
-          // Create a highlight object and add it to the current question
-          const highlight = {
-            start,
-            end,
-            text,
-          }
-          addHighlight(currentQuestion.id, highlight)
-        }}
-      /> */}
     </div>
   )
 }

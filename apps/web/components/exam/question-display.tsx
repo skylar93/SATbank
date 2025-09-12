@@ -1350,7 +1350,7 @@ export function QuestionDisplay({
   return (
     <div className="h-full flex flex-col lg:flex-row bg-white">
       {/* Question Content Area */}
-      <div className="flex-1 lg:w-1/2 p-6 lg:pr-3 border-b lg:border-b-0 lg:border-r border-gray-200 overflow-hidden">
+      <div className="flex-1 lg:w-1/2 p-6 lg:pr-3 border-b lg:border-b-0 lg:border-r border-gray-200 overflow-visible">
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-3">
@@ -1461,7 +1461,7 @@ export function QuestionDisplay({
             )}
         </div>
 
-        <div className="prose prose-gray max-w-none overflow-hidden">
+        <div className="prose prose-gray max-w-none overflow-visible relative">
           {isEditing ? (
             <div className="space-y-4">
               <div>
@@ -1787,7 +1787,7 @@ export function QuestionDisplay({
           ) : (
             <div
               ref={questionContentRef}
-              className="text-gray-900 leading-relaxed relative"
+              className="text-gray-900 leading-relaxed relative overflow-visible min-h-[60px]"
             >
               <HighlightedTextRenderer
                 text={(() => {

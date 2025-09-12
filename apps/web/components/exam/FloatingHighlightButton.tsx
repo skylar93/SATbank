@@ -95,10 +95,11 @@ export default function FloatingHighlightButton({
       const rect = range.getBoundingClientRect()
       const containerRect = containerElement.getBoundingClientRect()
 
-      // Simple and natural positioning algorithm - adjusted for two buttons
+      // Improved positioning algorithm for better handling of single-line questions
       const buttonWidth = 90 // Width for both buttons together
       const buttonHeight = 40
       const offset = 8
+      const minDistance = 5 // Minimum distance from container edges
 
       // Get the cursor position (end of selection)
       const tempRange = document.createRange()
@@ -106,31 +107,67 @@ export default function FloatingHighlightButton({
       tempRange.setEnd(range.endContainer, range.endOffset)
       const cursorRect = tempRange.getBoundingClientRect()
 
+      // Get viewport and container dimensions
       const containerWidth = containerElement.offsetWidth
       const containerHeight = containerElement.offsetHeight
+      const viewportHeight = window.innerHeight
 
-      // Default position: right and below the cursor
-      let buttonX = cursorRect.right - containerRect.left + offset
-      let buttonY = rect.bottom - containerRect.top + offset
+      // Calculate available space in all directions
+      const spaceRight = containerWidth - (rect.right - containerRect.left)
+      const spaceLeft = rect.left - containerRect.left
+      const spaceBelow = containerHeight - (rect.bottom - containerRect.top)
+      const spaceAbove = rect.top - containerRect.top
 
-      // Simple horizontal boundary check
-      if (buttonX + buttonWidth > containerWidth) {
-        // Position to the left of selection if no space on the right
+      let buttonX = 0
+      let buttonY = 0
+
+      // Horizontal positioning: prefer right, fallback to left if not enough space
+      if (spaceRight >= buttonWidth + offset + minDistance) {
+        // Position to the right of the cursor
+        buttonX = cursorRect.right - containerRect.left + offset
+      } else if (spaceLeft >= buttonWidth + offset + minDistance) {
+        // Position to the left of selection
         buttonX = rect.left - containerRect.left - buttonWidth - offset
+      } else {
+        // Center horizontally if neither side has enough space
+        buttonX = Math.max(minDistance, (containerWidth - buttonWidth) / 2)
       }
 
-      // Simple vertical boundary check - only move up if absolutely necessary
-      if (buttonY + buttonHeight > containerHeight) {
-        // Only move above selection if there's no other choice
+      // Vertical positioning: for single-line questions, be more aggressive about positioning
+      if (spaceBelow >= buttonHeight + offset + minDistance) {
+        // Position below selection
+        buttonY = rect.bottom - containerRect.top + offset
+      } else if (spaceAbove >= buttonHeight + offset + minDistance) {
+        // Position above selection  
         buttonY = rect.top - containerRect.top - buttonHeight - offset
+      } else {
+        // For very tight spaces (like single-line questions), position at a safe distance
+        // Try to position below first, but with minimal offset
+        const minimalOffset = 3
+        if (rect.bottom - containerRect.top + buttonHeight + minimalOffset <= containerHeight) {
+          buttonY = rect.bottom - containerRect.top + minimalOffset
+        } else if (rect.top - containerRect.top - buttonHeight - minimalOffset >= 0) {
+          buttonY = rect.top - containerRect.top - buttonHeight - minimalOffset
+        } else {
+          // For extremely tight single-line cases, position the buttons to overlay slightly
+          // This ensures they're always visible even if space is very limited
+          const selectionMiddleY = rect.top + (rect.height / 2) - containerRect.top
+          if (selectionMiddleY - (buttonHeight / 2) >= 0 && 
+              selectionMiddleY + (buttonHeight / 2) <= containerHeight) {
+            // Center vertically on the selection
+            buttonY = selectionMiddleY - (buttonHeight / 2)
+          } else {
+            // Final fallback: position at the edge with the most space
+            buttonY = spaceBelow > spaceAbove ? 
+              Math.max(0, containerHeight - buttonHeight) :
+              0
+          }
+        }
       }
 
-      // Final boundary enforcement (keep within container)
-      buttonX = Math.max(5, Math.min(buttonX, containerWidth - buttonWidth - 5))
-      buttonY = Math.max(
-        5,
-        Math.min(buttonY, containerHeight - buttonHeight - 5)
-      )
+      // Final boundary enforcement with more generous margins for single-line cases
+      buttonX = Math.max(minDistance, Math.min(buttonX, containerWidth - buttonWidth - minDistance))
+      buttonY = Math.max(minDistance, Math.min(buttonY, containerHeight - buttonHeight - minDistance))
 
       setPosition({
         x: buttonX,
@@ -277,13 +314,16 @@ export default function FloatingHighlightButton({
         style={{
           left: position.x,
           top: position.y,
+          maxWidth: '90px', // Prevent buttons from growing too wide
+          minHeight: '40px', // Ensure minimum height for visibility
         }}
       >
         {/* Highlight Button */}
         <button
           onClick={handleHighlight}
-          className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 p-2 rounded-full shadow-lg transition-all duration-200 ease-in-out transform hover:scale-110"
+          className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 p-2 rounded-full shadow-xl border-2 border-white transition-all duration-200 ease-in-out transform hover:scale-110 flex-shrink-0"
           title="Highlight selected text"
+          style={{ minWidth: '36px', minHeight: '36px' }}
         >
           <Highlighter size={16} />
         </button>
@@ -292,8 +332,9 @@ export default function FloatingHighlightButton({
         <button
           onClick={handleAddToVocab}
           disabled={isAddingVocab}
-          className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-2 rounded-full shadow-lg transition-all duration-200 ease-in-out transform hover:scale-110"
+          className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-2 rounded-full shadow-xl border-2 border-white transition-all duration-200 ease-in-out transform hover:scale-110 flex-shrink-0"
           title={`Add "${selectedText}" to vocabulary`}
+          style={{ minWidth: '36px', minHeight: '36px' }}
         >
           {isAddingVocab ? (
             <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
