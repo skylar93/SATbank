@@ -20,6 +20,12 @@ interface FinalScores {
   overall: number
   english: number
   math: number
+  moduleScores: {
+    english1: number
+    english2: number
+    math1: number
+    math2: number
+  }
 }
 
 // Helper function to validate curve data structure and values
@@ -165,9 +171,17 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
     throw new Error(`${invalidAnswers.length} answers missing valid question data - possible database integrity issue`)
   }
 
-  // Step 4: Calculate raw scores by subject
+  // Step 4: Calculate raw scores by subject and module
   let englishRawScore = 0
   let mathRawScore = 0
+  
+  // Module-specific scores
+  const moduleScores = {
+    english1: 0,
+    english2: 0,
+    math1: 0,
+    math2: 0
+  }
 
   console.log('📝 Processing answers:', answers?.length, 'total answers')
   answers?.forEach((answer: any) => {
@@ -181,6 +195,7 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
       const moduleType = answer.questions.module_type.toLowerCase().trim()
       const points = Math.max(0, Number(answer.questions.points) || 1)
 
+      // Add to overall subject scores
       if (moduleType.includes('english')) {
         englishRawScore += points
       } else if (moduleType.includes('math')) {
@@ -188,10 +203,22 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
       } else {
         console.warn('Unknown module type:', moduleType, 'for answer:', answer.id)
       }
+
+      // Add to specific module scores
+      if (moduleType === 'english1') {
+        moduleScores.english1 += points
+      } else if (moduleType === 'english2') {
+        moduleScores.english2 += points
+      } else if (moduleType === 'math1') {
+        moduleScores.math1 += points
+      } else if (moduleType === 'math2') {
+        moduleScores.math2 += points
+      }
     }
   })
 
   console.log('🔢 Raw scores calculated - English:', englishRawScore, 'Math:', mathRawScore)
+  console.log('🔢 Module scores calculated:', moduleScores)
 
   // Step 5: Fetch scoring curves with names for debugging
   const { data: englishCurve, error: englishCurveError } = await supabase
@@ -238,7 +265,8 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
   const finalScores = {
     overall: overallScore,
     english: englishScaledScore,
-    math: mathScaledScore
+    math: mathScaledScore,
+    moduleScores: moduleScores
   }
   
   console.log('📊 Final scores object:', finalScores)
@@ -285,14 +313,16 @@ serve(async (req) => {
     const finalScores = await calculateFinalScores(supabase, attempt_id)
     console.log('✅ Final scores calculated:', finalScores)
 
-    // Update the test attempt with completion status and final scores
+    // Update the test attempt with completion status, final scores, and module scores
     console.log('💾 Updating test attempt in database')
     const { error: updateError } = await supabase
       .from('test_attempts')
       .update({
         status: 'completed',
         completed_at: new Date().toISOString(),
-        final_scores: finalScores
+        final_scores: finalScores,
+        module_scores: finalScores.moduleScores,
+        total_score: finalScores.overall
       })
       .eq('id', attempt_id)
 
@@ -301,6 +331,57 @@ serve(async (req) => {
       throw new Error(`Failed to update test attempt: ${updateError.message}`)
     }
     console.log('✅ Test attempt updated successfully')
+
+    // Populate mistake bank with incorrect answers
+    console.log('📚 Populating mistake bank with incorrect answers')
+    try {
+      // Get the user_id from the test attempt
+      const { data: attemptData, error: attemptFetchError } = await supabase
+        .from('test_attempts')
+        .select('user_id')
+        .eq('id', attempt_id)
+        .single()
+
+      if (attemptFetchError || !attemptData) {
+        console.error('❌ Failed to fetch attempt user_id:', attemptFetchError?.message)
+      } else {
+        // Fetch all user answers for this attempt
+        const { data: userAnswers, error: answersError } = await supabase
+          .from('user_answers')
+          .select('question_id, is_correct')
+          .eq('attempt_id', attempt_id)
+
+        if (answersError) {
+          console.error('❌ Failed to fetch user answers:', answersError.message)
+        } else if (userAnswers) {
+          // Filter for incorrect answers and prepare for mistake bank
+          const mistakes = userAnswers
+            .filter(ans => ans.is_correct === false)
+            .map(ans => ({
+              user_id: attemptData.user_id,
+              question_id: ans.question_id,
+              status: 'unmastered' as const
+            }))
+
+          if (mistakes.length > 0) {
+            console.log(`📚 Found ${mistakes.length} mistakes to add to mistake bank`)
+            const { error: mistakeError } = await supabase
+              .from('mistake_bank')
+              .upsert(mistakes, { onConflict: 'user_id, question_id' })
+
+            if (mistakeError) {
+              console.error('❌ Failed to populate mistake bank:', mistakeError.message)
+            } else {
+              console.log('✅ Mistake bank populated successfully')
+            }
+          } else {
+            console.log('📚 No mistakes found - perfect score!')
+          }
+        }
+      }
+    } catch (mistakeError) {
+      console.error('❌ Error in mistake bank population (non-critical):', mistakeError)
+    }
 
     // Return the final scores
     console.log('📤 Returning final scores to client')

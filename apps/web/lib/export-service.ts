@@ -1,10 +1,15 @@
-import { AnalyticsService, type ComprehensiveResults, type QuestionAnalysis } from './analytics-service'
+import {
+  AnalyticsService,
+  type ComprehensiveResults,
+  type QuestionAnalysis,
+} from './analytics-service'
 import { TestAttempt } from './exam-service'
 
 export class ExportService {
   // Export student results to CSV
   static exportStudentResultsToCSV(results: ComprehensiveResults): string {
-    const { attempt, detailedScore, questionAnalysis, performanceAnalytics } = results
+    const { attempt, detailedScore, questionAnalysis, performanceAnalytics } =
+      results
 
     // Header for student results CSV
     const headers = [
@@ -16,7 +21,7 @@ export class ExportService {
       'Overall Accuracy %',
       'English 1 Score',
       'English 1 Accuracy %',
-      'English 2 Score', 
+      'English 2 Score',
       'English 2 Accuracy %',
       'Math 1 Score',
       'Math 1 Accuracy %',
@@ -28,7 +33,7 @@ export class ExportService {
       'Total Questions',
       'Easy Questions Accuracy %',
       'Medium Questions Accuracy %',
-      'Hard Questions Accuracy %'
+      'Hard Questions Accuracy %',
     ]
 
     const data = [
@@ -50,16 +55,24 @@ export class ExportService {
       Math.round(performanceAnalytics.averageTimePerQuestion).toString(),
       performanceAnalytics.correctAnswers.toString(),
       performanceAnalytics.totalQuestions.toString(),
-      Math.round(performanceAnalytics.difficultyBreakdown.easy.percentage).toString(),
-      Math.round(performanceAnalytics.difficultyBreakdown.medium.percentage).toString(),
-      Math.round(performanceAnalytics.difficultyBreakdown.hard.percentage).toString()
+      Math.round(
+        performanceAnalytics.difficultyBreakdown.easy.percentage
+      ).toString(),
+      Math.round(
+        performanceAnalytics.difficultyBreakdown.medium.percentage
+      ).toString(),
+      Math.round(
+        performanceAnalytics.difficultyBreakdown.hard.percentage
+      ).toString(),
     ]
 
     return [headers.join(','), data.join(',')].join('\n')
   }
 
   // Export question-by-question analysis to CSV
-  static exportQuestionAnalysisToCSV(questionAnalysis: QuestionAnalysis[]): string {
+  static exportQuestionAnalysisToCSV(
+    questionAnalysis: QuestionAnalysis[]
+  ): string {
     const headers = [
       'Question Number',
       'Module',
@@ -68,10 +81,10 @@ export class ExportService {
       'Correct Answer',
       'Is Correct',
       'Time Spent (seconds)',
-      'Topics'
+      'Topics',
     ]
 
-    const rows = questionAnalysis.map(q => [
+    const rows = questionAnalysis.map((q) => [
       q.questionNumber.toString(),
       q.moduleType,
       q.difficulty,
@@ -79,12 +92,12 @@ export class ExportService {
       q.correctAnswer,
       q.isCorrect ? 'Yes' : 'No',
       q.timeSpent.toString(),
-      q.topicTags.join('; ')
+      q.topicTags.join('; '),
     ])
 
     const csvContent = [
       headers.join(','),
-      ...rows.map(row => row.join(','))
+      ...rows.map((row) => row.join(',')),
     ].join('\n')
 
     return csvContent
@@ -98,14 +111,14 @@ export class ExportService {
       'Test Date',
       'Total Score',
       'English 1 Score',
-      'English 2 Score', 
+      'English 2 Score',
       'Math 1 Score',
       'Math 2 Score',
       'Test Duration',
-      'Status'
+      'Status',
     ]
 
-    const rows = attempts.map(attempt => [
+    const rows = attempts.map((attempt) => [
       attempt.user_profiles?.full_name || 'Unknown',
       attempt.user_profiles?.email || '',
       attempt.completed_at || attempt.started_at || '',
@@ -115,12 +128,12 @@ export class ExportService {
       (attempt.module_scores?.math1 || 0).toString(),
       (attempt.module_scores?.math2 || 0).toString(),
       this.calculateDuration(attempt.started_at, attempt.completed_at),
-      attempt.status
+      attempt.status,
     ])
 
     const csvContent = [
       headers.join(','),
-      ...rows.map(row => row.join(','))
+      ...rows.map((row) => row.join(',')),
     ].join('\n')
 
     return csvContent
@@ -130,7 +143,7 @@ export class ExportService {
   static downloadCSV(csvContent: string, filename: string): void {
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
-    
+
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob)
       link.setAttribute('href', url)
@@ -146,17 +159,18 @@ export class ExportService {
   static async exportStudentResults(attemptId: string): Promise<void> {
     try {
       const results = await AnalyticsService.getComprehensiveResults(attemptId)
-      
+
       // Export summary
       const summaryCSV = this.exportStudentResultsToCSV(results)
       const summaryFilename = `sat-results-summary-${attemptId.slice(0, 8)}-${new Date().toISOString().split('T')[0]}.csv`
       this.downloadCSV(summaryCSV, summaryFilename)
 
       // Export question details
-      const questionCSV = this.exportQuestionAnalysisToCSV(results.questionAnalysis)
+      const questionCSV = this.exportQuestionAnalysisToCSV(
+        results.questionAnalysis
+      )
       const questionFilename = `sat-results-questions-${attemptId.slice(0, 8)}-${new Date().toISOString().split('T')[0]}.csv`
       this.downloadCSV(questionCSV, questionFilename)
-
     } catch (error) {
       console.error('Export failed:', error)
       throw new Error('Failed to export results')
@@ -165,8 +179,9 @@ export class ExportService {
 
   // Generate simple PDF-like text report
   static generateTextReport(results: ComprehensiveResults): string {
-    const { attempt, detailedScore, questionAnalysis, performanceAnalytics } = results
-    
+    const { attempt, detailedScore, questionAnalysis, performanceAnalytics } =
+      results
+
     const report = `
 SAT PRACTICE TEST RESULTS REPORT
 ===============================
@@ -205,9 +220,13 @@ ${performanceAnalytics.weaknessAreas.length > 0 ? performanceAnalytics.weaknessA
 
 TOP TOPIC PERFORMANCE:
 =====================
-${performanceAnalytics.topicPerformance.slice(0, 5).map(topic => 
-  `${topic.topic}: ${topic.correct}/${topic.attempted} (${Math.round(topic.percentage)}%)`
-).join('\n')}
+${performanceAnalytics.topicPerformance
+  .slice(0, 5)
+  .map(
+    (topic) =>
+      `${topic.topic}: ${topic.correct}/${topic.attempted} (${Math.round(topic.percentage)}%)`
+  )
+  .join('\n')}
 
 =================================
 Report generated: ${new Date().toLocaleString()}
@@ -220,10 +239,10 @@ Report generated: ${new Date().toLocaleString()}
   static downloadTextReport(results: ComprehensiveResults): void {
     const report = this.generateTextReport(results)
     const filename = `sat-report-${results.attempt.id.slice(0, 8)}-${new Date().toISOString().split('T')[0]}.txt`
-    
+
     const blob = new Blob([report], { type: 'text/plain;charset=utf-8;' })
     const link = document.createElement('a')
-    
+
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob)
       link.setAttribute('href', url)
@@ -236,14 +255,17 @@ Report generated: ${new Date().toLocaleString()}
   }
 
   // Helper function to calculate test duration
-  private static calculateDuration(startTime: string | null, endTime: string | null): string {
+  private static calculateDuration(
+    startTime: string | null,
+    endTime: string | null
+  ): string {
     if (!startTime || !endTime) return 'N/A'
-    
+
     const start = new Date(startTime)
     const end = new Date(endTime)
     const durationMs = end.getTime() - start.getTime()
     const durationMinutes = Math.round(durationMs / (1000 * 60))
-    
+
     return `${durationMinutes} min`
   }
 }

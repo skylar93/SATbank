@@ -33,11 +33,11 @@ export class AuthService {
       const { data, error } = await supabase
         .from('user_profiles')
         .select('count', { count: 'exact', head: true })
-      
+
       if (error) {
         return { success: false, error: error.message }
       }
-      
+
       return { success: true }
     } catch (error: any) {
       return { success: false, error: error.message }
@@ -72,14 +72,28 @@ export class AuthService {
 
   // Sign out user
   static async signOut() {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
-    // Clear auth state manager cache
+    try {
+      // Clear local storage first
+      localStorage.removeItem('sb-eoyzqdsxlweygsukjnef-auth-token')
+
+      // Use global scope for complete logout across all devices
+      const { error } = await supabase.auth.signOut({ scope: 'global' })
+      if (error) {
+        console.warn('Supabase signOut warning (continuing):', error.message)
+      }
+    } catch (error: any) {
+      console.warn('SignOut error (continuing anyway):', error.message)
+    }
+
+    // Always clear auth state manager cache
     authStateManager.clearState()
   }
 
   // Helper method to get profile with retry
-  private static async getProfileWithRetry(userId: string, retries = 2): Promise<{ data: UserProfile | null; error: any }> {
+  private static async getProfileWithRetry(
+    userId: string,
+    retries = 2
+  ): Promise<{ data: UserProfile | null; error: any }> {
     for (let i = 0; i <= retries; i++) {
       try {
         const { data: profile, error: profileError } = await supabase
@@ -87,21 +101,25 @@ export class AuthService {
           .select('*')
           .eq('id', userId)
           .single()
-        
+
         if (!profileError || profileError.code === 'PGRST116') {
           return { data: profile, error: profileError }
         }
-        
+
         if (i < retries) {
-          console.log(`🔄 AuthService: Profile fetch failed, retrying... (${i + 1}/${retries})`);
-          await new Promise(resolve => setTimeout(resolve, 1000))
+          console.log(
+            `🔄 AuthService: Profile fetch failed, retrying... (${i + 1}/${retries})`
+          )
+          await new Promise((resolve) => setTimeout(resolve, 1000))
         } else {
           return { data: null, error: profileError }
         }
       } catch (error) {
         if (i < retries) {
-          console.log(`🔄 AuthService: Profile fetch error, retrying... (${i + 1}/${retries})`);
-          await new Promise(resolve => setTimeout(resolve, 1000))
+          console.log(
+            `🔄 AuthService: Profile fetch error, retrying... (${i + 1}/${retries})`
+          )
+          await new Promise((resolve) => setTimeout(resolve, 1000))
         } else {
           return { data: null, error }
         }
@@ -116,7 +134,10 @@ export class AuthService {
   }
 
   // Update user profile
-  static async updateProfile(userId: string, updates: Partial<CreateUserProfile>) {
+  static async updateProfile(
+    userId: string,
+    updates: Partial<CreateUserProfile>
+  ) {
     const { data, error } = await supabase
       .from('user_profiles')
       .update(updates)
@@ -130,8 +151,7 @@ export class AuthService {
 
   // Check if user is admin
   static async isAdmin(userId: string): Promise<boolean> {
-    const { data, error } = await supabase
-      .rpc('is_admin', { user_id: userId })
+    const { data, error } = await supabase.rpc('is_admin', { user_id: userId })
 
     if (error) throw error
     return data || false
@@ -141,21 +161,23 @@ export class AuthService {
   static onAuthStateChange(callback: (user: AuthUser | null) => void) {
     // Subscribe to AuthStateManager
     const unsubscribe = authStateManager.subscribe(callback)
-    
+
     // Also listen to Supabase auth changes and forward to AuthStateManager
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       authStateManager.handleAuthStateChange(event, session)
     })
-    
+
     return {
       data: {
         subscription: {
           unsubscribe: () => {
             unsubscribe()
             subscription.unsubscribe()
-          }
-        }
-      }
+          },
+        },
+      },
     }
   }
 }

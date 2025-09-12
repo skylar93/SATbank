@@ -2,13 +2,10 @@ import type { Metadata } from 'next'
 import { Nunito } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '../contexts/auth-context'
-import { SidebarProvider } from '../contexts/sidebar-context'
-import { RouteGuard } from '../components/route-guard'
-import { Sidebar } from '../components/sidebar'
 
-const nunito = Nunito({ 
+const nunito = Nunito({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '700', '900'] 
+  weight: ['300', '400', '500', '700', '900'],
 })
 
 export const metadata: Metadata = {
@@ -24,18 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={nunito.className}>
-        <AuthProvider>
-          <SidebarProvider>
-            <RouteGuard>
-              <div className="flex h-screen bg-gray-50">
-                <Sidebar />
-                <div className="flex-1 overflow-auto">
-                  {children}
-                </div>
-              </div>
-            </RouteGuard>
-          </SidebarProvider>
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   )

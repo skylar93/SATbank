@@ -21,10 +21,15 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center min-w-0 flex-1">
-            <Link href={isAdmin ? '/admin/dashboard' : '/student/dashboard'} className="flex-shrink-0">
-              <h1 className="text-lg md:text-xl font-bold text-blue-600">SAT Practice</h1>
+            <Link
+              href={isAdmin ? '/admin/dashboard' : '/student/dashboard'}
+              className="flex-shrink-0"
+            >
+              <h1 className="text-lg md:text-xl font-bold text-blue-600">
+                SAT Practice
+              </h1>
             </Link>
-            
+
             <div className="ml-4 md:ml-10 flex items-baseline space-x-2 md:space-x-4 overflow-x-auto">
               {isAdmin ? (
                 <>
@@ -52,6 +57,12 @@ export function Navigation() {
                   >
                     Exams
                   </Link>
+                  <Link
+                    href="/admin/assignments"
+                    className="text-gray-500 hover:text-gray-700 px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium whitespace-nowrap"
+                  >
+                    Assignments
+                  </Link>
                 </>
               ) : (
                 <>
@@ -72,6 +83,12 @@ export function Navigation() {
                     className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Results
+                  </Link>
+                  <Link
+                    href="/student/mistake-notebook"
+                    className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                  >
+                    Mistake Notebook
                   </Link>
                   {/* <Link
                     href="/student/recommendations"

@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { useState, useEffect } from 'react'
 
@@ -9,7 +9,12 @@ interface ToastProps {
   onClose?: () => void
 }
 
-export function Toast({ message, type = 'success', duration = 3000, onClose }: ToastProps) {
+export function Toast({
+  message,
+  type = 'success',
+  duration = 3000,
+  onClose,
+}: ToastProps) {
   const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
@@ -21,16 +26,17 @@ export function Toast({ message, type = 'success', duration = 3000, onClose }: T
     return () => clearTimeout(timer)
   }, [duration, onClose])
 
-  const baseClasses = "fixed top-4 right-4 z-50 px-4 py-2 rounded-md shadow-lg transition-all duration-300 transform"
+  const baseClasses =
+    'fixed top-4 right-4 z-50 px-4 py-2 rounded-md shadow-lg transition-all duration-300 transform'
   const typeClasses = {
-    success: "bg-green-600 text-white",
-    error: "bg-red-600 text-white",
-    info: "bg-blue-600 text-white"
+    success: 'bg-green-600 text-white',
+    error: 'bg-red-600 text-white',
+    info: 'bg-blue-600 text-white',
   }
-  
-  const visibilityClasses = isVisible 
-    ? "translate-y-0 opacity-100" 
-    : "-translate-y-2 opacity-0"
+
+  const visibilityClasses = isVisible
+    ? 'translate-y-0 opacity-100'
+    : '-translate-y-2 opacity-0'
 
   return (
     <div className={`${baseClasses} ${typeClasses[type]} ${visibilityClasses}`}>

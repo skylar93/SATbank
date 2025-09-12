@@ -24,10 +24,16 @@ interface ExamNavigationProps {
   markedQuestions: MarkedQuestion[]
   disabled?: boolean
   isAdminPreview?: boolean
-  allModules?: { module: ModuleType; questions: any[]; currentQuestionIndex: number }[]
+  allModules?: {
+    module: ModuleType
+    questions: any[]
+    currentQuestionIndex: number
+  }[]
   currentModuleIndex?: number
   onGoToModule?: (moduleIndex: number, questionIndex: number) => void
   isCompact?: boolean
+  correctQuestions?: Set<number>
+  incorrectQuestions?: Set<number>
 }
 
 export function ExamNavigation({
@@ -49,30 +55,26 @@ export function ExamNavigation({
   allModules = [],
   currentModuleIndex = 0,
   onGoToModule,
-  isCompact = false
+  isCompact = false,
+  correctQuestions = new Set(),
+  incorrectQuestions = new Set(),
 }: ExamNavigationProps) {
-
   const getModuleName = (module: ModuleType) => {
     const moduleNames = {
       english1: 'English Module 1',
-      english2: 'English Module 2', 
+      english2: 'English Module 2',
       math1: 'Math Module 1',
-      math2: 'Math Module 2'
+      math2: 'Math Module 2',
     }
     return moduleNames[module]
   }
 
   const handleClick = () => {
-    console.log('🔄 Navigation click:', { isLastQuestion, isLastModule })
-    
     if (isLastQuestion && isLastModule) {
-      console.log("Calling onSubmitExam")
       onSubmitExam()
     } else if (isLastQuestion) {
-      console.log("Calling onSubmitModule")
       onSubmitModule()
     } else {
-      console.log("Calling onNext")
       onNext()
     }
   }
@@ -102,39 +104,60 @@ export function ExamNavigation({
     if (isCompact) {
       // Compact top navigation for preview mode
       return (
-        <div className="bg-white border-b border-gray-200 px-4 py-2 shadow-sm">
+        <div className="bg-white/80 backdrop-blur-sm border-b border-purple-100 px-4 py-2 shadow-lg">
           <div className="flex items-center justify-between">
             {/* Left: Module Overview - Horizontal layout */}
             <div className="flex items-center space-x-4">
-              <span className="text-xs text-orange-600 font-medium">Preview:</span>
               {allModules.map((module, moduleIndex) => {
                 const isCurrentModule = moduleIndex === currentModuleIndex
-                const moduleShortName = module.module.replace(/^(\w+)(\d)$/, '$1$2').toUpperCase()
+                const moduleShortName = module.module
+                  .replace(/^(\w+)(\d)$/, '$1$2')
+                  .toUpperCase()
                 return (
-                  <div key={moduleIndex} className={`flex items-center space-x-1 px-2 py-1 rounded text-xs ${
-                    isCurrentModule ? 'bg-blue-100 text-blue-800' : 'text-gray-600'
-                  }`}>
-                    <span className="font-medium">{moduleShortName}</span>
-                    <div className="flex flex-wrap gap-0.5 max-w-xs">
+                  <div
+                    key={moduleIndex}
+                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs backdrop-blur-sm ${
+                      isCurrentModule
+                        ? 'bg-purple-50 text-purple-800 border border-purple-200'
+                        : 'bg-white/60 text-gray-600 hover:bg-white/80'
+                    } transition-all duration-200`}
+                  >
+                    <span className="font-semibold">{moduleShortName}</span>
+                    <div className="flex flex-wrap gap-1 max-w-xs">
                       {module.questions.map((_, qIndex) => {
-                        const isCurrent = isCurrentModule && (qIndex + 1) === currentQuestion
-                        const globalQuestionIndex = allModules.slice(0, moduleIndex)
-                          .reduce((acc, m) => acc + m.questions.length, 0) + qIndex + 1
-                        const isAnswered = answeredQuestions.has(globalQuestionIndex)
-                        
+                        const isCurrent =
+                          isCurrentModule &&
+                          qIndex === module.currentQuestionIndex
+                        const globalQuestionIndex =
+                          allModules
+                            .slice(0, moduleIndex)
+                            .reduce((acc, m) => acc + m.questions.length, 0) +
+                          qIndex +
+                          1
+                        const isAnswered =
+                          answeredQuestions.has(globalQuestionIndex)
+                        const isCorrect =
+                          correctQuestions.has(globalQuestionIndex)
+                        const isIncorrect =
+                          incorrectQuestions.has(globalQuestionIndex)
+
                         return (
                           <button
                             key={qIndex}
-                            onClick={() => onGoToModule && onGoToModule(moduleIndex, qIndex)}
+                            onClick={() =>
+                              onGoToModule && onGoToModule(moduleIndex, qIndex)
+                            }
                             disabled={disabled}
-                            className={`w-4 h-4 text-xs rounded transition-all ${
-                              isCurrent 
-                                ? 'bg-blue-600 text-white' 
-                                : isAnswered
-                                ? 'bg-green-200 text-green-800 hover:bg-green-300'
-                                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                            className={`w-5 h-5 text-xs rounded-md font-medium transition-all duration-200 ${
+                              isCurrent
+                                ? 'bg-purple-600 text-white shadow-sm'
+                                : isCorrect
+                                  ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                                  : isIncorrect
+                                    ? 'bg-red-50 text-red-700 hover:bg-red-100'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             } disabled:opacity-50`}
-                            title={`Question ${qIndex + 1}`}
+                            title={`Question ${qIndex + 1}${isCorrect ? ' - Correct' : isIncorrect ? ' - Incorrect' : ''}`}
                           >
                             {qIndex + 1}
                           </button>
@@ -145,93 +168,107 @@ export function ExamNavigation({
                 )
               })}
             </div>
-            
-            {/* Right: Navigation Controls */}
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={onPrevious}
-                disabled={disabled}
-                className="px-2 py-1 text-xs text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                ← Prev
-              </button>
-              <span className="text-xs text-gray-600 px-2">
-                {currentQuestion}/{totalQuestions}
-              </span>
-              <button
-                onClick={onNext}
-                disabled={disabled}
-                className="px-2 py-1 text-xs text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next →
-              </button>
-            </div>
+
+            {/* Right: Empty space */}
+            <div className="flex items-center"></div>
           </div>
         </div>
       )
     }
-    
+
     // Full navigation for bottom position
     return (
-      <div className="bg-white border-t border-gray-200 px-6 py-4">
+      <div className="bg-white/80 backdrop-blur-sm border-t border-purple-100 px-6 py-4">
         <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-gray-600">
-              <span className="font-medium text-orange-600">Admin Preview - All Modules</span>
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-sm">
+              <span className="font-semibold text-purple-700">
+                Admin Preview - All Modules
+              </span>
             </div>
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-purple-600/70">
               Navigate freely between all modules and questions
             </div>
           </div>
-          
+
           {/* Show all modules */}
           <div className="space-y-4">
             {allModules.map((module, moduleIndex) => {
               const isCurrentModule = moduleIndex === currentModuleIndex
               return (
-                <div key={moduleIndex} className={`border rounded-lg p-3 ${
-                  isCurrentModule ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                }`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className={`text-sm font-medium ${
-                      isCurrentModule ? 'text-blue-800' : 'text-gray-700'
-                    }`}>
+                <div
+                  key={moduleIndex}
+                  className={`border rounded-xl p-4 backdrop-blur-sm transition-all duration-200 ${
+                    isCurrentModule
+                      ? 'border-purple-300 bg-purple-50'
+                      : 'border-purple-100 bg-white/50 hover:bg-white/70'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <h4
+                      className={`text-sm font-semibold ${
+                        isCurrentModule ? 'text-purple-800' : 'text-purple-700'
+                      }`}
+                    >
                       {getModuleName(module.module)}
                     </h4>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-purple-600/70 px-2 py-1 bg-purple-100 rounded-full">
                       {module.questions.length} questions
                     </span>
                   </div>
-                  
+
                   <div className="flex flex-wrap gap-2">
                     {module.questions.map((_, qIndex) => {
                       const questionNum = qIndex + 1
-                      const isCurrent = isCurrentModule && questionNum === currentQuestion
-                      const globalQuestionIndex = allModules.slice(0, moduleIndex)
-                        .reduce((acc, m) => acc + m.questions.length, 0) + qIndex + 1
-                      const isAnswered = answeredQuestions.has(globalQuestionIndex)
-                      const isMarked = markedQuestions.some(mq => mq.index === qIndex && mq.question?.module_type === module.module)
-                      
+                      const isCurrent =
+                        isCurrentModule &&
+                        qIndex === module.currentQuestionIndex
+                      const globalQuestionIndex =
+                        allModules
+                          .slice(0, moduleIndex)
+                          .reduce((acc, m) => acc + m.questions.length, 0) +
+                        qIndex +
+                        1
+                      const isAnswered =
+                        answeredQuestions.has(globalQuestionIndex)
+                      const isCorrect =
+                        correctQuestions.has(globalQuestionIndex)
+                      const isIncorrect =
+                        incorrectQuestions.has(globalQuestionIndex)
+                      const isMarked = markedQuestions.some(
+                        (mq) =>
+                          mq.index === qIndex &&
+                          mq.question?.module_type === module.module
+                      )
+
                       return (
                         <button
                           key={qIndex}
-                          onClick={() => onGoToModule && onGoToModule(moduleIndex, qIndex)}
+                          onClick={() =>
+                            onGoToModule && onGoToModule(moduleIndex, qIndex)
+                          }
                           disabled={disabled}
                           className={`
-                            w-8 h-8 text-sm font-medium rounded transition-all relative
+                            w-9 h-9 text-sm font-semibold rounded-lg transition-all duration-200 relative shadow-sm
                             disabled:opacity-50 disabled:cursor-not-allowed
-                            ${isCurrent 
-                              ? 'bg-blue-600 text-white border-2 border-blue-600' 
-                              : isAnswered
-                              ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
-                              : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
+                            ${
+                              isCurrent
+                                ? 'bg-purple-600 text-white border-2 border-purple-500'
+                                : isCorrect
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100'
+                                  : isIncorrect
+                                    ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
+                                    : 'bg-white/80 text-purple-600 border border-purple-200 hover:bg-white hover:border-purple-300'
                             }
                           `}
+                          title={`Question ${questionNum}${isCorrect ? ' - Correct' : isIncorrect ? ' - Incorrect' : ''}`}
                         >
                           {questionNum}
                           {isMarked && (
-                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center">
-                              <span className="text-xs text-white">🏷️</span>
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center shadow-sm">
+                              <span className="text-xs text-white font-bold">
+                                !
+                              </span>
                             </div>
                           )}
                         </button>
@@ -243,30 +280,31 @@ export function ExamNavigation({
             })}
           </div>
         </div>
-        
+
         {/* Admin Navigation Controls */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+        <div className="flex items-center justify-between pt-4 border-t border-purple-200">
           <div className="flex items-center space-x-4">
             <button
               onClick={onPrevious}
               disabled={disabled}
-              className="px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-purple-700 bg-white/60 border border-purple-200 rounded-lg hover:bg-white/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium backdrop-blur-sm"
             >
               ← Previous
             </button>
             <button
               onClick={onNext}
               disabled={disabled}
-              className="px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-purple-700 bg-white/60 border border-purple-200 rounded-lg hover:bg-white/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium backdrop-blur-sm"
             >
               Next →
             </button>
-            <div className="text-sm text-gray-600">
-              Module {currentModuleIndex + 1} of {allModules.length} • Question {currentQuestion} of {totalQuestions}
+            <div className="text-sm text-purple-700 font-medium">
+              Module {currentModuleIndex + 1} of {allModules.length} • Question{' '}
+              {currentQuestion} of {totalQuestions}
             </div>
           </div>
-          
-          <div className="text-xs text-orange-600 font-medium">
+
+          <div className="text-xs text-purple-700 font-semibold">
             🔍 Admin Preview Mode - Full Navigation Enabled
           </div>
         </div>
@@ -284,15 +322,17 @@ export function ExamNavigation({
             <span className="font-medium">{getModuleName(currentModule)}</span>
           </div>
         </div>
-        
+
         <div className="flex flex-wrap gap-2">
           {Array.from({ length: totalQuestions }, (_, index) => {
             const questionNum = index + 1
-            const isAnswered = answeredQuestions.has(questionNum)
+            const isCorrect = correctQuestions.has(questionNum)
+            const isIncorrect = incorrectQuestions.has(questionNum)
+            const isAnswered =
+              answeredQuestions.has(questionNum) || isCorrect || isIncorrect
             const isCurrent = questionNum === currentQuestion
-            const isMarked = markedQuestions.some(mq => mq.index === index)
-            
-            
+            const isMarked = markedQuestions.some((mq) => mq.index === index)
+
             return (
               <button
                 key={questionNum}
@@ -301,11 +341,16 @@ export function ExamNavigation({
                 className={`
                   w-8 h-8 text-sm font-medium rounded transition-all relative
                   disabled:opacity-50 disabled:cursor-not-allowed
-                  ${isCurrent 
-                    ? 'bg-blue-600 text-white border-2 border-blue-600' 
-                    : isAnswered
-                    ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
-                    : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
+                  ${
+                    isCurrent
+                      ? 'bg-blue-600 text-white border-2 border-blue-600'
+                      : isCorrect
+                        ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
+                        : isIncorrect
+                          ? 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'
+                          : isAnswered
+                            ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
+                            : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
                   }
                 `}
               >
@@ -319,7 +364,7 @@ export function ExamNavigation({
             )
           })}
         </div>
-        
+
         {/* Marked Questions Section */}
         {markedQuestions.length > 0 && (
           <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -385,12 +430,14 @@ export function ExamNavigation({
             <div className="text-sm text-gray-500">
               Question {currentQuestion} of {totalQuestions}
             </div>
-            
+
             {/* Progress Bar */}
             <div className="w-32 bg-gray-200 rounded-full h-2">
               <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${(currentQuestion / totalQuestions) * 100}%` }}
+                style={{
+                  width: `${(currentQuestion / totalQuestions) * 100}%`,
+                }}
               />
             </div>
 
@@ -427,7 +474,6 @@ export function ExamNavigation({
           </button>
         </div>
       </div>
-
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/auth-context'
 
 interface Question {
@@ -36,10 +36,13 @@ interface PracticeSettings {
   includeIncorrectOnly: boolean
 }
 
-export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQuizGeneratorProps) {
+export function PracticeQuizGenerator({
+  questions,
+  availableTopics,
+}: PracticeQuizGeneratorProps) {
   const router = useRouter()
   const { user } = useAuth()
-  const supabase = createClient()
+  // Use the centralized Supabase client
   const [settings, setSettings] = useState<PracticeSettings>({
     module: 'all',
     difficulty: 'all',
@@ -49,49 +52,82 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
     shuffleQuestions: true,
     showExplanations: true,
     timeLimit: 0, // 0 means no time limit
-    includeIncorrectOnly: false
+    includeIncorrectOnly: false,
   })
   const [isGenerating, setIsGenerating] = useState(false)
 
-  const filteredQuestions = questions.filter(question => {
-    if (settings.module !== 'all' && question.module_type !== settings.module) return false
-    if (settings.difficulty !== 'all' && question.difficulty_level !== settings.difficulty) return false
-    if (settings.questionType !== 'all' && question.question_type !== settings.questionType) return false
-    if (settings.topics.length > 0 && !settings.topics.some(topic => question.topic_tags?.includes(topic))) return false
+  const filteredQuestions = questions.filter((question) => {
+    if (settings.module !== 'all' && question.module_type !== settings.module)
+      return false
+    if (
+      settings.difficulty !== 'all' &&
+      question.difficulty_level !== settings.difficulty
+    )
+      return false
+    if (
+      settings.questionType !== 'all' &&
+      question.question_type !== settings.questionType
+    )
+      return false
+    if (
+      settings.topics.length > 0 &&
+      !settings.topics.some((topic) => question.topic_tags?.includes(topic))
+    )
+      return false
     if (settings.includeIncorrectOnly && !question.is_incorrect) return false
     return true
   })
 
   const maxAvailableQuestions = filteredQuestions.length
-  const canGenerate = maxAvailableQuestions > 0 && settings.questionCount <= maxAvailableQuestions
+  const canGenerate =
+    maxAvailableQuestions > 0 && settings.questionCount <= maxAvailableQuestions
 
   const handleSettingChange = (key: keyof PracticeSettings, value: any) => {
-    setSettings(prev => {
+    setSettings((prev) => {
       const newSettings = { ...prev, [key]: value }
-      
+
       // Adjust question count if it exceeds available questions
       if (key !== 'questionCount') {
-        const filteredCount = questions.filter(question => {
-          if (newSettings.module !== 'all' && question.module_type !== newSettings.module) return false
-          if (newSettings.difficulty !== 'all' && question.difficulty_level !== newSettings.difficulty) return false
-          if (newSettings.questionType !== 'all' && question.question_type !== newSettings.questionType) return false
-          if (newSettings.topics.length > 0 && !newSettings.topics.some(topic => question.topic_tags?.includes(topic))) return false
-          if (newSettings.includeIncorrectOnly && !question.is_incorrect) return false
+        const filteredCount = questions.filter((question) => {
+          if (
+            newSettings.module !== 'all' &&
+            question.module_type !== newSettings.module
+          )
+            return false
+          if (
+            newSettings.difficulty !== 'all' &&
+            question.difficulty_level !== newSettings.difficulty
+          )
+            return false
+          if (
+            newSettings.questionType !== 'all' &&
+            question.question_type !== newSettings.questionType
+          )
+            return false
+          if (
+            newSettings.topics.length > 0 &&
+            !newSettings.topics.some((topic) =>
+              question.topic_tags?.includes(topic)
+            )
+          )
+            return false
+          if (newSettings.includeIncorrectOnly && !question.is_incorrect)
+            return false
           return true
         }).length
-        
+
         if (newSettings.questionCount > filteredCount) {
           newSettings.questionCount = Math.max(1, filteredCount)
         }
       }
-      
+
       return newSettings
     })
   }
 
   const handleTopicToggle = (topic: string) => {
     const newTopics = settings.topics.includes(topic)
-      ? settings.topics.filter(t => t !== topic)
+      ? settings.topics.filter((t) => t !== topic)
       : [...settings.topics, topic]
     handleSettingChange('topics', newTopics)
   }
@@ -106,7 +142,9 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
 
     if (!canGenerate) {
       console.log('❌ Cannot generate: canGenerate is false')
-      alert(`Cannot generate quiz: ${maxAvailableQuestions} questions available, ${settings.questionCount} requested`)
+      alert(
+        `Cannot generate quiz: ${maxAvailableQuestions} questions available, ${settings.questionCount} requested`
+      )
       return
     }
 
@@ -126,15 +164,18 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
     try {
       // Filter and select questions
       let selectedQuestions = [...filteredQuestions]
-      
+
       if (settings.shuffleQuestions) {
         // Shuffle questions
         for (let i = selectedQuestions.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1))
-          ;[selectedQuestions[i], selectedQuestions[j]] = [selectedQuestions[j], selectedQuestions[i]]
+          ;[selectedQuestions[i], selectedQuestions[j]] = [
+            selectedQuestions[j],
+            selectedQuestions[i],
+          ]
         }
       }
-      
+
       // Take the requested number of questions
       selectedQuestions = selectedQuestions.slice(0, settings.questionCount)
 
@@ -144,7 +185,7 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
 
       // Use the auth context user ID (now synchronized with Supabase session)
       let attempt
-      
+
       const { data, error } = await supabase
         .from('test_attempts')
         .insert({
@@ -154,25 +195,32 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
           is_practice_mode: true,
           current_module: selectedQuestions[0].module_type,
           current_question_number: 1,
-          expires_at: settings.timeLimit > 0 
-            ? new Date(Date.now() + settings.timeLimit * 60 * 1000).toISOString()
-            : null
+          expires_at:
+            settings.timeLimit > 0
+              ? new Date(
+                  Date.now() + settings.timeLimit * 60 * 1000
+                ).toISOString()
+              : null,
         })
         .select()
         .single()
-        
+
       if (error) {
         console.log('Direct insert failed, trying emergency function:', error)
-        
-        const { data: emergencyResult, error: emergencyError } = await supabase
-          .rpc('create_practice_session', {
+
+        const { data: emergencyResult, error: emergencyError } =
+          await supabase.rpc('create_practice_session', {
             target_user_id: user.id,
             module_name: selectedQuestions[0].module_type,
-            is_single_question: false
+            is_single_question: false,
           })
 
         if (emergencyError || !emergencyResult?.[0]?.success) {
-          throw new Error(emergencyError?.message || emergencyResult?.[0]?.error_message || 'Failed to create practice session')
+          throw new Error(
+            emergencyError?.message ||
+              emergencyResult?.[0]?.error_message ||
+              'Failed to create practice session'
+          )
         }
 
         // Get the created attempt
@@ -191,22 +239,24 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
       // Store practice settings and questions in localStorage for the session
       const practiceData = {
         attemptId: attempt.id,
-        questions: selectedQuestions.map(q => q.id),
+        questions: selectedQuestions.map((q) => q.id),
         settings: {
           shuffleQuestions: settings.shuffleQuestions,
           showExplanations: settings.showExplanations,
-          timeLimit: settings.timeLimit
-        }
+          timeLimit: settings.timeLimit,
+        },
       }
-      
-      localStorage.setItem(`practice_${attempt.id}`, JSON.stringify(practiceData))
+
+      localStorage.setItem(
+        `practice_${attempt.id}`,
+        JSON.stringify(practiceData)
+      )
 
       // Navigate to practice session
       router.push(`/student/practice/${attempt.id}`)
-      
     } catch (error: any) {
       console.error('Error generating practice quiz:', error)
-      
+
       // Show more specific error messages
       let errorMessage = 'Failed to generate practice quiz. Please try again.'
       if (error.message) {
@@ -216,7 +266,7 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
       } else if (error.hint) {
         errorMessage = `Error: ${error.hint}`
       }
-      
+
       alert(errorMessage)
     } finally {
       setIsGenerating(false)
@@ -227,8 +277,10 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Settings Panel */}
       <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-6">Practice Quiz Settings</h3>
-        
+        <h3 className="text-lg font-medium text-gray-900 mb-6">
+          Practice Quiz Settings
+        </h3>
+
         <div className="space-y-6">
           {/* Quick Options */}
           <div>
@@ -238,37 +290,53 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
                 <input
                   type="checkbox"
                   checked={settings.includeIncorrectOnly}
-                  onChange={(e) => handleSettingChange('includeIncorrectOnly', e.target.checked)}
+                  onChange={(e) =>
+                    handleSettingChange(
+                      'includeIncorrectOnly',
+                      e.target.checked
+                    )
+                  }
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
                 <span className="ml-2 text-sm text-gray-700">
-                  Include only previously incorrect answers ({questions.filter(q => q.is_incorrect).length} questions)
+                  Include only previously incorrect answers (
+                  {questions.filter((q) => q.is_incorrect).length} questions)
                 </span>
               </label>
               <label className="flex items-center">
                 <input
                   type="checkbox"
                   checked={settings.shuffleQuestions}
-                  onChange={(e) => handleSettingChange('shuffleQuestions', e.target.checked)}
+                  onChange={(e) =>
+                    handleSettingChange('shuffleQuestions', e.target.checked)
+                  }
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span className="ml-2 text-sm text-gray-700">Shuffle question order</span>
+                <span className="ml-2 text-sm text-gray-700">
+                  Shuffle question order
+                </span>
               </label>
               <label className="flex items-center">
                 <input
                   type="checkbox"
                   checked={settings.showExplanations}
-                  onChange={(e) => handleSettingChange('showExplanations', e.target.checked)}
+                  onChange={(e) =>
+                    handleSettingChange('showExplanations', e.target.checked)
+                  }
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span className="ml-2 text-sm text-gray-700">Show explanations after each question</span>
+                <span className="ml-2 text-sm text-gray-700">
+                  Show explanations after each question
+                </span>
               </label>
             </div>
           </div>
 
           {/* Module Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Module</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Module
+            </label>
             <select
               value={settings.module}
               onChange={(e) => handleSettingChange('module', e.target.value)}
@@ -284,10 +352,14 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
 
           {/* Difficulty Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Difficulty
+            </label>
             <select
               value={settings.difficulty}
-              onChange={(e) => handleSettingChange('difficulty', e.target.value)}
+              onChange={(e) =>
+                handleSettingChange('difficulty', e.target.value)
+              }
               className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Levels</option>
@@ -299,10 +371,14 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
 
           {/* Question Type Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Question Type</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Question Type
+            </label>
             <select
               value={settings.questionType}
-              onChange={(e) => handleSettingChange('questionType', e.target.value)}
+              onChange={(e) =>
+                handleSettingChange('questionType', e.target.value)
+              }
               className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Types</option>
@@ -316,11 +392,13 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
           {availableTopics.length > 0 && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Topics {settings.topics.length > 0 && `(${settings.topics.length} selected)`}
+                Topics{' '}
+                {settings.topics.length > 0 &&
+                  `(${settings.topics.length} selected)`}
               </label>
               <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-2">
                 <div className="space-y-1">
-                  {availableTopics.map(topic => (
+                  {availableTopics.map((topic) => (
                     <label key={topic} className="flex items-center">
                       <input
                         type="checkbox"
@@ -328,7 +406,9 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
                         onChange={() => handleTopicToggle(topic)}
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
-                      <span className="ml-2 text-sm text-gray-700">{topic}</span>
+                      <span className="ml-2 text-sm text-gray-700">
+                        {topic}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -346,7 +426,12 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
               min="1"
               max={maxAvailableQuestions}
               value={settings.questionCount}
-              onChange={(e) => handleSettingChange('questionCount', parseInt(e.target.value) || 1)}
+              onChange={(e) =>
+                handleSettingChange(
+                  'questionCount',
+                  parseInt(e.target.value) || 1
+                )
+              }
               className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -360,7 +445,9 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
               type="number"
               min="0"
               value={settings.timeLimit}
-              onChange={(e) => handleSettingChange('timeLimit', parseInt(e.target.value) || 0)}
+              onChange={(e) =>
+                handleSettingChange('timeLimit', parseInt(e.target.value) || 0)
+              }
               className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -370,22 +457,52 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
       {/* Preview and Generate */}
       <div className="bg-white rounded-lg shadow p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-6">Quiz Preview</h3>
-        
+
         <div className="space-y-4">
           {/* Quiz Summary */}
           <div className="bg-gray-50 rounded-lg p-4">
             <h4 className="font-medium text-gray-900 mb-2">Quiz Summary</h4>
             <div className="space-y-1 text-sm text-gray-600">
-              <p><span className="font-medium">Questions:</span> {settings.questionCount} of {maxAvailableQuestions} available</p>
-              <p><span className="font-medium">Module:</span> {settings.module === 'all' ? 'All Modules' : settings.module}</p>
-              <p><span className="font-medium">Difficulty:</span> {settings.difficulty === 'all' ? 'All Levels' : settings.difficulty}</p>
-              <p><span className="font-medium">Type:</span> {settings.questionType === 'all' ? 'All Types' : settings.questionType}</p>
+              <p>
+                <span className="font-medium">Questions:</span>{' '}
+                {settings.questionCount} of {maxAvailableQuestions} available
+              </p>
+              <p>
+                <span className="font-medium">Module:</span>{' '}
+                {settings.module === 'all' ? 'All Modules' : settings.module}
+              </p>
+              <p>
+                <span className="font-medium">Difficulty:</span>{' '}
+                {settings.difficulty === 'all'
+                  ? 'All Levels'
+                  : settings.difficulty}
+              </p>
+              <p>
+                <span className="font-medium">Type:</span>{' '}
+                {settings.questionType === 'all'
+                  ? 'All Types'
+                  : settings.questionType}
+              </p>
               {settings.topics.length > 0 && (
-                <p><span className="font-medium">Topics:</span> {settings.topics.join(', ')}</p>
+                <p>
+                  <span className="font-medium">Topics:</span>{' '}
+                  {settings.topics.join(', ')}
+                </p>
               )}
-              <p><span className="font-medium">Order:</span> {settings.shuffleQuestions ? 'Shuffled' : 'Original'}</p>
-              <p><span className="font-medium">Explanations:</span> {settings.showExplanations ? 'Shown' : 'Hidden'}</p>
-              <p><span className="font-medium">Time Limit:</span> {settings.timeLimit === 0 ? 'No limit' : `${settings.timeLimit} minutes`}</p>
+              <p>
+                <span className="font-medium">Order:</span>{' '}
+                {settings.shuffleQuestions ? 'Shuffled' : 'Original'}
+              </p>
+              <p>
+                <span className="font-medium">Explanations:</span>{' '}
+                {settings.showExplanations ? 'Shown' : 'Hidden'}
+              </p>
+              <p>
+                <span className="font-medium">Time Limit:</span>{' '}
+                {settings.timeLimit === 0
+                  ? 'No limit'
+                  : `${settings.timeLimit} minutes`}
+              </p>
             </div>
           </div>
 
@@ -393,10 +510,9 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
           {!canGenerate && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-800 text-sm">
-                {maxAvailableQuestions === 0 
+                {maxAvailableQuestions === 0
                   ? 'No questions match your current filters. Please adjust your settings.'
-                  : `Only ${maxAvailableQuestions} questions available. Please reduce the question count.`
-                }
+                  : `Only ${maxAvailableQuestions} questions available. Please reduce the question count.`}
               </p>
             </div>
           )}
@@ -429,7 +545,7 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
                     shuffleQuestions: true,
                     showExplanations: true,
                     timeLimit: 0,
-                    includeIncorrectOnly: false
+                    includeIncorrectOnly: false,
                   })
                 }}
                 className="w-full text-left px-3 py-2 text-sm bg-gray-50 hover:bg-gray-100 rounded border"
@@ -443,11 +559,14 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
                     difficulty: 'all',
                     questionType: 'all',
                     topics: [],
-                    questionCount: Math.min(5, questions.filter(q => q.is_incorrect).length),
+                    questionCount: Math.min(
+                      5,
+                      questions.filter((q) => q.is_incorrect).length
+                    ),
                     shuffleQuestions: true,
                     showExplanations: true,
                     timeLimit: 0,
-                    includeIncorrectOnly: true
+                    includeIncorrectOnly: true,
                   })
                 }}
                 className="w-full text-left px-3 py-2 text-sm bg-gray-50 hover:bg-gray-100 rounded border"
@@ -465,7 +584,7 @@ export function PracticeQuizGenerator({ questions, availableTopics }: PracticeQu
                     shuffleQuestions: true,
                     showExplanations: false,
                     timeLimit: 25,
-                    includeIncorrectOnly: false
+                    includeIncorrectOnly: false,
                   })
                 }}
                 className="w-full text-left px-3 py-2 text-sm bg-gray-50 hover:bg-gray-100 rounded border"

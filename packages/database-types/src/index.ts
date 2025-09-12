@@ -5,6 +5,8 @@ export type QuestionType = 'multiple_choice' | 'grid_in' | 'essay'
 export type DifficultyLevel = 'easy' | 'medium' | 'hard'
 export type UserRole = 'student' | 'admin'
 export type ExamStatus = 'not_started' | 'in_progress' | 'completed' | 'expired'
+export type QuizType = 'term_to_def' | 'def_to_term'
+export type QuizFormat = 'multiple_choice' | 'written_answer'
 
 export interface Database {
   public: {
@@ -34,6 +36,21 @@ export interface Database {
         Insert: Omit<UserAnswer, 'id' | 'answered_at'>
         Update: Partial<Omit<UserAnswer, 'id' | 'answered_at'>>
       }
+      vocab_sets: {
+        Row: VocabSet
+        Insert: Omit<VocabSet, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<VocabSet, 'id' | 'user_id' | 'created_at' | 'updated_at'>>
+      }
+      vocab_entries: {
+        Row: VocabEntry
+        Insert: Omit<VocabEntry, 'id' | 'created_at'>
+        Update: Partial<Omit<VocabEntry, 'id' | 'set_id' | 'user_id' | 'created_at'>>
+      }
+      quiz_sessions: {
+        Row: QuizSession
+        Insert: Omit<QuizSession, 'id' | 'completed_at'>
+        Update: Partial<Omit<QuizSession, 'id' | 'user_id' | 'set_id'>>
+      }
     }
     Views: {
       [_ in never]: never
@@ -43,6 +60,10 @@ export interface Database {
         Args: { user_id: string }
         Returns: boolean
       }
+      should_show_answers: {
+        Args: { attempt_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       module_type: ModuleType
@@ -50,6 +71,8 @@ export interface Database {
       difficulty_level: DifficultyLevel
       user_role: UserRole
       exam_status: ExamStatus
+      quiz_type: QuizType
+      quiz_format: QuizFormat
     }
   }
 }
@@ -93,7 +116,8 @@ export interface Question {
   question_text: string
   question_image_url: string | null
   options: Record<string, string> | null // {"A": "text", "B": "text", etc.}
-  correct_answer: string
+  correct_answer: string // For multiple_choice questions
+  correct_answers: string[] | null // For grid_in questions - array of acceptable answers
   explanation: string | null
   points: number
   topic_tags: string[] | null
@@ -115,6 +139,8 @@ export interface TestAttempt {
   total_score: number
   module_scores: Record<ModuleType, number> | null
   is_practice_mode: boolean
+  answers_visible: boolean
+  answers_visible_after: string | null
   created_at: string
   updated_at: string
 }
@@ -129,6 +155,41 @@ export interface UserAnswer {
   answered_at: string
 }
 
+export interface VocabSet {
+  id: number
+  user_id: string
+  title: string
+  description: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface VocabEntry {
+  id: number
+  set_id: number
+  user_id: string
+  term: string
+  definition: string
+  example_sentence: string | null
+  mastery_level: number
+  last_reviewed_at: string | null
+  next_review_date: string
+  review_interval: number
+  created_at: string
+}
+
+export interface QuizSession {
+  id: string
+  user_id: string
+  set_id: number
+  quiz_type: QuizType
+  quiz_format: QuizFormat
+  score_percentage: number | null
+  questions_total: number
+  questions_correct: number
+  completed_at: string
+}
+
 // Utility types for common operations
 export type CreateUserProfile = Database['public']['Tables']['user_profiles']['Insert']
 export type UpdateUserProfile = Database['public']['Tables']['user_profiles']['Update']
@@ -140,3 +201,9 @@ export type CreateTestAttempt = Database['public']['Tables']['test_attempts']['I
 export type UpdateTestAttempt = Database['public']['Tables']['test_attempts']['Update']
 export type CreateUserAnswer = Database['public']['Tables']['user_answers']['Insert']
 export type UpdateUserAnswer = Database['public']['Tables']['user_answers']['Update']
+export type CreateVocabSet = Database['public']['Tables']['vocab_sets']['Insert']
+export type UpdateVocabSet = Database['public']['Tables']['vocab_sets']['Update']
+export type CreateVocabEntry = Database['public']['Tables']['vocab_entries']['Insert']
+export type UpdateVocabEntry = Database['public']['Tables']['vocab_entries']['Update']
+export type CreateQuizSession = Database['public']['Tables']['quiz_sessions']['Insert']
+export type UpdateQuizSession = Database['public']['Tables']['quiz_sessions']['Update']

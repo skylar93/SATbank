@@ -8,7 +8,7 @@ interface AuthContextType {
   user: AuthUser | null
   loading: boolean
   error: string | null
-  signIn: (email: string, password: string) => Promise<void>
+  signIn: (email: string, password: string) => Promise<AuthUser>
   signUp: (email: string, password: string, fullName: string) => Promise<void>
   signOut: () => Promise<void>
   isAdmin: boolean
@@ -18,79 +18,152 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  // Get impersonation data from localStorage
+  const getImpersonationUser = (): AuthUser | null => {
+    if (typeof window === 'undefined') return null
+
+    const dataJSON = localStorage.getItem('impersonation_data')
+    if (!dataJSON) return null
+
+    try {
+      const data = JSON.parse(dataJSON)
+      return data.target_user || null
+    } catch {
+      return null
+    }
+  }
+
+  // Initialize with null to avoid hydration issues
   const [user, setUser] = useState<AuthUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    let isInitialized = false
-    
+    let isMounted = true
+    console.log('🚀 AuthProvider: Initializing...')
+
     // Simpler initialization with AuthStateManager
     const initializeAuth = async () => {
       try {
+        // Check for impersonation first - this is synchronous and fast
+        const impersonationUser = getImpersonationUser()
+        if (impersonationUser && isMounted) {
+          setUser(impersonationUser)
+          setError(null)
+          setLoading(false)
+          return
+        }
+
+        // Only fetch from auth state manager if not impersonating
         const user = await authStateManager.getCurrentUser()
-        isInitialized = true
-        setUser(user)
-        setError(null)
-        setLoading(false)
+        if (isMounted) {
+          setUser(user)
+          setError(null)
+          setLoading(false)
+        }
       } catch (err: any) {
-        isInitialized = true
-        setError(err.message)
-        setLoading(false)
+        if (isMounted) {
+          setError(err.message)
+          setLoading(false)
+        }
       }
     }
-    
+
+    // Run initialization immediately
     initializeAuth()
 
-    // Subscribe to auth state changes from AuthStateManager
-    const unsubscribeFromStateManager = authStateManager.subscribe(async (stateChangedUser) => {
-      
-      if (stateChangedUser === null) {
-        // State manager notified of change, fetch fresh user data
-        try {
-          const currentUser = await authStateManager.getCurrentUser()
-          setUser(currentUser)
-        } catch (err: any) {
-          setUser(null)
-          setError(err.message)
-        }
+    // Listen for impersonation changes via storage events
+    const handleStorageChange = (e: StorageEvent) => {
+      if (!isMounted || e.key !== 'impersonation_data') return
+
+      const impersonationUser = getImpersonationUser()
+      if (impersonationUser) {
+        setUser(impersonationUser)
       } else {
-        setUser(stateChangedUser)
+        console.log(
+          '🔄 AuthProvider: Impersonation ended, waiting for navigation...'
+        )
       }
-      
-      isInitialized = true
-      setLoading(false)
-      setError(null)
-    })
+    }
+
+    // Subscribe to auth state changes from AuthStateManager
+    const unsubscribeFromStateManager = authStateManager.subscribe(
+      async (stateChangedUser) => {
+        if (!isMounted) return
+
+        // Check for impersonation first, it takes precedence
+        const impersonationUser = getImpersonationUser()
+        if (impersonationUser) {
+          setUser(impersonationUser)
+          setLoading(false)
+          setError(null)
+          return
+        }
+
+        if (stateChangedUser === null) {
+          // State manager notified of change, fetch fresh user data
+          try {
+            const currentUser = await authStateManager.getCurrentUser()
+            if (isMounted) {
+              setUser(currentUser)
+            }
+          } catch (err: any) {
+            if (isMounted) {
+              setUser(null)
+              setError(err.message)
+            }
+          }
+        } else {
+          setUser(stateChangedUser)
+        }
+
+        if (isMounted) {
+          setLoading(false)
+          setError(null)
+        }
+      }
+    )
 
     // Also listen to Supabase auth changes and forward to AuthStateManager
-    const { data: { subscription } } = AuthService.onAuthStateChange(() => {
+    const {
+      data: { subscription },
+    } = AuthService.onAuthStateChange(() => {
       // AuthService.onAuthStateChange now delegates to AuthStateManager
       // This subscription is mainly for cleanup
     })
 
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', handleStorageChange)
+    }
+
     return () => {
       console.log('🧹 AuthProvider: Cleanup')
+      isMounted = false
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('storage', handleStorageChange)
+      }
       unsubscribeFromStateManager()
       subscription.unsubscribe()
     }
   }, [])
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<AuthUser> => {
     setLoading(true)
     setError(null)
-    
+
     try {
       await AuthService.signIn(email, password)
-      
+
       // Immediately try to get user data
       const currentUser = await AuthService.getCurrentUser()
-      if (currentUser) {
-        setUser(currentUser)
-        setLoading(false)
-      } else {
-        // Don't set loading to false here, let auth state change handle it
+
+      if (!currentUser) {
+        throw new Error('Login succeeded but failed to fetch user data.')
       }
+
+      setUser(currentUser)
+      setLoading(false)
+      return currentUser
     } catch (err: any) {
       setError(err.message)
       setLoading(false)
@@ -101,7 +174,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, fullName: string) => {
     setLoading(true)
     setError(null)
-    
+
     try {
       await AuthService.signUp(email, password, fullName)
       // Don't manually set user here, let the auth state change handle it
@@ -116,10 +189,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     setLoading(true)
     setError(null)
-    
+
     try {
       await AuthService.signOut()
       setUser(null)
+      // Redirect to login page after successful logout
+      window.location.href = '/login'
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -129,7 +204,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const isAdmin = user?.profile?.role === 'admin'
   const isStudent = user?.profile?.role === 'student'
-
 
   const value = {
     user,

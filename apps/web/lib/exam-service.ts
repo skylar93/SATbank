@@ -28,16 +28,21 @@ export interface Question {
   question_type: 'multiple_choice' | 'grid_in' | 'essay'
   difficulty_level: 'easy' | 'medium' | 'hard'
   question_text: string
+  question_html?: string | null // HTML version of question content
   question_image_url: string | null
   options: Record<string, string> | null
-  correct_answer: string | string[]
+  options_html?: Record<string, string> | null // HTML version of options
+  correct_answer: string
+  correct_answers: string[] | null
   explanation: string | null
+  explanation_html?: string | null // HTML version of explanation
   points: number
   topic_tags: string[] | null
   table_data?: {
     headers: string[]
     rows: string[][]
   } | null
+  content_format?: string // 'markdown' or 'html' - indicates primary format
   created_at: string
   updated_at: string
 }
@@ -108,40 +113,136 @@ export class ExamService {
   static async getAssignedExams(userId: string): Promise<Exam[]> {
     const { data, error } = await supabase
       .from('exam_assignments')
-      .select(`
+      .select(
+        `
         exams (*)
-      `)
+      `
+      )
       .eq('student_id', userId)
       .eq('is_active', true)
       .eq('exams.is_active', true)
       .order('assigned_at', { ascending: false })
 
     if (error) throw error
-    return (data?.map((assignment: any) => assignment.exams as Exam).filter((exam: Exam | null) => exam !== null) as Exam[]) || []
+    return (
+      (data
+        ?.map((assignment: any) => assignment.exams as Exam)
+        .filter((exam: Exam | null) => exam !== null) as Exam[]) || []
+    )
   }
 
-  // Get available exams for a student (including mock exams and assigned exams)
+  // Get available exams for a student (only assigned exams)
   static async getAvailableExams(userId: string): Promise<Exam[]> {
+    // Only return assigned exams - no automatic mock exam access
+    return await this.getAssignedExams(userId)
+  }
+
+  // Get available exams with completion status for a student
+  static async getAvailableExamsWithStatus(userId: string): Promise<
+    (Exam & {
+      completionStatus: 'not_started' | 'in_progress' | 'completed'
+      completedAttemptId?: string
+      isCurrentlyAssigned?: boolean
+    })[]
+  > {
     // Get assigned exams
     const assignedExams = await this.getAssignedExams(userId)
-    
-    // Get mock exams (available to all students)
-    const { data: mockExams, error } = await supabase
-      .from('exams')
-      .select('*')
-      .eq('is_mock_exam', true)
-      .eq('is_active', true)
+
+    // Get all completed exams by this user (including non-assigned ones)
+    const { data: completedAttempts, error: attemptsError } = await supabase
+      .from('test_attempts')
+      .select(
+        `
+        id,
+        exam_id,
+        status,
+        completed_at,
+        exams (*)
+      `
+      )
+      .eq('user_id', userId)
+      .eq('status', 'completed')
       .order('created_at', { ascending: false })
 
-    if (error) throw error
+    if (attemptsError) {
+      console.error('Error fetching completed attempts:', attemptsError)
+    }
 
-    // Combine and deduplicate exams
-    const allExams = [...assignedExams, ...(mockExams || [])]
-    const uniqueExams = allExams.filter((exam, index, self) => 
-      index === self.findIndex(e => e.id === exam.id)
+    // Create a set of all unique exam IDs (assigned + completed)
+    const assignedExamIds = new Set(assignedExams.map((exam) => exam.id))
+    const completedExamData = completedAttempts || []
+    const allExamIds = new Set([
+      ...assignedExamIds,
+      ...completedExamData.map((attempt) => attempt.exam_id),
+    ])
+
+    // Create a map of exam_id -> most recent completed attempt
+    const completedAttemptsMap = new Map()
+    completedExamData.forEach((attempt) => {
+      if (
+        !completedAttemptsMap.has(attempt.exam_id) ||
+        attempt.completed_at >
+          completedAttemptsMap.get(attempt.exam_id).completed_at
+      ) {
+        completedAttemptsMap.set(attempt.exam_id, attempt)
+      }
+    })
+
+    // Build the final list
+    const examsWithStatus = await Promise.all(
+      Array.from(allExamIds).map(async (examId) => {
+        let exam = assignedExams.find((e) => e.id === examId)
+        const isCurrentlyAssigned = !!exam
+
+        // If not assigned, get exam data from completed attempt
+        if (!exam) {
+          const completedAttempt = completedAttemptsMap.get(examId)
+          exam = completedAttempt?.exams
+          if (!exam) return null
+        }
+
+        // Get the most recent attempt for this exam (not just completed ones)
+        const { data: attempts, error } = await supabase
+          .from('test_attempts')
+          .select('id, status, completed_at')
+          .eq('user_id', userId)
+          .eq('exam_id', examId)
+          .order('created_at', { ascending: false })
+          .limit(1)
+
+        if (error) {
+          console.error('Error fetching attempt status:', error)
+          return {
+            ...exam,
+            completionStatus: 'not_started' as const,
+            isCurrentlyAssigned,
+          }
+        }
+
+        const latestAttempt = attempts?.[0]
+
+        if (!latestAttempt) {
+          return {
+            ...exam,
+            completionStatus: 'not_started' as const,
+            isCurrentlyAssigned,
+          }
+        }
+
+        return {
+          ...exam,
+          completionStatus: latestAttempt.status as
+            | 'not_started'
+            | 'in_progress'
+            | 'completed',
+          completedAttemptId:
+            latestAttempt.status === 'completed' ? latestAttempt.id : undefined,
+          isCurrentlyAssigned,
+        }
+      })
     )
 
-    return uniqueExams
+    return examsWithStatus.filter((exam) => exam !== null)
   }
 
   // Get exam by ID
@@ -176,12 +277,15 @@ export class ExamService {
     if (error) {
       throw error
     }
-    
+
     return !!data
   }
 
   // Check if results should be shown for a specific assignment
-  static async canShowResults(userId: string, examId: string): Promise<boolean> {
+  static async canShowResults(
+    userId: string,
+    examId: string
+  ): Promise<boolean> {
     const { data, error } = await supabase
       .from('exam_assignments')
       .select('show_results')
@@ -193,25 +297,101 @@ export class ExamService {
     if (error) {
       throw error
     }
-    
+
     return data?.show_results ?? true // Default to true if not found
   }
 
   // Get questions for exam module
-  static async getQuestions(examId: string, moduleType: ModuleType): Promise<Question[]> {
-    const { data, error } = await supabase
+  static async getQuestions(
+    examId: string,
+    moduleType: ModuleType
+  ): Promise<Question[]> {
+    console.log(
+      `🔍 getQuestions: Fetching questions for examId=${examId}, moduleType=${moduleType}`
+    )
+
+    // First try direct questions (for regular exams)
+    console.log('🔍 getQuestions: Trying direct questions first...')
+    const { data: directQuestions, error: directError } = await supabase
       .from('questions')
       .select('*')
       .eq('exam_id', examId)
       .eq('module_type', moduleType)
       .order('question_number', { ascending: true })
 
-    if (error) throw error
-    return data || []
+    if (directError) {
+      console.error(
+        '❌ getQuestions: Direct questions query error:',
+        directError
+      )
+      throw directError
+    }
+
+    console.log(
+      `✅ getQuestions: Found ${directQuestions?.length || 0} direct questions`
+    )
+
+    // If we found direct questions, return them
+    if (directQuestions && directQuestions.length > 0) {
+      console.log('✅ getQuestions: Returning direct questions')
+      return directQuestions
+    }
+
+    // If no direct questions, try linked questions (for mistake-based assignments)
+    console.log(
+      '🔍 getQuestions: No direct questions found, trying linked questions...'
+    )
+    const { data: linkedQuestions, error: linkedError } = await supabase
+      .from('exam_questions')
+      .select(
+        `
+        questions!inner (*)
+      `
+      )
+      .eq('exam_id', examId)
+      .eq('questions.module_type', moduleType)
+
+    if (linkedError) {
+      console.error(
+        '❌ getQuestions: Linked questions query error:',
+        linkedError
+      )
+      throw linkedError
+    }
+
+    console.log(
+      `✅ getQuestions: Found ${linkedQuestions?.length || 0} linked questions`
+    )
+
+    // Extract questions from the linked results and sort by question_number
+    const questions =
+      (linkedQuestions
+        ?.map((item: any) => item.questions)
+        .filter(
+          (question: Question | null) => question !== null
+        ) as Question[]) || []
+
+    // Sort by question_number since we cannot do it in the query
+    questions.sort((a, b) => a.question_number - b.question_number)
+
+    console.log(
+      `✅ getQuestions: Final result: ${questions.length} questions for ${moduleType}`
+    )
+
+    if (questions.length === 0) {
+      console.warn(
+        `⚠️ getQuestions: No questions found for examId=${examId}, moduleType=${moduleType}`
+      )
+    }
+
+    return questions
   }
 
   // Update a question
-  static async updateQuestion(questionId: string, updates: Partial<Question>): Promise<Question> {
+  static async updateQuestion(
+    questionId: string,
+    updates: Partial<Question>
+  ): Promise<Question> {
     const { data, error } = await supabase
       .from('questions')
       .update(updates)
@@ -224,8 +404,12 @@ export class ExamService {
   }
 
   // Create new test attempt
-  static async createTestAttempt(attempt: CreateTestAttempt): Promise<TestAttempt> {
-    const { data, error } = await supabase
+  static async createTestAttempt(
+    attempt: CreateTestAttempt,
+    supabaseClient?: any
+  ): Promise<TestAttempt> {
+    const client = supabaseClient || supabase
+    const { data, error } = await client
       .from('test_attempts')
       .insert(attempt)
       .select()
@@ -235,11 +419,19 @@ export class ExamService {
     return data
   }
 
-  // Get user's test attempts
-  static async getUserAttempts(userId: string, examId?: string): Promise<TestAttempt[]> {
+  // Get user's test attempts with exam details
+  static async getUserAttempts(
+    userId: string,
+    examId?: string
+  ): Promise<(TestAttempt & { exam?: Exam })[]> {
     let query = supabase
       .from('test_attempts')
-      .select('*')
+      .select(
+        `
+        *,
+        exam:exams(*)
+      `
+      )
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
@@ -254,7 +446,10 @@ export class ExamService {
   }
 
   // Check for existing in-progress or expired attempt for specific exam
-  static async getInProgressAttempt(userId: string, examId: string): Promise<TestAttempt | null> {
+  static async getInProgressAttempt(
+    userId: string,
+    examId: string
+  ): Promise<TestAttempt | null> {
     const { data, error } = await supabase
       .from('test_attempts')
       .select('*')
@@ -305,7 +500,10 @@ export class ExamService {
   }
 
   // Clean up duplicate in_progress attempts for same exam (keep only the most recent)
-  static async cleanupDuplicateAttempts(userId: string, examId: string): Promise<void> {
+  static async cleanupDuplicateAttempts(
+    userId: string,
+    examId: string
+  ): Promise<void> {
     try {
       // Get all in_progress/not_started attempts for this user and exam
       const { data: attempts, error } = await supabase
@@ -332,7 +530,10 @@ export class ExamService {
   }
 
   // Update test attempt
-  static async updateTestAttempt(attemptId: string, updates: Partial<TestAttempt>): Promise<TestAttempt> {
+  static async updateTestAttempt(
+    attemptId: string,
+    updates: Partial<TestAttempt>
+  ): Promise<TestAttempt> {
     const { data, error } = await supabase
       .from('test_attempts')
       .update(updates)
@@ -356,6 +557,93 @@ export class ExamService {
     return data
   }
 
+  // Submit answer and mark as viewed (for per-question mode)
+  static async submitAnswerWithView(answer: CreateUserAnswer): Promise<{
+    userAnswer: UserAnswer
+    question: Question
+    isCorrect: boolean
+  }> {
+    // Submit the answer first
+    const userAnswer = await this.submitAnswer(answer)
+
+    // Get the question details to check correctness
+    const { data: question, error: questionError } = await supabase
+      .from('questions')
+      .select('*')
+      .eq('id', answer.question_id)
+      .single()
+
+    if (questionError) throw questionError
+
+    // Check if answer is correct
+    const isCorrect = this.checkAnswer(question, answer.user_answer || '')
+
+    // Mark answer as viewed if per-question mode
+    const { error: viewError } = await supabase
+      .from('user_answers')
+      .update({ viewed_correct_answer_at: new Date().toISOString() })
+      .eq('attempt_id', answer.attempt_id)
+      .eq('question_id', answer.question_id)
+
+    if (viewError) throw viewError
+
+    return {
+      userAnswer,
+      question,
+      isCorrect,
+    }
+  }
+
+  // Check if answer is correct
+  static checkAnswer(question: Question, userAnswer: string): boolean {
+    if (!userAnswer || !question.correct_answer) return false
+
+    if (question.question_type === 'grid_in') {
+      // For grid-in questions, check against all possible correct answers
+      const correctAnswers = question.correct_answers || [
+        question.correct_answer,
+      ]
+      return correctAnswers.some(
+        (correct) =>
+          String(correct).trim().toLowerCase() ===
+          String(userAnswer).trim().toLowerCase()
+      )
+    }
+
+    // For multiple choice, direct comparison
+    return (
+      String(question.correct_answer).trim().toLowerCase() ===
+      String(userAnswer).trim().toLowerCase()
+    )
+  }
+
+  // Get exam answer check mode
+  static async getExamAnswerMode(
+    examId: string
+  ): Promise<'exam_end' | 'per_question'> {
+    const { data, error } = await supabase
+      .from('exams')
+      .select('answer_check_mode')
+      .eq('id', examId)
+      .single()
+
+    if (error) throw error
+    return data?.answer_check_mode || 'exam_end'
+  }
+
+  // Update exam answer check mode
+  static async updateExamAnswerMode(
+    examId: string,
+    mode: 'exam_end' | 'per_question'
+  ): Promise<void> {
+    const { error } = await supabase
+      .from('exams')
+      .update({ answer_check_mode: mode })
+      .eq('id', examId)
+
+    if (error) throw error
+  }
+
   // Get user answers for attempt
   static async getUserAnswers(attemptId: string): Promise<UserAnswer[]> {
     const { data, error } = await supabase
@@ -368,19 +656,85 @@ export class ExamService {
     return data || []
   }
 
+  // Get incorrect questions for a specific attempt (for Second Chance review)
+  static async getIncorrectQuestionsForAttempt(
+    attemptId: string
+  ): Promise<Question[]> {
+    console.log(
+      `🔍 getIncorrectQuestionsForAttempt: Fetching incorrect questions for attemptId=${attemptId}`
+    )
+
+    // Get all incorrect answers for this attempt with question details
+    const { data: incorrectAnswers, error } = await supabase
+      .from('user_answers')
+      .select(
+        `
+        question_id,
+        questions!inner (*)
+      `
+      )
+      .eq('attempt_id', attemptId)
+      .eq('is_correct', false)
+
+    if (error) {
+      console.error('❌ getIncorrectQuestionsForAttempt: Query error:', error)
+      throw error
+    }
+
+    console.log(
+      `✅ getIncorrectQuestionsForAttempt: Found ${incorrectAnswers?.length || 0} incorrect answers`
+    )
+
+    if (!incorrectAnswers || incorrectAnswers.length === 0) {
+      return []
+    }
+
+    // Extract questions and sort by module_type and question_number (original order)
+    const questions = incorrectAnswers
+      .map((item: any) => item.questions)
+      .filter((question: Question | null) => question !== null) as Question[]
+
+    // Sort by module_type priority and then by question_number to maintain original exam order
+    const moduleOrder: Record<ModuleType, number> = {
+      english1: 1,
+      english2: 2,
+      math1: 3,
+      math2: 4,
+    }
+
+    questions.sort((a, b) => {
+      const moduleComparison =
+        moduleOrder[a.module_type] - moduleOrder[b.module_type]
+      if (moduleComparison !== 0) {
+        return moduleComparison
+      }
+      return a.question_number - b.question_number
+    })
+
+    console.log(
+      `✅ getIncorrectQuestionsForAttempt: Returning ${questions.length} questions in original order`
+    )
+
+    return questions
+  }
+
   // Calculate and update scores
-  static async calculateScore(attemptId: string): Promise<{ totalScore: number; moduleScores: Record<ModuleType, number> }> {
+  static async calculateScore(
+    attemptId: string
+  ): Promise<{ totalScore: number; moduleScores: Record<ModuleType, number> }> {
     // Get all answers for this attempt with question details
     const { data: answers, error } = await supabase
       .from('user_answers')
-      .select(`
+      .select(
+        `
         *,
         questions:question_id (
           module_type,
           points,
           correct_answer
         )
-      `)
+      `
+      )
       .eq('attempt_id', attemptId)
 
     if (error) throw error
@@ -390,7 +744,7 @@ export class ExamService {
       english1: 0,
       english2: 0,
       math1: 0,
-      math2: 0
+      math2: 0,
     }
 
     answers?.forEach((answer: any) => {
@@ -404,7 +758,7 @@ export class ExamService {
     // Update the test attempt with scores
     await this.updateTestAttempt(attemptId, {
       total_score: totalScore,
-      module_scores: moduleScores
+      module_scores: moduleScores,
     })
 
     return { totalScore, moduleScores }
@@ -418,7 +772,7 @@ export class ExamService {
     // Mark as completed
     return await this.updateTestAttempt(attemptId, {
       status: 'completed',
-      completed_at: new Date().toISOString()
+      completed_at: new Date().toISOString(),
     })
   }
 
@@ -441,22 +795,23 @@ export class ExamService {
 
       const attempts = completedAttempts || []
       const examsTaken = attempts.length
-      const bestScore = attempts.length > 0 
-        ? Math.max(...attempts.map(attempt => attempt.total_score || 0))
-        : null
+      const bestScore =
+        attempts.length > 0
+          ? Math.max(...attempts.map((attempt) => attempt.total_score || 0))
+          : null
       const recentAttempts = attempts.slice(0, 5) // Last 5 attempts
 
       return {
         examsTaken,
         bestScore,
-        recentAttempts
+        recentAttempts,
       }
     } catch (error) {
       console.error('Error fetching dashboard stats:', error)
       return {
         examsTaken: 0,
         bestScore: null,
-        recentAttempts: []
+        recentAttempts: [],
       }
     }
   }

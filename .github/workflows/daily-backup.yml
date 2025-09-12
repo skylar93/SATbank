@@ -1,0 +1,60 @@
+name: Daily Data Backup
+
+on:
+  schedule:
+    # 매일 한국시간 오전 2시 (UTC 17:00)
+    - cron: '0 17 * * *'
+  
+  # 수동으로도 실행 가능
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: |
+        npm install @supabase/supabase-js
+    
+    - name: Run backup script
+      env:
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      run: |
+        chmod +x scripts/daily-backup.js
+        node scripts/daily-backup.js
+    
+    - name: Commit and push backup files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add scripts/backups/
+        
+        # Check if there are changes to commit
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "🤖 Daily backup $(date +'%Y-%m-%d')"
+          git push
+        fi
+    
+    - name: Backup status comment
+      if: always()
+      run: |
+        if [ ${{ job.status }} == 'success' ]; then
+          echo "✅ Daily backup completed successfully on $(date)"
+        else
+          echo "❌ Daily backup failed on $(date)"
+        fi

@@ -10,14 +10,21 @@ interface ProgressChartProps {
 export function ProgressChart({ data }: ProgressChartProps) {
   // Handle empty data
   if (!data.scores || data.scores.length === 0) {
-    return <div className="p-6 text-center text-gray-500">No score data available</div>
+    return (
+      <div className="p-6 text-center text-gray-500">
+        No score data available
+      </div>
+    )
   }
 
   const maxScore = Math.max(...data.scores)
   const minScore = Math.min(...data.scores)
   const latestScore = data.scores[data.scores.length - 1]
-  const improvement = data.scores.length > 1 ? latestScore - data.scores[data.scores.length - 2] : 0
-  
+  const improvement =
+    data.scores.length > 1
+      ? latestScore - data.scores[data.scores.length - 2]
+      : 0
+
   return (
     <div className="space-y-6">
       {/* Header Stats */}
@@ -25,8 +32,11 @@ export function ProgressChart({ data }: ProgressChartProps) {
         <div>
           <p className="text-sm text-gray-600 mb-1">Latest Score</p>
           <p className="text-2xl font-bold text-gray-900">{latestScore}</p>
-          <p className={`text-sm font-medium ${improvement >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {improvement >= 0 ? '+' : ''}{improvement} from last test
+          <p
+            className={`text-sm font-medium ${improvement >= 0 ? 'text-green-600' : 'text-red-600'}`}
+          >
+            {improvement >= 0 ? '+' : ''}
+            {improvement} from last test
           </p>
         </div>
         <div className="text-right">
@@ -37,31 +47,47 @@ export function ProgressChart({ data }: ProgressChartProps) {
 
       {/* Clean Line Chart */}
       <div className="relative h-64 bg-gray-50 rounded-2xl p-6">
-        
         <svg className="w-full h-full" viewBox="0 0 400 200">
           <defs>
-            <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <linearGradient
+              id="scoreGradient"
+              x1="0%"
+              y1="0%"
+              x2="0%"
+              y2="100%"
+            >
               <stop offset="0%" stopColor="rgba(139, 92, 246, 0.2)" />
               <stop offset="100%" stopColor="rgba(139, 92, 246, 0.02)" />
             </linearGradient>
           </defs>
-          
-          
+
           {/* Score line and area */}
           {data.scores.length > 1 && (
             <>
               <path
-                d={`M 50 ${175 - ((data.scores[0] - 1000) / 600) * 125} ${data.scores.map((score, index) => {
-                  const xPos = data.scores.length === 1 ? 200 : 50 + (index / (data.scores.length - 1)) * 300
-                  return `L ${xPos} ${175 - ((score - 1000) / 600) * 125}`
-                }).join(' ')} L ${data.scores.length === 1 ? 200 : 50 + ((data.scores.length - 1) / (data.scores.length - 1)) * 300} 175 L 50 175 Z`}
+                d={`M 50 ${175 - ((data.scores[0] - 1000) / 600) * 125} ${data.scores
+                  .map((score, index) => {
+                    const xPos =
+                      data.scores.length === 1
+                        ? 200
+                        : 50 + (index / (data.scores.length - 1)) * 300
+                    return `L ${xPos} ${175 - ((score - 1000) / 600) * 125}`
+                  })
+                  .join(
+                    ' '
+                  )} L ${data.scores.length === 1 ? 200 : 50 + ((data.scores.length - 1) / (data.scores.length - 1)) * 300} 175 L 50 175 Z`}
                 fill="url(#scoreGradient)"
               />
               <path
-                d={`M 50 ${175 - ((data.scores[0] - 1000) / 600) * 125} ${data.scores.map((score, index) => {
-                  const xPos = data.scores.length === 1 ? 200 : 50 + (index / (data.scores.length - 1)) * 300
-                  return `L ${xPos} ${175 - ((score - 1000) / 600) * 125}`
-                }).join(' ')}`}
+                d={`M 50 ${175 - ((data.scores[0] - 1000) / 600) * 125} ${data.scores
+                  .map((score, index) => {
+                    const xPos =
+                      data.scores.length === 1
+                        ? 200
+                        : 50 + (index / (data.scores.length - 1)) * 300
+                    return `L ${xPos} ${175 - ((score - 1000) / 600) * 125}`
+                  })
+                  .join(' ')}`}
                 fill="none"
                 stroke="rgb(139, 92, 246)"
                 strokeWidth="2"
@@ -70,10 +96,13 @@ export function ProgressChart({ data }: ProgressChartProps) {
               />
             </>
           )}
-          
+
           {/* Score points */}
           {data.scores.map((score, index) => {
-            const xPos = data.scores.length === 1 ? 200 : 50 + (index / (data.scores.length - 1)) * 300
+            const xPos =
+              data.scores.length === 1
+                ? 200
+                : 50 + (index / (data.scores.length - 1)) * 300
             return (
               <circle
                 key={index}
@@ -86,7 +115,7 @@ export function ProgressChart({ data }: ProgressChartProps) {
               />
             )
           })}
-          
+
           {/* Y-axis labels */}
           {[1000, 1200, 1400, 1600].map((score) => (
             <text
@@ -100,10 +129,13 @@ export function ProgressChart({ data }: ProgressChartProps) {
               {score}
             </text>
           ))}
-          
+
           {/* X-axis labels */}
           {data.labels.map((label, index) => {
-            const xPos = data.scores.length === 1 ? 200 : 50 + (index / (data.scores.length - 1)) * 300
+            const xPos =
+              data.scores.length === 1
+                ? 200
+                : 50 + (index / (data.scores.length - 1)) * 300
             return (
               <text
                 key={index}
@@ -124,17 +156,24 @@ export function ProgressChart({ data }: ProgressChartProps) {
       <div className="grid grid-cols-3 gap-4">
         <div className="text-center p-4 bg-white rounded-xl border border-gray-100">
           <p className="text-xs text-gray-600 mb-1">Improvement</p>
-          <p className={`text-lg font-bold ${latestScore - data.scores[0] >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {latestScore - data.scores[0] >= 0 ? '+' : ''}{latestScore - data.scores[0]}
+          <p
+            className={`text-lg font-bold ${latestScore - data.scores[0] >= 0 ? 'text-green-600' : 'text-red-600'}`}
+          >
+            {latestScore - data.scores[0] >= 0 ? '+' : ''}
+            {latestScore - data.scores[0]}
           </p>
         </div>
         <div className="text-center p-4 bg-white rounded-xl border border-gray-100">
           <p className="text-xs text-gray-600 mb-1">Tests Taken</p>
-          <p className="text-lg font-bold text-gray-900">{data.scores.length}</p>
+          <p className="text-lg font-bold text-gray-900">
+            {data.scores.length}
+          </p>
         </div>
         <div className="text-center p-4 bg-white rounded-xl border border-gray-100">
           <p className="text-xs text-gray-600 mb-1">To Goal</p>
-          <p className="text-lg font-bold text-violet-600">{1600 - latestScore}</p>
+          <p className="text-lg font-bold text-violet-600">
+            {1600 - latestScore}
+          </p>
         </div>
       </div>
     </div>
@@ -196,17 +235,29 @@ export function SubjectPerformanceChart({ data }: SubjectPerformanceProps) {
             />
             {/* Gradient definitions */}
             <defs>
-              <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient
+                id="gradient1"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
                 <stop offset="0%" stopColor="#8b5cf6" />
                 <stop offset="100%" stopColor="#a855f7" />
               </linearGradient>
-              <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient
+                id="gradient2"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
                 <stop offset="0%" stopColor="#3b82f6" />
                 <stop offset="100%" stopColor="#1d4ed8" />
               </linearGradient>
             </defs>
           </svg>
-          
+
           {/* Center content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <div className="text-3xl font-bold text-gray-900">{totalScore}</div>
@@ -220,9 +271,13 @@ export function SubjectPerformanceChart({ data }: SubjectPerformanceProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-3 h-3 rounded-full bg-gradient-to-r from-violet-500 to-purple-500"></div>
-            <span className="text-sm font-medium text-gray-700">Reading & Writing</span>
+            <span className="text-sm font-medium text-gray-700">
+              Reading & Writing
+            </span>
           </div>
-          <span className="text-sm font-bold text-gray-900">{data.reading + data.writing}</span>
+          <span className="text-sm font-bold text-gray-900">
+            {data.reading + data.writing}
+          </span>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -257,7 +312,9 @@ export function WeeklyActivityChart({ data }: WeeklyActivityProps) {
         </div>
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 rounded-full bg-gradient-to-r from-pink-500 to-rose-500"></div>
-          <span className="text-sm font-medium text-gray-600">Practice Tests</span>
+          <span className="text-sm font-medium text-gray-600">
+            Practice Tests
+          </span>
         </div>
       </div>
 
@@ -266,26 +323,30 @@ export function WeeklyActivityChart({ data }: WeeklyActivityProps) {
         {data.days.map((day, index) => (
           <div key={day} className="flex items-center space-x-4">
             <div className="w-8 text-sm font-medium text-gray-600">{day}</div>
-            
+
             {/* Study Time Bar */}
             <div className="flex-1 flex items-center space-x-3">
               <div className="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all duration-1000 ease-out"
-                  style={{ width: `${(data.studyTime[index] / (maxValue || 1)) * 100}%` }}
+                  style={{
+                    width: `${(data.studyTime[index] / (maxValue || 1)) * 100}%`,
+                  }}
                 />
               </div>
               <div className="w-12 text-sm font-medium text-gray-900 text-right">
                 {data.studyTime[index]}h
               </div>
             </div>
-            
+
             {/* Practice Tests Bar */}
             <div className="flex-1 flex items-center space-x-3">
               <div className="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-pink-500 to-rose-500 rounded-full transition-all duration-1000 ease-out"
-                  style={{ width: `${(data.practiceTests[index] / (maxValue || 1)) * 100}%` }}
+                  style={{
+                    width: `${(data.practiceTests[index] / (maxValue || 1)) * 100}%`,
+                  }}
                 />
               </div>
               <div className="w-12 text-sm font-medium text-gray-900 text-right">
@@ -324,23 +385,19 @@ interface CircularProgressProps {
   color?: string
 }
 
-export function CircularProgress({ 
-  percentage, 
-  size = 120, 
-  strokeWidth = 8, 
-  color = 'rgb(139, 92, 246)' 
+export function CircularProgress({
+  percentage,
+  size = 120,
+  strokeWidth = 8,
+  color = 'rgb(139, 92, 246)',
 }: CircularProgressProps) {
   const radius = (size - strokeWidth) / 2
   const circumference = radius * 2 * Math.PI
   const strokeDasharray = `${(percentage / 100) * circumference} ${circumference}`
-  
+
   return (
     <div className="relative" style={{ width: size, height: size }}>
-      <svg
-        className="transform -rotate-90"
-        width={size}
-        height={size}
-      >
+      <svg className="transform -rotate-90" width={size} height={size}>
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -364,7 +421,9 @@ export function CircularProgress({
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-2xl font-bold text-gray-900">{Math.round(percentage)}%</span>
+        <span className="text-2xl font-bold text-gray-900">
+          {Math.round(percentage)}%
+        </span>
       </div>
     </div>
   )
