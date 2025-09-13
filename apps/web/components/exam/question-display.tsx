@@ -23,6 +23,7 @@ import FloatingHighlightButton from './FloatingHighlightButton'
 import { AnswerRevealCard } from './AnswerRevealCard'
 import { ContentRenderer } from '../content-renderer'
 import { QuestionTimer } from './question-timer'
+import { parseCorrectAnswers, formatCorrectAnswersDisplay } from '../../lib/grid-in-validator'
 
 // HTML rendering function for content that is already in HTML format
 export const renderHtmlContent = (htmlContent: string) => {
@@ -366,78 +367,6 @@ interface QuestionDisplayProps {
   isPaused?: boolean
   examTitle?: string
   examId?: string
-}
-
-// Helper function to parse correct answers for grid-in questions
-const parseCorrectAnswers = (question: Question): string[] => {
-  if (question.question_type !== 'grid_in') {
-    return []
-  }
-
-  let answers: string[] | string | null = question.correct_answers
-
-  // Handle null/undefined
-  if (!answers) {
-    return [question.correct_answer || '']
-  }
-
-  // Handle array case
-  if (Array.isArray(answers)) {
-    const parsedAnswers: string[] = []
-
-    for (const answer of answers) {
-      if (
-        typeof answer === 'string' &&
-        (answer.startsWith('[') || answer.startsWith('"'))
-      ) {
-        // Try to parse as JSON
-        try {
-          const parsed = JSON.parse(answer)
-
-          if (Array.isArray(parsed)) {
-            // If parsed result is an array, add all elements
-            parsedAnswers.push(
-              ...parsed.map((p: any) => String(p || '').trim())
-            )
-          } else {
-            // If parsed result is a single value, add it
-            parsedAnswers.push(String(parsed || '').trim())
-          }
-        } catch (error) {
-          // If parsing fails, treat as regular string
-          parsedAnswers.push(String(answer || '').trim())
-        }
-      } else {
-        // Regular string, just add it
-        parsedAnswers.push(String(answer || '').trim())
-      }
-    }
-
-    const filtered = parsedAnswers.filter((a: string) => a.length > 0)
-    return filtered.length > 0 ? filtered : [question.correct_answer || '']
-  }
-
-  // If it's a string, try to parse it as JSON
-  if (typeof answers === 'string') {
-    try {
-      answers = JSON.parse(answers)
-
-      if (Array.isArray(answers)) {
-        const filtered = answers
-          .map((a: any) => String(a || '').trim())
-          .filter((a: string) => a.length > 0)
-        return filtered.length > 0 ? filtered : [question.correct_answer || '']
-      } else {
-        return [String(answers).trim()]
-      }
-    } catch (error) {
-      // If parsing fails, treat as single answer
-      return [String(answers || '')]
-    }
-  }
-
-  // Fallback for other types
-  return [String(answers) || question.correct_answer || '']
 }
 
 export function QuestionDisplay({
@@ -1310,7 +1239,7 @@ export function QuestionDisplay({
                     }
                   >
                     {localQuestion.question_type === 'grid_in'
-                      ? parseCorrectAnswers(localQuestion).join(', ')
+                      ? formatCorrectAnswersDisplay(parseCorrectAnswers(localQuestion))
                       : localQuestion.correct_answer}
                   </span>
                 </p>

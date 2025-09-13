@@ -27,7 +27,7 @@ export function Toast({
   }, [duration, onClose])
 
   const baseClasses =
-    'fixed top-4 right-4 z-50 px-4 py-2 rounded-md shadow-lg transition-all duration-300 transform'
+    'fixed bottom-4 right-4 z-50 px-4 py-2 rounded-md shadow-lg transition-all duration-300 transform'
   const typeClasses = {
     success: 'bg-green-600 text-white',
     error: 'bg-red-600 text-white',
@@ -67,7 +67,7 @@ interface ToastContainerProps {
 
 export function ToastContainer({ toasts, removeToast }: ToastContainerProps) {
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className="fixed bottom-4 right-4 z-50 space-y-2">
       {toasts.map((toast) => (
         <Toast
           key={toast.id}

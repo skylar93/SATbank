@@ -28,8 +28,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { Toast } from '@/components/ui/toast'
 import { supabase } from '@/lib/supabase'
+import { toast } from 'sonner'
 import {
   Plus,
   BookOpen,
@@ -113,11 +113,6 @@ export default function VocabSetDetailPage() {
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState('')
   const [masteryFilter, setMasteryFilter] = useState('all')
-
-  const [toast, setToast] = useState<{
-    message: string
-    type: 'success' | 'error'
-  } | null>(null)
 
   // Use the centralized Supabase client
   const { speak, isPlaying } = useTTS()
@@ -209,10 +204,7 @@ export default function VocabSetDetailPage() {
 
   const handleAddEntry = async () => {
     if (!newTerm.trim() || !newDefinition.trim()) {
-      setToast({
-        message: 'Please fill in both term and definition',
-        type: 'error',
-      })
+      toast.error('Please fill in both term and definition')
       return
     }
 
@@ -234,7 +226,7 @@ export default function VocabSetDetailPage() {
 
       if (error) throw error
 
-      setToast({ message: 'Word added successfully!', type: 'success' })
+      toast.success('Word added successfully!')
       setNewTerm('')
       setNewDefinition('')
       setNewExample('')
@@ -244,7 +236,7 @@ export default function VocabSetDetailPage() {
       fetchVocabSetAndEntries()
     } catch (error) {
       console.error('Error adding entry:', error)
-      setToast({ message: 'Failed to add word', type: 'error' })
+      toast.error('Failed to add word')
     } finally {
       setIsCreating(false)
     }
@@ -261,10 +253,7 @@ export default function VocabSetDetailPage() {
 
   const handleUpdateEntry = async () => {
     if (!editTerm.trim() || !editDefinition.trim()) {
-      setToast({
-        message: 'Please fill in both term and definition',
-        type: 'error',
-      })
+      toast.error('Please fill in both term and definition')
       return
     }
 
@@ -282,12 +271,12 @@ export default function VocabSetDetailPage() {
 
       if (error) throw error
 
-      setToast({ message: 'Word updated successfully!', type: 'success' })
+      toast.success('Word updated successfully!')
       setEditingEntry(null)
       fetchVocabSetAndEntries()
     } catch (error) {
       console.error('Error updating entry:', error)
-      setToast({ message: 'Failed to update word', type: 'error' })
+      toast.error('Failed to update word')
     } finally {
       setIsUpdating(false)
     }

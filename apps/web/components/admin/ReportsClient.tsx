@@ -53,7 +53,7 @@ interface ReportsClientProps {
 
 export default function ReportsClient({ attempts }: ReportsClientProps) {
   const [searchTerm, setSearchTerm] = useState('')
-  const [viewMode, setViewMode] = useState<'attempts' | 'students'>('attempts')
+  const [viewMode, setViewMode] = useState<'attempts' | 'students'>('students')
   const [filters, setFilters] = useState<FilterState>({
     examFilter: '',
     studentFilter: '',

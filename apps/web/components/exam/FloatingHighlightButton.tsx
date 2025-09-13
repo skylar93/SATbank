@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Highlighter, Languages } from 'lucide-react'
 import { autoAddToVocab } from '@/lib/dictionary-actions'
 import { useAuth } from '@/contexts/auth-context'
+import { toast } from 'sonner'
 
 interface Highlight {
   start: number
@@ -36,15 +37,6 @@ export default function FloatingHighlightButton({
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isHoveringRef = useRef(false)
   const [isAddingVocab, setIsAddingVocab] = useState(false)
-  const [feedbackMessage, setFeedbackMessage] = useState<{
-    text: string
-    type: 'success' | 'error'
-  } | null>(null)
-
-  const showFeedback = (text: string, type: 'success' | 'error') => {
-    setFeedbackMessage({ text, type })
-    setTimeout(() => setFeedbackMessage(null), 3000)
-  }
 
   useEffect(() => {
     const handleSelectionChange = () => {
@@ -240,7 +232,7 @@ export default function FloatingHighlightButton({
 
   const handleAddToVocab = async () => {
     if (!user) {
-      showFeedback('Please sign in to add vocabulary', 'error')
+      toast.error('Please sign in to add vocabulary')
       return
     }
 
@@ -249,13 +241,13 @@ export default function FloatingHighlightButton({
     // Basic validation for selected text
     const cleanText = selectedText.trim()
     if (cleanText.length < 2 || cleanText.length > 50) {
-      showFeedback('Please select a word between 2-50 characters', 'error')
+      toast.error('Please select a word between 2-50 characters')
       return
     }
 
     // Check if it's a reasonable word (no excessive punctuation or numbers)
     if (/^[^a-zA-Z]*$/.test(cleanText) || cleanText.split(' ').length > 3) {
-      showFeedback('Please select a valid word or short phrase', 'error')
+      toast.error('Please select a valid word or short phrase')
       return
     }
 
@@ -269,17 +261,17 @@ export default function FloatingHighlightButton({
       )
 
       if (result.success) {
-        showFeedback(result.message, 'success')
+        toast.success(result.message)
         
         // Clear selection
         window.getSelection()?.removeAllRanges()
         setIsVisible(false)
       } else {
-        showFeedback(result.message, 'error')
+        toast.error(result.message)
       }
     } catch (error) {
       console.error('Error adding vocabulary:', error)
-      showFeedback('Failed to add vocabulary. Please try again.', 'error')
+      toast.error('Failed to add vocabulary. Please try again.')
     } finally {
       setIsAddingVocab(false)
     }
@@ -343,24 +335,6 @@ export default function FloatingHighlightButton({
           )}
         </button>
       </div>
-
-      {/* Feedback Toast */}
-      {feedbackMessage && (
-        <div
-          className={`fixed top-4 right-4 z-[9999] px-4 py-2 rounded-lg shadow-lg max-w-sm transition-all duration-300 animate-in slide-in-from-right-4 ${
-            feedbackMessage.type === 'success'
-              ? 'bg-green-100 border border-green-300 text-green-800'
-              : 'bg-red-100 border border-red-300 text-red-800'
-          }`}
-        >
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium">
-              {feedbackMessage.type === 'success' ? '✅' : '❌'}
-            </span>
-            <span className="text-sm">{feedbackMessage.text}</span>
-          </div>
-        </div>
-      )}
     </>
   )
 }

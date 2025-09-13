@@ -599,15 +599,10 @@ export class ExamService {
     if (!userAnswer || !question.correct_answer) return false
 
     if (question.question_type === 'grid_in') {
-      // For grid-in questions, check against all possible correct answers
-      const correctAnswers = question.correct_answers || [
-        question.correct_answer,
-      ]
-      return correctAnswers.some(
-        (correct) =>
-          String(correct).trim().toLowerCase() ===
-          String(userAnswer).trim().toLowerCase()
-      )
+      // Import the grid-in validator
+      const { validateGridInAnswer } = require('./grid-in-validator')
+      const result = validateGridInAnswer(question, userAnswer)
+      return result.isCorrect
     }
 
     // For multiple choice, direct comparison

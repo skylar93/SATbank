@@ -196,20 +196,30 @@ export default function StudentReportRow({ student }: StudentReportRowProps) {
                             </td>
                             <td className="px-4 py-3">
                               <div className="flex space-x-2">
-                                <Link
-                                  href={`/admin/results/${attempt.attempt_id}`}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    window.open(`/admin/results/${attempt.attempt_id}`, '_blank')
+                                  }}
                                   className="text-gray-500 hover:text-gray-700"
-                                  onClick={(e) => e.stopPropagation()}
+                                  title="View Results"
                                 >
                                   <EyeIcon className="w-4 h-4" />
-                                </Link>
-                                <Link
-                                  href={`/admin/results/${attempt.attempt_id}/review`}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    window.open(`/admin/results/${attempt.attempt_id}/review`, '_blank')
+                                  }}
                                   className="text-gray-500 hover:text-gray-700"
-                                  onClick={(e) => e.stopPropagation()}
+                                  title="Review Exam"
                                 >
                                   <PencilSquareIcon className="w-4 h-4" />
-                                </Link>
+                                </button>
                               </div>
                             </td>
                           </tr>

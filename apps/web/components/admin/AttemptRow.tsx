@@ -107,22 +107,30 @@ export default function AttemptRow({ attempt }: AttemptRowProps) {
 
       <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium">
         <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Link
-            href={`/admin/results/${attempt.attempt_id}`}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              window.open(`/admin/results/${attempt.attempt_id}`, '_blank')
+            }}
             className="p-2 hover:bg-gray-100 rounded"
             title="View Details"
-            onClick={(e) => e.stopPropagation()}
           >
             <Eye className="h-4 w-4" />
-          </Link>
-          <Link
-            href={`/admin/results/${attempt.attempt_id}/review`}
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              window.open(`/admin/results/${attempt.attempt_id}/review`, '_blank')
+            }}
             className="p-2 hover:bg-gray-100 rounded"
             title="Edit / Regrade"
-            onClick={(e) => e.stopPropagation()}
           >
             <PenSquare className="h-4 w-4" />
-          </Link>
+          </button>
         </div>
       </TableCell>
     </TableRow>
