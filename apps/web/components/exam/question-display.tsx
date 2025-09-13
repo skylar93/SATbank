@@ -1063,13 +1063,9 @@ export function QuestionDisplay({
                     </span>
                     {showExplanation && (
                       <>
-                        {isCorrectAnswer && (
+                        {isCorrectAnswer && !isUserAnswer && (
                           <span
-                            className={`text-sm font-bold ${
-                              !isUserAnswer
-                                ? 'text-green-700 bg-green-100 px-2 py-1 rounded-full border border-green-300'
-                                : 'text-green-600 font-medium'
-                            }`}
+                            className="text-sm font-bold text-green-700 bg-green-100 px-2 py-1 rounded-full border border-green-300"
                           >
                             ✓ Correct Answer
                           </span>
@@ -1202,24 +1198,16 @@ export function QuestionDisplay({
               }
             />
           </div>
-          {showExplanation && (
+          {showExplanation && isCorrect === false && (
             <div className="space-y-3">
               <div
-                className={`p-4 border rounded-lg ${
-                  isCorrect !== false
-                    ? 'bg-green-50 border-green-200'
-                    : 'bg-green-100 border-2 border-green-500 ring-1 ring-green-200'
-                }`}
+                className="p-4 border rounded-lg bg-green-100 border-2 border-green-500 ring-1 ring-green-200"
               >
                 <p
-                  className={`text-sm ${
-                    isCorrect !== false
-                      ? 'text-green-800'
-                      : 'text-green-900 font-bold'
-                  }`}
+                  className="text-sm text-green-900 font-bold"
                 >
                   <strong
-                    className={isCorrect === false ? 'text-green-800' : ''}
+                    className="text-green-800"
                   >
                     Correct Answer
                     {(() => {
@@ -1232,11 +1220,7 @@ export function QuestionDisplay({
                     :
                   </strong>{' '}
                   <span
-                    className={
-                      isCorrect === false
-                        ? 'bg-green-200 px-2 py-1 rounded font-bold'
-                        : ''
-                    }
+                    className="bg-green-200 px-2 py-1 rounded font-bold"
                   >
                     {localQuestion.question_type === 'grid_in'
                       ? formatCorrectAnswersDisplay(parseCorrectAnswers(localQuestion))
