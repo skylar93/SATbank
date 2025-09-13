@@ -660,16 +660,19 @@ export class ExamService {
     )
 
     // Get all incorrect answers for this attempt with question details
+    // Include: is_correct = false, is_correct = null, or user_answer is empty/null
     const { data: incorrectAnswers, error } = await supabase
       .from('user_answers')
       .select(
         `
         question_id,
+        user_answer,
+        is_correct,
         questions!inner (*)
       `
       )
       .eq('attempt_id', attemptId)
-      .eq('is_correct', false)
+      .or('is_correct.eq.false,is_correct.is.null,user_answer.is.null,user_answer.eq.')
 
     if (error) {
       console.error('❌ getIncorrectQuestionsForAttempt: Query error:', error)
@@ -677,15 +680,31 @@ export class ExamService {
     }
 
     console.log(
-      `✅ getIncorrectQuestionsForAttempt: Found ${incorrectAnswers?.length || 0} incorrect answers`
+      `✅ getIncorrectQuestionsForAttempt: Found ${incorrectAnswers?.length || 0} answers to check`
     )
 
     if (!incorrectAnswers || incorrectAnswers.length === 0) {
       return []
     }
 
+    // Filter to only truly incorrect answers (false, null, empty, or whitespace-only)
+    const trulyIncorrectAnswers = incorrectAnswers.filter((item: any) => {
+      return item.is_correct === false || 
+             item.is_correct === null || 
+             !item.user_answer || 
+             item.user_answer.trim() === ''
+    })
+
+    console.log(
+      `✅ getIncorrectQuestionsForAttempt: Found ${trulyIncorrectAnswers.length} truly incorrect answers`
+    )
+
+    if (trulyIncorrectAnswers.length === 0) {
+      return []
+    }
+
     // Extract questions and sort by module_type and question_number (original order)
-    const questions = incorrectAnswers
+    const questions = trulyIncorrectAnswers
       .map((item: any) => item.questions)
       .filter((question: Question | null) => question !== null) as Question[]
 

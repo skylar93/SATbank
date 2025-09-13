@@ -504,8 +504,10 @@ export const useExamStore = create<ExamState>((set, get) => ({
       )
 
       // Create a single "review" module containing all incorrect questions
+      // We'll use the first question's module type, but display will be handled dynamically
+      const firstQuestionModule = incorrectQuestions[0]?.module_type || 'english1'
       const reviewModule: ModuleState = {
-        module: 'english1', // Use a dummy module type
+        module: firstQuestionModule, // Use first question's module type
         questions: incorrectQuestions,
         currentQuestionIndex: 0,
         answers: {},

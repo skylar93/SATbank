@@ -940,7 +940,16 @@ function ExamPageContent() {
               {exam.title}
             </h1>
             <span className="text-sm text-gray-500">
-              {currentModule.module.replace(/(\d)/, ' $1').toUpperCase()}
+              {(() => {
+                const reviewForAttemptId = searchParams.get('review_for')
+                if (reviewForAttemptId && currentQuestion) {
+                  // In review mode, show the actual module type of the current question
+                  return `${currentQuestion.module_type.replace(/(\d)/, ' $1').toUpperCase()} (Review)`
+                } else {
+                  // Normal mode, show the current module
+                  return currentModule.module.replace(/(\d)/, ' $1').toUpperCase()
+                }
+              })()}
             </span>
           </div>
 
