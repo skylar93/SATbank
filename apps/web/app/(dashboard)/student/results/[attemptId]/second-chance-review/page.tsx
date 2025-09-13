@@ -49,9 +49,10 @@ export default function SecondChanceReviewPage() {
 
   useEffect(() => {
     if (user && attemptId) {
-      loadReviewData()
+      // Redirect to regular results page since answers are now visible
+      router.push(`/student/results/${attemptId}`)
     }
-  }, [user, attemptId])
+  }, [user, attemptId, router])
 
   const loadReviewData = async () => {
     try {

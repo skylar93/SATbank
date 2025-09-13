@@ -351,23 +351,22 @@ export default function DetailedResultsPage() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                        Second Chance Review Completed!
+                        Second Chance Completed! ✨
                       </h3>
                       <p className="text-gray-600 text-sm">
-                        You've completed your second chance attempt. View your
-                        potential score improvement and detailed review.
+                        Great job! You've completed your second chance review.
                         <br />
                         <span className="text-green-700 font-medium">
-                          See how you would have scored with correct answers
+                          All answers and explanations are now visible for this exam
                         </span>
                       </p>
                     </div>
                   </div>
                   <Link
-                    href={`/student/results/${attemptId}/second-chance-review`}
+                    href={`/student/results/${attemptId}/review`}
                     className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
-                    View Review →
+                    Review with Answers →
                   </Link>
                 </div>
               </div>
