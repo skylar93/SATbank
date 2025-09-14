@@ -18,7 +18,7 @@ import { ImageUpload } from '../image-upload'
 import { HelpCircle } from 'lucide-react'
 import { TableEditor } from '../admin/TableEditor'
 import { parseTableFromMarkdown, buildTableMarkdown } from '../../lib/utils'
-import { HighlightedTextRenderer } from './HighlightedTextRenderer'
+import { HighlightedTextRendererMemo } from './HighlightedTextRenderer'
 import FloatingHighlightButton from './FloatingHighlightButton'
 import { AnswerRevealCard } from './AnswerRevealCard'
 import { ContentRenderer } from '../content-renderer'
@@ -1667,7 +1667,7 @@ export function QuestionDisplay({
               ref={questionContentRef}
               className="text-gray-900 leading-relaxed relative overflow-visible min-h-[60px]"
             >
-              <HighlightedTextRenderer
+              <HighlightedTextRendererMemo
                 text={(() => {
                   // Simple priority-based rendering: HTML first, then fallback to markdown
                   if (

@@ -89,6 +89,19 @@
   opacity: 1;
 }
 
+/* Layered highlighting styles for overlapping highlights */
+mark.hl-layer-1 {
+  background-color: #FEF08A; /* yellow-200 */
+}
+
+mark.hl-layer-2 {
+  background-color: #FDE047; /* yellow-300 */
+}
+
+mark.hl-layer-3 {
+  background-color: #FACC15; /* yellow-400 */
+}
+
 /* Impersonation banner layout fixes */
 body.impersonation-active .flex.h-screen {
   padding-top: 44px;
