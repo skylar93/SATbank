@@ -78,6 +78,7 @@ export interface UserAnswer {
   is_correct: boolean | null
   time_spent_seconds: number
   answered_at: string
+  viewed_correct_answer_at: string | null
 }
 
 export interface CreateTestAttempt {

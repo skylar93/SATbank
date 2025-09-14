@@ -304,7 +304,7 @@ export default function ReviewPageClient({
               (ua) => ua.question_id === currentQuestion.id
             )
             const isSecondTryCorrect = 
-              isCorrect && currentUserAnswer?.viewed_correct_answer_at
+              isCorrect && !!currentUserAnswer?.viewed_correct_answer_at
 
             return (
               <QuestionDisplay

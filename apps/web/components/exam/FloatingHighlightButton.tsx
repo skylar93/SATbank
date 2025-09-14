@@ -46,6 +46,7 @@ export default function FloatingHighlightButton({
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isHoveringRef = useRef(false)
   const [isAddingVocab, setIsAddingVocab] = useState(false)
+  const storedRangeRef = useRef<Range | null>(null) // Store the actual Range object
 
   useEffect(() => {
     const handleSelectionChange = () => {
@@ -88,6 +89,9 @@ export default function FloatingHighlightButton({
         return
       }
 
+      // Store the range for later restoration
+      storedRangeRef.current = range.cloneRange()
+
       // Calculate text offsets within the container
       const containerElement = containerRef.current
       
@@ -112,11 +116,12 @@ export default function FloatingHighlightButton({
           // Get the text content of just the range
           const rangeText = preSelectionRange.toString()
           
-          console.log('Text offset calculation:', {
-            containerText: (actualContainer.textContent || '').substring(0, 100),
-            rangeText: rangeText.substring(0, 100),
-            calculatedOffset: rangeText.length
-          })
+          // Debug: uncomment for troubleshooting offset calculations
+          // console.log('Text offset calculation:', {
+          //   containerText: (actualContainer.textContent || '').substring(0, 100),
+          //   rangeText: rangeText.substring(0, 100),
+          //   calculatedOffset: rangeText.length
+          // })
           
           return rangeText.length
         } catch (error) {
@@ -159,19 +164,14 @@ export default function FloatingHighlightButton({
       const start = calculateTextOffset(containerElement, range.startContainer, range.startOffset)
       const end = start + text.length
       
-      console.log('Selection debug in FloatingHighlightButton:', {
-        selectedText: text,
-        selectedLength: text.length,
-        calculatedStart: start,
-        calculatedEnd: end,
-        containerText: (containerElement.textContent || '').substring(0, 200),
-        actualSelectionRange: {
-          startContainer: range.startContainer.nodeName,
-          startOffset: range.startOffset,
-          endContainer: range.endContainer.nodeName,
-          endOffset: range.endOffset
-        }
-      })
+      // Debug: uncomment for troubleshooting selection issues
+      // console.log('Selection debug in FloatingHighlightButton:', {
+      //   selectedText: text,
+      //   selectedLength: text.length,
+      //   calculatedStart: start,
+      //   calculatedEnd: end,
+      //   containerText: (containerElement.textContent || '').substring(0, 200)
+      // })
 
       // Get selection position for floating button
       const rect = range.getBoundingClientRect()
@@ -284,10 +284,14 @@ export default function FloatingHighlightButton({
             Math.pow(e.clientY - (buttonRect.top + buttonRect.height / 2), 2)
         )
 
-        // If user is close to button (within 50px), keep it visible
-        if (distance < 50 && hideTimeoutRef.current) {
-          clearTimeout(hideTimeoutRef.current)
-          hideTimeoutRef.current = null
+        // If user is close to button (within 50px), keep it visible and restore selection
+        if (distance < 50) {
+          if (hideTimeoutRef.current) {
+            clearTimeout(hideTimeoutRef.current)
+            hideTimeoutRef.current = null
+          }
+          // Restore selection when user approaches the button
+          restoreSelection()
         }
       }
     }
@@ -314,8 +318,11 @@ export default function FloatingHighlightButton({
         text: selectedText,
       })
 
-      // Clear selection and hide button
+      // Clear stored range and selection, then hide button
+      storedRangeRef.current = null
       window.getSelection()?.removeAllRanges()
+      setSelectedText('')
+      setSelectionRange(null)
       setIsVisible(false)
     }
   }
@@ -353,8 +360,11 @@ export default function FloatingHighlightButton({
       if (result.success) {
         toast.success(result.message)
         
-        // Clear selection
+        // Clear stored range and selection
+        storedRangeRef.current = null
         window.getSelection()?.removeAllRanges()
+        setSelectedText('')
+        setSelectionRange(null)
         setIsVisible(false)
       } else {
         toast.error(result.message)
@@ -367,6 +377,20 @@ export default function FloatingHighlightButton({
     }
   }
 
+  const restoreSelection = () => {
+    if (storedRangeRef.current) {
+      try {
+        const selection = window.getSelection()
+        if (selection) {
+          selection.removeAllRanges()
+          selection.addRange(storedRangeRef.current)
+        }
+      } catch (error) {
+        console.warn('Failed to restore selection:', error)
+      }
+    }
+  }
+
   const handleMouseEnter = () => {
     isHoveringRef.current = true
     // Clear any pending hide timeout when hovering
@@ -374,6 +398,9 @@ export default function FloatingHighlightButton({
       clearTimeout(hideTimeoutRef.current)
       hideTimeoutRef.current = null
     }
+    
+    // Restore selection when hovering over button
+    restoreSelection()
   }
 
   const handleMouseLeave = () => {

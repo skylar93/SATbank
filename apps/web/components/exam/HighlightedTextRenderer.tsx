@@ -64,10 +64,11 @@ function createPositionMapping(container: Element): PositionMap[] {
 function applyHighlightsToHTML(htmlContent: string, highlights: Highlight[]): string {
   if (!highlights || highlights.length === 0) return htmlContent
   
-  console.log('Applying highlights to HTML:', {
-    htmlLength: htmlContent.length,
-    highlights: highlights.map(h => ({ start: h.start, end: h.end, text: h.text.substring(0, 20) }))
-  })
+  // Debug: uncomment for troubleshooting
+  // console.log('Applying highlights to HTML:', {
+  //   htmlLength: htmlContent.length,
+  //   highlights: highlights.map(h => ({ start: h.start, end: h.end, text: h.text.substring(0, 20) }))
+  // })
   
   // Create a temporary container
   const tempDiv = document.createElement('div')
@@ -75,40 +76,21 @@ function applyHighlightsToHTML(htmlContent: string, highlights: Highlight[]): st
   
   // Get the plaintext that will be used for offset calculations
   const plainText = tempDiv.textContent || tempDiv.innerText || ''
-  console.log('Plain text extracted:', plainText.substring(0, 100) + '...')
   
   // Create position mapping
   const mapping = createPositionMapping(tempDiv)
-  console.log('Position mapping created:', mapping.length, 'positions')
   
   // Sort highlights by start position (reverse order for safe insertion)
   const sortedHighlights = [...highlights].sort((a, b) => b.start - a.start)
   
   sortedHighlights.forEach((highlight, highlightIndex) => {
-    console.log(`Processing highlight ${highlightIndex}:`, {
-      start: highlight.start,
-      end: highlight.end,
-      text: highlight.text,
-      expectedText: plainText.substring(highlight.start, highlight.end)
-    })
     
     const startMap = mapping[highlight.start]
     const endMap = mapping[highlight.end - 1] // end is exclusive
     
     if (!startMap || !endMap) {
       console.warn('Could not find DOM position for highlight:', highlight)
-      console.warn('Available mapping range:', mapping.length, 'positions')
       return
-    }
-    
-    // Verify the mapping is correct
-    const mappedText = plainText.substring(highlight.start, highlight.end)
-    if (mappedText !== highlight.text) {
-      console.warn('Text mismatch in highlight mapping:', {
-        expected: highlight.text,
-        mapped: mappedText,
-        highlight
-      })
     }
     
     try {
@@ -117,13 +99,10 @@ function applyHighlightsToHTML(htmlContent: string, highlights: Highlight[]): st
       range.setStart(startMap.domNode, startMap.nodeOffset)
       range.setEnd(endMap.domNode, endMap.nodeOffset + 1)
       
-      // Verify the range text matches
+      // Verify the range text matches (debug only)
       const rangeText = range.toString()
-      if (rangeText !== highlight.text) {
-        console.warn('Range text mismatch:', {
-          expected: highlight.text,
-          range: rangeText
-        })
+      if (rangeText !== highlight.text && process.env.NODE_ENV === 'development') {
+        console.warn('Range text mismatch:', { expected: highlight.text, range: rangeText })
       }
       
       // Create mark element
@@ -137,15 +116,11 @@ function applyHighlightsToHTML(htmlContent: string, highlights: Highlight[]): st
       try {
         // First try surroundContents for simple cases
         range.surroundContents(mark)
-        console.log('Successfully applied highlight using surroundContents:', highlightIndex)
       } catch (surroundError) {
-        console.log('surroundContents failed, using extractContents approach:', surroundError.message)
-        
         // Alternative approach: extract contents, wrap in mark, then insert
         const contents = range.extractContents()
         mark.appendChild(contents)
         range.insertNode(mark)
-        console.log('Successfully applied highlight using extractContents:', highlightIndex)
       }
     } catch (error) {
       console.warn('Failed to apply highlight using range:', error, highlight)
@@ -161,7 +136,6 @@ function applyHighlightsToHTML(htmlContent: string, highlights: Highlight[]): st
       let matchCount = 0
       htmlWithHighlight = htmlWithHighlight.replace(regex, (match, p1) => {
         matchCount++
-        console.log(`Fallback replacement ${matchCount}:`, match)
         return `<mark class="bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors" 
                  title="Click to remove highlight" 
                  data-highlight-text="${textToReplace}" 
@@ -170,8 +144,7 @@ function applyHighlightsToHTML(htmlContent: string, highlights: Highlight[]): st
       
       if (matchCount > 0) {
         tempDiv.innerHTML = htmlWithHighlight
-        console.log('Applied highlight using fallback method')
-      } else {
+      } else if (process.env.NODE_ENV === 'development') {
         console.error('Failed to apply highlight - text not found:', textToReplace)
       }
     }
@@ -200,14 +173,11 @@ function renderHtmlWithClickHandler(
         const highlightedText = target.getAttribute('data-highlight-text')
         const highlightIndex = target.getAttribute('data-highlight-index')
         
-        console.log('Highlight clicked:', { highlightedText, highlightIndex })
-        
         // Find the matching highlight by text content (more reliable than index due to sorting)
         const highlight = highlights.find(h => h.text === highlightedText)
         if (highlight) {
-          console.log('Removing highlight:', highlight)
           onRemoveHighlight(highlight)
-        } else {
+        } else if (process.env.NODE_ENV === 'development') {
           console.warn('Could not find matching highlight for:', highlightedText)
         }
       }
@@ -251,11 +221,9 @@ export function HighlightedTextRenderer({
     )
   }
 
-  // NEW: Use position mapping for HTML content highlighting
+  // Use position mapping for HTML content highlighting
   if (isHtml) {
-    console.log('HTML content detected, using position mapping for highlighting')
-    
-    // Apply highlights using the new position mapping approach
+    // Apply highlights using the position mapping approach
     const highlightedHtml = applyHighlightsToHTML(text, highlights)
     
     // Render with click handler for highlight removal
