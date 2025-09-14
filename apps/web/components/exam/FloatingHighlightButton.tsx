@@ -12,6 +12,15 @@ interface Highlight {
   text: string
 }
 
+interface DOMHighlight {
+  startXPath: string
+  startOffset: number
+  endXPath: string
+  endOffset: number
+  text: string
+  html?: string
+}
+
 interface FloatingHighlightButtonProps {
   containerRef: React.RefObject<HTMLElement>
   onHighlight: (highlight: Highlight) => void
@@ -49,12 +58,15 @@ export default function FloatingHighlightButton({
       }
 
       if (!selection || !containerRef.current || selection.rangeCount === 0) {
-        // Delay hiding to give user time to move to the button
-        hideTimeoutRef.current = setTimeout(() => {
-          if (!isHoveringRef.current) {
-            setIsVisible(false)
-          }
-        }, 300)
+        // Only hide if we don't have selected text stored (user cleared selection manually)
+        // Give more time for user to interact with the button
+        if (!selectedText) {
+          hideTimeoutRef.current = setTimeout(() => {
+            if (!isHoveringRef.current) {
+              setIsVisible(false)
+            }
+          }, 1000) // Increased from 300ms to 1000ms
+        }
         return
       }
 
@@ -65,23 +77,101 @@ export default function FloatingHighlightButton({
         !text ||
         !containerRef.current.contains(range.commonAncestorContainer)
       ) {
-        // Delay hiding to give user time to move to the button
-        hideTimeoutRef.current = setTimeout(() => {
-          if (!isHoveringRef.current) {
-            setIsVisible(false)
-          }
-        }, 300)
+        // Only hide if we don't have selected text stored
+        if (!selectedText) {
+          hideTimeoutRef.current = setTimeout(() => {
+            if (!isHoveringRef.current) {
+              setIsVisible(false)
+            }
+          }, 1000) // Increased timeout
+        }
         return
       }
 
       // Calculate text offsets within the container
       const containerElement = containerRef.current
-      const preSelectionRange = document.createRange()
-      preSelectionRange.selectNodeContents(containerElement)
-      preSelectionRange.setEnd(range.startContainer, range.startOffset)
-      const start = preSelectionRange.toString().length
-
+      
+      // Improved text offset calculation that finds the actual content container
+      const calculateTextOffset = (container: Element, targetNode: Node, targetOffset: number): number => {
+        try {
+          // Find the actual content container (the div that contains the rendered content)
+          // This might be nested inside wrapper divs created by HighlightedTextRenderer
+          let actualContainer = container
+          
+          // Look for the div with dangerouslySetInnerHTML or ContentRenderer content
+          const contentDiv = container.querySelector('div[style*="font-family"], .max-w-none, [data-math]')
+          if (contentDiv) {
+            actualContainer = contentDiv as Element
+          }
+          
+          // Use the simple range-based approach on the actual content container
+          const preSelectionRange = document.createRange()
+          preSelectionRange.selectNodeContents(actualContainer)
+          preSelectionRange.setEnd(targetNode, targetOffset)
+          
+          // Get the text content of just the range
+          const rangeText = preSelectionRange.toString()
+          
+          console.log('Text offset calculation:', {
+            containerText: (actualContainer.textContent || '').substring(0, 100),
+            rangeText: rangeText.substring(0, 100),
+            calculatedOffset: rangeText.length
+          })
+          
+          return rangeText.length
+        } catch (error) {
+          console.warn('Text offset calculation failed, using fallback:', error)
+          
+          // Enhanced fallback: try to find the selection text within the container
+          const containerText = container.textContent || ''
+          const selectionText = text.trim()
+          
+          // Find all occurrences of the selection text
+          let index = -1
+          let searchStart = 0
+          
+          // Try to find the selection that matches the actual DOM position
+          while ((index = containerText.indexOf(selectionText, searchStart)) !== -1) {
+            // This is a rough approximation - in practice, you'd want more sophisticated matching
+            const beforeText = containerText.substring(0, index)
+            
+            // Create a temporary range to check if this matches our selection
+            try {
+              const testRange = document.createRange()
+              testRange.selectNodeContents(container)
+              testRange.setStart(testRange.startContainer, 0)
+              
+              // If the length matches, this is likely our selection
+              if (beforeText.length <= index + selectionText.length) {
+                return index
+              }
+            } catch (e) {
+              // Continue searching
+            }
+            
+            searchStart = index + 1
+          }
+          
+          return Math.max(0, index)
+        }
+      }
+      
+      const start = calculateTextOffset(containerElement, range.startContainer, range.startOffset)
       const end = start + text.length
+      
+      console.log('Selection debug in FloatingHighlightButton:', {
+        selectedText: text,
+        selectedLength: text.length,
+        calculatedStart: start,
+        calculatedEnd: end,
+        containerText: (containerElement.textContent || '').substring(0, 200),
+        actualSelectionRange: {
+          startContainer: range.startContainer.nodeName,
+          startOffset: range.startOffset,
+          endContainer: range.endContainer.nodeName,
+          endOffset: range.endOffset
+        }
+      })
 
       // Get selection position for floating button
       const rect = range.getBoundingClientRect()
@@ -177,12 +267,12 @@ export default function FloatingHighlightButton({
         return
       }
 
-      // Give user more time to move to the button
+      // Give user more time to move to the button - increased timeout
       hideTimeoutRef.current = setTimeout(() => {
         if (!isHoveringRef.current) {
           setIsVisible(false)
         }
-      }, 500)
+      }, 2000) // Increased from 500ms to 2000ms
     }
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -288,10 +378,10 @@ export default function FloatingHighlightButton({
 
   const handleMouseLeave = () => {
     isHoveringRef.current = false
-    // Start hide timeout when leaving button
+    // Start hide timeout when leaving button - increased timeout
     hideTimeoutRef.current = setTimeout(() => {
       setIsVisible(false)
-    }, 800) // Give extra time after leaving the button
+    }, 2000) // Increased from 800ms to 2000ms for better UX
   }
 
   if (!isVisible || !containerRef.current) return null

@@ -351,6 +351,7 @@ interface QuestionDisplayProps {
   isMarkedForReview?: boolean
   onToggleMarkForReview?: () => void
   isCorrect?: boolean
+  isSecondTryCorrect?: boolean
   moduleDisplayName?: string
   questionContentRef?: React.RefObject<HTMLDivElement>
   highlights?: Highlight[]
@@ -382,6 +383,7 @@ export function QuestionDisplay({
   isMarkedForReview = false,
   onToggleMarkForReview,
   isCorrect,
+  isSecondTryCorrect = false,
   moduleDisplayName,
   questionContentRef,
   highlights = [],
@@ -1034,7 +1036,9 @@ export function QuestionDisplay({
                       ? showExplanation || disabled
                         ? isCorrect !== undefined
                           ? isCorrect
-                            ? 'bg-green-50 border-2 border-green-500 ring-1 ring-green-200'
+                            ? isSecondTryCorrect
+                              ? 'bg-yellow-50 border-2 border-yellow-400 ring-2 ring-green-300 shadow-md'
+                              : 'bg-green-50 border-2 border-green-500 ring-1 ring-green-200'
                             : 'bg-red-50 border-2 border-red-500 ring-1 ring-red-200'
                           : 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200'
                         : 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200'
@@ -1061,38 +1065,6 @@ export function QuestionDisplay({
                     <span className="font-semibold text-gray-700 mr-2">
                       {key}.
                     </span>
-                    {showExplanation && (
-                      <>
-                        {isCorrectAnswer && !isUserAnswer && (
-                          <span
-                            className="text-sm font-bold text-green-700 bg-green-100 px-2 py-1 rounded-full border border-green-300"
-                          >
-                            ✓ Correct Answer
-                          </span>
-                        )}
-                        {isUserAnswer && (
-                          <span
-                            className={`text-sm font-medium ${
-                              isCorrect !== undefined
-                                ? isCorrect
-                                  ? 'text-green-600'
-                                  : 'text-red-600'
-                                : isCorrectAnswer
-                                  ? 'text-green-600'
-                                  : 'text-red-600'
-                            }`}
-                          >
-                            {isCorrect !== undefined
-                              ? isCorrect
-                                ? '✓ Your Answer (Correct)'
-                                : '✗ Your Answer (Incorrect)'
-                              : isCorrectAnswer
-                                ? '✓ Your Answer (Correct)'
-                                : '✗ Your Answer (Incorrect)'}
-                          </span>
-                        )}
-                      </>
-                    )}
                   </div>
                   <div className="text-gray-900 leading-relaxed">
                     {(() => {
@@ -1187,7 +1159,9 @@ export function QuestionDisplay({
                 disabled || (showExplanation && !showPerQuestionAnswers)
                   ? isCorrect !== undefined
                     ? isCorrect
-                      ? 'border-green-500 bg-green-50 cursor-not-allowed ring-1 ring-green-200'
+                      ? isSecondTryCorrect
+                        ? 'border-yellow-400 bg-yellow-50 cursor-not-allowed ring-2 ring-green-200'
+                        : 'border-green-500 bg-green-50 cursor-not-allowed ring-1 ring-green-200'
                       : 'border-red-500 bg-red-50 cursor-not-allowed ring-1 ring-red-200'
                     : 'border-gray-300 bg-gray-50 cursor-not-allowed'
                   : 'border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200'
@@ -1206,19 +1180,6 @@ export function QuestionDisplay({
                 <p
                   className="text-sm text-green-900 font-bold"
                 >
-                  <strong
-                    className="text-green-800"
-                  >
-                    Correct Answer
-                    {(() => {
-                      if (localQuestion.question_type === 'grid_in') {
-                        const parsedAnswers = parseCorrectAnswers(localQuestion)
-                        return parsedAnswers.length > 1 ? 's' : ''
-                      }
-                      return ''
-                    })()}
-                    :
-                  </strong>{' '}
                   <span
                     className="bg-green-200 px-2 py-1 rounded font-bold"
                   >
@@ -1233,7 +1194,9 @@ export function QuestionDisplay({
                   className={`p-3 border rounded-lg ${
                     isCorrect !== undefined
                       ? isCorrect
-                        ? 'bg-green-50 border-green-200'
+                        ? isSecondTryCorrect
+                          ? 'bg-yellow-50 border-yellow-200 ring-1 ring-green-200'
+                          : 'bg-green-50 border-green-200'
                         : 'bg-red-50 border-red-200'
                       : 'bg-gray-50 border-gray-200'
                   }`}
@@ -1242,7 +1205,9 @@ export function QuestionDisplay({
                     className={`text-sm ${
                       isCorrect !== undefined
                         ? isCorrect
-                          ? 'text-green-800'
+                          ? isSecondTryCorrect
+                            ? 'text-yellow-800'
+                            : 'text-green-800'
                           : 'text-red-800'
                         : 'text-gray-800'
                     }`}

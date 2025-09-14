@@ -34,6 +34,7 @@ interface ExamNavigationProps {
   isCompact?: boolean
   correctQuestions?: Set<number>
   incorrectQuestions?: Set<number>
+  secondTryCorrectQuestions?: Set<number>
 }
 
 export function ExamNavigation({
@@ -58,6 +59,7 @@ export function ExamNavigation({
   isCompact = false,
   correctQuestions = new Set(),
   incorrectQuestions = new Set(),
+  secondTryCorrectQuestions = new Set(),
 }: ExamNavigationProps) {
   const getModuleName = (module: ModuleType) => {
     const moduleNames = {
@@ -140,6 +142,8 @@ export function ExamNavigation({
                           correctQuestions.has(globalQuestionIndex)
                         const isIncorrect =
                           incorrectQuestions.has(globalQuestionIndex)
+                        const isSecondTryCorrect =
+                          secondTryCorrectQuestions.has(globalQuestionIndex)
 
                         return (
                           <button
@@ -151,13 +155,15 @@ export function ExamNavigation({
                             className={`w-5 h-5 text-xs rounded-md font-medium transition-all duration-200 ${
                               isCurrent
                                 ? 'bg-purple-600 text-white shadow-sm'
-                                : isCorrect
-                                  ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                                  : isIncorrect
-                                    ? 'bg-red-50 text-red-700 hover:bg-red-100'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : isSecondTryCorrect
+                                  ? 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100 border border-green-300'
+                                  : isCorrect
+                                    ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                                    : isIncorrect
+                                      ? 'bg-red-50 text-red-700 hover:bg-red-100'
+                                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             } disabled:opacity-50`}
-                            title={`Question ${qIndex + 1}${isCorrect ? ' - Correct' : isIncorrect ? ' - Incorrect' : ''}`}
+                            title={`Question ${qIndex + 1}${isSecondTryCorrect ? ' - Second Try Correct' : isCorrect ? ' - Correct' : isIncorrect ? ' - Incorrect' : ''}`}
                           >
                             {qIndex + 1}
                           </button>
@@ -235,6 +241,8 @@ export function ExamNavigation({
                         correctQuestions.has(globalQuestionIndex)
                       const isIncorrect =
                         incorrectQuestions.has(globalQuestionIndex)
+                      const isSecondTryCorrect =
+                        secondTryCorrectQuestions.has(globalQuestionIndex)
                       const isMarked = markedQuestions.some(
                         (mq) =>
                           mq.index === qIndex &&
@@ -254,14 +262,16 @@ export function ExamNavigation({
                             ${
                               isCurrent
                                 ? 'bg-purple-600 text-white border-2 border-purple-500'
-                                : isCorrect
-                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100'
-                                  : isIncorrect
-                                    ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
-                                    : 'bg-white/80 text-purple-600 border border-purple-200 hover:bg-white hover:border-purple-300'
+                                : isSecondTryCorrect
+                                  ? 'bg-yellow-50 text-yellow-700 border border-green-300 hover:bg-yellow-100'
+                                  : isCorrect
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100'
+                                    : isIncorrect
+                                      ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
+                                      : 'bg-white/80 text-purple-600 border border-purple-200 hover:bg-white hover:border-purple-300'
                             }
                           `}
-                          title={`Question ${questionNum}${isCorrect ? ' - Correct' : isIncorrect ? ' - Incorrect' : ''}`}
+                          title={`Question ${questionNum}${isSecondTryCorrect ? ' - Second Try Correct' : isCorrect ? ' - Correct' : isIncorrect ? ' - Incorrect' : ''}`}
                         >
                           {questionNum}
                           {isMarked && (
@@ -328,6 +338,7 @@ export function ExamNavigation({
             const questionNum = index + 1
             const isCorrect = correctQuestions.has(questionNum)
             const isIncorrect = incorrectQuestions.has(questionNum)
+            const isSecondTryCorrect = secondTryCorrectQuestions.has(questionNum)
             const isAnswered =
               answeredQuestions.has(questionNum) || isCorrect || isIncorrect
             const isCurrent = questionNum === currentQuestion
@@ -344,13 +355,15 @@ export function ExamNavigation({
                   ${
                     isCurrent
                       ? 'bg-blue-600 text-white border-2 border-blue-600'
-                      : isCorrect
-                        ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
-                        : isIncorrect
-                          ? 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'
-                          : isAnswered
-                            ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
-                            : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
+                      : isSecondTryCorrect
+                        ? 'bg-yellow-100 text-yellow-800 border border-green-300 hover:bg-yellow-200'
+                        : isCorrect
+                          ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
+                          : isIncorrect
+                            ? 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'
+                            : isAnswered
+                              ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200'
+                              : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
                   }
                 `}
               >
