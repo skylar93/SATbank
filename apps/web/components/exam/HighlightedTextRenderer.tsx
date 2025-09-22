@@ -60,11 +60,14 @@ function createVisiblePositionMapping(container: Element): PositionMap[] {
   while (walker.nextNode()) {
     const textNode = walker.currentNode as Text
     const textContent = textNode.data
+    const blockEl = getNearestBlockAncestor(textNode, container)
+    
     for (let i = 0; i < textContent.length; i++) {
       mapping.push({
-        plaintextIndex: plaintextIndex,
+        plaintextIndex,
         domNode: textNode,
-        nodeOffset: i
+        nodeOffset: i,
+        blockEl,
       })
       plaintextIndex++
     }
@@ -93,6 +96,21 @@ interface PositionMap {
   plaintextIndex: number
   domNode: Node
   nodeOffset: number
+  blockEl: Element
+}
+
+// Find nearest block ancestor: closest ancestor with display !== inline
+function getNearestBlockAncestor(node: Node, root: Element): Element {
+  let el: Element | null =
+    node.nodeType === Node.TEXT_NODE ? (node.parentElement) : (node as Element)
+
+  while (el && el !== root) {
+    const cs = window.getComputedStyle(el)
+    // inline이 아니면 블록 컨테이너로 취급 (block, inline-block, list-item, table-cell, flex, grid 등)
+    if (cs.display !== 'inline') return el
+    el = el.parentElement
+  }
+  return root
 }
 
 // Create position mapping from HTML to plaintext
@@ -103,11 +121,13 @@ function createPositionMapping(container: Element): PositionMap[] {
   function walkTextNodes(node: Node) {
     if (node.nodeType === Node.TEXT_NODE) {
       const textContent = node.textContent || ''
+      const blockEl = getNearestBlockAncestor(node, container)
       for (let i = 0; i < textContent.length; i++) {
         mapping.push({
-          plaintextIndex: plaintextIndex,
+          plaintextIndex,
           domNode: node,
-          nodeOffset: i
+          nodeOffset: i,
+          blockEl,
         })
         plaintextIndex++
       }
@@ -125,8 +145,7 @@ function createPositionMapping(container: Element): PositionMap[] {
 // Sanitize HTML by removing non-visible elements
 function sanitizeHtmlContainer(div: HTMLDivElement) {
   div.querySelectorAll('style,script,noscript,template').forEach(el => el.remove())
-  // Also remove elements with aria-hidden="true"
-  div.querySelectorAll('[aria-hidden="true"]').forEach(el => el.remove())
+  // Note: aria-hidden elements are kept in DOM but excluded from walker for consistency
 }
 
 // Apply highlights using segment-based approach for better overlap handling
@@ -185,37 +204,51 @@ function applyHighlightsToHTML(htmlContent: string, highlights: Highlight[]): st
   // Apply segments in reverse order for safe DOM insertion
   const sortedSegments = [...segments].sort((a, b) => b.start - a.start)
   
-  sortedSegments.forEach((segment) => {
-    const startMap = mapping[segment.start]
-    const endMap = mapping[segment.end - 1] // end is exclusive
-    
-    if (!startMap || !endMap) {
-      console.warn('Could not find DOM position for segment:', segment)
-      return
-    }
-    
-    try {
-      const range = document.createRange()
-      range.setStart(startMap.domNode, startMap.nodeOffset)
-      range.setEnd(endMap.domNode, endMap.nodeOffset + 1)
-      
-      const mark = document.createElement('mark')
-      mark.className = `hl-layer-${Math.min(segment.layer, 3)} rounded px-1 cursor-pointer hover:opacity-80 transition-opacity`
-      mark.title = 'Click to remove highlight'
-      mark.setAttribute('data-start', String(segment.start))
-      mark.setAttribute('data-end', String(segment.end))
-      
-      try {
-        range.surroundContents(mark)
-      } catch (surroundError) {
-        const contents = range.extractContents()
-        mark.appendChild(contents)
-        range.insertNode(mark)
+  for (const segment of sortedSegments) {
+    let i = segment.start
+    while (i < segment.end) {
+      // 현재 블록 조상
+      const first = mapping[i]
+      if (!first) break
+      const blockEl = first.blockEl
+
+      // 같은 블록 조상인 구간의 끝 j 찾기
+      let j = i + 1
+      while (j < segment.end && mapping[j] && mapping[j].blockEl === blockEl) {
+        j++
       }
-    } catch (error) {
-      console.warn('Failed to apply segment:', error, segment)
+
+      // [i, j) 구간을 mark
+      const startMap = mapping[i]
+      const endMap = mapping[j - 1]
+      if (startMap && endMap) {
+        try {
+          const range = document.createRange()
+          range.setStart(startMap.domNode, startMap.nodeOffset)
+          range.setEnd(endMap.domNode, endMap.nodeOffset + 1)
+
+          const mark = document.createElement('mark')
+          mark.className = `hl-layer-${Math.min(segment.layer, 3)} rounded px-1 cursor-pointer hover:opacity-80 transition-opacity`
+          mark.title = 'Click to remove highlight'
+          // 세그먼트 전체 범위를 저장 (부모 하이라이트 탐색에 사용)
+          mark.setAttribute('data-seg-start', String(segment.start))
+          mark.setAttribute('data-seg-end', String(segment.end))
+
+          try {
+            range.surroundContents(mark)
+          } catch {
+            const contents = range.extractContents()
+            mark.appendChild(contents)
+            range.insertNode(mark)
+          }
+        } catch (error) {
+          console.warn('Failed to apply block segment:', error, segment)
+        }
+      }
+
+      i = j // 다음 블록으로 진행
     }
-  })
+  }
   
   return tempDiv.innerHTML
 }
@@ -280,17 +313,24 @@ function renderHtmlWithClickHandler(
     const handleClick = (event: React.MouseEvent) => {
       const target = event.target as HTMLElement
       if (target.tagName === 'MARK' && onRemoveHighlight) {
-        // Use precise start/end positions for highlight identification
+        // 세그먼트 범위로 부모 하이라이트 추정
+        const segStart = Number(target.getAttribute('data-seg-start'))
+        const segEnd = Number(target.getAttribute('data-seg-end'))
+        if (Number.isFinite(segStart) && Number.isFinite(segEnd)) {
+          const candidates = highlights
+            .filter(h => h.start <= segStart && h.end >= segEnd)
+            .sort((a, b) => (a.end - a.start) - (b.end - b.start))
+          const toRemove = candidates[0]
+          if (toRemove) {
+            onRemoveHighlight(toRemove)
+            return
+          }
+        }
+        // fallback: 예전 방식도 시도
         const start = Number(target.getAttribute('data-start'))
         const end = Number(target.getAttribute('data-end'))
-        
-        // Find the highlight that matches this exact range
-        const highlight = highlights.find(h => h.start === start && h.end === end)
-        if (highlight) {
-          onRemoveHighlight(highlight)
-        } else if (process.env.NODE_ENV === 'development') {
-          console.warn('Could not find matching highlight for range:', start, end)
-        }
+        const exact = highlights.find(h => h.start === start && h.end === end)
+        if (exact) onRemoveHighlight(exact)
       }
     }
 
