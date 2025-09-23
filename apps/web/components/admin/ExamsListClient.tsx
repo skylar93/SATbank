@@ -425,9 +425,14 @@ export function ExamsListClient() {
                               </button>
                             </td>
                           </tr>
-                          {expandedTestTypes.has(`${date}-fullTest`) && 
+                          {expandedTestTypes.has(`${date}-fullTest`) &&
                             dateGroup.fullTest.map(exam => (
-                              <ExamRow key={exam.id} exam={exam} openAnswerModal={openAnswerModal} />
+                              <ExamRow
+                                key={exam.id}
+                                exam={exam}
+                                openAnswerModal={openAnswerModal}
+                                onExamDeleted={fetchExamsOptimized}
+                              />
                             ))
                           }
                         </>
@@ -449,9 +454,14 @@ export function ExamsListClient() {
                               </button>
                             </td>
                           </tr>
-                          {expandedTestTypes.has(`${date}-sectionExam`) && 
+                          {expandedTestTypes.has(`${date}-sectionExam`) &&
                             dateGroup.sectionExam.map(exam => (
-                              <ExamRow key={exam.id} exam={exam} openAnswerModal={openAnswerModal} />
+                              <ExamRow
+                                key={exam.id}
+                                exam={exam}
+                                openAnswerModal={openAnswerModal}
+                                onExamDeleted={fetchExamsOptimized}
+                              />
                             ))
                           }
                         </>
@@ -497,9 +507,14 @@ export function ExamsListClient() {
                                       </button>
                                     </td>
                                   </tr>
-                                  {expandedRegions.has(`${date}-International`) && 
+                                  {expandedRegions.has(`${date}-International`) &&
                                     dateGroup.individualModule.International.map(exam => (
-                                      <ExamRow key={exam.id} exam={exam} openAnswerModal={openAnswerModal} />
+                                      <ExamRow
+                                        key={exam.id}
+                                        exam={exam}
+                                        openAnswerModal={openAnswerModal}
+                                        onExamDeleted={fetchExamsOptimized}
+                                      />
                                     ))
                                   }
                                 </>
@@ -521,9 +536,14 @@ export function ExamsListClient() {
                                       </button>
                                     </td>
                                   </tr>
-                                  {expandedRegions.has(`${date}-US`) && 
+                                  {expandedRegions.has(`${date}-US`) &&
                                     dateGroup.individualModule.US.map(exam => (
-                                      <ExamRow key={exam.id} exam={exam} openAnswerModal={openAnswerModal} />
+                                      <ExamRow
+                                        key={exam.id}
+                                        exam={exam}
+                                        openAnswerModal={openAnswerModal}
+                                        onExamDeleted={fetchExamsOptimized}
+                                      />
                                     ))
                                   }
                                 </>
@@ -545,9 +565,14 @@ export function ExamsListClient() {
                                       </button>
                                     </td>
                                   </tr>
-                                  {expandedRegions.has(`${date}-Other`) && 
+                                  {expandedRegions.has(`${date}-Other`) &&
                                     dateGroup.individualModule.Other.map(exam => (
-                                      <ExamRow key={exam.id} exam={exam} openAnswerModal={openAnswerModal} />
+                                      <ExamRow
+                                        key={exam.id}
+                                        exam={exam}
+                                        openAnswerModal={openAnswerModal}
+                                        onExamDeleted={fetchExamsOptimized}
+                                      />
                                     ))
                                   }
                                 </>

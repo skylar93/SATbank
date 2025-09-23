@@ -507,6 +507,7 @@ export default function StudentDetailPage() {
           <StudentAttemptsList
             attempts={attempts}
             onVisibilityUpdate={loadStudentData}
+            studentName={student.full_name}
           />
         )}
 

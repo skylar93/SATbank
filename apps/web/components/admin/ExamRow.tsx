@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ChevronDown, ChevronRight, Settings, Eye } from 'lucide-react'
+import { ChevronDown, ChevronRight, Settings, Eye, Trash2 } from 'lucide-react'
 import { CurveAssignmentControl } from './CurveAssignmentControlSimple'
 import { AnswerVisibilityControl } from './AnswerVisibilityControlSimple'
+import { DeleteExamConfirmDialog } from './DeleteExamConfirmDialog'
 import { supabase } from '@/lib/supabase'
 
 interface ScoringCurve {
@@ -31,11 +32,14 @@ interface ExamWithCurves {
 interface ExamRowProps {
   exam: ExamWithCurves
   openAnswerModal: (examId: string, examTitle: string) => void
+  onExamDeleted?: () => void
 }
 
-export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
+export function ExamRow({ exam, openAnswerModal, onExamDeleted }: ExamRowProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [allCurves, setAllCurves] = useState<ScoringCurve[]>([])
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Fetch all scoring curves when component mounts
   useEffect(() => {
@@ -59,6 +63,33 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
 
     fetchCurves()
   }, [])
+
+  const handleDeleteExam = async () => {
+    setIsDeleting(true)
+    try {
+      const { error } = await supabase
+        .from('exams')
+        .delete()
+        .eq('id', exam.id)
+
+      if (error) {
+        console.error('Error deleting exam:', error)
+        alert('Failed to delete exam. Please try again.')
+        return
+      }
+
+      alert('Exam deleted successfully!')
+      setIsDeleteDialogOpen(false)
+      if (onExamDeleted) {
+        onExamDeleted()
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Failed to delete exam. Please try again.')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   return (
     <>
@@ -134,6 +165,13 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
             >
               <Eye className="h-3 w-3" />
             </Link>
+            <button
+              onClick={() => setIsDeleteDialogOpen(true)}
+              className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors"
+              title="Delete Exam"
+            >
+              <Trash2 className="h-3 w-3" />
+            </button>
           </div>
         </td>
       </tr>
@@ -189,12 +227,26 @@ export function ExamRow({ exam, openAnswerModal }: ExamRowProps) {
                   >
                     Manage Answers
                   </button>
+                  <button
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                    className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
           </td>
         </tr>
       )}
+
+      <DeleteExamConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDeleteExam}
+        examTitle={exam.title}
+        isDeleting={isDeleting}
+      />
     </>
   )
 }
