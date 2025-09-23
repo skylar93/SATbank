@@ -40,6 +40,11 @@ function getVisiblePlainText(container: Element) {
   return s
 }
 
+// Helper function to normalize whitespace for consistent text matching
+function normalizeWhitespace(text: string): string {
+  return text.replace(/\s+/g, ' ').trim()
+}
+
 function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: string) {
   // Enhanced offset calculation with better accuracy
   const walker = getTextWalker(container)
@@ -65,6 +70,9 @@ function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: st
       end = start + (range.endOffset - range.startOffset)
     } else {
       // Different text nodes - continue walking
+      // Add start node's length to idx since we broke out of first loop before adding it
+      idx += (range.startContainer as Text).data.length
+
       while (walker.nextNode()) {
         const t = walker.currentNode as Text
         if (t === range.endContainer) {
@@ -79,7 +87,14 @@ function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: st
   // Fallback to text search if direct position calculation failed
   if (start < 0 || end < 0) {
     const containerText = getVisiblePlainText(container)
-    const foundStart = containerText.indexOf(textRaw)
+    // Try exact match first
+    let foundStart = containerText.indexOf(textRaw)
+    if (foundStart < 0) {
+      // Try normalized match as fallback
+      const normalizedContainer = normalizeWhitespace(containerText)
+      const normalizedText = normalizeWhitespace(textRaw)
+      foundStart = normalizedContainer.indexOf(normalizedText)
+    }
     if (foundStart >= 0) {
       start = foundStart
       end = foundStart + textRaw.length
@@ -183,12 +198,8 @@ export default function FloatingHighlightButton({
       // Calculate text offsets using improved approach
       const containerElement = containerRef.current
 
-      // Find the actual content container for accurate offset calculation
-      let actualContainer = containerElement
-      const contentDiv = containerElement.querySelector('div[style*="font-family"], .max-w-none, [data-math]')
-      if (contentDiv && contentDiv instanceof HTMLElement) {
-        actualContainer = contentDiv
-      }
+      // Use containerElement directly to ensure consistency with renderer
+      const actualContainer = containerElement
 
       // Validate that the range is within our container
       if (!actualContainer.contains(range.commonAncestorContainer)) {
@@ -344,7 +355,7 @@ export default function FloatingHighlightButton({
         clearTimeout(hideTimeoutRef.current)
       }
     }
-  }, [containerRef, isVisible])
+  }, [containerRef])
 
   const clearSelectionAndUI = () => {
     storedRangeRef.current = null

@@ -1,0 +1,20 @@
+{
+  "backup_date": "2025-09-23T16:40:26.180Z",
+  "tables_backed_up": [
+    "user_profiles",
+    "exams",
+    "questions",
+    "test_attempts",
+    "user_answers",
+    "exam_assignments",
+    "scoring_curves",
+    "regrade_history",
+    "mistake_bank",
+    "exam_questions",
+    "vocab_sets",
+    "vocab_entries",
+    "quiz_sessions",
+    "exam_templates"
+  ],
+  "database_url": "https://eoyzqdsxlweygsukjnef.supabase.co"
+}
