@@ -41,11 +41,14 @@ function getVisiblePlainText(container: Element) {
 }
 
 function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: string) {
-  // Calculate offset without trimming to maintain position accuracy
+  // Enhanced offset calculation with better accuracy
   const walker = getTextWalker(container)
   let idx = 0
   let start = -1
+  let end = -1
 
+  // Find start position
+  // Reset walker by creating a new one
   while (walker.nextNode()) {
     const t = walker.currentNode as Text
     if (t === range.startContainer) {
@@ -55,12 +58,38 @@ function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: st
     idx += t.data.length
   }
 
-  if (start < 0) {
-    // Fallback: search for selection text in visible container text
-    const containerText = getVisiblePlainText(container)
-    start = containerText.indexOf(textRaw)
+  // Find end position
+  if (start >= 0) {
+    if (range.startContainer === range.endContainer) {
+      // Same text node
+      end = start + (range.endOffset - range.startOffset)
+    } else {
+      // Different text nodes - continue walking
+      while (walker.nextNode()) {
+        const t = walker.currentNode as Text
+        if (t === range.endContainer) {
+          end = idx + range.endOffset
+          break
+        }
+        idx += t.data.length
+      }
+    }
   }
-  const end = start + textRaw.length
+
+  // Fallback to text search if direct position calculation failed
+  if (start < 0 || end < 0) {
+    const containerText = getVisiblePlainText(container)
+    const foundStart = containerText.indexOf(textRaw)
+    if (foundStart >= 0) {
+      start = foundStart
+      end = foundStart + textRaw.length
+    }
+  }
+
+  // Ensure we have valid positions
+  if (start < 0) start = 0
+  if (end < 0) end = start + textRaw.length
+
   return { start, end, textForHighlight: textRaw }
 }
 
@@ -151,17 +180,29 @@ export default function FloatingHighlightButton({
       isStickyRef.current = true
       storedRangeRef.current = range.cloneRange()
 
-      // Calculate text offsets using the new approach without trim
+      // Calculate text offsets using improved approach
       const containerElement = containerRef.current
-      
+
       // Find the actual content container for accurate offset calculation
       let actualContainer = containerElement
       const contentDiv = containerElement.querySelector('div[style*="font-family"], .max-w-none, [data-math]')
       if (contentDiv && contentDiv instanceof HTMLElement) {
         actualContainer = contentDiv
       }
-      
+
+      // Validate that the range is within our container
+      if (!actualContainer.contains(range.commonAncestorContainer)) {
+        console.warn('Selection range is outside target container')
+        return
+      }
+
       const { start, end, textForHighlight } = computeOffsetsWithoutTrim(actualContainer, range, textRaw)
+
+      // Additional validation
+      if (start < 0 || end <= start) {
+        console.warn('Invalid selection offsets calculated:', { start, end, textForHighlight })
+        return
+      }
       
       // Debug: uncomment for troubleshooting selection issues
       // console.log('Selection debug in FloatingHighlightButton:', {

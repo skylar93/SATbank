@@ -12,7 +12,7 @@ interface Highlight {
   text: string
 }
 
-// Helper functions for visible text processing
+// Enhanced helper functions for better text processing
 function isVisibleTextNode(n: Node): n is Text {
   if (n.nodeType !== Node.TEXT_NODE) return false
   const el = n.parentElement
@@ -33,46 +33,82 @@ function getTextWalker(root: Node) {
   })
 }
 
-// Segment-based highlighting for better overlap handling
-type HighlightSegment = { start: number; end: number; layer: number }
+// New stable approach: Use XPath-based positioning for robustness
+function getNodeXPath(node: Node, container: Element): string {
+  if (node === container) return ''
 
-function partitionIntoSegments(highlights: Highlight[]): HighlightSegment[] {
-  const points: number[] = []
-  highlights.forEach(h => { points.push(h.start, h.end) })
-  const uniq = Array.from(new Set(points)).sort((a, b) => a - b)
-  const segments: HighlightSegment[] = []
-  
-  for (let i = 0; i < uniq.length - 1; i++) {
-    const a = uniq[i], b = uniq[i + 1]
-    const layer = highlights.reduce((acc, h) => acc + (h.start < b && h.end > a ? 1 : 0), 0)
-    if (layer > 0) segments.push({ start: a, end: b, layer })
+  const path: string[] = []
+  let current = node
+
+  while (current && current !== container) {
+    let index = 0
+    let sibling = current.previousSibling
+
+    while (sibling) {
+      if (sibling.nodeType === current.nodeType) {
+        if (sibling.nodeType === Node.TEXT_NODE || sibling.nodeName === current.nodeName) {
+          index++
+        }
+      }
+      sibling = sibling.previousSibling
+    }
+
+    const tagName = current.nodeType === Node.TEXT_NODE ? 'text()' : current.nodeName.toLowerCase()
+    path.unshift(`${tagName}[${index + 1}]`)
+    current = current.parentNode as Node
   }
-  
-  return segments
+
+  return path.join('/')
 }
 
-// Create position mapping from visible text only
-function createVisiblePositionMapping(container: Element): PositionMap[] {
+function getNodeByXPath(xpath: string, container: Element): Node | null {
+  if (!xpath) return container
+
+  try {
+    const result = document.evaluate(
+      xpath,
+      container,
+      null,
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null
+    )
+    return result.singleNodeValue
+  } catch (error) {
+    console.warn('XPath evaluation failed:', error)
+    return null
+  }
+}
+
+// Position mapping interface
+interface PositionMap {
+  plaintextIndex: number
+  domNode: Node
+  nodeOffset: number
+  xpath: string
+}
+
+// Create robust position mapping using XPath
+function createStablePositionMapping(container: Element): PositionMap[] {
   const mapping: PositionMap[] = []
   let plaintextIndex = 0
-  
+
   const walker = getTextWalker(container)
   while (walker.nextNode()) {
     const textNode = walker.currentNode as Text
     const textContent = textNode.data
-    const blockEl = getNearestBlockAncestor(textNode, container)
-    
+    const xpath = getNodeXPath(textNode, container)
+
     for (let i = 0; i < textContent.length; i++) {
       mapping.push({
         plaintextIndex,
         domNode: textNode,
         nodeOffset: i,
-        blockEl,
+        xpath,
       })
       plaintextIndex++
     }
   }
-  
+
   return mapping
 }
 
@@ -91,55 +127,14 @@ function getPlainTextFromHtml(htmlString: string): string {
   return tempDiv.textContent || tempDiv.innerText || ''
 }
 
-// Position mapping between plaintext and DOM nodes
-interface PositionMap {
-  plaintextIndex: number
-  domNode: Node
-  nodeOffset: number
-  blockEl: Element
-}
-
-// Find nearest block ancestor: closest ancestor with display !== inline
-function getNearestBlockAncestor(node: Node, root: Element): Element {
-  let el: Element | null =
-    node.nodeType === Node.TEXT_NODE ? (node.parentElement) : (node as Element)
-
-  while (el && el !== root) {
-    const cs = window.getComputedStyle(el)
-    // inline이 아니면 블록 컨테이너로 취급 (block, inline-block, list-item, table-cell, flex, grid 등)
-    if (cs.display !== 'inline') return el
-    el = el.parentElement
+// Get visible plain text from container, preserving all spacing
+function getVisiblePlainText(container: Element): string {
+  const walker = getTextWalker(container)
+  let text = ''
+  while (walker.nextNode()) {
+    text += (walker.currentNode as Text).data
   }
-  return root
-}
-
-// Create position mapping from HTML to plaintext
-function createPositionMapping(container: Element): PositionMap[] {
-  const mapping: PositionMap[] = []
-  let plaintextIndex = 0
-  
-  function walkTextNodes(node: Node) {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const textContent = node.textContent || ''
-      const blockEl = getNearestBlockAncestor(node, container)
-      for (let i = 0; i < textContent.length; i++) {
-        mapping.push({
-          plaintextIndex,
-          domNode: node,
-          nodeOffset: i,
-          blockEl,
-        })
-        plaintextIndex++
-      }
-    } else {
-      for (let i = 0; i < node.childNodes.length; i++) {
-        walkTextNodes(node.childNodes[i])
-      }
-    }
-  }
-  
-  walkTextNodes(container)
-  return mapping
+  return text
 }
 
 // Sanitize HTML by removing non-visible elements
@@ -148,109 +143,118 @@ function sanitizeHtmlContainer(div: HTMLDivElement) {
   // Note: aria-hidden elements are kept in DOM but excluded from walker for consistency
 }
 
-// Apply highlights using segment-based approach for better overlap handling
+// New robust highlight application using stable positioning
 function applyHighlightsToHTML(htmlContent: string, highlights: Highlight[]): string {
   if (!highlights || highlights.length === 0) return htmlContent
-  
+
   const tempDiv = document.createElement('div')
   tempDiv.innerHTML = htmlContent
-  
+
   // Sanitize to remove non-visible content before processing
   sanitizeHtmlContainer(tempDiv)
-  
-  // Get visible plaintext for validation and mapping
-  const walker = getTextWalker(tempDiv)
-  let plainText = ''
-  while (walker.nextNode()) {
-    plainText += (walker.currentNode as Text).data
-  }
-  
-  // More lenient validation - only check range validity, not exact text match
+
+  // Get visible plaintext for validation
+  const plainText = getVisiblePlainText(tempDiv)
+
+  // Validate highlights against visible text
   const validHighlights = highlights.filter(highlight => {
     if (highlight.start < 0 || highlight.end > plainText.length || highlight.start >= highlight.end) {
       console.warn('Invalid highlight range:', highlight, 'visible plaintext length:', plainText.length)
       return false
     }
-    
-    // Optional: softer text validation with normalized whitespace comparison
+
+    // More lenient text validation
     const expectedText = plainText.substring(highlight.start, highlight.end)
     const normalizeSpace = (s: string) => s.replace(/\s+/g, ' ').trim()
     if (normalizeSpace(expectedText) !== normalizeSpace(highlight.text)) {
-      console.warn('Highlight text mismatch (normalized):', { 
-        expected: normalizeSpace(highlight.text), 
+      console.warn('Highlight text mismatch (normalized):', {
+        expected: normalizeSpace(highlight.text),
         found: normalizeSpace(expectedText),
         start: highlight.start,
         end: highlight.end
       })
-      // Still allow it - don't return false here for better compatibility
+      // Continue anyway for better compatibility
     }
-    
+
     return true
   })
-  
+
   if (validHighlights.length === 0) {
     return htmlContent
   }
-  
-  // Use segment-based approach
-  const segments = partitionIntoSegments(validHighlights)
-  const mapping = createVisiblePositionMapping(tempDiv)
-  
-  if (mapping.length !== plainText.length) {
-    console.warn('Visible position mapping length mismatch:', mapping.length, 'vs', plainText.length)
-    return applyHighlightsViaTextReplacement(htmlContent, validHighlights)
-  }
-  
-  // Apply segments in reverse order for safe DOM insertion
-  const sortedSegments = [...segments].sort((a, b) => b.start - a.start)
-  
-  for (const segment of sortedSegments) {
-    let i = segment.start
-    while (i < segment.end) {
-      // 현재 블록 조상
-      const first = mapping[i]
-      if (!first) break
-      const blockEl = first.blockEl
 
-      // 같은 블록 조상인 구간의 끝 j 찾기
-      let j = i + 1
-      while (j < segment.end && mapping[j] && mapping[j].blockEl === blockEl) {
-        j++
-      }
+  // Sort highlights by start position (apply in reverse order)
+  const sortedHighlights = [...validHighlights].sort((a, b) => b.start - a.start)
 
-      // [i, j) 구간을 mark
-      const startMap = mapping[i]
-      const endMap = mapping[j - 1]
-      if (startMap && endMap) {
-        try {
-          const range = document.createRange()
-          range.setStart(startMap.domNode, startMap.nodeOffset)
-          range.setEnd(endMap.domNode, endMap.nodeOffset + 1)
-
-          const mark = document.createElement('mark')
-          mark.className = `hl-layer-${Math.min(segment.layer, 3)} rounded px-1 cursor-pointer hover:opacity-80 transition-opacity`
-          mark.title = 'Click to remove highlight'
-          // 세그먼트 전체 범위를 저장 (부모 하이라이트 탐색에 사용)
-          mark.setAttribute('data-seg-start', String(segment.start))
-          mark.setAttribute('data-seg-end', String(segment.end))
-
-          try {
-            range.surroundContents(mark)
-          } catch {
-            const contents = range.extractContents()
-            mark.appendChild(contents)
-            range.insertNode(mark)
-          }
-        } catch (error) {
-          console.warn('Failed to apply block segment:', error, segment)
-        }
-      }
-
-      i = j // 다음 블록으로 진행
+  // Apply each highlight using a more reliable method
+  for (const highlight of sortedHighlights) {
+    try {
+      applyHighlightRobust(tempDiv, highlight, plainText)
+    } catch (error) {
+      console.warn('Failed to apply highlight:', error, highlight)
+      // Continue with other highlights
     }
   }
-  
+
   return tempDiv.innerHTML
+}
+
+// Robust highlight application for a single highlight
+function applyHighlightRobust(container: Element, highlight: Highlight, plainText: string): void {
+  const { start, end } = highlight
+
+  // Create a fresh position mapping each time
+  const mapping = createStablePositionMapping(container)
+
+  if (mapping.length !== plainText.length) {
+    console.warn('Position mapping length mismatch, falling back to text replacement')
+    applyHighlightViaTextReplacementSingle(container as HTMLElement, highlight, 0)
+    return
+  }
+
+  // Find start and end positions in DOM
+  const startMap = mapping[start]
+  const endMap = mapping[end - 1] // end is exclusive
+
+  if (!startMap || !endMap) {
+    console.warn('Could not find DOM positions for highlight range')
+    return
+  }
+
+  // Handle case where highlight spans multiple text nodes
+  const startNode = getNodeByXPath(startMap.xpath, container)
+  const endNode = getNodeByXPath(endMap.xpath, container)
+
+  if (!startNode || !endNode || startNode.nodeType !== Node.TEXT_NODE || endNode.nodeType !== Node.TEXT_NODE) {
+    console.warn('Could not resolve XPath to text nodes')
+    return
+  }
+
+  try {
+    const range = document.createRange()
+    range.setStart(startNode, startMap.nodeOffset)
+    range.setEnd(endNode, endMap.nodeOffset + 1)
+
+    const mark = document.createElement('mark')
+    mark.className = 'bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors'
+    mark.title = 'Click to remove highlight'
+    mark.setAttribute('data-highlight-start', String(start))
+    mark.setAttribute('data-highlight-end', String(end))
+    mark.setAttribute('data-highlight-text', highlight.text)
+
+    // Try to surround contents, fallback to manual insertion
+    try {
+      range.surroundContents(mark)
+    } catch {
+      const contents = range.extractContents()
+      mark.appendChild(contents)
+      range.insertNode(mark)
+    }
+  } catch (error) {
+    console.warn('Failed to create range for highlight:', error)
+    // Final fallback to text replacement
+    applyHighlightViaTextReplacementSingle(container as HTMLElement, highlight, 0)
+  }
 }
 
 // Fallback method using text replacement
@@ -302,7 +306,7 @@ function escapeForRegex(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-// Helper function to render HTML with click handler using precise positioning
+// Helper function to render HTML with click handler using improved positioning
 function renderHtmlWithClickHandler(
   processedHtml: string,
   highlights: Highlight[],
@@ -313,24 +317,35 @@ function renderHtmlWithClickHandler(
     const handleClick = (event: React.MouseEvent) => {
       const target = event.target as HTMLElement
       if (target.tagName === 'MARK' && onRemoveHighlight) {
-        // 세그먼트 범위로 부모 하이라이트 추정
-        const segStart = Number(target.getAttribute('data-seg-start'))
-        const segEnd = Number(target.getAttribute('data-seg-end'))
-        if (Number.isFinite(segStart) && Number.isFinite(segEnd)) {
-          const candidates = highlights
-            .filter(h => h.start <= segStart && h.end >= segEnd)
-            .sort((a, b) => (a.end - a.start) - (b.end - b.start))
-          const toRemove = candidates[0]
-          if (toRemove) {
-            onRemoveHighlight(toRemove)
+        // Try to find highlight by data attributes
+        const start = Number(target.getAttribute('data-highlight-start'))
+        const end = Number(target.getAttribute('data-highlight-end'))
+        const text = target.getAttribute('data-highlight-text')
+
+        if (Number.isFinite(start) && Number.isFinite(end)) {
+          // Find exact match by position and text
+          const exact = highlights.find(h =>
+            h.start === start && h.end === end && h.text === text
+          )
+          if (exact) {
+            onRemoveHighlight(exact)
+            return
+          }
+
+          // Fallback: find by position only
+          const byPosition = highlights.find(h => h.start === start && h.end === end)
+          if (byPosition) {
+            onRemoveHighlight(byPosition)
             return
           }
         }
-        // fallback: 예전 방식도 시도
-        const start = Number(target.getAttribute('data-start'))
-        const end = Number(target.getAttribute('data-end'))
-        const exact = highlights.find(h => h.start === start && h.end === end)
-        if (exact) onRemoveHighlight(exact)
+
+        // Final fallback: find by text content
+        const textContent = target.textContent || ''
+        const byText = highlights.find(h => h.text === textContent)
+        if (byText) {
+          onRemoveHighlight(byText)
+        }
       }
     }
 
@@ -372,13 +387,18 @@ export function HighlightedTextRenderer({
     )
   }
 
-  // Use position mapping for HTML content highlighting
+  // Use improved position mapping for HTML content highlighting
   if (isHtml) {
-    // Apply highlights using the position mapping approach
-    const highlightedHtml = applyHighlightsToHTML(text, highlights)
-    
-    // Render with click handler for highlight removal
-    return renderHtmlWithClickHandler(highlightedHtml, highlights, onRemoveHighlight)
+    try {
+      // Apply highlights using the robust approach
+      const highlightedHtml = applyHighlightsToHTML(text, highlights)
+
+      // Render with click handler for highlight removal
+      return renderHtmlWithClickHandler(highlightedHtml, highlights, onRemoveHighlight)
+    } catch (error) {
+      console.error('Failed to apply HTML highlights, falling back to original content:', error)
+      return renderHtmlContent(text)
+    }
   }
 
   const parts = []
