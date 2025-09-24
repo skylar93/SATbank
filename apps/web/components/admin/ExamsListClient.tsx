@@ -25,6 +25,7 @@ interface RpcExamData {
   latest_attempt_visibility: boolean | null
   latest_attempt_visible_after: string | null
   total_attempts_count: number
+  template_id: string | null
   default_answers_visible: boolean
   default_answers_visible_after: string | null
 }
@@ -39,6 +40,8 @@ interface ExamWithCurves {
   math_scoring_curve_id: number | null
   english_curve_name: string | null
   math_curve_name: string | null
+  template_id: string | null
+  scoring_groups?: { [key: string]: string[] }
   answer_release_setting?: {
     type: 'hidden' | 'immediate' | 'scheduled'
     scheduled_date?: Date
@@ -50,6 +53,7 @@ export function ExamsListClient() {
   const router = useRouter()
   const [exams, setExams] = useState<ExamWithCurves[]>([])
   const [loading, setLoading] = useState(true)
+  const [templates, setTemplates] = useState<{ [key: string]: { scoring_groups: { [key: string]: string[] } } }>({});
   const [filteredExams, setFilteredExams] = useState<ExamWithCurves[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [expandedDateGroups, setExpandedDateGroups] = useState<Set<string>>(new Set())
@@ -67,12 +71,37 @@ export function ExamsListClient() {
     examTitle: '',
   })
 
-  // Fetch exams using the optimized RPC function
+  // Fetch templates first, then exams
   useEffect(() => {
     if (user && isAdmin) {
-      fetchExamsOptimized()
+      fetchTemplates().then(() => {
+        fetchExamsOptimized()
+      })
     }
   }, [user, isAdmin])
+
+  const fetchTemplates = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('exam_templates')
+        .select('id, scoring_groups')
+
+      if (error) {
+        console.error('Error fetching templates:', error)
+        return
+      }
+
+      const templatesMap: { [key: string]: { scoring_groups: { [key: string]: string[] } } } = {}
+      data?.forEach(template => {
+        templatesMap[template.id] = {
+          scoring_groups: template.scoring_groups || {}
+        }
+      })
+      setTemplates(templatesMap)
+    } catch (error) {
+      console.error('Error fetching templates:', error)
+    }
+  }
 
   const fetchExamsOptimized = async () => {
     setLoading(true)
@@ -144,6 +173,8 @@ export function ExamsListClient() {
             math_scoring_curve_id: exam.math_curve_id,
             english_curve_name: exam.english_curve_name,
             math_curve_name: exam.math_curve_name,
+            template_id: exam.template_id,
+            scoring_groups: exam.template_id ? templates[exam.template_id]?.scoring_groups : undefined,
             answer_release_setting: answerReleaseSetting,
           }
         }

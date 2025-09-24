@@ -697,7 +697,7 @@ async function processTestData(testFilter = null, questionLimit = null, dryRun =
     console.log('🚀 Starting Bluebook SAT Import Process...\n');
     
     // Load data
-    const dataPath = path.join(__dirname, 'bluebook-sat-problems-2025-09-2025-after.json');
+    const dataPath = path.join(__dirname, 'bluebook-sat-problems-2025-09-24.json');
     const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
     
     console.log(`📊 Loaded data with ${data.tests.length} tests`);

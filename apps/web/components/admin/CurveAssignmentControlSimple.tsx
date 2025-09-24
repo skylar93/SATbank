@@ -23,6 +23,7 @@ interface CurveAssignmentControlProps {
   currentCurveName?: string | null
   currentCurveId?: number | null
   allCurves: ScoringCurve[]
+  scoringGroups?: { [key: string]: string[] }
 }
 
 export function CurveAssignmentControl({
@@ -31,8 +32,17 @@ export function CurveAssignmentControl({
   currentCurveName,
   currentCurveId,
   allCurves,
+  scoringGroups,
 }: CurveAssignmentControlProps) {
   const [isPending, startTransition] = useTransition()
+
+  // Check if this curve type is needed based on scoring groups
+  const isRequired = scoringGroups ? Object.keys(scoringGroups).includes(curveType) : true
+
+  // If not required, don't render anything
+  if (!isRequired) {
+    return null
+  }
 
   // Filter curves based on type (basic filtering by curve name)
   const relevantCurves = allCurves.filter((curve) => {

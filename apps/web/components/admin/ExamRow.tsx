@@ -23,6 +23,8 @@ interface ExamWithCurves {
   math_scoring_curve_id: number | null
   english_curve_name: string | null
   math_curve_name: string | null
+  template_id: string | null
+  scoring_groups?: { [key: string]: string[] }
   answer_release_setting?: {
     type: 'hidden' | 'immediate' | 'scheduled'
     scheduled_date?: Date
@@ -126,6 +128,7 @@ export function ExamRow({ exam, openAnswerModal, onExamDeleted }: ExamRowProps) 
             currentCurveName={exam.english_curve_name}
             currentCurveId={exam.english_scoring_curve_id}
             allCurves={allCurves}
+            scoringGroups={exam.scoring_groups}
           />
         </td>
         <td className="px-3 py-2">
@@ -135,6 +138,7 @@ export function ExamRow({ exam, openAnswerModal, onExamDeleted }: ExamRowProps) 
             currentCurveName={exam.math_curve_name}
             currentCurveId={exam.math_scoring_curve_id}
             allCurves={allCurves}
+            scoringGroups={exam.scoring_groups}
           />
         </td>
         <td className="px-3 py-2">
@@ -192,6 +196,7 @@ export function ExamRow({ exam, openAnswerModal, onExamDeleted }: ExamRowProps) 
                       currentCurveName={exam.english_curve_name}
                       currentCurveId={exam.english_scoring_curve_id}
                       allCurves={allCurves}
+                      scoringGroups={exam.scoring_groups}
                     />
                   </div>
                   <div className="flex items-center justify-between p-2 bg-white rounded border">
@@ -202,6 +207,7 @@ export function ExamRow({ exam, openAnswerModal, onExamDeleted }: ExamRowProps) 
                       currentCurveName={exam.math_curve_name}
                       currentCurveId={exam.math_scoring_curve_id}
                       allCurves={allCurves}
+                      scoringGroups={exam.scoring_groups}
                     />
                   </div>
                 </div>
