@@ -35,6 +35,39 @@ export const renderHtmlContent = (htmlContent: string) => {
     return <ContentRenderer htmlContent={htmlContent} />
   }
 
+  // Check if content contains $...$ patterns and convert them for KaTeX rendering
+  if (htmlContent.includes('$')) {
+    const processedHtml = htmlContent.replace(/\$([^$]+)\$/g, (match, latex) => {
+      return `<span data-math="${latex}" data-inline="true"></span>`
+    }).replace(/\$\$([^$]+)\$\$/g, (match, latex) => {
+      return `<span data-math="${latex}" data-inline="false"></span>`
+    })
+
+    // If we processed any math, use ContentRenderer
+    if (processedHtml !== htmlContent) {
+      return <ContentRenderer htmlContent={processedHtml} />
+    }
+  }
+
+  // Auto-detect simple mathematical expressions and wrap them in $ delimiters
+  let processedContent = htmlContent
+
+  // Pattern for simple equations like s=10+4t, x+y=5, etc.
+  const simpleEquationPattern = /\b([a-zA-Z]\s*[=+\-*/]\s*[\da-zA-Z+\-*/\s]+(?:[=+\-*/]\s*[\da-zA-Z+\-*/\s]*)*)\b/g
+
+  processedContent = processedContent.replace(simpleEquationPattern, (match) => {
+    // Only process if it looks like an equation (contains = or is a simple expression)
+    if (match.includes('=') || /^[a-zA-Z]\s*[+\-*/]\s*\d/.test(match)) {
+      return `<span data-math="${match.trim()}" data-inline="true"></span>`
+    }
+    return match
+  })
+
+  // If we processed any math expressions, use ContentRenderer
+  if (processedContent !== htmlContent) {
+    return <ContentRenderer htmlContent={processedContent} />
+  }
+
   return (
     <div
       className="max-w-none [&_*]:!font-[inherit] text-gray-900 leading-relaxed"
@@ -48,9 +81,24 @@ export const renderHtmlContent = (htmlContent: string) => {
 export const renderTextWithFormattingAndMath = (text: string) => {
   if (!text || typeof text !== 'string') return text
 
+  // Auto-detect simple mathematical expressions and wrap them in $ delimiters
+  let processedText = text
+
+  // Pattern for simple equations like s=10+4t, x+y=5, etc.
+  const simpleEquationPattern = /\b([a-zA-Z]\s*[=+\-*/]\s*[\da-zA-Z+\-*/\s]+(?:[=+\-*/]\s*[\da-zA-Z+\-*/\s]*)*)\b/g
+
+  processedText = processedText.replace(simpleEquationPattern, (match) => {
+    // Only process if it looks like an equation and isn't already wrapped in $
+    if ((match.includes('=') || /^[a-zA-Z]\s*[+\-*/]\s*\d/.test(match)) &&
+        !text.includes(`$${match}$`)) {
+      return `$${match.trim()}$`
+    }
+    return match
+  })
+
   // First, handle escaped dollar signs by replacing \$ with a unique placeholder
   const escapedDollarPlaceholder = '§§§DOLLAR§§§'
-  const processedText = text.replace(/\\\$/g, escapedDollarPlaceholder)
+  processedText = processedText.replace(/\\\$/g, escapedDollarPlaceholder)
 
   // Function to restore escaped dollars in final output
   const restoreEscapedDollars = (content: string): string => {
