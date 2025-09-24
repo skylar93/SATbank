@@ -139,7 +139,41 @@ function getVisiblePlainText(container: Element): string {
 
 // Sanitize HTML by removing non-visible elements
 function sanitizeHtmlContainer(div: HTMLDivElement) {
-  div.querySelectorAll('style,script,noscript,template').forEach(el => el.remove())
+  // Remove elements that should never affect visible question content
+  div
+    .querySelectorAll('style,script,noscript,template,iframe,object')
+    .forEach((el) => el.remove())
+
+  // Remove MathQuill editing scaffolding that is hidden in the live view
+  div.querySelectorAll('.mq-textarea, .mq-cursor, .mq-selection').forEach((el) => {
+    el.remove()
+  })
+
+  // Remove orphan textarea/input nodes that are hidden via CSS in the real DOM
+  div.querySelectorAll('textarea, input[type="hidden"]').forEach((el) => {
+    const parent = el.parentElement
+    // Drop empty wrappers such as <span class="mq-textarea"><textarea/></span>
+    if (parent && parent.childNodes.length === 1) {
+      parent.remove()
+    } else {
+      el.remove()
+    }
+  })
+
+  // Drop elements that are explicitly marked hidden
+  div.querySelectorAll('[hidden]').forEach((el) => el.remove())
+
+  div.querySelectorAll<HTMLElement>('[style]').forEach((el) => {
+    const style = el.getAttribute('style')?.toLowerCase() ?? ''
+    if (
+      style.includes('display:none') ||
+      style.includes('display: none') ||
+      style.includes('visibility:hidden') ||
+      style.includes('visibility: hidden')
+    ) {
+      el.remove()
+    }
+  })
   // Note: aria-hidden elements are kept in DOM but excluded from walker for consistency
 }
 
@@ -150,53 +184,81 @@ function applyHighlightsToHTML(htmlContent: string, highlights: Highlight[]): st
   const tempDiv = document.createElement('div')
   tempDiv.innerHTML = htmlContent
 
-  // Sanitize to remove non-visible content before processing
-  sanitizeHtmlContainer(tempDiv)
+  // Append off-screen so computed styles match the live DOM (important for hidden MathQuill nodes)
+  tempDiv.style.position = 'absolute'
+  tempDiv.style.left = '-9999px'
+  tempDiv.style.top = '-9999px'
+  tempDiv.style.pointerEvents = 'none'
+  tempDiv.style.opacity = '0'
+  tempDiv.style.zIndex = '-1'
 
-  // Get visible plaintext for validation
-  const plainText = getVisiblePlainText(tempDiv)
-
-  // Validate highlights against visible text
-  const validHighlights = highlights.filter(highlight => {
-    if (highlight.start < 0 || highlight.end > plainText.length || highlight.start >= highlight.end) {
-      console.warn('Invalid highlight range:', highlight, 'visible plaintext length:', plainText.length)
-      return false
-    }
-
-    // More lenient text validation
-    const expectedText = plainText.substring(highlight.start, highlight.end)
-    const normalizeSpace = (s: string) => s.replace(/\s+/g, ' ').trim()
-    if (normalizeSpace(expectedText) !== normalizeSpace(highlight.text)) {
-      console.warn('Highlight text mismatch (normalized):', {
-        expected: normalizeSpace(highlight.text),
-        found: normalizeSpace(expectedText),
-        start: highlight.start,
-        end: highlight.end
-      })
-      // Continue anyway for better compatibility
-    }
-
-    return true
-  })
-
-  if (validHighlights.length === 0) {
+  const { body } = document
+  if (!body) {
     return htmlContent
   }
 
-  // Sort highlights by start position (apply in reverse order)
-  const sortedHighlights = [...validHighlights].sort((a, b) => b.start - a.start)
+  body.appendChild(tempDiv)
 
-  // Apply each highlight using a more reliable method
-  for (const highlight of sortedHighlights) {
-    try {
-      applyHighlightRobust(tempDiv, highlight, plainText)
-    } catch (error) {
-      console.warn('Failed to apply highlight:', error, highlight)
-      // Continue with other highlights
+  try {
+    // Sanitize to remove non-visible content before processing
+    sanitizeHtmlContainer(tempDiv)
+
+    // Get visible plaintext for validation
+    const plainText = getVisiblePlainText(tempDiv)
+
+    // Validate highlights against visible text
+    const validHighlights = highlights.filter((highlight) => {
+      if (
+        highlight.start < 0 ||
+        highlight.end > plainText.length ||
+        highlight.start >= highlight.end
+      ) {
+        console.warn(
+          'Invalid highlight range:',
+          highlight,
+          'visible plaintext length:',
+          plainText.length
+        )
+        return false
+      }
+
+      // More lenient text validation
+      const expectedText = plainText.substring(highlight.start, highlight.end)
+      const normalizeSpace = (s: string) => s.replace(/\s+/g, ' ').trim()
+      if (normalizeSpace(expectedText) !== normalizeSpace(highlight.text)) {
+        console.warn('Highlight text mismatch (normalized):', {
+          expected: normalizeSpace(highlight.text),
+          found: normalizeSpace(expectedText),
+          start: highlight.start,
+          end: highlight.end,
+        })
+        // Continue anyway for better compatibility
+      }
+
+      return true
+    })
+
+    if (validHighlights.length === 0) {
+      return tempDiv.innerHTML
     }
-  }
 
-  return tempDiv.innerHTML
+    // Sort highlights by start position (apply in reverse order)
+    const sortedHighlights = [...validHighlights].sort((a, b) => b.start - a.start)
+
+    // Apply each highlight using a more reliable method
+    for (const highlight of sortedHighlights) {
+      try {
+        applyHighlightRobust(tempDiv, highlight, plainText)
+      } catch (error) {
+        console.warn('Failed to apply highlight:', error, highlight)
+        // Continue with other highlights
+      }
+    }
+
+    return tempDiv.innerHTML
+  } finally {
+    tempDiv.remove()
+  }
 }
 
 // Robust highlight application for a single highlight

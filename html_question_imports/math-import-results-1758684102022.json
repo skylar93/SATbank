@@ -1,0 +1,50 @@
+{
+  "testsProcessed": 1,
+  "questionsProcessed": 22,
+  "questionsSucceeded": 0,
+  "questionsFailed": 22,
+  "gridInQuestions": 6,
+  "multipleChoiceQuestions": 16,
+  "errors": [
+    {
+      "batch": 1,
+      "error": "null value in column \"correct_answer\" of relation \"questions\" violates not-null constraint",
+      "questions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "batch": 2,
+      "error": "null value in column \"correct_answer\" of relation \"questions\" violates not-null constraint",
+      "questions": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "batch": 3,
+      "error": "null value in column \"correct_answer\" of relation \"questions\" violates not-null constraint",
+      "questions": [
+        21,
+        22
+      ]
+    }
+  ]
+}

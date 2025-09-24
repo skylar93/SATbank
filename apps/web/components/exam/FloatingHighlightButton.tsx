@@ -40,14 +40,34 @@ function getVisiblePlainText(container: Element) {
   return s
 }
 
-// Helper function to normalize whitespace for consistent text matching
-function normalizeWhitespace(text: string): string {
-  return text.replace(/\s+/g, ' ').trim()
+// Helper to locate selection text while tolerating whitespace differences
+function findFlexibleWhitespaceMatch(source: string, target: string) {
+  if (!target) return null
+
+  const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const flexiblePattern = escaped.replace(/\s+/g, '\\s+')
+
+  try {
+    const regex = new RegExp(flexiblePattern, 'mu')
+    const match = regex.exec(source)
+    if (match?.index !== undefined) {
+      return {
+        start: match.index,
+        end: match.index + match[0].length,
+        text: match[0],
+      }
+    }
+  } catch (error) {
+    console.warn('Flexible whitespace match failed:', error)
+  }
+
+  return null
 }
 
 function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: string) {
   // Enhanced offset calculation with better accuracy
   const walker = getTextWalker(container)
+  const visibleText = getVisiblePlainText(container)
   let idx = 0
   let start = -1
   let end = -1
@@ -86,18 +106,18 @@ function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: st
 
   // Fallback to text search if direct position calculation failed
   if (start < 0 || end < 0) {
-    const containerText = getVisiblePlainText(container)
+    const directIndex = visibleText.indexOf(textRaw)
     // Try exact match first
-    let foundStart = containerText.indexOf(textRaw)
-    if (foundStart < 0) {
-      // Try normalized match as fallback
-      const normalizedContainer = normalizeWhitespace(containerText)
-      const normalizedText = normalizeWhitespace(textRaw)
-      foundStart = normalizedContainer.indexOf(normalizedText)
-    }
-    if (foundStart >= 0) {
-      start = foundStart
-      end = foundStart + textRaw.length
+    if (directIndex >= 0) {
+      start = directIndex
+      end = directIndex + textRaw.length
+    } else {
+      const flexibleMatch = findFlexibleWhitespaceMatch(visibleText, textRaw)
+      if (flexibleMatch) {
+        start = flexibleMatch.start
+        end = flexibleMatch.end
+        textRaw = flexibleMatch.text
+      }
     }
   }
 
@@ -105,7 +125,11 @@ function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: st
   if (start < 0) start = 0
   if (end < 0) end = start + textRaw.length
 
-  return { start, end, textForHighlight: textRaw }
+  const boundedStart = Math.max(0, Math.min(start, visibleText.length))
+  const boundedEnd = Math.max(boundedStart, Math.min(end, visibleText.length))
+  const textForHighlight = visibleText.slice(boundedStart, boundedEnd) || textRaw
+
+  return { start: boundedStart, end: boundedEnd, textForHighlight }
 }
 
 interface DOMHighlight {
