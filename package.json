@@ -14,7 +14,17 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "backup": "node scripts/backup-database.js",
-    "backup:sql": "bash scripts/backup-sql.sh"
+    "backup:sql": "bash scripts/backup-sql.sh",
+    "test:scoring": "cd apps/web && pnpm test -- tests/scoring",
+    "test:scoring:full": "cd apps/web && pnpm test:scoring:comprehensive",
+    "test:scoring:integration": "cd apps/web && pnpm test -- tests/scoring/exam-scoring.integration.test.ts",
+    "test:scoring:validation": "cd apps/web && pnpm test -- tests/integration/exam-scoring-validation.test.ts",
+    "test:scoring:quick": "pnpm test:scoring:validation",
+    "test:scoring:edge-cases": "cd apps/web && pnpm test -- tests/utils/test-data-generator.test.ts",
+    "validate:all-exams": "pnpm test:scoring:full",
+    "scoring:health-check": "pnpm test:scoring:quick",
+    "scoring:regression": "pnpm test:scoring:integration",
+    "scoring:stress-test": "cd apps/web && pnpm test -- tests/scoring --verbose --reporter=verbose"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.21.0",

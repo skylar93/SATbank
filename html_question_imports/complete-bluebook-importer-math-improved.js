@@ -33,11 +33,32 @@ function mapModuleType(testId) {
   return 'math1';
 }
 
-// Extract LaTeX from HTML content and convert to KaTeX format
+// FUNDAMENTAL SOLUTION: Convert ALL math to clean LaTeX-only format
 function extractLatexFromHtml(htmlContent) {
   if (!htmlContent) return htmlContent;
 
   let processed = htmlContent;
+  console.log('   📊 Converting all math content to clean LaTeX format...');
+
+  // Step 1: Remove existing $ delimiters temporarily to avoid conflicts
+  const preservedMath = [];
+  let mathIndex = 0;
+
+  // Preserve display math ($$...$$)
+  processed = processed.replace(/\$\$([^$]+)\$\$/g, (match, content) => {
+    const placeholder = `__PRESERVED_DISPLAY_${mathIndex}__`;
+    preservedMath.push({ placeholder, latex: content.trim(), isDisplay: true });
+    mathIndex++;
+    return placeholder;
+  });
+
+  // Preserve inline math ($...$)
+  processed = processed.replace(/\$([^$]+)\$/g, (match, content) => {
+    const placeholder = `__PRESERVED_INLINE_${mathIndex}__`;
+    preservedMath.push({ placeholder, latex: content.trim(), isDisplay: false });
+    mathIndex++;
+    return placeholder;
+  });
 
   // Improved: Use balanced bracket matching to completely remove mathquill structures
   function findCompleteSpan(text, startIndex) {
@@ -61,37 +82,35 @@ function extractLatexFromHtml(htmlContent) {
     return -1;
   }
 
-  // Find and collect all LaTeX data
+  // Step 2: Extract MathQuill LaTeX data and convert to clean format
   const latexRegex = /latex-data="([^"]*)"/g;
   let match;
-  let latexData = [];
+  const extractedMathQuill = [];
 
   while ((match = latexRegex.exec(processed)) !== null) {
-    latexData.push({
+    extractedMathQuill.push({
       latex: match[1],
       index: match.index
     });
   }
 
-  // Process in reverse order to maintain indices
-  for (let i = latexData.length - 1; i >= 0; i--) {
-    const data = latexData[i];
+  // Process MathQuill spans in reverse order to maintain indices
+  for (let i = extractedMathQuill.length - 1; i >= 0; i--) {
+    const data = extractedMathQuill[i];
 
-    // Find the start of the span containing this latex-data
+    // Find the complete MathQuill span
     let spanStart = processed.lastIndexOf('<span', data.index);
     if (spanStart === -1) continue;
 
-    // Check if this span is a mq-math-mode span
     let spanOpenEnd = processed.indexOf('>', spanStart);
     let spanTag = processed.substring(spanStart, spanOpenEnd + 1);
 
     if (!spanTag.includes('mq-math-mode')) continue;
 
-    // Find the complete end of this span using balanced matching
     let spanEnd = findCompleteSpan(processed, spanStart);
     if (spanEnd === -1) continue;
 
-    // Clean and prepare LaTeX for KaTeX
+    // Clean LaTeX content
     let latex = data.latex
       .replace(/\\cdot/g, '\\cdot')
       .replace(/\\times/g, '\\times')
@@ -101,14 +120,25 @@ function extractLatexFromHtml(htmlContent) {
       .replace(/\\frac{([^}]*)}{([^}]*)}/g, '\\frac{$1}{$2}')
       .trim();
 
-    // Replace the entire span with KaTeX
+    // Replace with placeholder for now
     let beforeSpan = processed.substring(0, spanStart);
     let afterSpan = processed.substring(spanEnd);
 
-    processed = beforeSpan + `$${latex}$` + afterSpan;
+    const placeholder = `__EXTRACTED_MATHQUILL_${mathIndex}__`;
+    preservedMath.push({ placeholder, latex, isDisplay: true }); // MathQuill usually display mode
+    mathIndex++;
 
-    console.log(`   🔄 Replaced complete mathquill span with: $${latex}$`);
+    processed = beforeSpan + placeholder + afterSpan;
+    console.log(`   🔄 Extracted MathQuill LaTeX: ${latex}`);
   }
+
+  // Step 3: Restore all math as consistent LaTeX format
+  preservedMath.forEach(math => {
+    const delimiter = math.isDisplay ? '$$' : '$';
+    const replacement = `${delimiter}${math.latex}${delimiter}`;
+    processed = processed.replace(math.placeholder, replacement);
+    console.log(`   ✅ Restored as ${math.isDisplay ? 'display' : 'inline'} LaTeX: ${replacement}`);
+  });
 
   return processed;
 }
@@ -398,20 +428,23 @@ function processQuestion(question, testId, examId) {
       // Grid-in: use correct_answers array
       const acceptableAnswers = generateAcceptableAnswers(question.correctAnswer);
       processedQuestion.correct_answers = acceptableAnswers;
-      processedQuestion.correct_answer = {}; // Empty object instead of null
-      processedQuestion.options = {};
-      processedQuestion.options_markdown_backup = {};
+      processedQuestion.correct_answer = acceptableAnswers[0] || question.correctAnswer || ""; // First acceptable answer as string
+      processedQuestion.options = null; // null for grid-in
+      processedQuestion.options_markdown_backup = null;
+
+      console.log(`   ✅ Grid-in - Primary answer: "${processedQuestion.correct_answer}", All answers: ${JSON.stringify(acceptableAnswers)}`);
     } else {
       // Multiple choice: use correct_answer and options
       const options = convertChoicesToOptions(question.choices);
       const correctLetter = extractCorrectAnswerLetter(question.correctAnswer, question.choices);
 
-      // Store the actual option text, not the original correctAnswer
-      const correctOptionText = options[correctLetter] || question.correctAnswer;
-      processedQuestion.correct_answer = { [correctLetter]: correctOptionText };
-      processedQuestion.correct_answers = []; // Empty array instead of null
+      // Store just the correct letter as a string (NOT an object)
+      processedQuestion.correct_answer = correctLetter;
+      processedQuestion.correct_answers = null; // null for multiple choice
       processedQuestion.options = options;
       processedQuestion.options_markdown_backup = options;
+
+      console.log(`   ✅ Multiple choice - Letter: ${correctLetter}, Option: "${options[correctLetter]}"`);
     }
 
     // Handle explanation
@@ -459,11 +492,12 @@ async function createOrGetExam(testId, testName, totalQuestions) {
 
   // Clean up the test name to remove module info and Form parts
   let cleanedName = testName
-    .replace(/Module\s*[12]/gi, '') // Remove Module1 or Module2
-    .replace(/module\s*[12]/gi, '') // Remove module1 or module2
-    .replace(/Form\s*[A-Z]/gi, '')  // Remove Form A, Form B, etc.
-    .replace(/form\s*[a-z]/gi, '')  // Remove form a, form b, etc.
-    .replace(/\s+/g, ' ')           // Normalize whitespace
+    .replace(/Module\s*[12]\s*/gi, '') // Remove "Module 1" or "Module 2" completely
+    .replace(/module\s*[12]\s*/gi, '') // Remove "module 1" or "module 2" completely
+    .replace(/Form\s*[A-Z]/gi, '')     // Remove "Form A", "Form B", etc.
+    .replace(/form\s*[a-z]/gi, '')     // Remove "form a", "form b", etc.
+    .replace(/\bUs\b/gi, 'US')         // Change "Us" to "US"
+    .replace(/\s+/g, ' ')              // Normalize whitespace
     .trim();
 
   let formattedDate = cleanedName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -549,8 +583,8 @@ async function insertQuestions(questions, batchSize = 10) {
         data.forEach(q => {
           console.log(`   Q${q.question_number} (${q.question_type}): ${
             q.question_type === 'grid_in'
-              ? `Answers: ${JSON.stringify(q.correct_answers)}`
-              : `Answer: ${JSON.stringify(q.correct_answer)}`
+              ? `Primary: "${q.correct_answer}", All: ${JSON.stringify(q.correct_answers)}`
+              : `Letter: "${q.correct_answer}"`
           }`);
         });
       }
@@ -665,11 +699,13 @@ async function processTestData(testFilter = null, questionLimit = null, dryRun =
             console.log(`      → Module: ${processed.module_type}`);
 
             if (processed.question_type === 'grid_in') {
-              console.log(`      → Acceptable Answers: ${JSON.stringify(processed.correct_answers)}`);
+              console.log(`      → Primary Answer: "${processed.correct_answer}"`);
+              console.log(`      → All Acceptable: ${JSON.stringify(processed.correct_answers)}`);
               totalResults.gridInQuestions++;
             } else {
               console.log(`      → Options: ${JSON.stringify(processed.options)}`);
-              console.log(`      → Correct: ${JSON.stringify(processed.correct_answer)}`);
+              console.log(`      → Correct Letter: "${processed.correct_answer}"`);
+              console.log(`      → Correct Option: "${processed.options[processed.correct_answer]}"`);
               totalResults.multipleChoiceQuestions++;
             }
 
