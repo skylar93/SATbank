@@ -157,6 +157,93 @@ function normalizeMathExpression(expr) {
     .toLowerCase();
 }
 
+// Fix broken HTML tags that got corrupted during parsing
+function fixBrokenHtmlTags(content) {
+  if (!content || typeof content !== 'string') return content;
+
+  console.log('   🔧 Repairing broken HTML tags...');
+
+  let repaired = content;
+  let repairCount = 0;
+
+  // Fix broken <strong> tags (most common issue)
+  const brokenStrongOpen = /<\s*s\s*t\s*r\s*o\s*n\s*g\s*>/gi;
+  const brokenStrongClose = /<\s*\/\s*s\s*t\s*r\s*o\s*n\s*g\s*>/gi;
+
+  if (brokenStrongOpen.test(content) || brokenStrongClose.test(content)) {
+    repaired = repaired
+      .replace(brokenStrongOpen, '<strong>')
+      .replace(brokenStrongClose, '</strong>');
+    repairCount++;
+    console.log('      ✅ Fixed broken <strong> tags');
+  }
+
+  // Fix broken <em> tags
+  const brokenEmOpen = /<\s*e\s*m\s*>/gi;
+  const brokenEmClose = /<\s*\/\s*e\s*m\s*>/gi;
+
+  if (brokenEmOpen.test(content) || brokenEmClose.test(content)) {
+    repaired = repaired
+      .replace(brokenEmOpen, '<em>')
+      .replace(brokenEmClose, '</em>');
+    repairCount++;
+    console.log('      ✅ Fixed broken <em> tags');
+  }
+
+  // Fix broken <span> tags
+  const brokenSpanOpen = /<\s*s\s*p\s*a\s*n([^>]*)>/gi;
+  const brokenSpanClose = /<\s*\/\s*s\s*p\s*a\s*n\s*>/gi;
+
+  if (brokenSpanOpen.test(content) || brokenSpanClose.test(content)) {
+    repaired = repaired
+      .replace(brokenSpanOpen, '<span$1>')
+      .replace(brokenSpanClose, '</span>');
+    repairCount++;
+    console.log('      ✅ Fixed broken <span> tags');
+  }
+
+  // Fix broken <div> tags
+  const brokenDivOpen = /<\s*d\s*i\s*v([^>]*)>/gi;
+  const brokenDivClose = /<\s*\/\s*d\s*i\s*v\s*>/gi;
+
+  if (brokenDivOpen.test(content) || brokenDivClose.test(content)) {
+    repaired = repaired
+      .replace(brokenDivOpen, '<div$1>')
+      .replace(brokenDivClose, '</div>');
+    repairCount++;
+    console.log('      ✅ Fixed broken <div> tags');
+  }
+
+  // Fix broken <p> tags
+  const brokenPOpen = /<\s*p\s*([^>]*)>/gi;
+  const brokenPClose = /<\s*\/\s*p\s*>/gi;
+
+  if (brokenPOpen.test(content) || brokenPClose.test(content)) {
+    repaired = repaired
+      .replace(brokenPOpen, '<p$1>')
+      .replace(brokenPClose, '</p>');
+    repairCount++;
+    console.log('      ✅ Fixed broken <p> tags');
+  }
+
+  // Fix any remaining broken angle brackets and invisible characters
+  repaired = repaired
+    .replace(/< \s*/g, '<')  // Fix "< strong>" → "<strong>"
+    .replace(/\s* >/g, '>')  // Fix "strong >" → "strong>"
+    .replace(/<\s+/g, '<')   // Fix "<  strong>" → "<strong>"
+    .replace(/\s+>/g, '>')   // Fix "strong  >" → "strong>"
+    .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width spaces
+    .replace(/​/g, '');      // Remove specific invisible character found in data
+
+  if (repairCount > 0) {
+    console.log(`   ✅ Repaired ${repairCount} types of broken HTML tags`);
+  } else {
+    console.log('   ℹ️ No broken HTML tags found');
+  }
+
+  return repaired;
+}
+
 // Clean special characters from answer strings
 function cleanAnswerString(answer) {
   if (!answer || typeof answer !== 'string') return answer;
@@ -357,8 +444,11 @@ function extractMainContentFromHtml(questionHTML) {
     return '';
   }
 
-  // First, extract and convert LaTeX
-  let content = extractLatexFromHtml(questionHTML);
+  // Step 1: Fix broken HTML tags FIRST
+  let content = fixBrokenHtmlTags(questionHTML);
+
+  // Step 2: Extract and convert LaTeX
+  content = extractLatexFromHtml(content);
 
   // Then apply the existing content extraction logic
   content = content.replace(/<\/?html[^>]*>/gi, '');
@@ -613,7 +703,7 @@ async function processTestData(testFilter = null, questionLimit = null, dryRun =
     console.log('🚀 Starting Math Bluebook SAT Import Process...\n');
 
     // Load data
-    const defaultJsonFile = 'bluebook-sat-problems-2025-09-24.json';
+    const defaultJsonFile = 'bluebook-sat-problems-march2025module2.json';
     const fileName = jsonFile || defaultJsonFile;
     const dataPath = path.join(__dirname, fileName);
 

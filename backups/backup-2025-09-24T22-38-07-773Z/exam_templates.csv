@@ -1,0 +1,6 @@
+"id","name","description","scoring_groups","created_at","updated_at"
+"full_sat","Full SAT Practice Test","A standard, 4-module SAT test with combined English and Math scoring.","{""math"":[""math1"",""math2""],""english"":[""english1"",""english2""]}","2025-09-05T16:21:45.622317+00:00","2025-09-05T16:21:45.622317+00:00"
+"english_only","English Only Section","An exam consisting of only the two English modules with combined English scoring.","{""english"":[""english1"",""english2""]}","2025-09-05T16:21:45.622317+00:00","2025-09-05T16:21:45.622317+00:00"
+"math_only","Math Only Section","An exam consisting of only the two Math modules with combined Math scoring.","{""math"":[""math1"",""math2""]}","2025-09-05T16:21:45.622317+00:00","2025-09-05T16:21:45.622317+00:00"
+"single_module","Single Module Practice","A practice test focused on a single module with individual scoring.","{}","2025-09-05T16:21:45.622317+00:00","2025-09-05T16:21:45.622317+00:00"
+"custom","Custom Assignment","A custom set of questions, often from student mistakes or specific practice needs.","{}","2025-09-05T16:21:45.622317+00:00","2025-09-05T16:21:45.622317+00:00"

@@ -588,6 +588,8 @@ export async function createExamFromModules(data: {
       template_id: data.templateId,
       module_composition: data.moduleAssignments,
       is_active: true, // Start as active so it can be assigned immediately
+      english_scoring_curve_id: 1, // Default English curve
+      math_scoring_curve_id: 2, // Default Math curve
     }
 
     // Add time limits if provided
