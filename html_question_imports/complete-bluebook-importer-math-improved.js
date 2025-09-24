@@ -228,12 +228,16 @@ function convertChoicesToOptions(choices) {
   const options = {};
   choices.forEach(choice => {
     if (typeof choice === 'object' && choice.letter && choice.text) {
-      options[choice.letter] = choice.text.trim();
+      // Process LaTeX content if present
+      const processedText = extractLatexFromHtml(choice.text);
+      options[choice.letter] = processedText.trim();
     } else if (typeof choice === 'string') {
       const match = choice.match(/^([A-D])\)\s*(.*)$/);
       if (match) {
         const [, letter, text] = match;
-        options[letter] = text.trim();
+        // Process LaTeX content if present
+        const processedText = extractLatexFromHtml(text);
+        options[letter] = processedText.trim();
       }
     }
   });
@@ -247,6 +251,8 @@ function extractCorrectAnswerLetter(correctAnswer, choices) {
   // Clean the correct answer first
   const cleanCorrectAnswer = cleanAnswerString(correctAnswer);
   const normalizedCorrect = normalizeMathExpression(cleanCorrectAnswer);
+
+  console.log(`   🔍 Finding match for: "${correctAnswer}" (cleaned: "${cleanCorrectAnswer}")`);
 
   for (const choice of choices) {
     let letter, text;
@@ -265,27 +271,53 @@ function extractCorrectAnswerLetter(correctAnswer, choices) {
       continue;
     }
 
-    // Exact match
-    if (text.trim() === cleanCorrectAnswer.trim()) {
+    // Clean the choice text
+    const cleanChoiceText = cleanAnswerString(text);
+    console.log(`      Option ${letter}: "${text}" (cleaned: "${cleanChoiceText}")`);
+
+    // Exact match (after cleaning)
+    if (cleanChoiceText.trim() === cleanCorrectAnswer.trim()) {
+      console.log(`      ✅ Exact match found: ${letter}`);
       return letter;
     }
 
     // Normalized math expression match
     const normalizedChoice = normalizeMathExpression(text);
     if (normalizedCorrect && normalizedCorrect === normalizedChoice) {
+      console.log(`      ✅ Normalized match found: ${letter}`);
       return letter;
+    }
+
+    // Handle LaTeX expressions
+    if (cleanCorrectAnswer.includes('$') && cleanChoiceText.includes('$')) {
+      const correctLatex = cleanCorrectAnswer.replace(/\$/g, '');
+      const choiceLatex = cleanChoiceText.replace(/\$/g, '');
+      if (correctLatex.trim() === choiceLatex.trim()) {
+        console.log(`      ✅ LaTeX match found: ${letter}`);
+        return letter;
+      }
     }
 
     // Partial match for complex expressions
     if (cleanCorrectAnswer.length > 10 && (
-        text.includes(cleanCorrectAnswer.slice(0, 10)) ||
-        cleanCorrectAnswer.includes(text.slice(0, 10))
+        cleanChoiceText.includes(cleanCorrectAnswer.slice(0, 10)) ||
+        cleanCorrectAnswer.includes(cleanChoiceText.slice(0, 10))
     )) {
+      console.log(`      ✅ Partial match found: ${letter}`);
+      return letter;
+    }
+
+    // Try matching without HTML tags
+    const cleanCorrectNoHtml = cleanCorrectAnswer.replace(/<[^>]*>/g, '').trim();
+    const cleanChoiceNoHtml = cleanChoiceText.replace(/<[^>]*>/g, '').trim();
+    if (cleanCorrectNoHtml && cleanCorrectNoHtml === cleanChoiceNoHtml) {
+      console.log(`      ✅ HTML-stripped match found: ${letter}`);
       return letter;
     }
   }
 
-  console.warn(`⚠️ Could not match correct answer: "${correctAnswer}" (cleaned: "${cleanCorrectAnswer}")`);
+  console.warn(`   ⚠️ Could not match correct answer: "${correctAnswer}" (cleaned: "${cleanCorrectAnswer}")`);
+  console.warn(`   Available choices:`, choices.map(c => typeof c === 'object' ? `${c.letter}: ${c.text}` : c));
   return 'A';
 }
 
@@ -374,7 +406,9 @@ function processQuestion(question, testId, examId) {
       const options = convertChoicesToOptions(question.choices);
       const correctLetter = extractCorrectAnswerLetter(question.correctAnswer, question.choices);
 
-      processedQuestion.correct_answer = { [correctLetter]: question.correctAnswer };
+      // Store the actual option text, not the original correctAnswer
+      const correctOptionText = options[correctLetter] || question.correctAnswer;
+      processedQuestion.correct_answer = { [correctLetter]: correctOptionText };
       processedQuestion.correct_answers = []; // Empty array instead of null
       processedQuestion.options = options;
       processedQuestion.options_markdown_backup = options;

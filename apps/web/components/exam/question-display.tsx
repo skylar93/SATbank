@@ -685,7 +685,7 @@ export function QuestionDisplay({
       correct_answers: parseCorrectAnswers(localQuestion),
       explanation: localQuestion.explanation || '',
       table_data: localQuestion.table_data || null,
-      content_format: localQuestion.content_format || 'markdown',
+      content_format: localQuestion.content_format || (localQuestion.question_html ? 'html' : 'markdown'),
     })
 
     // THEN, enter edit mode
@@ -702,10 +702,10 @@ export function QuestionDisplay({
       correct_answers: parseCorrectAnswers(localQuestion),
       explanation: localQuestion.explanation || '',
       table_data: localQuestion.table_data || null,
-      content_format: localQuestion.content_format || 'markdown',
+      content_format: localQuestion.content_format || (localQuestion.question_html ? 'html' : 'markdown'),
     })
     setCurrentEditorMode(
-      (localQuestion.content_format as 'markdown' | 'html') || 'markdown'
+      (localQuestion.content_format as 'markdown' | 'html') || (localQuestion.question_html ? 'html' : 'markdown')
     )
     setIsEditing(false)
   }

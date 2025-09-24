@@ -563,10 +563,21 @@ function getTopicFromModuleType(moduleType) {
 
 // Create or get exam
 async function createOrGetExam(testId, testName, totalQuestions) {
-  // Format exam title: "August 2023 English1" (capitalize first letter of month and year, add module type)
   const moduleType = mapModuleType(testId);
-  let formattedDate = testName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  
+
+  // Clean up the test name to remove Module1/Module2 prefix, Form parts, and fix US capitalization
+  let cleanedName = testName
+    .replace(/Module\s*[12]/gi, '')     // Remove Module1 or Module2
+    .replace(/module\s*[12]/gi, '')     // Remove module1 or module2
+    .replace(/Form\s*[A-Z]/gi, '')      // Remove Form A, Form B, etc.
+    .replace(/form\s*[a-z]/gi, '')      // Remove form a, form b, etc.
+    .replace(/\bUs\b/g, 'US')           // Fix Us to US
+    .replace(/\s+/g, ' ')               // Normalize whitespace
+    .trim();
+
+  // Format the cleaned name (capitalize first letter of each word)
+  let formattedDate = cleanedName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
   // Add module type to the title (English1, English2, Math1, Math2)
   let moduleTypeName;
   switch(moduleType) {
@@ -585,7 +596,7 @@ async function createOrGetExam(testId, testName, totalQuestions) {
     default:
       moduleTypeName = 'English1';
   }
-  
+
   const examTitle = `${formattedDate} ${moduleTypeName}`;
   
   // Check if exam exists
@@ -597,8 +608,9 @@ async function createOrGetExam(testId, testName, totalQuestions) {
     
   if (examError && examError.code === 'PGRST116') {
     // Create new exam
-    const timeLimit = moduleType.includes('english') ? 64 : 70; // English: 64min, Math: 70min
-    
+    // English modules: 32 minutes (27 questions), Math modules: different times
+    const timeLimit = moduleType.includes('english') ? 32 : 70; // English: 32min, Math: 70min
+
     const { data: newExam, error: createError } = await supabase
       .from('exams')
       .insert([{
