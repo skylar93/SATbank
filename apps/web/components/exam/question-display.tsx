@@ -426,6 +426,22 @@ export function QuestionDisplay({
   const [saving, setSaving] = useState(false)
   const [showFormattingHelp, setShowFormattingHelp] = useState(false)
 
+  // Answer elimination state
+  const [eliminatedAnswers, setEliminatedAnswers] = useState<Set<string>>(new Set())
+
+  // Handle answer elimination
+  const toggleAnswerElimination = (answerKey: string) => {
+    setEliminatedAnswers(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(answerKey)) {
+        newSet.delete(answerKey)
+      } else {
+        newSet.add(answerKey)
+      }
+      return newSet
+    })
+  }
+
   // Dual Mode state
   const [currentEditorMode, setCurrentEditorMode] = useState<
     'markdown' | 'html'
@@ -469,6 +485,8 @@ export function QuestionDisplay({
   // Update local question when prop changes
   useEffect(() => {
     setLocalQuestion(question)
+    // Reset eliminated answers when question changes
+    setEliminatedAnswers(new Set())
     // Reset the form directly with the new question's data.
     // The processing will be handled by handleEditClick when needed.
     setEditForm({
@@ -1020,6 +1038,7 @@ export function QuestionDisplay({
 
             const isCorrectAnswer = normalizedCorrectAnswer === normalizedKey
             const isUserAnswer = normalizedUserAnswer === normalizedKey
+            const isEliminated = eliminatedAnswers.has(key)
 
             return (
               <label
@@ -1027,6 +1046,7 @@ export function QuestionDisplay({
                 className={`
                 flex items-start p-3 rounded-lg transition-all
                 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                ${isEliminated ? 'opacity-40' : ''}
                 ${
                   // Priority 1: If this is the correct answer and student got it wrong, show green styling
                   showExplanation && isCorrectAnswer && !isUserAnswer
@@ -1048,6 +1068,18 @@ export function QuestionDisplay({
                         : 'bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }
               `}
+                onContextMenu={(e) => {
+                  e.preventDefault()
+                  if (!disabled && !showExplanation) {
+                    toggleAnswerElimination(key)
+                  }
+                }}
+                onDoubleClick={(e) => {
+                  e.preventDefault()
+                  if (!disabled && !showExplanation) {
+                    toggleAnswerElimination(key)
+                  }
+                }}
               >
                 <input
                   type="radio"
@@ -1060,11 +1092,16 @@ export function QuestionDisplay({
                     disabled || (showExplanation && !showPerQuestionAnswers)
                   }
                 />
-                <div className="flex-1">
+                <div className={`flex-1 ${isEliminated ? 'line-through' : ''}`}>
                   <div className="flex items-center mb-1">
                     <span className="font-semibold text-gray-700 mr-2">
                       {key}.
                     </span>
+                    {isEliminated && (
+                      <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">
+                        Eliminated
+                      </span>
+                    )}
                   </div>
                   <div className="text-gray-900 leading-relaxed">
                     {(() => {
@@ -1727,11 +1764,16 @@ export function QuestionDisplay({
       {/* Answer Selection Area */}
       <div className="flex-1 lg:w-1/2 p-6 lg:pl-3">
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
             {localQuestion.question_type === 'multiple_choice'
               ? 'Select your answer:'
               : 'Enter your answer:'}
           </h3>
+          {localQuestion.question_type === 'multiple_choice' && !isAdminPreview && !showExplanation && (
+            <p className="text-sm text-gray-600 mb-4">
+              💡 Right-click or double-click on answer choices to eliminate them
+            </p>
+          )}
 
           {renderAnswerOptions()}
 

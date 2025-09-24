@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../../../../contexts/auth-context'
 import { supabase } from '../../../../lib/supabase'
 import Link from 'next/link'
+import Image from 'next/image'
 // import { WysiwygEditor } from '../../../../components/wysiwyg-editor' // KEEPING COMMENTED OUT - HTML conversion functionality removed
 
 interface Question {
@@ -14,8 +15,8 @@ interface Question {
   difficulty_level: string
   question_text: string
   question_image_url?: string
-  table_data?: any
-  options?: any
+  table_data?: unknown
+  options?: Record<string, unknown>
   correct_answer: string | string[]
   correct_answers?: string[] | null
   explanation?: string
@@ -66,14 +67,7 @@ export default function ManageExamsPage() {
     )
   }
 
-  useEffect(() => {
-    if (user && isAdmin) {
-      fetchExams()
-      fetchQuestions()
-    }
-  }, [user, isAdmin])
-
-  const fetchExams = async () => {
+  const fetchExams = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('exams')
@@ -89,9 +83,9 @@ export default function ManageExamsPage() {
     } catch (error) {
       console.error('Error:', error)
     }
-  }
+  }, [])
 
-  const fetchQuestions = async (forceRefresh = false, retryCount = 0) => {
+  const fetchQuestions = useCallback(async (forceRefresh = false, retryCount = 0) => {
     try {
       setLoading(true)
 
@@ -158,7 +152,14 @@ export default function ManageExamsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedModule, selectedExam])
+
+  useEffect(() => {
+    if (user && isAdmin) {
+      fetchExams()
+      fetchQuestions()
+    }
+  }, [user, isAdmin, fetchExams, fetchQuestions])
 
   // Utility functions (keeping for potential future use)
   // const isMarkdown = (text: string) => {
@@ -201,7 +202,7 @@ export default function ManageExamsPage() {
     if (isAdmin) {
       fetchQuestions()
     }
-  }, [selectedExam, isAdmin])
+  }, [selectedExam, isAdmin, fetchQuestions])
 
   const filteredQuestions = questions.filter((question) => {
     const matchesModule =
@@ -580,10 +581,12 @@ export default function ManageExamsPage() {
                                       </div>
                                     )}
                                     {optionData.imageUrl && (
-                                      <img
+                                      <Image
                                         src={optionData.imageUrl}
                                         alt={`Option ${key}`}
-                                        className="max-w-full h-auto max-h-20 border border-gray-200 rounded"
+                                        width={500}
+                                        height={80}
+                                        className="max-w-full h-auto max-h-20 border border-gray-200 rounded object-contain"
                                       />
                                     )}
                                   </div>

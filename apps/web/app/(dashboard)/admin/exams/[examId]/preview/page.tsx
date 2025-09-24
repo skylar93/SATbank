@@ -233,6 +233,7 @@ function AdminExamPreviewContent() {
     examState.currentModuleIndex,
     handleNext,
     handlePrevious,
+    handleGoToModule,
   ])
 
   // Handle module completion
