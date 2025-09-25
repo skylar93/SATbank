@@ -5,112 +5,16 @@ import {
   renderTextWithFormattingAndMath,
 } from './question-display'
 import { ContentRenderer } from '../content-renderer'
-
-interface Highlight {
-  start: number
-  end: number
-  text: string
-}
-
-// Enhanced helper functions for better text processing
-function isVisibleTextNode(n: Node): n is Text {
-  if (n.nodeType !== Node.TEXT_NODE) return false
-  const el = n.parentElement
-  if (!el) return false
-  const tag = el.tagName
-  if (['STYLE', 'SCRIPT', 'NOSCRIPT', 'TEMPLATE'].includes(tag)) return false
-  const cs = window.getComputedStyle(el)
-  if (cs.display === 'none' || cs.visibility === 'hidden') return false
-  if (el.getAttribute('aria-hidden') === 'true') return false
-  return true
-}
-
-function getTextWalker(root: Node) {
-  return document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-    acceptNode(node) {
-      return isVisibleTextNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
-    }
-  })
-}
-
-// New stable approach: Use XPath-based positioning for robustness
-function getNodeXPath(node: Node, container: Element): string {
-  if (node === container) return ''
-
-  const path: string[] = []
-  let current = node
-
-  while (current && current !== container) {
-    let index = 0
-    let sibling = current.previousSibling
-
-    while (sibling) {
-      if (sibling.nodeType === current.nodeType) {
-        if (sibling.nodeType === Node.TEXT_NODE || sibling.nodeName === current.nodeName) {
-          index++
-        }
-      }
-      sibling = sibling.previousSibling
-    }
-
-    const tagName = current.nodeType === Node.TEXT_NODE ? 'text()' : current.nodeName.toLowerCase()
-    path.unshift(`${tagName}[${index + 1}]`)
-    current = current.parentNode as Node
-  }
-
-  return path.join('/')
-}
-
-function getNodeByXPath(xpath: string, container: Element): Node | null {
-  if (!xpath) return container
-
-  try {
-    const result = document.evaluate(
-      xpath,
-      container,
-      null,
-      XPathResult.FIRST_ORDERED_NODE_TYPE,
-      null
-    )
-    return result.singleNodeValue
-  } catch (error) {
-    console.warn('XPath evaluation failed:', error)
-    return null
-  }
-}
-
-// Position mapping interface
-interface PositionMap {
-  plaintextIndex: number
-  domNode: Node
-  nodeOffset: number
-  xpath: string
-}
-
-// Create robust position mapping using XPath
-function createStablePositionMapping(container: Element): PositionMap[] {
-  const mapping: PositionMap[] = []
-  let plaintextIndex = 0
-
-  const walker = getTextWalker(container)
-  while (walker.nextNode()) {
-    const textNode = walker.currentNode as Text
-    const textContent = textNode.data
-    const xpath = getNodeXPath(textNode, container)
-
-    for (let i = 0; i < textContent.length; i++) {
-      mapping.push({
-        plaintextIndex,
-        domNode: textNode,
-        nodeOffset: i,
-        xpath,
-      })
-      plaintextIndex++
-    }
-  }
-
-  return mapping
-}
+import {
+  Highlight,
+  createNormalizedContainer,
+  getVisiblePlainText,
+  createStablePositionMapping,
+  getNodeByXPath,
+  findFlexibleWhitespaceMatch,
+  PositionMap,
+  debugHighlightIssue,
+} from './text-utils'
 
 interface Props {
   text: string
@@ -119,145 +23,77 @@ interface Props {
   isHtml?: boolean // Flag to indicate if content is HTML
 }
 
-// Helper function to get plain text from HTML string
-function getPlainTextFromHtml(htmlString: string): string {
-  // Create a temporary div to parse HTML
-  const tempDiv = document.createElement('div')
-  tempDiv.innerHTML = htmlString
-  return tempDiv.textContent || tempDiv.innerText || ''
-}
-
-// Get visible plain text from container, preserving all spacing
-function getVisiblePlainText(container: Element): string {
-  const walker = getTextWalker(container)
-  let text = ''
-  while (walker.nextNode()) {
-    text += (walker.currentNode as Text).data
-  }
-  return text
-}
-
-// Sanitize HTML by removing non-visible elements
-function sanitizeHtmlContainer(div: HTMLDivElement) {
-  // Remove elements that should never affect visible question content
-  div
-    .querySelectorAll('style,script,noscript,template,iframe,object')
-    .forEach((el) => el.remove())
-
-  // Remove MathQuill editing scaffolding that is hidden in the live view
-  div.querySelectorAll('.mq-textarea, .mq-cursor, .mq-selection').forEach((el) => {
-    el.remove()
-  })
-
-  // Remove orphan textarea/input nodes that are hidden via CSS in the real DOM
-  div.querySelectorAll('textarea, input[type="hidden"]').forEach((el) => {
-    const parent = el.parentElement
-    // Drop empty wrappers such as <span class="mq-textarea"><textarea/></span>
-    if (parent && parent.childNodes.length === 1) {
-      parent.remove()
-    } else {
-      el.remove()
-    }
-  })
-
-  // Drop elements that are explicitly marked hidden
-  div.querySelectorAll('[hidden]').forEach((el) => el.remove())
-
-  div.querySelectorAll<HTMLElement>('[style]').forEach((el) => {
-    const style = el.getAttribute('style')?.toLowerCase() ?? ''
-    if (
-      style.includes('display:none') ||
-      style.includes('display: none') ||
-      style.includes('visibility:hidden') ||
-      style.includes('visibility: hidden')
-    ) {
-      el.remove()
-    }
-  })
-  // Note: aria-hidden elements are kept in DOM but excluded from walker for consistency
-}
-
 // New robust highlight application using stable positioning
 function applyHighlightsToHTML(htmlContent: string, highlights: Highlight[]): string {
   if (!highlights || highlights.length === 0) return htmlContent
 
-  const tempDiv = document.createElement('div')
-  tempDiv.innerHTML = htmlContent
-
-  // Append off-screen so computed styles match the live DOM (important for hidden MathQuill nodes)
-  tempDiv.style.position = 'absolute'
-  tempDiv.style.left = '-9999px'
-  tempDiv.style.top = '-9999px'
-  tempDiv.style.pointerEvents = 'none'
-  tempDiv.style.opacity = '0'
-  tempDiv.style.zIndex = '-1'
-
-  const { body } = document
-  if (!body) {
-    return htmlContent
-  }
-
-  body.appendChild(tempDiv)
-
   try {
-    // Sanitize to remove non-visible content before processing
-    sanitizeHtmlContainer(tempDiv)
+    // Use normalized container for consistent processing
+    const { container, plainText } = createNormalizedContainer(htmlContent)
 
-    // Get visible plaintext for validation
-    const plainText = getVisiblePlainText(tempDiv)
+    try {
+      // Validate highlights against visible text
+      const validHighlights = highlights.filter((highlight) => {
+        if (
+          highlight.start < 0 ||
+          highlight.end > plainText.length ||
+          highlight.start >= highlight.end
+        ) {
+          console.warn(
+            'Invalid highlight range:',
+            highlight,
+            'visible plaintext length:',
+            plainText.length
+          )
+          return false
+        }
 
-    // Validate highlights against visible text
-    const validHighlights = highlights.filter((highlight) => {
-      if (
-        highlight.start < 0 ||
-        highlight.end > plainText.length ||
-        highlight.start >= highlight.end
-      ) {
-        console.warn(
-          'Invalid highlight range:',
-          highlight,
-          'visible plaintext length:',
-          plainText.length
-        )
-        return false
+        // More lenient text validation with flexible whitespace matching
+        const expectedText = plainText.substring(highlight.start, highlight.end)
+        const normalizeSpace = (s: string) => s.replace(/\s+/g, ' ').trim()
+
+        if (normalizeSpace(expectedText) !== normalizeSpace(highlight.text)) {
+          // Try flexible whitespace matching
+          const flexibleMatch = findFlexibleWhitespaceMatch(plainText, highlight.text)
+          if (!flexibleMatch || flexibleMatch.start !== highlight.start) {
+            console.warn('Highlight text mismatch (normalized):', {
+              expected: normalizeSpace(highlight.text),
+              found: normalizeSpace(expectedText),
+              start: highlight.start,
+              end: highlight.end,
+            })
+            // Continue anyway for better compatibility
+          }
+        }
+
+        return true
+      })
+
+      if (validHighlights.length === 0) {
+        return container.innerHTML
       }
 
-      // More lenient text validation
-      const expectedText = plainText.substring(highlight.start, highlight.end)
-      const normalizeSpace = (s: string) => s.replace(/\s+/g, ' ').trim()
-      if (normalizeSpace(expectedText) !== normalizeSpace(highlight.text)) {
-        console.warn('Highlight text mismatch (normalized):', {
-          expected: normalizeSpace(highlight.text),
-          found: normalizeSpace(expectedText),
-          start: highlight.start,
-          end: highlight.end,
-        })
-        // Continue anyway for better compatibility
+      // Sort highlights by start position (apply in reverse order)
+      const sortedHighlights = [...validHighlights].sort((a, b) => b.start - a.start)
+
+      // Apply each highlight using a more reliable method
+      for (const highlight of sortedHighlights) {
+        try {
+          applyHighlightRobust(container, highlight, plainText)
+        } catch (error) {
+          console.warn('Failed to apply highlight:', error, highlight)
+          debugHighlightIssue(container, highlight, plainText, 'applyHighlightsToHTML')
+          // Continue with other highlights
+        }
       }
 
-      return true
-    })
-
-    if (validHighlights.length === 0) {
-      return tempDiv.innerHTML
+      return container.innerHTML
+    } finally {
+      container.remove()
     }
-
-    // Sort highlights by start position (apply in reverse order)
-    const sortedHighlights = [...validHighlights].sort((a, b) => b.start - a.start)
-
-    // Apply each highlight using a more reliable method
-    for (const highlight of sortedHighlights) {
-      try {
-        applyHighlightRobust(tempDiv, highlight, plainText)
-      } catch (error) {
-        console.warn('Failed to apply highlight:', error, highlight)
-        // Continue with other highlights
-      }
-    }
-
-    return tempDiv.innerHTML
-  } finally {
-    tempDiv.remove()
+  } catch (error) {
+    console.error('Failed to create normalized container:', error)
+    return htmlContent
   }
 }
 
@@ -268,8 +104,10 @@ function applyHighlightRobust(container: Element, highlight: Highlight, plainTex
   // Create a fresh position mapping each time
   const mapping = createStablePositionMapping(container)
 
+  // Check if mapping matches the expected plain text length
   if (mapping.length !== plainText.length) {
     console.warn('Position mapping length mismatch, falling back to text replacement')
+    console.warn(`Mapping: ${mapping.length}, Plain text: ${plainText.length}`)
     applyHighlightViaTextReplacementSingle(container as HTMLElement, highlight, 0)
     return
   }
@@ -280,6 +118,8 @@ function applyHighlightRobust(container: Element, highlight: Highlight, plainTex
 
   if (!startMap || !endMap) {
     console.warn('Could not find DOM positions for highlight range')
+    console.warn(`Start: ${start}, End: ${end}, Mapping length: ${mapping.length}`)
+    applyHighlightViaTextReplacementSingle(container as HTMLElement, highlight, 0)
     return
   }
 
@@ -289,6 +129,8 @@ function applyHighlightRobust(container: Element, highlight: Highlight, plainTex
 
   if (!startNode || !endNode || startNode.nodeType !== Node.TEXT_NODE || endNode.nodeType !== Node.TEXT_NODE) {
     console.warn('Could not resolve XPath to text nodes')
+    console.warn(`Start XPath: ${startMap.xpath}, End XPath: ${endMap.xpath}`)
+    applyHighlightViaTextReplacementSingle(container as HTMLElement, highlight, 0)
     return
   }
 

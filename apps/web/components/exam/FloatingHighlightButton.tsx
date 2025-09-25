@@ -5,131 +5,190 @@ import { Highlighter, Languages } from 'lucide-react'
 import { autoAddToVocab } from '@/lib/dictionary-actions'
 import { useAuth } from '@/contexts/auth-context'
 import { toast } from 'sonner'
-
-interface Highlight {
-  start: number
-  end: number
-  text: string
-}
-
-// Helper functions for visible text processing
-function isVisibleTextNode(n: Node): n is Text {
-  if (n.nodeType !== Node.TEXT_NODE) return false
-  const el = n.parentElement
-  if (!el) return false
-  const tag = el.tagName
-  if (['STYLE', 'SCRIPT', 'NOSCRIPT', 'TEMPLATE'].includes(tag)) return false
-  const cs = window.getComputedStyle(el)
-  if (cs.display === 'none' || cs.visibility === 'hidden') return false
-  if (el.getAttribute('aria-hidden') === 'true') return false
-  return true
-}
-
-function getTextWalker(root: Node) {
-  return document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-    acceptNode(node) {
-      return isVisibleTextNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
-    }
-  })
-}
-
-function getVisiblePlainText(container: Element) {
-  const walker = getTextWalker(container)
-  let s = ''
-  while (walker.nextNode()) s += (walker.currentNode as Text).data
-  return s
-}
-
-// Helper to locate selection text while tolerating whitespace differences
-function findFlexibleWhitespaceMatch(source: string, target: string) {
-  if (!target) return null
-
-  const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const flexiblePattern = escaped.replace(/\s+/g, '\\s+')
-
-  try {
-    const regex = new RegExp(flexiblePattern, 'mu')
-    const match = regex.exec(source)
-    if (match?.index !== undefined) {
-      return {
-        start: match.index,
-        end: match.index + match[0].length,
-        text: match[0],
-      }
-    }
-  } catch (error) {
-    console.warn('Flexible whitespace match failed:', error)
-  }
-
-  return null
-}
+import {
+  Highlight,
+  getVisiblePlainText,
+  getTextWalker,
+  findFlexibleWhitespaceMatch,
+  sanitizeHtmlContainer,
+  findBestTextMatch,
+} from './text-utils'
 
 function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: string) {
-  // Enhanced offset calculation with better accuracy
-  const walker = getTextWalker(container)
-  const visibleText = getVisiblePlainText(container)
-  let idx = 0
-  let start = -1
-  let end = -1
+  // Create a temporary normalized container that mimics what HighlightedTextRenderer does
+  const normalizedContainer = createNormalizedContainerForSelection(container)
 
-  // Find start position
-  // Reset walker by creating a new one
-  while (walker.nextNode()) {
-    const t = walker.currentNode as Text
-    if (t === range.startContainer) {
-      start = idx + range.startOffset
-      break
+  try {
+    // Get normalized plain text using the same method as HighlightedTextRenderer
+    const visibleText = getVisiblePlainText(normalizedContainer)
+
+    // NEW: Try to compute accurate offsets by walking through DOM nodes
+    let start = -1
+    let end = -1
+    let textForHighlight = textRaw.trim() // Use local variable instead of mutating parameter
+
+    try {
+      // Map original range nodes to normalized container
+      const mappedOffsets = mapRangeToNormalizedContainer(range, container, normalizedContainer)
+      if (mappedOffsets) {
+        start = mappedOffsets.start
+        end = mappedOffsets.end
+      }
+    } catch (error) {
+      console.warn('Range mapping failed, falling back to text search:', error)
     }
-    idx += t.data.length
-  }
 
-  // Find end position
-  if (start >= 0) {
-    if (range.startContainer === range.endContainer) {
-      // Same text node
-      end = start + (range.endOffset - range.startOffset)
-    } else {
-      // Different text nodes - continue walking
-      // Add start node's length to idx since we broke out of first loop before adding it
-      idx += (range.startContainer as Text).data.length
+    // Fallback: Try enhanced text matching
+    if (start < 0 || end < 0) {
+      const trimmedText = textRaw.trim()
 
-      while (walker.nextNode()) {
-        const t = walker.currentNode as Text
-        if (t === range.endContainer) {
-          end = idx + range.endOffset
-          break
-        }
-        idx += t.data.length
+      // Use enhanced text matching which handles cross-element selections better
+      const enhancedMatch = findBestTextMatch(visibleText, trimmedText)
+      if (enhancedMatch) {
+        start = enhancedMatch.start
+        end = enhancedMatch.end
+        textForHighlight = enhancedMatch.text // Update local variable only
       }
     }
-  }
 
-  // Fallback to text search if direct position calculation failed
-  if (start < 0 || end < 0) {
-    const directIndex = visibleText.indexOf(textRaw)
-    // Try exact match first
-    if (directIndex >= 0) {
-      start = directIndex
-      end = directIndex + textRaw.length
-    } else {
-      const flexibleMatch = findFlexibleWhitespaceMatch(visibleText, textRaw)
-      if (flexibleMatch) {
-        start = flexibleMatch.start
-        end = flexibleMatch.end
-        textRaw = flexibleMatch.text
+    // Final fallback: try with original container
+    if (start < 0 || end < 0) {
+      console.warn('Using final fallback offset calculation with original container')
+      const originalText = getVisiblePlainText(container)
+      const trimmedText = textRaw.trim()
+      const originalDirectIndex = originalText.indexOf(trimmedText)
+      if (originalDirectIndex >= 0) {
+        // Need to adjust offsets to normalized text
+        start = Math.min(originalDirectIndex, visibleText.length - trimmedText.length)
+        end = Math.min(start + trimmedText.length, visibleText.length)
       }
     }
+
+    // Ensure we have valid positions
+    if (start < 0) start = 0
+    if (end < 0) end = start + textForHighlight.length
+
+    const boundedStart = Math.max(0, Math.min(start, visibleText.length))
+    const boundedEnd = Math.max(boundedStart, Math.min(end, visibleText.length))
+
+    // Use the final text from normalized content or fallback to original
+    const finalText = visibleText.slice(boundedStart, boundedEnd) || textForHighlight
+
+    return { start: boundedStart, end: boundedEnd, textForHighlight: finalText }
+  } finally {
+    normalizedContainer.remove()
   }
+}
 
-  // Ensure we have valid positions
-  if (start < 0) start = 0
-  if (end < 0) end = start + textRaw.length
+// NEW: Map range from original container to normalized container
+function mapRangeToNormalizedContainer(
+  originalRange: Range,
+  originalContainer: Element,
+  normalizedContainer: Element
+): { start: number; end: number } | null {
+  try {
+    // Get all text nodes in both containers
+    const originalWalker = getTextWalker(originalContainer)
+    const normalizedWalker = getTextWalker(normalizedContainer)
 
-  const boundedStart = Math.max(0, Math.min(start, visibleText.length))
-  const boundedEnd = Math.max(boundedStart, Math.min(end, visibleText.length))
-  const textForHighlight = visibleText.slice(boundedStart, boundedEnd) || textRaw
+    // Build mapping between original and normalized text positions
+    let originalOffset = 0
+    let normalizedOffset = 0
+    let startMapped = -1
+    let endMapped = -1
 
-  return { start: boundedStart, end: boundedEnd, textForHighlight }
+    const originalNodes: { node: Text; startOffset: number; endOffset: number }[] = []
+    const normalizedNodes: { node: Text; startOffset: number; endOffset: number }[] = []
+
+    // Collect all text nodes with their offsets in original container
+    while (originalWalker.nextNode()) {
+      const textNode = originalWalker.currentNode as Text
+      const nodeLength = textNode.data.length
+      originalNodes.push({
+        node: textNode,
+        startOffset: originalOffset,
+        endOffset: originalOffset + nodeLength
+      })
+      originalOffset += nodeLength
+    }
+
+    // Collect all text nodes with their offsets in normalized container
+    while (normalizedWalker.nextNode()) {
+      const textNode = normalizedWalker.currentNode as Text
+      const nodeLength = textNode.data.length
+      normalizedNodes.push({
+        node: textNode,
+        startOffset: normalizedOffset,
+        endOffset: normalizedOffset + nodeLength
+      })
+      normalizedOffset += nodeLength
+    }
+
+    // Find where the original range starts and ends
+    let rangeStartGlobalOffset = -1
+    let rangeEndGlobalOffset = -1
+
+    // Calculate global offset for range start
+    for (const nodeInfo of originalNodes) {
+      if (nodeInfo.node === originalRange.startContainer) {
+        rangeStartGlobalOffset = nodeInfo.startOffset + originalRange.startOffset
+        break
+      }
+    }
+
+    // Calculate global offset for range end
+    for (const nodeInfo of originalNodes) {
+      if (nodeInfo.node === originalRange.endContainer) {
+        rangeEndGlobalOffset = nodeInfo.startOffset + originalRange.endOffset
+        break
+      }
+    }
+
+    if (rangeStartGlobalOffset >= 0 && rangeEndGlobalOffset >= 0) {
+      // Map these global offsets to normalized container
+      // For now, use simple proportional mapping
+      const originalTotalLength = originalOffset
+      const normalizedTotalLength = normalizedOffset
+
+      if (originalTotalLength > 0 && normalizedTotalLength > 0) {
+        const ratio = normalizedTotalLength / originalTotalLength
+        startMapped = Math.floor(rangeStartGlobalOffset * ratio)
+        endMapped = Math.floor(rangeEndGlobalOffset * ratio)
+
+        // Ensure valid bounds
+        startMapped = Math.max(0, Math.min(startMapped, normalizedTotalLength))
+        endMapped = Math.max(startMapped, Math.min(endMapped, normalizedTotalLength))
+
+        return { start: startMapped, end: endMapped }
+      }
+    }
+
+    return null
+  } catch (error) {
+    console.warn('Range mapping failed:', error)
+    return null
+  }
+}
+
+// Helper function to create a normalized container for selection offset calculation
+function createNormalizedContainerForSelection(originalContainer: Element): HTMLDivElement {
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = originalContainer.innerHTML
+
+  // Apply same normalization as HighlightedTextRenderer
+  tempDiv.style.position = 'absolute'
+  tempDiv.style.left = '-9999px'
+  tempDiv.style.top = '-9999px'
+  tempDiv.style.pointerEvents = 'none'
+  tempDiv.style.opacity = '0'
+  tempDiv.style.zIndex = '-1'
+
+  document.body.appendChild(tempDiv)
+
+  // Apply same sanitization as HighlightedTextRenderer
+  sanitizeHtmlContainer(tempDiv)
+
+  return tempDiv
 }
 
 interface DOMHighlight {
@@ -202,12 +261,18 @@ export default function FloatingHighlightButton({
       }
 
       const range = selection.getRangeAt(0)
-      const textRaw = selection.toString() // Don't trim for offset calculations
+      const textRaw = selection.toString()
 
-      if (
-        !textRaw ||
-        !containerRef.current.contains(range.commonAncestorContainer)
-      ) {
+      // Check for empty or whitespace-only selection
+      if (!textRaw || textRaw.trim().length === 0) {
+        // Only hide if we don't have sticky selection
+        if (!isStickyRef.current && !selectedText) {
+          scheduleHide(1500)
+        }
+        return
+      }
+
+      if (!containerRef.current.contains(range.commonAncestorContainer)) {
         // Only hide if we don't have sticky selection
         if (!isStickyRef.current && !selectedText) {
           scheduleHide(1500)
@@ -222,35 +287,34 @@ export default function FloatingHighlightButton({
       // Calculate text offsets using improved approach
       const containerElement = containerRef.current
 
-      // Use containerElement directly to ensure consistency with renderer
-      const actualContainer = containerElement
-
       // Validate that the range is within our container
-      if (!actualContainer.contains(range.commonAncestorContainer)) {
+      if (!containerElement.contains(range.commonAncestorContainer)) {
         console.warn('Selection range is outside target container')
         return
       }
 
-      const { start, end, textForHighlight } = computeOffsetsWithoutTrim(actualContainer, range, textRaw)
+      try {
+        const { start, end, textForHighlight } = computeOffsetsWithoutTrim(containerElement, range, textRaw)
 
-      // Additional validation
-      if (start < 0 || end <= start) {
-        console.warn('Invalid selection offsets calculated:', { start, end, textForHighlight })
-        return
-      }
-      
-      // Debug: uncomment for troubleshooting selection issues
-      // console.log('Selection debug in FloatingHighlightButton:', {
-      //   selectedText: textForHighlight,
-      //   selectedLength: textForHighlight.length,
-      //   calculatedStart: start,
-      //   calculatedEnd: end,
-      //   containerText: getVisiblePlainText(actualContainer).substring(0, 200)
-      // })
+        // Additional validation
+        if (start < 0 || end <= start || textForHighlight.trim().length === 0) {
+          console.warn('Invalid selection offsets calculated:', { start, end, textForHighlight })
+          return
+        }
 
-      // Get selection position for floating button
-      const rect = range.getBoundingClientRect()
-      const containerRect = containerElement.getBoundingClientRect()
+        // Debug logging (can be enabled for troubleshooting)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Selection processed in FloatingHighlightButton:', {
+            selectedText: textForHighlight,
+            selectedLength: textForHighlight.length,
+            calculatedStart: start,
+            calculatedEnd: end,
+          })
+        }
+
+        // Get selection position for floating button
+        const rect = range.getBoundingClientRect()
+        const containerRect = containerElement.getBoundingClientRect()
 
       // Improved positioning algorithm for better handling of single-line questions
       const buttonWidth = 90 // Width for both buttons together
@@ -326,14 +390,20 @@ export default function FloatingHighlightButton({
       buttonX = Math.max(minDistance, Math.min(buttonX, containerWidth - buttonWidth - minDistance))
       buttonY = Math.max(minDistance, Math.min(buttonY, containerHeight - buttonHeight - minDistance))
 
-      setPosition({
-        x: buttonX,
-        y: buttonY,
-      })
+        setPosition({
+          x: buttonX,
+          y: buttonY,
+        })
 
-      setSelectedText(textForHighlight)
-      setSelectionRange({ start, end })
-      setIsVisible(true)
+        setSelectedText(textForHighlight)
+        setSelectionRange({ start, end })
+        setIsVisible(true)
+      } catch (error) {
+        console.error('Error processing text selection:', error)
+        // Reset state on error
+        isStickyRef.current = false
+        storedRangeRef.current = null
+      }
     }
 
     const handleClickOutside = (e: MouseEvent) => {
@@ -382,12 +452,25 @@ export default function FloatingHighlightButton({
   }, [containerRef])
 
   const clearSelectionAndUI = () => {
+    // Clear all state and reset for new selections
     storedRangeRef.current = null
-    window.getSelection()?.removeAllRanges()
+    isStickyRef.current = false
     setSelectedText('')
     setSelectionRange(null)
-    isStickyRef.current = false
     setIsVisible(false)
+
+    // Clear any pending hide timeouts
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current)
+      hideTimeoutRef.current = null
+    }
+
+    // Clear the selection after a short delay to prevent immediate re-trigger
+    setTimeout(() => {
+      if (!isRestoringRef.current) {
+        window.getSelection()?.removeAllRanges()
+      }
+    }, 100)
   }
 
   const handleHighlight = () => {
@@ -398,7 +481,16 @@ export default function FloatingHighlightButton({
         text: selectedText,
       })
 
+      // Clear UI immediately but allow for new selections after DOM update
       clearSelectionAndUI()
+
+      // Force re-initialization after highlight is applied and DOM is updated
+      setTimeout(() => {
+        // Reset all internal state to allow fresh selections
+        isStickyRef.current = false
+        isRestoringRef.current = false
+        storedRangeRef.current = null
+      }, 200)
     }
   }
 
