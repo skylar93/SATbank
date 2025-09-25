@@ -37,7 +37,10 @@ describe('Fixed Scoring System Test', () => {
       console.log('✅ Using existing test attempt:', existingAttemptId)
 
       // Calculate scores using the real scoring service
-      const finalScores = await ScoringService.calculateFinalScores(existingAttemptId, true)
+      const finalScores = await ScoringService.calculateFinalScores(
+        existingAttemptId,
+        true
+      )
 
       console.log('📊 Final scores result:', finalScores)
 
@@ -57,15 +60,17 @@ describe('Fixed Scoring System Test', () => {
     const { error: attemptError } = await supabase.rpc('create_test_attempt', {
       p_id: testAttemptId,
       p_user_id: testUserId,
-      p_exam_id: examId
+      p_exam_id: examId,
     })
 
     if (attemptError) {
-      console.log('⚠️ Could not create test attempt via RPC, trying direct insert...')
+      console.log(
+        '⚠️ Could not create test attempt via RPC, trying direct insert...'
+      )
 
       // Fallback: disable constraints temporarily
       await supabase.rpc('execute_sql', {
-        query: 'SET session_replication_role = replica;'
+        query: 'SET session_replication_role = replica;',
       })
 
       const { data: attempt, error: directError } = await supabase
@@ -76,43 +81,53 @@ describe('Fixed Scoring System Test', () => {
           exam_id: examId,
           status: 'completed',
           started_at: new Date().toISOString(),
-          completed_at: new Date().toISOString()
+          completed_at: new Date().toISOString(),
         })
         .select('id')
         .single()
 
       // Re-enable constraints
       await supabase.rpc('execute_sql', {
-        query: 'SET session_replication_role = DEFAULT;'
+        query: 'SET session_replication_role = DEFAULT;',
       })
 
       if (directError) {
         console.log('❌ Cannot create test attempt:', directError.message)
-        console.log('✅ Test passed: Confirmed scoring logic works with existing data')
+        console.log(
+          '✅ Test passed: Confirmed scoring logic works with existing data'
+        )
         return // Skip this test but don't fail
       }
     }
 
     // Create some user answers
     if (questions && questions.length > 0) {
-      const userAnswers = questions.slice(0, 2).map(q => ({
+      const userAnswers = questions.slice(0, 2).map((q) => ({
         id: crypto.randomUUID(),
         attempt_id: testAttemptId,
         question_id: q.id,
-        user_answer: Array.isArray(q.correct_answer) ? q.correct_answer[0] : q.correct_answer,
+        user_answer: Array.isArray(q.correct_answer)
+          ? q.correct_answer[0]
+          : q.correct_answer,
         time_spent_seconds: 60,
-        is_correct: true
+        is_correct: true,
       }))
 
       await supabase.from('user_answers').insert(userAnswers)
 
       // Calculate scores
-      const finalScores = await ScoringService.calculateFinalScores(testAttemptId, true)
+      const finalScores = await ScoringService.calculateFinalScores(
+        testAttemptId,
+        true
+      )
 
       console.log('📊 Final scores result:', finalScores)
 
       // Clean up
-      await supabase.from('user_answers').delete().eq('attempt_id', testAttemptId)
+      await supabase
+        .from('user_answers')
+        .delete()
+        .eq('attempt_id', testAttemptId)
       await supabase.from('test_attempts').delete().eq('id', testAttemptId)
 
       expect(finalScores.overall).toBeGreaterThan(0)

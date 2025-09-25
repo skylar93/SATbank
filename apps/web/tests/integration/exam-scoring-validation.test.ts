@@ -39,35 +39,46 @@ describe('Comprehensive Exam Scoring Validation', () => {
       .select('id, title')
       .limit(10)
 
-    testCases = exams?.map(exam => ({
-      examId: exam.id,
-      examTitle: exam.title,
-      expectedBehavior: 'standard_sat_scoring'
-    })) || []
+    testCases =
+      exams?.map((exam) => ({
+        examId: exam.id,
+        examTitle: exam.title,
+        expectedBehavior: 'standard_sat_scoring',
+      })) || []
   })
 
   describe('Full Exam Flow Validation', () => {
-    it.each(testCases)('should validate $examTitle scoring system', async ({ examId, examTitle }) => {
-      const result = await validateExamScoring(examId, examTitle)
+    it.each(testCases)(
+      'should validate $examTitle scoring system',
+      async ({ examId, examTitle }) => {
+        const result = await validateExamScoring(examId, examTitle)
 
-      console.log(`\n📊 VALIDATION REPORT: ${examTitle}`)
-      console.log(`📝 Total Questions: ${result.totalQuestions}`)
-      console.log(`🔢 Multiple Answer Questions: ${result.questionsWithMultipleAnswers}`)
-      console.log(`✅ Scoring Validation: ${result.scoringValidation.passed ? 'PASSED' : 'FAILED'}`)
-      console.log(`✅ Answer Validation: ${result.answerValidation.passed ? 'PASSED' : 'FAILED'}`)
+        console.log(`\n📊 VALIDATION REPORT: ${examTitle}`)
+        console.log(`📝 Total Questions: ${result.totalQuestions}`)
+        console.log(
+          `🔢 Multiple Answer Questions: ${result.questionsWithMultipleAnswers}`
+        )
+        console.log(
+          `✅ Scoring Validation: ${result.scoringValidation.passed ? 'PASSED' : 'FAILED'}`
+        )
+        console.log(
+          `✅ Answer Validation: ${result.answerValidation.passed ? 'PASSED' : 'FAILED'}`
+        )
 
-      if (!result.scoringValidation.passed) {
-        console.log(`❌ Scoring Issues:`, result.scoringValidation.issues)
-      }
+        if (!result.scoringValidation.passed) {
+          console.log(`❌ Scoring Issues:`, result.scoringValidation.issues)
+        }
 
-      if (!result.answerValidation.passed) {
-        console.log(`❌ Answer Issues:`, result.answerValidation.issues)
-      }
+        if (!result.answerValidation.passed) {
+          console.log(`❌ Answer Issues:`, result.answerValidation.issues)
+        }
 
-      // Test should pass if no critical issues found
-      expect(result.scoringValidation.passed).toBe(true)
-      expect(result.answerValidation.passed).toBe(true)
-    }, 30000)
+        // Test should pass if no critical issues found
+        expect(result.scoringValidation.passed).toBe(true)
+        expect(result.answerValidation.passed).toBe(true)
+      },
+      30000
+    )
   })
 
   describe('Answer Validation Stress Test', () => {
@@ -95,12 +106,11 @@ describe('Comprehensive Exam Scoring Validation', () => {
 
           // Test various input formats against the correct answers
           await testAnswerVariations(question, normalized)
-
         } catch (error) {
           problematicQuestions.push({
             questionId: question.id,
             error: error.message,
-            correctAnswer: question.correct_answer
+            correctAnswer: question.correct_answer,
           })
         }
       }
@@ -112,7 +122,7 @@ describe('Comprehensive Exam Scoring Validation', () => {
 
       if (problematicQuestions.length > 0) {
         console.log(`\n🚨 PROBLEMATIC QUESTIONS:`)
-        problematicQuestions.forEach(q => {
+        problematicQuestions.forEach((q) => {
           console.log(`- Question ${q.questionId}: ${q.error}`)
           console.log(`  Correct Answer: ${JSON.stringify(q.correctAnswer)}`)
         })
@@ -120,7 +130,7 @@ describe('Comprehensive Exam Scoring Validation', () => {
 
       // Allow some margin for edge cases, but flag if too many issues
       // Temporarily increased from 5% to 20% due to data quality issues that need separate fixing
-      expect(problematicQuestions.length).toBeLessThan(totalQuestions * 0.20) // Less than 20% error rate
+      expect(problematicQuestions.length).toBeLessThan(totalQuestions * 0.2) // Less than 20% error rate
     })
   })
 
@@ -150,14 +160,20 @@ describe('Comprehensive Exam Scoring Validation', () => {
           console.log(`\n🔄 RECALCULATION TEST: Attempt ${attempt.id}`)
           console.log(`📊 Original Total: ${attempt.total_score}`)
           console.log(`🔄 Recalculated Total: ${recalculatedScores.overall}`)
-          console.log(`📈 Difference: ${Math.abs(attempt.total_score - recalculatedScores.overall)}`)
+          console.log(
+            `📈 Difference: ${Math.abs(attempt.total_score - recalculatedScores.overall)}`
+          )
 
           // Allow small differences due to rounding or data changes
-          const scoreDifference = Math.abs(attempt.total_score - recalculatedScores.overall)
+          const scoreDifference = Math.abs(
+            attempt.total_score - recalculatedScores.overall
+          )
           expect(scoreDifference).toBeLessThan(10) // Allow up to 10 points difference
-
         } catch (error) {
-          console.error(`❌ Failed to recalculate scores for attempt ${attempt.id}:`, error.message)
+          console.error(
+            `❌ Failed to recalculate scores for attempt ${attempt.id}:`,
+            error.message
+          )
           throw error
         }
       }
@@ -173,10 +189,10 @@ describe('Comprehensive Exam Scoring Validation', () => {
         { input: '[]', expected: [] },
         { input: 'invalid json', expected: ['invalid json'] },
         { input: ['["a", "b"]'], expected: ['a', 'b'] },
-        { input: [null, 'valid', undefined], expected: ['valid'] }
+        { input: [null, 'valid', undefined], expected: ['valid'] },
       ]
 
-      edgeCases.forEach(testCase => {
+      edgeCases.forEach((testCase) => {
         const result = normalizeCorrectAnswers(testCase.input)
         expect(result).toEqual(testCase.expected)
       })
@@ -188,10 +204,10 @@ describe('Comprehensive Exam Scoring Validation', () => {
         { userAnswer: ' 192 ', correctAnswers: ['192'], expected: true },
         { userAnswer: 'A', correctAnswers: 'a', expected: true },
         { userAnswer: 'wrong', correctAnswers: ['right'], expected: false },
-        { userAnswer: '', correctAnswers: ['anything'], expected: false }
+        { userAnswer: '', correctAnswers: ['anything'], expected: false },
       ]
 
-      testCases.forEach(testCase => {
+      testCases.forEach((testCase) => {
         const result = checkAnswer(testCase.userAnswer, testCase.correctAnswers)
         expect(result).toBe(testCase.expected)
       })
@@ -200,14 +216,17 @@ describe('Comprehensive Exam Scoring Validation', () => {
 })
 
 // Helper Functions
-async function validateExamScoring(examId: string, examTitle: string): Promise<ValidationResult> {
+async function validateExamScoring(
+  examId: string,
+  examTitle: string
+): Promise<ValidationResult> {
   const result: ValidationResult = {
     examId,
     examTitle,
     totalQuestions: 0,
     questionsWithMultipleAnswers: 0,
     scoringValidation: { passed: true, issues: [] },
-    answerValidation: { passed: true, issues: [] }
+    answerValidation: { passed: true, issues: [] },
   }
 
   try {
@@ -219,7 +238,9 @@ async function validateExamScoring(examId: string, examTitle: string): Promise<V
 
     if (error || !questions) {
       result.scoringValidation.passed = false
-      result.scoringValidation.issues.push(`Failed to fetch questions: ${error?.message}`)
+      result.scoringValidation.issues.push(
+        `Failed to fetch questions: ${error?.message}`
+      )
       return result
     }
 
@@ -236,24 +257,31 @@ async function validateExamScoring(examId: string, examTitle: string): Promise<V
 
         if (normalized.length === 0) {
           result.answerValidation.passed = false
-          result.answerValidation.issues.push(`Question ${question.id} has no valid answers`)
+          result.answerValidation.issues.push(
+            `Question ${question.id} has no valid answers`
+          )
         }
 
         // Validate module type
         if (!question.module_type || question.module_type.trim() === '') {
           result.scoringValidation.passed = false
-          result.scoringValidation.issues.push(`Question ${question.id} has invalid module_type`)
+          result.scoringValidation.issues.push(
+            `Question ${question.id} has invalid module_type`
+          )
         }
 
         // Validate points
         if (!question.points || question.points < 0) {
           result.scoringValidation.passed = false
-          result.scoringValidation.issues.push(`Question ${question.id} has invalid points value`)
+          result.scoringValidation.issues.push(
+            `Question ${question.id} has invalid points value`
+          )
         }
-
       } catch (error) {
         result.answerValidation.passed = false
-        result.answerValidation.issues.push(`Question ${question.id}: ${error.message}`)
+        result.answerValidation.issues.push(
+          `Question ${question.id}: ${error.message}`
+        )
       }
     }
 
@@ -266,9 +294,10 @@ async function validateExamScoring(examId: string, examTitle: string): Promise<V
 
     if (!exam?.english_scoring_curve_id && !exam?.math_scoring_curve_id) {
       result.scoringValidation.passed = false
-      result.scoringValidation.issues.push('Exam has no scoring curves assigned')
+      result.scoringValidation.issues.push(
+        'Exam has no scoring curves assigned'
+      )
     }
-
   } catch (error) {
     result.scoringValidation.passed = false
     result.scoringValidation.issues.push(`Validation failed: ${error.message}`)
@@ -280,16 +309,18 @@ async function validateExamScoring(examId: string, examTitle: string): Promise<V
 async function testAnswerVariations(question: any, correctAnswers: string[]) {
   // Test common variations
   const variations = [
-    ...correctAnswers.map(ans => ans.toLowerCase()),
-    ...correctAnswers.map(ans => ans.toUpperCase()),
-    ...correctAnswers.map(ans => ` ${ans} `), // with whitespace
-    ...correctAnswers.map(ans => ans.replace(/\s+/g, '')), // no whitespace
+    ...correctAnswers.map((ans) => ans.toLowerCase()),
+    ...correctAnswers.map((ans) => ans.toUpperCase()),
+    ...correctAnswers.map((ans) => ` ${ans} `), // with whitespace
+    ...correctAnswers.map((ans) => ans.replace(/\s+/g, '')), // no whitespace
   ]
 
   for (const variation of variations) {
     const isCorrect = checkAnswer(variation, correctAnswers)
     if (!isCorrect) {
-      throw new Error(`Answer variation "${variation}" should be correct but was marked wrong`)
+      throw new Error(
+        `Answer variation "${variation}" should be correct but was marked wrong`
+      )
     }
   }
 
@@ -298,7 +329,9 @@ async function testAnswerVariations(question: any, correctAnswers: string[]) {
   for (const wrong of wrongAnswers) {
     const isCorrect = checkAnswer(wrong, correctAnswers)
     if (isCorrect && !correctAnswers.includes(wrong.trim().toLowerCase())) {
-      throw new Error(`Wrong answer "${wrong}" was incorrectly marked as correct`)
+      throw new Error(
+        `Wrong answer "${wrong}" was incorrectly marked as correct`
+      )
     }
   }
 }

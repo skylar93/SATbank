@@ -14,8 +14,8 @@ export async function DELETE(
       {
         auth: {
           autoRefreshToken: false,
-          persistSession: false
-        }
+          persistSession: false,
+        },
       }
     )
 
@@ -65,17 +65,18 @@ export async function DELETE(
     }
 
     // Log the deletion for audit purposes
-    console.log(`Admin deleted test attempt ${attemptId} for user ${attemptData.user_id}`)
+    console.log(
+      `Admin deleted test attempt ${attemptId} for user ${attemptData.user_id}`
+    )
 
     return NextResponse.json(
       {
         success: true,
         message: 'Test attempt deleted successfully',
-        deletedAttemptId: attemptId
+        deletedAttemptId: attemptId,
       },
       { status: 200 }
     )
-
   } catch (error) {
     console.error('Unexpected error during attempt deletion:', error)
     return NextResponse.json(

@@ -357,7 +357,8 @@ export default function DetailedResultsPage() {
                         Great job! You've completed your second chance review.
                         <br />
                         <span className="text-green-700 font-medium">
-                          All answers and explanations are now visible for this exam
+                          All answers and explanations are now visible for this
+                          exam
                         </span>
                       </p>
                     </div>

@@ -90,7 +90,9 @@ export function BulkAddModal({
         const result = await addWordsInBulk(setId, parsedWords)
 
         if (result.success) {
-          toast.success(`Successfully added ${parsedWords.length} words to your vocabulary set!`)
+          toast.success(
+            `Successfully added ${parsedWords.length} words to your vocabulary set!`
+          )
           await onAddWords(parsedWords)
           handleClose()
         } else {

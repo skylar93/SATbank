@@ -505,7 +505,8 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
       // Create a single "review" module containing all incorrect questions
       // We'll use the first question's module type, but display will be handled dynamically
-      const firstQuestionModule = incorrectQuestions[0]?.module_type || 'english1'
+      const firstQuestionModule =
+        incorrectQuestions[0]?.module_type || 'english1'
       const reviewModule: ModuleState = {
         module: firstQuestionModule, // Use first question's module type
         questions: incorrectQuestions,
@@ -566,11 +567,11 @@ export const useExamStore = create<ExamState>((set, get) => ({
       currentModuleIndex,
       currentQuestionStartTime,
     } = get()
-    
+
     // Allow operation in review mode (attempt is null) or normal in_progress mode
     const isReviewMode = !attempt && status === 'in_progress'
     const isNormalMode = attempt && status === 'in_progress'
-    
+
     if (!isReviewMode && !isNormalMode) return
 
     const currentModule = modules[currentModuleIndex]
@@ -618,13 +619,13 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
   saveModuleAnswers: async () => {
     const { attempt, status, modules, currentModuleIndex } = get()
-    
+
     // Allow operation in review mode (attempt is null) or normal in_progress mode
     const isReviewMode = !attempt && status === 'in_progress'
     const isNormalMode = attempt && status === 'in_progress'
-    
+
     if (!isReviewMode && !isNormalMode) return
-    
+
     // Skip database operations in review mode
     if (isReviewMode) return
 
@@ -1431,11 +1432,11 @@ export const useExamStore = create<ExamState>((set, get) => ({
       getCurrentQuestion,
       currentQuestionStartTime,
     } = get()
-    
+
     // Allow operation in review mode (attempt is null) or normal in_progress mode
     const isReviewMode = !attempt && status === 'in_progress'
     const isNormalMode = attempt && status === 'in_progress'
-    
+
     if (!isReviewMode && !isNormalMode) return
 
     const currentModule = modules[currentModuleIndex]

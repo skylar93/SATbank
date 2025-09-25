@@ -45,7 +45,7 @@ describe('Debug Scoring Issues', () => {
 
         // Ensure it has a template
         if (!exam.template_id && templates && templates.length > 0) {
-          const englishTemplate = templates.find(t => t.id === 'english_only')
+          const englishTemplate = templates.find((t) => t.id === 'english_only')
           if (englishTemplate) {
             const { data: updatedExam } = await supabase
               .from('exams')
@@ -55,12 +55,14 @@ describe('Debug Scoring Issues', () => {
               .single()
 
             exam = updatedExam || exam
-            console.log(`🔧 Updated exam ${exam.title} with template ${englishTemplate.name}`)
+            console.log(
+              `🔧 Updated exam ${exam.title} with template ${englishTemplate.name}`
+            )
           }
         }
 
         if (exam.template_id) {
-          break  // Found exam with both questions and template
+          break // Found exam with both questions and template
         }
       }
     }
@@ -69,15 +71,20 @@ describe('Debug Scoring Issues', () => {
       throw new Error('No exam found with both questions and template')
     }
 
-    console.log(`🎯 Testing with exam: ${exam.title} (template: ${exam.template_id})`)
+    console.log(
+      `🎯 Testing with exam: ${exam.title} (template: ${exam.template_id})`
+    )
     console.log(`📝 Questions found: ${questions.length}`)
-    console.log('Question details:', questions.map(q => ({
-      id: q.id,
-      number: q.question_number,
-      module: q.module_type,
-      points: q.points,
-      hasCorrectAnswer: !!q.correct_answer
-    })))
+    console.log(
+      'Question details:',
+      questions.map((q) => ({
+        id: q.id,
+        number: q.question_number,
+        module: q.module_type,
+        points: q.points,
+        hasCorrectAnswer: !!q.correct_answer,
+      }))
+    )
 
     expect(questions).toBeDefined()
     expect(questions!.length).toBeGreaterThan(0)
@@ -99,11 +106,14 @@ describe('Debug Scoring Issues', () => {
       const { error: userError } = await supabase.from('users').insert({
         id: testUserId,
         email: `test-${Date.now()}@example.com`,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       })
 
       if (userError) {
-        console.log('⚠️ Could not create user, using UUID anyway:', userError.message)
+        console.log(
+          '⚠️ Could not create user, using UUID anyway:',
+          userError.message
+        )
         // Continue with the test - some setups might not have the users table constraint
       }
     }
@@ -115,7 +125,7 @@ describe('Debug Scoring Issues', () => {
         exam_id: exam.id,
         status: 'completed',
         started_at: new Date().toISOString(),
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
       })
       .select('id')
       .single()
@@ -125,12 +135,14 @@ describe('Debug Scoring Issues', () => {
     expect(attempt).toBeDefined()
 
     // Create some user answers with correct responses
-    const userAnswers = questions!.slice(0, 3).map(q => ({
+    const userAnswers = questions!.slice(0, 3).map((q) => ({
       attempt_id: attempt!.id,
       question_id: q.id,
-      user_answer: Array.isArray(q.correct_answer) ? q.correct_answer[0] : q.correct_answer,
+      user_answer: Array.isArray(q.correct_answer)
+        ? q.correct_answer[0]
+        : q.correct_answer,
       time_spent_seconds: 60,
-      is_correct: true // Manually set to true for debugging
+      is_correct: true, // Manually set to true for debugging
     }))
 
     console.log('📝 Creating user answers:', userAnswers.length)
@@ -144,7 +156,8 @@ describe('Debug Scoring Issues', () => {
     // Verify the data was inserted
     const { data: insertedAnswers } = await supabase
       .from('user_answers')
-      .select(`
+      .select(
+        `
         id,
         user_answer,
         is_correct,
@@ -152,19 +165,26 @@ describe('Debug Scoring Issues', () => {
           module_type,
           points
         )
-      `)
+      `
+      )
       .eq('attempt_id', attempt!.id)
 
-    console.log('📊 Inserted answers:', insertedAnswers?.map(a => ({
-      answer: a.user_answer,
-      correct: a.is_correct,
-      module: a.questions?.module_type,
-      points: a.questions?.points
-    })))
+    console.log(
+      '📊 Inserted answers:',
+      insertedAnswers?.map((a) => ({
+        answer: a.user_answer,
+        correct: a.is_correct,
+        module: a.questions?.module_type,
+        points: a.questions?.points,
+      }))
+    )
 
     // Now try scoring
     console.log('🔄 Calculating scores...')
-    const finalScores = await ScoringService.calculateFinalScores(attempt!.id, true)
+    const finalScores = await ScoringService.calculateFinalScores(
+      attempt!.id,
+      true
+    )
 
     console.log('📊 Final scores result:', finalScores)
 

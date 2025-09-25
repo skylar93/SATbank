@@ -85,74 +85,80 @@ export default function ManageExamsPage() {
     }
   }, [])
 
-  const fetchQuestions = useCallback(async (forceRefresh = false, retryCount = 0) => {
-    try {
-      setLoading(true)
+  const fetchQuestions = useCallback(
+    async (forceRefresh = false, retryCount = 0) => {
+      try {
+        setLoading(true)
 
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession()
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession()
 
-      if (sessionError) {
-        if (retryCount < 2) {
-          setTimeout(() => fetchQuestions(forceRefresh, retryCount + 1), 1000)
-          return
-        }
-      }
-
-      if (!session?.user) {
-        if (retryCount === 0) {
-          const { data: refreshed } = await supabase.auth.refreshSession()
-          if (refreshed.session) {
-            setTimeout(() => fetchQuestions(forceRefresh, retryCount + 1), 500)
+        if (sessionError) {
+          if (retryCount < 2) {
+            setTimeout(() => fetchQuestions(forceRefresh, retryCount + 1), 1000)
             return
           }
         }
-        setLoading(false)
-        return
-      }
 
-      let query = supabase
-        .from('questions')
-        .select(
-          `
+        if (!session?.user) {
+          if (retryCount === 0) {
+            const { data: refreshed } = await supabase.auth.refreshSession()
+            if (refreshed.session) {
+              setTimeout(
+                () => fetchQuestions(forceRefresh, retryCount + 1),
+                500
+              )
+              return
+            }
+          }
+          setLoading(false)
+          return
+        }
+
+        let query = supabase
+          .from('questions')
+          .select(
+            `
           *,
           exams!questions_exam_id_fkey (
             id,
             title
           )
         `
-        )
-        .order('module_type', { ascending: true })
-        .order('question_number', { ascending: true })
+          )
+          .order('module_type', { ascending: true })
+          .order('question_number', { ascending: true })
 
-      if (selectedExam !== 'all') {
-        query = query.eq('exam_id', selectedExam)
+        if (selectedExam !== 'all') {
+          query = query.eq('exam_id', selectedExam)
+        }
+
+        const { data, error } = await query
+
+        if (error) {
+          alert(`Error fetching questions: ${error.message}`)
+          return
+        }
+
+        // Process questions to include exam title
+        const processedQuestions = (data || []).map((q) => ({
+          ...q,
+          exam_title: q.exams?.title || null,
+        }))
+
+        setQuestions(processedQuestions)
+      } catch (error) {
+        if (retryCount < 2) {
+          setTimeout(() => fetchQuestions(forceRefresh, retryCount + 1), 2000)
+        }
+      } finally {
+        setLoading(false)
       }
-
-      const { data, error } = await query
-
-      if (error) {
-        alert(`Error fetching questions: ${error.message}`)
-        return
-      }
-
-      // Process questions to include exam title
-      const processedQuestions = (data || []).map((q) => ({
-        ...q,
-        exam_title: q.exams?.title || null,
-      }))
-
-      setQuestions(processedQuestions)
-    } catch (error) {
-      if (retryCount < 2) {
-        setTimeout(() => fetchQuestions(forceRefresh, retryCount + 1), 2000)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }, [selectedModule, selectedExam])
+    },
+    [selectedModule, selectedExam]
+  )
 
   useEffect(() => {
     if (user && isAdmin) {

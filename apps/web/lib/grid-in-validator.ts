@@ -14,21 +14,23 @@ export interface GridInValidationResult {
  */
 function normalizeAnswer(answer: string): string {
   const trimmed = answer.trim()
-  
+
   // Handle fractions
   if (trimmed.includes('/')) {
-    const [numerator, denominator] = trimmed.split('/').map(s => parseFloat(s.trim()))
+    const [numerator, denominator] = trimmed
+      .split('/')
+      .map((s) => parseFloat(s.trim()))
     if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
       return (numerator / denominator).toString()
     }
   }
-  
+
   // Handle decimals and integers
   const numValue = parseFloat(trimmed)
   if (!isNaN(numValue)) {
     return numValue.toString()
   }
-  
+
   // Return original if not numeric
   return trimmed.toLowerCase()
 }
@@ -39,16 +41,16 @@ function normalizeAnswer(answer: string): string {
 function answersAreEquivalent(answer1: string, answer2: string): boolean {
   const norm1 = normalizeAnswer(answer1)
   const norm2 = normalizeAnswer(answer2)
-  
+
   // Try numeric comparison first
   const num1 = parseFloat(norm1)
   const num2 = parseFloat(norm2)
-  
+
   if (!isNaN(num1) && !isNaN(num2)) {
     // Use a small tolerance for floating point comparison
     return Math.abs(num1 - num2) < 0.0001
   }
-  
+
   // Fall back to string comparison for non-numeric answers
   return norm1 === norm2
 }
@@ -61,16 +63,16 @@ export function parseCorrectAnswers(question: {
   correct_answer?: string
 }): string[] {
   let answers: any = question.correct_answers
-  
+
   // Handle null/undefined
   if (!answers) {
     return question.correct_answer ? [question.correct_answer] : []
   }
-  
+
   // Already an array
   if (Array.isArray(answers)) {
     const result: string[] = []
-    
+
     for (const answer of answers) {
       if (typeof answer === 'string') {
         // Check if it looks like JSON
@@ -92,16 +94,16 @@ export function parseCorrectAnswers(question: {
         result.push(String(answer))
       }
     }
-    
-    return result.filter(a => a.trim().length > 0)
+
+    return result.filter((a) => a.trim().length > 0)
   }
-  
+
   // String that might be JSON
   if (typeof answers === 'string') {
     try {
       const parsed = JSON.parse(answers)
       if (Array.isArray(parsed)) {
-        return parsed.map(String).filter(a => a.trim().length > 0)
+        return parsed.map(String).filter((a) => a.trim().length > 0)
       } else {
         return [String(parsed)]
       }
@@ -109,7 +111,7 @@ export function parseCorrectAnswers(question: {
       return [answers]
     }
   }
-  
+
   // Fallback
   return [String(answers)]
 }
@@ -127,24 +129,24 @@ export function validateGridInAnswer(
   if (!userAnswer?.trim()) {
     return { isCorrect: false }
   }
-  
+
   const correctAnswers = parseCorrectAnswers(question)
   const normalizedUserAnswer = normalizeAnswer(userAnswer)
-  
+
   // Check each possible correct answer
   for (const correctAnswer of correctAnswers) {
     if (answersAreEquivalent(userAnswer, correctAnswer)) {
       return {
         isCorrect: true,
         matchedAnswer: correctAnswer,
-        normalizedUserAnswer
+        normalizedUserAnswer,
       }
     }
   }
-  
+
   return {
     isCorrect: false,
-    normalizedUserAnswer
+    normalizedUserAnswer,
   }
 }
 
@@ -154,13 +156,13 @@ export function validateGridInAnswer(
 export function formatCorrectAnswersDisplay(correctAnswers: string[]): string {
   if (correctAnswers.length === 0) return ''
   if (correctAnswers.length === 1) return correctAnswers[0]
-  
+
   // Group equivalent answers together
   const groups: string[][] = []
-  
+
   for (const answer of correctAnswers) {
     let addedToGroup = false
-    
+
     for (const group of groups) {
       if (answersAreEquivalent(answer, group[0])) {
         group.push(answer)
@@ -168,17 +170,17 @@ export function formatCorrectAnswersDisplay(correctAnswers: string[]): string {
         break
       }
     }
-    
+
     if (!addedToGroup) {
       groups.push([answer])
     }
   }
-  
+
   // Format each group
-  const formattedGroups = groups.map(group => {
+  const formattedGroups = groups.map((group) => {
     if (group.length === 1) return group[0]
     return group.join(' or ')
   })
-  
+
   return formattedGroups.join(', ')
 }

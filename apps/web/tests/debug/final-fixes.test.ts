@@ -17,7 +17,8 @@ describe('Final Test Fixes', () => {
     // From the logs, it seems like there's an exam with math2 answers but english_only template
     const { data: attemptsWithMath } = await supabase
       .from('user_answers')
-      .select(`
+      .select(
+        `
         test_attempt_id,
         module_type,
         test_attempts(
@@ -25,7 +26,8 @@ describe('Final Test Fixes', () => {
           exam_id,
           exams(id, title, template_id)
         )
-      `)
+      `
+      )
       .or('module_type.eq.math1,module_type.eq.math2')
       .limit(20)
 
@@ -33,14 +35,14 @@ describe('Final Test Fixes', () => {
 
     // Group by exam to find problematic ones
     const examIssues: { [key: string]: any } = {}
-    attemptsWithMath?.forEach(answer => {
+    attemptsWithMath?.forEach((answer) => {
       const exam = answer.test_attempts?.exams
       if (exam && answer.module_type?.startsWith('math')) {
         if (!examIssues[exam.id]) {
           examIssues[exam.id] = {
             exam,
             mathModules: new Set(),
-            attemptIds: new Set()
+            attemptIds: new Set(),
           }
         }
         examIssues[exam.id].mathModules.add(answer.module_type)
@@ -54,7 +56,9 @@ describe('Final Test Fixes', () => {
       if (examInfo.exam.template_id === 'english_only') {
         console.log(`\n   🚨 FOUND ISSUE: ${examInfo.exam.title}`)
         console.log(`      Template: ${examInfo.exam.template_id}`)
-        console.log(`      Math Modules: ${Array.from(examInfo.mathModules).join(', ')}`)
+        console.log(
+          `      Math Modules: ${Array.from(examInfo.mathModules).join(', ')}`
+        )
         console.log(`      Attempts: ${examInfo.attemptIds.size}`)
 
         // Fix the template
@@ -81,7 +85,7 @@ describe('Final Test Fixes', () => {
       .limit(200)
 
     let invalidCount = 0
-    allQuestions?.forEach(q => {
+    allQuestions?.forEach((q) => {
       try {
         if (q.correct_answer && typeof q.correct_answer === 'string') {
           JSON.parse(q.correct_answer)
@@ -113,7 +117,7 @@ describe('Final Test Fixes', () => {
 
     if (testCaseExams && testCaseExams.length > 0) {
       console.log('   ✅ Test cases should be populated')
-      testCaseExams.forEach(exam => {
+      testCaseExams.forEach((exam) => {
         console.log(`      - ${exam.title}`)
       })
     } else {

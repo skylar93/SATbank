@@ -556,7 +556,10 @@ function ExamPageContent() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="flex items-center justify-center min-h-screen">
-          <Dialog open={showConflictModal} onOpenChange={() => closeConflictModal(router)}>
+          <Dialog
+            open={showConflictModal}
+            onOpenChange={() => closeConflictModal(router)}
+          >
             <DialogContent className="max-w-lg">
               <DialogHeader>
                 <DialogTitle>
@@ -598,7 +601,9 @@ function ExamPageContent() {
                         <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
                         Started:{' '}
                         <span className="font-medium">
-                          {new Date(existingAttempt.started_at).toLocaleString()}
+                          {new Date(
+                            existingAttempt.started_at
+                          ).toLocaleString()}
                         </span>
                       </li>
                     )}
@@ -947,7 +952,9 @@ function ExamPageContent() {
                   return `${currentQuestion.module_type.replace(/(\d)/, ' $1').toUpperCase()} (Review)`
                 } else {
                   // Normal mode, show the current module
-                  return currentModule.module.replace(/(\d)/, ' $1').toUpperCase()
+                  return currentModule.module
+                    .replace(/(\d)/, ' $1')
+                    .toUpperCase()
                 }
               })()}
             </span>
@@ -1021,7 +1028,6 @@ function ExamPageContent() {
           isLastModule={currentModuleIndex >= modules.length - 1}
         />
       )}
-
 
       {/* Exit Confirmation Modal */}
       <Dialog open={showExitConfirm} onOpenChange={handleCancelExit}>

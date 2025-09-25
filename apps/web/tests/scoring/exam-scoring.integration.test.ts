@@ -2,7 +2,10 @@ import { describe, it, expect, beforeAll } from 'vitest'
 import { createClient } from '@supabase/supabase-js'
 import { ScoringService } from '../../lib/scoring-service'
 import { submitExamAndScore, createTestExam } from '../utils/test-exam-utils'
-import { generateExamTestCases, generateTestAnswers } from '../utils/test-data-generator'
+import {
+  generateExamTestCases,
+  generateTestAnswers,
+} from '../utils/test-data-generator'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,7 +19,9 @@ describe('Full Exam Scoring Integration', () => {
     // Get real exam data for integration testing
     const { data: exams } = await supabase
       .from('exams')
-      .select('id, title, template_id, english_scoring_curve_id, math_scoring_curve_id')
+      .select(
+        'id, title, template_id, english_scoring_curve_id, math_scoring_curve_id'
+      )
       .limit(5)
 
     realExams = exams || []
@@ -33,7 +38,7 @@ describe('Full Exam Scoring Integration', () => {
           includeMultipleAnswerTypes: true,
           includePerfectScore: false,
           includePartialScore: true,
-          includeEdgeCases: true
+          includeEdgeCases: true,
         })
 
         const result = await submitExamAndScore(testAnswers)
@@ -52,7 +57,7 @@ describe('Full Exam Scoring Integration', () => {
 
       const testExam = await createTestExam(exam.id)
       const perfectAnswers = await generateTestAnswers(testExam, {
-        scenario: 'perfect_score'
+        scenario: 'perfect_score',
       })
 
       const result = await submitExamAndScore(perfectAnswers)
@@ -68,7 +73,7 @@ describe('Full Exam Scoring Integration', () => {
 
       const testExam = await createTestExam(exam.id)
       const zeroAnswers = await generateTestAnswers(testExam, {
-        scenario: 'zero_score'
+        scenario: 'zero_score',
       })
 
       const result = await submitExamAndScore(zeroAnswers)
@@ -84,7 +89,7 @@ describe('Full Exam Scoring Integration', () => {
 
       const testExam = await createTestExam(exam.id)
       const multipleAnswerTest = await generateTestAnswers(testExam, {
-        scenario: 'multiple_answers_focus'
+        scenario: 'multiple_answers_focus',
       })
 
       const result = await submitExamAndScore(multipleAnswerTest)
@@ -92,43 +97,48 @@ describe('Full Exam Scoring Integration', () => {
       expect(result.multipleAnswerValidation.questionsFound).toBeGreaterThan(0)
       expect(result.multipleAnswerValidation.allVariationsWork).toBe(true)
 
-      console.log(`🔢 Multiple answers: Found ${result.multipleAnswerValidation.questionsFound} questions`)
+      console.log(
+        `🔢 Multiple answers: Found ${result.multipleAnswerValidation.questionsFound} questions`
+      )
     })
   })
 
   describe('Automated Scenario Testing', () => {
     const testScenarios = generateExamTestCases()
 
-    it.each(testScenarios)('should handle $scenario scenario correctly', async ({ scenario, config }) => {
-      const exam = realExams[0]
-      if (!exam) return
+    it.each(testScenarios)(
+      'should handle $scenario scenario correctly',
+      async ({ scenario, config }) => {
+        const exam = realExams[0]
+        if (!exam) return
 
-      console.log(`\n🎪 Testing scenario: ${scenario}`)
+        console.log(`\n🎪 Testing scenario: ${scenario}`)
 
-      const testExam = await createTestExam(exam.id)
-      const testAnswers = await generateTestAnswers(testExam, config)
+        const testExam = await createTestExam(exam.id)
+        const testAnswers = await generateTestAnswers(testExam, config)
 
-      const result = await submitExamAndScore(testAnswers)
+        const result = await submitExamAndScore(testAnswers)
 
-      // Validate based on scenario
-      switch (scenario) {
-        case 'perfect_score':
-          expect(result.scores.overall).toBeGreaterThan(1400)
-          break
-        case 'mixed_performance':
-          expect(result.scores.overall).toBeGreaterThan(800)
-          expect(result.scores.overall).toBeLessThan(1400)
-          break
-        case 'edge_cases':
-          expect(result.edgeCaseValidation.passed).toBe(true)
-          break
-        case 'module_type_variations':
-          expect(result.moduleValidation.allModulesScored).toBe(true)
-          break
+        // Validate based on scenario
+        switch (scenario) {
+          case 'perfect_score':
+            expect(result.scores.overall).toBeGreaterThan(1400)
+            break
+          case 'mixed_performance':
+            expect(result.scores.overall).toBeGreaterThan(800)
+            expect(result.scores.overall).toBeLessThan(1400)
+            break
+          case 'edge_cases':
+            expect(result.edgeCaseValidation.passed).toBe(true)
+            break
+          case 'module_type_variations':
+            expect(result.moduleValidation.allModulesScored).toBe(true)
+            break
+        }
+
+        console.log(`✅ ${scenario}: Score ${result.scores.overall}`)
       }
-
-      console.log(`✅ ${scenario}: Score ${result.scores.overall}`)
-    })
+    )
   })
 
   describe('Scoring Curve Integration', () => {
@@ -140,18 +150,20 @@ describe('Full Exam Scoring Integration', () => {
       const scoreRanges = [
         { range: 'low', rawScoreTarget: 10 },
         { range: 'medium', rawScoreTarget: 30 },
-        { range: 'high', rawScoreTarget: 50 }
+        { range: 'high', rawScoreTarget: 50 },
       ]
 
       for (const scoreRange of scoreRanges) {
         const testExam = await createTestExam(exam.id)
         const targetAnswers = await generateTestAnswers(testExam, {
-          targetRawScore: scoreRange.rawScoreTarget
+          targetRawScore: scoreRange.rawScoreTarget,
         })
 
         const result = await submitExamAndScore(targetAnswers)
 
-        console.log(`📊 ${scoreRange.range} range (target ${scoreRange.rawScoreTarget}): ${result.scores.overall}`)
+        console.log(
+          `📊 ${scoreRange.range} range (target ${scoreRange.rawScoreTarget}): ${result.scores.overall}`
+        )
 
         // Verify the curve is working (scores should be reasonable)
         expect(result.scores.overall).toBeGreaterThan(200)
@@ -168,14 +180,14 @@ describe('Full Exam Scoring Integration', () => {
         questions: [
           { id: '1', correct_answer: null, module_type: null },
           { id: '2', correct_answer: 'invalid_json[', module_type: 'english1' },
-          { id: '3', correct_answer: [''], module_type: '' }
-        ]
+          { id: '3', correct_answer: [''], module_type: '' },
+        ],
       }
 
       const answers = [
         { questionId: '1', userAnswer: 'A' },
         { questionId: '2', userAnswer: 'B' },
-        { questionId: '3', userAnswer: 'C' }
+        { questionId: '3', userAnswer: 'C' },
       ]
 
       // Should not throw errors, but handle gracefully
@@ -192,7 +204,7 @@ describe('Full Exam Scoring Integration', () => {
         { input: '3/2', expected: true },
         { input: '1.50', expected: true },
         { input: '15/10', expected: true },
-        { input: 'abc', expected: false }
+        { input: 'abc', expected: false },
       ]
 
       for (const test of gridInTests) {
@@ -209,13 +221,15 @@ describe('Full Exam Scoring Integration', () => {
       // Generate many test cases
       const bulkTests = Array.from({ length: 10 }, (_, i) => ({
         examId: realExams[0]?.id,
-        testCase: i
+        testCase: i,
       }))
 
       const results = await Promise.all(
         bulkTests.map(async (test) => {
           const testExam = await createTestExam(test.examId)
-          const answers = await generateTestAnswers(testExam, { scenario: 'random' })
+          const answers = await generateTestAnswers(testExam, {
+            scenario: 'random',
+          })
           return submitExamAndScore(answers)
         })
       )

@@ -86,7 +86,7 @@ export function ExamModals({
                       : 'You already have an ongoing exam attempt for this test. You can either:'}
                   </p>
                 </div>
-                
+
                 <div className="bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-2xl p-6 mb-8">
                   <h4 className="font-medium text-violet-900 mb-3">
                     Current attempt details:
@@ -113,7 +113,7 @@ export function ExamModals({
                     )}
                   </ul>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <button
@@ -135,7 +135,7 @@ export function ExamModals({
                       {loading ? 'Loading...' : 'Start New'}
                     </button>
                   </div>
-                  
+
                   <button
                     onClick={onCloseConflictModal}
                     className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium transition-all duration-200"

@@ -14,7 +14,11 @@ import {
   findBestTextMatch,
 } from './text-utils'
 
-function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: string) {
+function computeOffsetsWithoutTrim(
+  container: Element,
+  range: Range,
+  textRaw: string
+) {
   // Create a temporary normalized container that mimics what HighlightedTextRenderer does
   const normalizedContainer = createNormalizedContainerForSelection(container)
 
@@ -29,7 +33,11 @@ function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: st
 
     try {
       // Map original range nodes to normalized container
-      const mappedOffsets = mapRangeToNormalizedContainer(range, container, normalizedContainer)
+      const mappedOffsets = mapRangeToNormalizedContainer(
+        range,
+        container,
+        normalizedContainer
+      )
       if (mappedOffsets) {
         start = mappedOffsets.start
         end = mappedOffsets.end
@@ -53,13 +61,18 @@ function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: st
 
     // Final fallback: try with original container
     if (start < 0 || end < 0) {
-      console.warn('Using final fallback offset calculation with original container')
+      console.warn(
+        'Using final fallback offset calculation with original container'
+      )
       const originalText = getVisiblePlainText(container)
       const trimmedText = textRaw.trim()
       const originalDirectIndex = originalText.indexOf(trimmedText)
       if (originalDirectIndex >= 0) {
         // Need to adjust offsets to normalized text
-        start = Math.min(originalDirectIndex, visibleText.length - trimmedText.length)
+        start = Math.min(
+          originalDirectIndex,
+          visibleText.length - trimmedText.length
+        )
         end = Math.min(start + trimmedText.length, visibleText.length)
       }
     }
@@ -72,7 +85,8 @@ function computeOffsetsWithoutTrim(container: Element, range: Range, textRaw: st
     const boundedEnd = Math.max(boundedStart, Math.min(end, visibleText.length))
 
     // Use the final text from normalized content or fallback to original
-    const finalText = visibleText.slice(boundedStart, boundedEnd) || textForHighlight
+    const finalText =
+      visibleText.slice(boundedStart, boundedEnd) || textForHighlight
 
     return { start: boundedStart, end: boundedEnd, textForHighlight: finalText }
   } finally {
@@ -97,8 +111,16 @@ function mapRangeToNormalizedContainer(
     let startMapped = -1
     let endMapped = -1
 
-    const originalNodes: { node: Text; startOffset: number; endOffset: number }[] = []
-    const normalizedNodes: { node: Text; startOffset: number; endOffset: number }[] = []
+    const originalNodes: {
+      node: Text
+      startOffset: number
+      endOffset: number
+    }[] = []
+    const normalizedNodes: {
+      node: Text
+      startOffset: number
+      endOffset: number
+    }[] = []
 
     // Collect all text nodes with their offsets in original container
     while (originalWalker.nextNode()) {
@@ -107,7 +129,7 @@ function mapRangeToNormalizedContainer(
       originalNodes.push({
         node: textNode,
         startOffset: originalOffset,
-        endOffset: originalOffset + nodeLength
+        endOffset: originalOffset + nodeLength,
       })
       originalOffset += nodeLength
     }
@@ -119,7 +141,7 @@ function mapRangeToNormalizedContainer(
       normalizedNodes.push({
         node: textNode,
         startOffset: normalizedOffset,
-        endOffset: normalizedOffset + nodeLength
+        endOffset: normalizedOffset + nodeLength,
       })
       normalizedOffset += nodeLength
     }
@@ -131,7 +153,8 @@ function mapRangeToNormalizedContainer(
     // Calculate global offset for range start
     for (const nodeInfo of originalNodes) {
       if (nodeInfo.node === originalRange.startContainer) {
-        rangeStartGlobalOffset = nodeInfo.startOffset + originalRange.startOffset
+        rangeStartGlobalOffset =
+          nodeInfo.startOffset + originalRange.startOffset
         break
       }
     }
@@ -157,7 +180,10 @@ function mapRangeToNormalizedContainer(
 
         // Ensure valid bounds
         startMapped = Math.max(0, Math.min(startMapped, normalizedTotalLength))
-        endMapped = Math.max(startMapped, Math.min(endMapped, normalizedTotalLength))
+        endMapped = Math.max(
+          startMapped,
+          Math.min(endMapped, normalizedTotalLength)
+        )
 
         return { start: startMapped, end: endMapped }
       }
@@ -171,7 +197,9 @@ function mapRangeToNormalizedContainer(
 }
 
 // Helper function to create a normalized container for selection offset calculation
-function createNormalizedContainerForSelection(originalContainer: Element): HTMLDivElement {
+function createNormalizedContainerForSelection(
+  originalContainer: Element
+): HTMLDivElement {
   const tempDiv = document.createElement('div')
   tempDiv.innerHTML = originalContainer.innerHTML
 
@@ -294,11 +322,19 @@ export default function FloatingHighlightButton({
       }
 
       try {
-        const { start, end, textForHighlight } = computeOffsetsWithoutTrim(containerElement, range, textRaw)
+        const { start, end, textForHighlight } = computeOffsetsWithoutTrim(
+          containerElement,
+          range,
+          textRaw
+        )
 
         // Additional validation
         if (start < 0 || end <= start || textForHighlight.trim().length === 0) {
-          console.warn('Invalid selection offsets calculated:', { start, end, textForHighlight })
+          console.warn('Invalid selection offsets calculated:', {
+            start,
+            end,
+            textForHighlight,
+          })
           return
         }
 
@@ -316,79 +352,96 @@ export default function FloatingHighlightButton({
         const rect = range.getBoundingClientRect()
         const containerRect = containerElement.getBoundingClientRect()
 
-      // Improved positioning algorithm for better handling of single-line questions
-      const buttonWidth = 90 // Width for both buttons together
-      const buttonHeight = 40
-      const offset = 8
-      const minDistance = 5 // Minimum distance from container edges
+        // Improved positioning algorithm for better handling of single-line questions
+        const buttonWidth = 90 // Width for both buttons together
+        const buttonHeight = 40
+        const offset = 8
+        const minDistance = 5 // Minimum distance from container edges
 
-      // Get the cursor position (end of selection)
-      const tempRange = document.createRange()
-      tempRange.setStart(range.endContainer, range.endOffset)
-      tempRange.setEnd(range.endContainer, range.endOffset)
-      const cursorRect = tempRange.getBoundingClientRect()
+        // Get the cursor position (end of selection)
+        const tempRange = document.createRange()
+        tempRange.setStart(range.endContainer, range.endOffset)
+        tempRange.setEnd(range.endContainer, range.endOffset)
+        const cursorRect = tempRange.getBoundingClientRect()
 
-      // Get viewport and container dimensions
-      const containerWidth = containerElement.offsetWidth
-      const containerHeight = containerElement.offsetHeight
-      const viewportHeight = window.innerHeight
+        // Get viewport and container dimensions
+        const containerWidth = containerElement.offsetWidth
+        const containerHeight = containerElement.offsetHeight
+        const viewportHeight = window.innerHeight
 
-      // Calculate available space in all directions
-      const spaceRight = containerWidth - (rect.right - containerRect.left)
-      const spaceLeft = rect.left - containerRect.left
-      const spaceBelow = containerHeight - (rect.bottom - containerRect.top)
-      const spaceAbove = rect.top - containerRect.top
+        // Calculate available space in all directions
+        const spaceRight = containerWidth - (rect.right - containerRect.left)
+        const spaceLeft = rect.left - containerRect.left
+        const spaceBelow = containerHeight - (rect.bottom - containerRect.top)
+        const spaceAbove = rect.top - containerRect.top
 
-      let buttonX = 0
-      let buttonY = 0
+        let buttonX = 0
+        let buttonY = 0
 
-      // Horizontal positioning: prefer right, fallback to left if not enough space
-      if (spaceRight >= buttonWidth + offset + minDistance) {
-        // Position to the right of the cursor
-        buttonX = cursorRect.right - containerRect.left + offset
-      } else if (spaceLeft >= buttonWidth + offset + minDistance) {
-        // Position to the left of selection
-        buttonX = rect.left - containerRect.left - buttonWidth - offset
-      } else {
-        // Center horizontally if neither side has enough space
-        buttonX = Math.max(minDistance, (containerWidth - buttonWidth) / 2)
-      }
-
-      // Vertical positioning: for single-line questions, be more aggressive about positioning
-      if (spaceBelow >= buttonHeight + offset + minDistance) {
-        // Position below selection
-        buttonY = rect.bottom - containerRect.top + offset
-      } else if (spaceAbove >= buttonHeight + offset + minDistance) {
-        // Position above selection  
-        buttonY = rect.top - containerRect.top - buttonHeight - offset
-      } else {
-        // For very tight spaces (like single-line questions), position at a safe distance
-        // Try to position below first, but with minimal offset
-        const minimalOffset = 3
-        if (rect.bottom - containerRect.top + buttonHeight + minimalOffset <= containerHeight) {
-          buttonY = rect.bottom - containerRect.top + minimalOffset
-        } else if (rect.top - containerRect.top - buttonHeight - minimalOffset >= 0) {
-          buttonY = rect.top - containerRect.top - buttonHeight - minimalOffset
+        // Horizontal positioning: prefer right, fallback to left if not enough space
+        if (spaceRight >= buttonWidth + offset + minDistance) {
+          // Position to the right of the cursor
+          buttonX = cursorRect.right - containerRect.left + offset
+        } else if (spaceLeft >= buttonWidth + offset + minDistance) {
+          // Position to the left of selection
+          buttonX = rect.left - containerRect.left - buttonWidth - offset
         } else {
-          // For extremely tight single-line cases, position the buttons to overlay slightly
-          // This ensures they're always visible even if space is very limited
-          const selectionMiddleY = rect.top + (rect.height / 2) - containerRect.top
-          if (selectionMiddleY - (buttonHeight / 2) >= 0 && 
-              selectionMiddleY + (buttonHeight / 2) <= containerHeight) {
-            // Center vertically on the selection
-            buttonY = selectionMiddleY - (buttonHeight / 2)
+          // Center horizontally if neither side has enough space
+          buttonX = Math.max(minDistance, (containerWidth - buttonWidth) / 2)
+        }
+
+        // Vertical positioning: for single-line questions, be more aggressive about positioning
+        if (spaceBelow >= buttonHeight + offset + minDistance) {
+          // Position below selection
+          buttonY = rect.bottom - containerRect.top + offset
+        } else if (spaceAbove >= buttonHeight + offset + minDistance) {
+          // Position above selection
+          buttonY = rect.top - containerRect.top - buttonHeight - offset
+        } else {
+          // For very tight spaces (like single-line questions), position at a safe distance
+          // Try to position below first, but with minimal offset
+          const minimalOffset = 3
+          if (
+            rect.bottom - containerRect.top + buttonHeight + minimalOffset <=
+            containerHeight
+          ) {
+            buttonY = rect.bottom - containerRect.top + minimalOffset
+          } else if (
+            rect.top - containerRect.top - buttonHeight - minimalOffset >=
+            0
+          ) {
+            buttonY =
+              rect.top - containerRect.top - buttonHeight - minimalOffset
           } else {
-            // Final fallback: position at the edge with the most space
-            buttonY = spaceBelow > spaceAbove ? 
-              Math.max(0, containerHeight - buttonHeight) :
-              0
+            // For extremely tight single-line cases, position the buttons to overlay slightly
+            // This ensures they're always visible even if space is very limited
+            const selectionMiddleY =
+              rect.top + rect.height / 2 - containerRect.top
+            if (
+              selectionMiddleY - buttonHeight / 2 >= 0 &&
+              selectionMiddleY + buttonHeight / 2 <= containerHeight
+            ) {
+              // Center vertically on the selection
+              buttonY = selectionMiddleY - buttonHeight / 2
+            } else {
+              // Final fallback: position at the edge with the most space
+              buttonY =
+                spaceBelow > spaceAbove
+                  ? Math.max(0, containerHeight - buttonHeight)
+                  : 0
+            }
           }
         }
-      }
 
-      // Final boundary enforcement with more generous margins for single-line cases
-      buttonX = Math.max(minDistance, Math.min(buttonX, containerWidth - buttonWidth - minDistance))
-      buttonY = Math.max(minDistance, Math.min(buttonY, containerHeight - buttonHeight - minDistance))
+        // Final boundary enforcement with more generous margins for single-line cases
+        buttonX = Math.max(
+          minDistance,
+          Math.min(buttonX, containerWidth - buttonWidth - minDistance)
+        )
+        buttonY = Math.max(
+          minDistance,
+          Math.min(buttonY, containerHeight - buttonHeight - minDistance)
+        )
 
         setPosition({
           x: buttonX,
@@ -518,15 +571,11 @@ export default function FloatingHighlightButton({
     setIsAddingVocab(true)
 
     try {
-      const result = await autoAddToVocab(
-        cleanText,
-        examTitle,
-        examId
-      )
+      const result = await autoAddToVocab(cleanText, examTitle, examId)
 
       if (result.success) {
         toast.success(result.message)
-        
+
         clearSelectionAndUI()
       } else {
         toast.error(result.message)
@@ -552,7 +601,9 @@ export default function FloatingHighlightButton({
       console.warn('Failed to restore selection:', error)
     } finally {
       // Delay clearing the flag to prevent selectionchange loop
-      setTimeout(() => { isRestoringRef.current = false }, 0)
+      setTimeout(() => {
+        isRestoringRef.current = false
+      }, 0)
     }
   }
 
@@ -563,7 +614,7 @@ export default function FloatingHighlightButton({
       clearTimeout(hideTimeoutRef.current)
       hideTimeoutRef.current = null
     }
-    
+
     // Restore selection when hovering over button
     restoreSelection()
   }

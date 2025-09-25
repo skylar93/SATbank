@@ -37,7 +37,11 @@ interface ExamRowProps {
   onExamDeleted?: () => void
 }
 
-export function ExamRow({ exam, openAnswerModal, onExamDeleted }: ExamRowProps) {
+export function ExamRow({
+  exam,
+  openAnswerModal,
+  onExamDeleted,
+}: ExamRowProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [allCurves, setAllCurves] = useState<ScoringCurve[]>([])
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -69,10 +73,7 @@ export function ExamRow({ exam, openAnswerModal, onExamDeleted }: ExamRowProps) 
   const handleDeleteExam = async () => {
     setIsDeleting(true)
     try {
-      const { error } = await supabase
-        .from('exams')
-        .delete()
-        .eq('id', exam.id)
+      const { error } = await supabase.from('exams').delete().eq('id', exam.id)
 
       if (error) {
         console.error('Error deleting exam:', error)
@@ -179,17 +180,21 @@ export function ExamRow({ exam, openAnswerModal, onExamDeleted }: ExamRowProps) 
           </div>
         </td>
       </tr>
-      
+
       {/* Expanded Details Row */}
       {isExpanded && (
         <tr className="bg-gray-50">
           <td colSpan={7} className="px-6 py-3">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
-                <h5 className="text-xs font-medium text-gray-700 mb-2">Scoring Configuration</h5>
+                <h5 className="text-xs font-medium text-gray-700 mb-2">
+                  Scoring Configuration
+                </h5>
                 <div className="space-y-1">
                   <div className="flex items-center justify-between p-2 bg-white rounded border">
-                    <span className="text-xs text-gray-600">English Curve:</span>
+                    <span className="text-xs text-gray-600">
+                      English Curve:
+                    </span>
                     <CurveAssignmentControl
                       examId={exam.id}
                       curveType="english"
@@ -213,7 +218,9 @@ export function ExamRow({ exam, openAnswerModal, onExamDeleted }: ExamRowProps) 
                 </div>
               </div>
               <div>
-                <h5 className="text-xs font-medium text-gray-700 mb-2">Quick Actions</h5>
+                <h5 className="text-xs font-medium text-gray-700 mb-2">
+                  Quick Actions
+                </h5>
                 <div className="flex flex-wrap gap-2">
                   <Link
                     href={`/admin/exams/${exam.id}/settings`}

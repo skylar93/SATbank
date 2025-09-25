@@ -45,7 +45,6 @@ interface StudentReportRowProps {
 export default function StudentReportRow({ student }: StudentReportRowProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
-
   return (
     <>
       {/* Trigger Row */}
@@ -135,7 +134,10 @@ export default function StudentReportRow({ student }: StudentReportRowProps) {
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {student.attempts.map((attempt) => {
-                        const displayScores = getDisplayScores(attempt.final_scores, attempt.template_id)
+                        const displayScores = getDisplayScores(
+                          attempt.final_scores,
+                          attempt.template_id
+                        )
 
                         return (
                           <tr
@@ -173,16 +175,21 @@ export default function StudentReportRow({ student }: StudentReportRowProps) {
                                 </div>
                               </td>
                             )}
-                            {!displayScores.sections.showEnglish && !displayScores.sections.showMath && (
-                              <>
-                                <td className="px-4 py-3">
-                                  <div className="text-sm text-gray-400">N/A</div>
-                                </td>
-                                <td className="px-4 py-3">
-                                  <div className="text-sm text-gray-400">N/A</div>
-                                </td>
-                              </>
-                            )}
+                            {!displayScores.sections.showEnglish &&
+                              !displayScores.sections.showMath && (
+                                <>
+                                  <td className="px-4 py-3">
+                                    <div className="text-sm text-gray-400">
+                                      N/A
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    <div className="text-sm text-gray-400">
+                                      N/A
+                                    </div>
+                                  </td>
+                                </>
+                              )}
                             <td className="px-4 py-3">
                               <div className="text-sm text-gray-700">
                                 {formatDuration(attempt.duration_seconds)}
@@ -208,7 +215,10 @@ export default function StudentReportRow({ student }: StudentReportRowProps) {
                                   onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()
-                                    window.open(`/admin/results/${attempt.attempt_id}`, '_blank')
+                                    window.open(
+                                      `/admin/results/${attempt.attempt_id}`,
+                                      '_blank'
+                                    )
                                   }}
                                   className="text-gray-500 hover:text-gray-700"
                                   title="View Results"
@@ -220,7 +230,10 @@ export default function StudentReportRow({ student }: StudentReportRowProps) {
                                   onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()
-                                    window.open(`/admin/results/${attempt.attempt_id}/review`, '_blank')
+                                    window.open(
+                                      `/admin/results/${attempt.attempt_id}/review`,
+                                      '_blank'
+                                    )
                                   }}
                                   className="text-gray-500 hover:text-gray-700"
                                   title="Review Exam"

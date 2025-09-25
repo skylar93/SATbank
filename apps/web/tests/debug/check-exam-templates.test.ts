@@ -28,8 +28,8 @@ describe('Exam Templates Check', () => {
           id: 'english_only',
           name: 'English Only Section',
           scoring_groups: {
-            english: ['english1', 'english2']
-          }
+            english: ['english1', 'english2'],
+          },
         })
         .select()
 
@@ -39,10 +39,14 @@ describe('Exam Templates Check', () => {
         console.log('✅ Created english_only template')
       }
     } else {
-      console.log(`✅ exam_templates: exists with ${templates?.length || 0} templates`)
-      templates?.forEach(template => {
+      console.log(
+        `✅ exam_templates: exists with ${templates?.length || 0} templates`
+      )
+      templates?.forEach((template) => {
         console.log(`  - ${template.name} (id: ${template.id})`)
-        console.log(`    Scoring Groups: ${JSON.stringify(template.scoring_groups)}`)
+        console.log(
+          `    Scoring Groups: ${JSON.stringify(template.scoring_groups)}`
+        )
       })
     }
 

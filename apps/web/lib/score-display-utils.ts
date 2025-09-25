@@ -40,7 +40,7 @@ export function getDisplayScores(
     return {
       overall: 0,
       maxTotal: 1600,
-      sections: { showEnglish: false, showMath: false }
+      sections: { showEnglish: false, showMath: false },
     }
   }
 
@@ -57,7 +57,7 @@ export function getDisplayScores(
     ...(showEnglish && { english: finalScores.english || 0 }),
     ...(showMath && { math: finalScores.math || 0 }),
     maxTotal,
-    sections: { showEnglish, showMath }
+    sections: { showEnglish, showMath },
   }
 }
 
@@ -65,7 +65,11 @@ export function getDisplayScores(
  * Gets the score string with appropriate max score
  * e.g., "650/800" for English-only or "1450/1600" for full SAT
  */
-export function getScoreString(score: number, templateId: string | null | undefined): string {
-  const maxScore = templateId === 'english_only' || templateId === 'math_only' ? 800 : 1600
+export function getScoreString(
+  score: number,
+  templateId: string | null | undefined
+): string {
+  const maxScore =
+    templateId === 'english_only' || templateId === 'math_only' ? 800 : 1600
   return `${score}/${maxScore}`
 }

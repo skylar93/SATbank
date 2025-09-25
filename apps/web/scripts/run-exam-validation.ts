@@ -8,16 +8,22 @@
 import { config } from 'dotenv'
 import { writeFileSync } from 'fs'
 import { join } from 'path'
-import { runFullExamValidation, generateTestReport } from '../tests/utils/exam-test-runner'
+import {
+  runFullExamValidation,
+  generateTestReport,
+} from '../tests/utils/exam-test-runner'
 
 // Load environment variables
 config({ path: '.env.local' })
 
 async function main() {
   console.log('🎯 SAT Bank - Comprehensive Exam Validation')
-  console.log('=' .repeat(50))
+  console.log('='.repeat(50))
 
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.SUPABASE_SERVICE_ROLE_KEY
+  ) {
     console.error('❌ Missing required environment variables:')
     console.error('   - NEXT_PUBLIC_SUPABASE_URL')
     console.error('   - SUPABASE_SERVICE_ROLE_KEY')
@@ -33,29 +39,42 @@ async function main() {
     console.log('🎯 VALIDATION COMPLETE')
     console.log('='.repeat(50))
     console.log(`📊 Success Rate: ${results.successRate.toFixed(1)}%`)
-    console.log(`📝 Exams Tested: ${results.totalExamsTest}`)
+    console.log(`📝 Exams Tested: ${results.totalExamstested}`)
     console.log(`📋 Total Questions: ${results.summary.totalQuestions}`)
-    console.log(`🔢 Multiple Answer Questions: ${results.summary.totalMultipleAnswers}`)
+    console.log(
+      `🔢 Multiple Answer Questions: ${results.summary.totalMultipleAnswers}`
+    )
     console.log(`❌ Total Issues: ${results.totalIssues}`)
-    console.log(`⏱️  Average Processing Time: ${results.summary.averageProcessingTime.toFixed(0)}ms`)
+    console.log(
+      `⏱️  Average Processing Time: ${results.summary.averageProcessingTime.toFixed(0)}ms`
+    )
 
     // Show failed exams
-    const failedExams = results.results.filter(r => !r.success)
+    const failedExams = results.results.filter((r) => !r.success)
     if (failedExams.length > 0) {
       console.log('\n🚨 FAILED EXAMS:')
-      failedExams.forEach(exam => {
-        console.log(`   ❌ ${exam.examTitle} (${exam.issues.critical.length} critical, ${exam.issues.warnings.length} warnings)`)
+      failedExams.forEach((exam) => {
+        console.log(
+          `   ❌ ${exam.examTitle} (${exam.issues.critical.length} critical, ${exam.issues.warnings.length} warnings)`
+        )
       })
     }
 
     // Generate and save HTML report
     const htmlReport = generateTestReport(results)
-    const reportPath = join(__dirname, '..', 'validation-reports', `exam-validation-${Date.now()}.html`)
+    const reportPath = join(
+      __dirname,
+      '..',
+      'validation-reports',
+      `exam-validation-${Date.now()}.html`
+    )
 
     // Create directory if it doesn't exist
     const reportsDir = join(__dirname, '..', 'validation-reports')
     try {
-      await import('fs').then(fs => fs.mkdirSync(reportsDir, { recursive: true }))
+      await import('fs').then((fs) =>
+        fs.mkdirSync(reportsDir, { recursive: true })
+      )
     } catch (e) {
       // Directory might already exist
     }
@@ -64,7 +83,12 @@ async function main() {
     console.log(`\n📄 Detailed report saved: ${reportPath}`)
 
     // Save JSON results for programmatic access
-    const jsonPath = join(__dirname, '..', 'validation-reports', `exam-validation-${Date.now()}.json`)
+    const jsonPath = join(
+      __dirname,
+      '..',
+      'validation-reports',
+      `exam-validation-${Date.now()}.json`
+    )
     writeFileSync(jsonPath, JSON.stringify(results, null, 2))
     console.log(`📄 JSON results saved: ${jsonPath}`)
 
@@ -72,17 +96,19 @@ async function main() {
     if (results.totalIssues === 0) {
       console.log('\n✅ All tests passed! 🎉')
       process.exit(0)
-    } else if (results.results.every(r => r.issues.critical.length === 0)) {
+    } else if (results.results.every((r) => r.issues.critical.length === 0)) {
       console.log('\n⚠️  Some warnings found, but no critical issues')
       process.exit(0)
     } else {
       console.log('\n❌ Critical issues found - please review and fix')
       process.exit(1)
     }
-
   } catch (error) {
-    console.error('\n💥 FATAL ERROR:', error.message)
-    if (error.stack) {
+    console.error(
+      '\n💥 FATAL ERROR:',
+      error instanceof Error ? error.message : String(error)
+    )
+    if (error instanceof Error && error.stack) {
       console.error(error.stack)
     }
     process.exit(1)
@@ -123,7 +149,7 @@ Reports are saved to: apps/web/validation-reports/
 }
 
 // Run the main function
-main().catch(error => {
+main().catch((error) => {
   console.error('Unhandled error:', error)
   process.exit(1)
 })

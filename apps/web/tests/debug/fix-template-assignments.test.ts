@@ -13,11 +13,13 @@ describe('Fix Template Assignments', () => {
     // Get all test attempts that are failing
     const { data: failedAttempts } = await supabase
       .from('test_attempts')
-      .select(`
+      .select(
+        `
         id,
         exam_id,
         exams(id, title, template_id, module_composition)
-      `)
+      `
+      )
       .eq('status', 'completed')
       .limit(10)
 
@@ -43,12 +45,14 @@ describe('Fix Template Assignments', () => {
             .eq('test_attempt_id', attempt.id)
             .limit(5)
 
-          const moduleTypes = [...new Set(answers?.map(a => a.module_type) || [])]
+          const moduleTypes = [
+            ...new Set(answers?.map((a) => a.module_type) || []),
+          ]
           console.log(`   Answer Modules: ${moduleTypes.join(', ')}`)
 
           // Determine correct template
-          const hasEnglish = moduleTypes.some(m => m?.startsWith('english'))
-          const hasMath = moduleTypes.some(m => m?.startsWith('math'))
+          const hasEnglish = moduleTypes.some((m) => m?.startsWith('english'))
+          const hasMath = moduleTypes.some((m) => m?.startsWith('math'))
 
           let correctTemplate = 'english_only'
           if (hasEnglish && hasMath) {
@@ -58,7 +62,9 @@ describe('Fix Template Assignments', () => {
           }
 
           if (exam.template_id !== correctTemplate) {
-            console.log(`   🔧 Needs Update: ${exam.template_id} → ${correctTemplate}`)
+            console.log(
+              `   🔧 Needs Update: ${exam.template_id} → ${correctTemplate}`
+            )
 
             const { error: updateError } = await supabase
               .from('exams')

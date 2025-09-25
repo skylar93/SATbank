@@ -18,7 +18,12 @@ describe('Database Schema Check', () => {
     }
 
     // Check specific scoring-related tables
-    const scoringTables = ['scoring_templates', 'scoring_curves', 'exams', 'test_attempts']
+    const scoringTables = [
+      'scoring_templates',
+      'scoring_curves',
+      'exams',
+      'test_attempts',
+    ]
 
     console.log('\n🎯 Scoring System Tables:')
     for (const tableName of scoringTables) {
@@ -57,7 +62,7 @@ describe('Database Schema Check', () => {
       .limit(2)
 
     console.log('\n📈 Scoring Curves Structure:')
-    curves?.forEach(curve => {
+    curves?.forEach((curve) => {
       console.log(`  Curve ID ${curve.id}:`)
       console.log(`    Name: ${curve.name}`)
       console.log(`    Columns: ${Object.keys(curve).join(', ')}`)

@@ -14,7 +14,7 @@ async function checkExamTemplates() {
     .limit(10)
 
   console.log('\n📋 Exam Template Status:')
-  exams?.forEach(exam => {
+  exams?.forEach((exam) => {
     const status = exam.template_id ? '✅' : '❌'
     console.log(`${status} ${exam.title}: ${exam.template_id || 'NO TEMPLATE'}`)
   })
@@ -24,7 +24,7 @@ async function checkExamTemplates() {
     .select('id, name')
 
   console.log('\n📋 Available Templates:')
-  templates?.forEach(template => {
+  templates?.forEach((template) => {
     console.log(`  - ${template.name} (id: ${template.id})`)
   })
 

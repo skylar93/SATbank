@@ -53,11 +53,17 @@ export function ExamsListClient() {
   const router = useRouter()
   const [exams, setExams] = useState<ExamWithCurves[]>([])
   const [loading, setLoading] = useState(true)
-  const [templates, setTemplates] = useState<{ [key: string]: { scoring_groups: { [key: string]: string[] } } }>({});
+  const [templates, setTemplates] = useState<{
+    [key: string]: { scoring_groups: { [key: string]: string[] } }
+  }>({})
   const [filteredExams, setFilteredExams] = useState<ExamWithCurves[]>([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [expandedDateGroups, setExpandedDateGroups] = useState<Set<string>>(new Set())
-  const [expandedTestTypes, setExpandedTestTypes] = useState<Set<string>>(new Set())
+  const [expandedDateGroups, setExpandedDateGroups] = useState<Set<string>>(
+    new Set()
+  )
+  const [expandedTestTypes, setExpandedTestTypes] = useState<Set<string>>(
+    new Set()
+  )
   const [expandedRegions, setExpandedRegions] = useState<Set<string>>(new Set())
   const [allGroupsInitialized, setAllGroupsInitialized] = useState(false)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -91,10 +97,12 @@ export function ExamsListClient() {
         return
       }
 
-      const templatesMap: { [key: string]: { scoring_groups: { [key: string]: string[] } } } = {}
-      data?.forEach(template => {
+      const templatesMap: {
+        [key: string]: { scoring_groups: { [key: string]: string[] } }
+      } = {}
+      data?.forEach((template) => {
         templatesMap[template.id] = {
-          scoring_groups: template.scoring_groups || {}
+          scoring_groups: template.scoring_groups || {},
         }
       })
       setTemplates(templatesMap)
@@ -174,7 +182,9 @@ export function ExamsListClient() {
             english_curve_name: exam.english_curve_name,
             math_curve_name: exam.math_curve_name,
             template_id: exam.template_id,
-            scoring_groups: exam.template_id ? templates[exam.template_id]?.scoring_groups : undefined,
+            scoring_groups: exam.template_id
+              ? templates[exam.template_id]?.scoring_groups
+              : undefined,
             answer_release_setting: answerReleaseSetting,
           }
         }
@@ -209,21 +219,21 @@ export function ExamsListClient() {
       const dateGroups = new Set<string>()
       const testTypeGroups = new Set<string>()
       const regionGroups = new Set<string>()
-      
-      Object.keys(groupedExams).forEach(date => {
+
+      Object.keys(groupedExams).forEach((date) => {
         dateGroups.add(date)
-        
+
         // Add all test types for this date
         testTypeGroups.add(`${date}-fullTest`)
         testTypeGroups.add(`${date}-sectionExam`)
         testTypeGroups.add(`${date}-individualModule`)
-        
+
         // Add all regions for this date
         regionGroups.add(`${date}-International`)
         regionGroups.add(`${date}-US`)
         regionGroups.add(`${date}-Other`)
       })
-      
+
       setExpandedDateGroups(dateGroups)
       setExpandedTestTypes(testTypeGroups)
       setExpandedRegions(regionGroups)
@@ -298,11 +308,12 @@ export function ExamsListClient() {
     // Extract date from title
     const dateMatch = title.match(/(\w+)\s+(\d{4})/)
     const date = dateMatch ? `${dateMatch[2]} ${dateMatch[1]}` : 'Unknown Date'
-    
+
     // Determine exam type
-    let examType: 'fullTest' | 'sectionExam' | 'individualModule' = 'individualModule'
+    let examType: 'fullTest' | 'sectionExam' | 'individualModule' =
+      'individualModule'
     let region: 'International' | 'US' | 'Other' = 'Other'
-    
+
     if (title.startsWith('SAT')) {
       if (title.includes('International') || title.includes('US')) {
         examType = 'fullTest'
@@ -318,24 +329,27 @@ export function ExamsListClient() {
         region = 'US'
       }
     }
-    
+
     return { date, examType, region }
   }
 
   const groupExamsByCategory = (exams: ExamWithCurves[]) => {
-    const grouped: Record<string, {
-      fullTest: ExamWithCurves[]
-      sectionExam: ExamWithCurves[]
-      individualModule: {
-        International: ExamWithCurves[]
-        US: ExamWithCurves[]
-        Other: ExamWithCurves[]
+    const grouped: Record<
+      string,
+      {
+        fullTest: ExamWithCurves[]
+        sectionExam: ExamWithCurves[]
+        individualModule: {
+          International: ExamWithCurves[]
+          US: ExamWithCurves[]
+          Other: ExamWithCurves[]
+        }
       }
-    }> = {}
-    
-    exams.forEach(exam => {
+    > = {}
+
+    exams.forEach((exam) => {
       const { date, examType, region } = parseExamTitle(exam.title)
-      
+
       if (!grouped[date]) {
         grouped[date] = {
           fullTest: [],
@@ -343,11 +357,11 @@ export function ExamsListClient() {
           individualModule: {
             International: [],
             US: [],
-            Other: []
-          }
+            Other: [],
+          },
         }
       }
-      
+
       if (examType === 'fullTest') {
         grouped[date].fullTest.push(exam)
       } else if (examType === 'sectionExam') {
@@ -356,7 +370,7 @@ export function ExamsListClient() {
         grouped[date].individualModule[region].push(exam)
       }
     })
-    
+
     return grouped
   }
 
@@ -397,30 +411,54 @@ export function ExamsListClient() {
       const [yearA, monthA] = a.split(' ')
       const [yearB, monthB] = b.split(' ')
       if (yearA !== yearB) return parseInt(yearB) - parseInt(yearA)
-      const months = ['January', 'February', 'March', 'April', 'May', 'June',
-                      'July', 'August', 'September', 'October', 'November', 'December']
+      const months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+      ]
       return months.indexOf(monthB) - months.indexOf(monthA)
     })
-    
+
     return (
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-200 sticky top-0">
             <tr>
               <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-8"></th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-64">Exam</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-24">Created</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">English Curve</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">Math Curve</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">Answer Visibility</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-20">Actions</th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-64">
+                Exam
+              </th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-24">
+                Created
+              </th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">
+                English Curve
+              </th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">
+                Math Curve
+              </th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">
+                Answer Visibility
+              </th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-20">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
-            {sortedDates.map(date => {
+            {sortedDates.map((date) => {
               const dateGroup = groupedExams[date]
               const isDateExpanded = expandedDateGroups.has(date)
-              
+
               return (
                 <React.Fragment key={date}>
                   {/* Date Group Header */}
@@ -437,7 +475,7 @@ export function ExamsListClient() {
                       </button>
                     </td>
                   </tr>
-                  
+
                   {isDateExpanded && (
                     <>
                       {/* Full Test Section */}
@@ -446,58 +484,68 @@ export function ExamsListClient() {
                           <tr className="bg-blue-50">
                             <td colSpan={7} className="px-6 py-1">
                               <button
-                                onClick={() => toggleTestType(`${date}-fullTest`)}
+                                onClick={() =>
+                                  toggleTestType(`${date}-fullTest`)
+                                }
                                 className="flex items-center space-x-2 text-sm font-medium text-blue-800 hover:text-blue-900"
                               >
                                 <span className="text-blue-600 text-xs">
-                                  {expandedTestTypes.has(`${date}-fullTest`) ? '▼' : '▶'}
+                                  {expandedTestTypes.has(`${date}-fullTest`)
+                                    ? '▼'
+                                    : '▶'}
                                 </span>
-                                <span>Full Test ({dateGroup.fullTest.length})</span>
+                                <span>
+                                  Full Test ({dateGroup.fullTest.length})
+                                </span>
                               </button>
                             </td>
                           </tr>
                           {expandedTestTypes.has(`${date}-fullTest`) &&
-                            dateGroup.fullTest.map(exam => (
+                            dateGroup.fullTest.map((exam) => (
                               <ExamRow
                                 key={exam.id}
                                 exam={exam}
                                 openAnswerModal={openAnswerModal}
                                 onExamDeleted={fetchExamsOptimized}
                               />
-                            ))
-                          }
+                            ))}
                         </>
                       )}
-                      
+
                       {/* Section Exam */}
                       {dateGroup.sectionExam.length > 0 && (
                         <>
                           <tr className="bg-green-50">
                             <td colSpan={7} className="px-6 py-1">
                               <button
-                                onClick={() => toggleTestType(`${date}-sectionExam`)}
+                                onClick={() =>
+                                  toggleTestType(`${date}-sectionExam`)
+                                }
                                 className="flex items-center space-x-2 text-sm font-medium text-green-800 hover:text-green-900"
                               >
                                 <span className="text-green-600 text-xs">
-                                  {expandedTestTypes.has(`${date}-sectionExam`) ? '▼' : '▶'}
+                                  {expandedTestTypes.has(`${date}-sectionExam`)
+                                    ? '▼'
+                                    : '▶'}
                                 </span>
-                                <span>Section Exam ({dateGroup.sectionExam.length})</span>
+                                <span>
+                                  Section Exam ({dateGroup.sectionExam.length})
+                                </span>
                               </button>
                             </td>
                           </tr>
                           {expandedTestTypes.has(`${date}-sectionExam`) &&
-                            dateGroup.sectionExam.map(exam => (
+                            dateGroup.sectionExam.map((exam) => (
                               <ExamRow
                                 key={exam.id}
                                 exam={exam}
                                 openAnswerModal={openAnswerModal}
                                 onExamDeleted={fetchExamsOptimized}
                               />
-                            ))
-                          }
+                            ))}
                         </>
                       )}
-                      
+
                       {/* Individual Modules */}
                       {(dateGroup.individualModule.International.length > 0 ||
                         dateGroup.individualModule.US.length > 0 ||
@@ -506,106 +554,155 @@ export function ExamsListClient() {
                           <tr className="bg-purple-50">
                             <td colSpan={7} className="px-6 py-1">
                               <button
-                                onClick={() => toggleTestType(`${date}-individualModule`)}
+                                onClick={() =>
+                                  toggleTestType(`${date}-individualModule`)
+                                }
                                 className="flex items-center space-x-2 text-sm font-medium text-purple-800 hover:text-purple-900"
                               >
                                 <span className="text-purple-600 text-xs">
-                                  {expandedTestTypes.has(`${date}-individualModule`) ? '▼' : '▶'}
+                                  {expandedTestTypes.has(
+                                    `${date}-individualModule`
+                                  )
+                                    ? '▼'
+                                    : '▶'}
                                 </span>
-                                <span>Individual Modules ({
-                                  dateGroup.individualModule.International.length +
-                                  dateGroup.individualModule.US.length +
-                                  dateGroup.individualModule.Other.length
-                                })</span>
+                                <span>
+                                  Individual Modules (
+                                  {dateGroup.individualModule.International
+                                    .length +
+                                    dateGroup.individualModule.US.length +
+                                    dateGroup.individualModule.Other.length}
+                                  )
+                                </span>
                               </button>
                             </td>
                           </tr>
-                          {expandedTestTypes.has(`${date}-individualModule`) && (
+                          {expandedTestTypes.has(
+                            `${date}-individualModule`
+                          ) && (
                             <>
                               {/* International Modules */}
-                              {dateGroup.individualModule.International.length > 0 && (
+                              {dateGroup.individualModule.International.length >
+                                0 && (
                                 <>
                                   <tr className="bg-orange-50">
                                     <td colSpan={7} className="px-9 py-1">
                                       <button
-                                        onClick={() => toggleRegion(`${date}-International`)}
+                                        onClick={() =>
+                                          toggleRegion(`${date}-International`)
+                                        }
                                         className="flex items-center space-x-2 text-sm font-medium text-orange-800 hover:text-orange-900"
                                       >
                                         <span className="text-orange-600 text-xs">
-                                          {expandedRegions.has(`${date}-International`) ? '▼' : '▶'}
+                                          {expandedRegions.has(
+                                            `${date}-International`
+                                          )
+                                            ? '▼'
+                                            : '▶'}
                                         </span>
-                                        <span>International ({dateGroup.individualModule.International.length})</span>
+                                        <span>
+                                          International (
+                                          {
+                                            dateGroup.individualModule
+                                              .International.length
+                                          }
+                                          )
+                                        </span>
                                       </button>
                                     </td>
                                   </tr>
-                                  {expandedRegions.has(`${date}-International`) &&
-                                    dateGroup.individualModule.International.map(exam => (
-                                      <ExamRow
-                                        key={exam.id}
-                                        exam={exam}
-                                        openAnswerModal={openAnswerModal}
-                                        onExamDeleted={fetchExamsOptimized}
-                                      />
-                                    ))
-                                  }
+                                  {expandedRegions.has(
+                                    `${date}-International`
+                                  ) &&
+                                    dateGroup.individualModule.International.map(
+                                      (exam) => (
+                                        <ExamRow
+                                          key={exam.id}
+                                          exam={exam}
+                                          openAnswerModal={openAnswerModal}
+                                          onExamDeleted={fetchExamsOptimized}
+                                        />
+                                      )
+                                    )}
                                 </>
                               )}
-                              
+
                               {/* US Modules */}
                               {dateGroup.individualModule.US.length > 0 && (
                                 <>
                                   <tr className="bg-red-50">
                                     <td colSpan={7} className="px-9 py-1">
                                       <button
-                                        onClick={() => toggleRegion(`${date}-US`)}
+                                        onClick={() =>
+                                          toggleRegion(`${date}-US`)
+                                        }
                                         className="flex items-center space-x-2 text-sm font-medium text-red-800 hover:text-red-900"
                                       >
                                         <span className="text-red-600 text-xs">
-                                          {expandedRegions.has(`${date}-US`) ? '▼' : '▶'}
+                                          {expandedRegions.has(`${date}-US`)
+                                            ? '▼'
+                                            : '▶'}
                                         </span>
-                                        <span>US ({dateGroup.individualModule.US.length})</span>
+                                        <span>
+                                          US (
+                                          {dateGroup.individualModule.US.length}
+                                          )
+                                        </span>
                                       </button>
                                     </td>
                                   </tr>
                                   {expandedRegions.has(`${date}-US`) &&
-                                    dateGroup.individualModule.US.map(exam => (
-                                      <ExamRow
-                                        key={exam.id}
-                                        exam={exam}
-                                        openAnswerModal={openAnswerModal}
-                                        onExamDeleted={fetchExamsOptimized}
-                                      />
-                                    ))
-                                  }
+                                    dateGroup.individualModule.US.map(
+                                      (exam) => (
+                                        <ExamRow
+                                          key={exam.id}
+                                          exam={exam}
+                                          openAnswerModal={openAnswerModal}
+                                          onExamDeleted={fetchExamsOptimized}
+                                        />
+                                      )
+                                    )}
                                 </>
                               )}
-                              
+
                               {/* Other Modules */}
                               {dateGroup.individualModule.Other.length > 0 && (
                                 <>
                                   <tr className="bg-gray-50">
                                     <td colSpan={7} className="px-9 py-1">
                                       <button
-                                        onClick={() => toggleRegion(`${date}-Other`)}
+                                        onClick={() =>
+                                          toggleRegion(`${date}-Other`)
+                                        }
                                         className="flex items-center space-x-2 text-sm font-medium text-gray-800 hover:text-gray-900"
                                       >
                                         <span className="text-gray-600 text-xs">
-                                          {expandedRegions.has(`${date}-Other`) ? '▼' : '▶'}
+                                          {expandedRegions.has(`${date}-Other`)
+                                            ? '▼'
+                                            : '▶'}
                                         </span>
-                                        <span>Other ({dateGroup.individualModule.Other.length})</span>
+                                        <span>
+                                          Other (
+                                          {
+                                            dateGroup.individualModule.Other
+                                              .length
+                                          }
+                                          )
+                                        </span>
                                       </button>
                                     </td>
                                   </tr>
                                   {expandedRegions.has(`${date}-Other`) &&
-                                    dateGroup.individualModule.Other.map(exam => (
-                                      <ExamRow
-                                        key={exam.id}
-                                        exam={exam}
-                                        openAnswerModal={openAnswerModal}
-                                        onExamDeleted={fetchExamsOptimized}
-                                      />
-                                    ))
-                                  }
+                                    dateGroup.individualModule.Other.map(
+                                      (exam) => (
+                                        <ExamRow
+                                          key={exam.id}
+                                          exam={exam}
+                                          openAnswerModal={openAnswerModal}
+                                          onExamDeleted={fetchExamsOptimized}
+                                        />
+                                      )
+                                    )}
                                 </>
                               )}
                             </>
@@ -718,9 +815,7 @@ export function ExamsListClient() {
               </p>
             </div>
           ) : (
-            <div className="p-6">
-              {renderGroupedExams()}
-            </div>
+            <div className="p-6">{renderGroupedExams()}</div>
           )}
         </div>
 

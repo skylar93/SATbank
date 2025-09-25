@@ -33,7 +33,10 @@ interface AttemptRowProps {
 }
 
 export default function AttemptRow({ attempt }: AttemptRowProps) {
-  const displayScores = getDisplayScores(attempt.final_scores, attempt.template_id)
+  const displayScores = getDisplayScores(
+    attempt.final_scores,
+    attempt.template_id
+  )
 
   return (
     <TableRow
@@ -68,26 +71,31 @@ export default function AttemptRow({ attempt }: AttemptRowProps) {
 
       {displayScores.sections.showEnglish && (
         <TableCell className="px-6 py-4 whitespace-nowrap">
-          <div className="text-sm text-gray-900">{displayScores.english || 0}/800</div>
+          <div className="text-sm text-gray-900">
+            {displayScores.english || 0}/800
+          </div>
         </TableCell>
       )}
 
       {displayScores.sections.showMath && (
         <TableCell className="px-6 py-4 whitespace-nowrap">
-          <div className="text-sm text-gray-900">{displayScores.math || 0}/800</div>
+          <div className="text-sm text-gray-900">
+            {displayScores.math || 0}/800
+          </div>
         </TableCell>
       )}
 
-      {!displayScores.sections.showEnglish && !displayScores.sections.showMath && (
-        <>
-          <TableCell className="px-6 py-4 whitespace-nowrap">
-            <div className="text-sm text-gray-400">N/A</div>
-          </TableCell>
-          <TableCell className="px-6 py-4 whitespace-nowrap">
-            <div className="text-sm text-gray-400">N/A</div>
-          </TableCell>
-        </>
-      )}
+      {!displayScores.sections.showEnglish &&
+        !displayScores.sections.showMath && (
+          <>
+            <TableCell className="px-6 py-4 whitespace-nowrap">
+              <div className="text-sm text-gray-400">N/A</div>
+            </TableCell>
+            <TableCell className="px-6 py-4 whitespace-nowrap">
+              <div className="text-sm text-gray-400">N/A</div>
+            </TableCell>
+          </>
+        )}
 
       <TableCell className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center space-x-2">
@@ -133,7 +141,10 @@ export default function AttemptRow({ attempt }: AttemptRowProps) {
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
-              window.open(`/admin/results/${attempt.attempt_id}/review`, '_blank')
+              window.open(
+                `/admin/results/${attempt.attempt_id}/review`,
+                '_blank'
+              )
             }}
             className="p-2 hover:bg-gray-100 rounded"
             title="Edit / Regrade"

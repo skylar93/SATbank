@@ -1069,7 +1069,6 @@ export default function VocabSetDetailPage() {
           onAddWords={handleBulkAddWords}
           setId={parseInt(setId)}
         />
-
       </div>
     </div>
   )

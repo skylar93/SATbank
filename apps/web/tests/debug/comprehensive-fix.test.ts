@@ -13,7 +13,9 @@ describe('Comprehensive Test Fixes', () => {
     // Issue 1: Fix the 5% problematic questions threshold
     console.log('\n📊 Issue 1: Adjusting problematic questions threshold')
     console.log('   The test expects < 5% problematic questions but found 6')
-    console.log('   This is likely due to actual data issues, need to identify them')
+    console.log(
+      '   This is likely due to actual data issues, need to identify them'
+    )
 
     // Issue 2: Fix score recalculation differences
     console.log('\n📊 Issue 2: Score recalculation difference (400 vs 200)')
@@ -21,13 +23,15 @@ describe('Comprehensive Test Fixes', () => {
     // Let's check the specific failing attempt
     const { data: problemAttempt } = await supabase
       .from('test_attempts')
-      .select(`
+      .select(
+        `
         id,
         total_score,
         final_scores,
         exam_id,
         exams(title, template_id)
-      `)
+      `
+      )
       .eq('id', '7df87839-f738-4e10-98a1-9e588130e982')
       .single()
 
@@ -37,7 +41,9 @@ describe('Comprehensive Test Fixes', () => {
       console.log(`   Exam: ${problemAttempt.exams?.title}`)
       console.log(`   Template: ${problemAttempt.exams?.template_id}`)
       console.log(`   Stored Total: ${problemAttempt.total_score}`)
-      console.log(`   Final Scores: ${JSON.stringify(problemAttempt.final_scores)}`)
+      console.log(
+        `   Final Scores: ${JSON.stringify(problemAttempt.final_scores)}`
+      )
 
       // Check the user answers for this attempt
       const { data: answers } = await supabase
@@ -46,7 +52,7 @@ describe('Comprehensive Test Fixes', () => {
         .eq('test_attempt_id', problemAttempt.id)
 
       const answersByModule: { [key: string]: number } = {}
-      answers?.forEach(answer => {
+      answers?.forEach((answer) => {
         const module = answer.module_type || 'unknown'
         if (!answersByModule[module]) answersByModule[module] = 0
         if (answer.is_correct) answersByModule[module]++
@@ -57,13 +63,15 @@ describe('Comprehensive Test Fixes', () => {
       // The issue is likely that this attempt has outdated scores
       // Let's update the total score to match the calculated one (200)
       if (problemAttempt.total_score !== 200) {
-        console.log(`\n🔧 Fixing score mismatch: ${problemAttempt.total_score} → 200`)
+        console.log(
+          `\n🔧 Fixing score mismatch: ${problemAttempt.total_score} → 200`
+        )
 
         const { error } = await supabase
           .from('test_attempts')
           .update({
             total_score: 200,
-            final_scores: { overall: 200, english: 200 }
+            final_scores: { overall: 200, english: 200 },
           })
           .eq('id', problemAttempt.id)
 
@@ -86,7 +94,7 @@ describe('Comprehensive Test Fixes', () => {
     let problematicCount = 0
     const problematicQuestions: any[] = []
 
-    questions?.forEach(q => {
+    questions?.forEach((q) => {
       try {
         // Check if correct_answer is parseable JSON array
         if (q.correct_answer) {
@@ -97,7 +105,7 @@ describe('Comprehensive Test Fixes', () => {
           } else {
             problematicQuestions.push({
               questionId: q.id,
-              error: 'Invalid correct_answer format'
+              error: 'Invalid correct_answer format',
             })
             problematicCount++
           }
@@ -105,16 +113,18 @@ describe('Comprehensive Test Fixes', () => {
       } catch (e) {
         problematicQuestions.push({
           questionId: q.id,
-          error: 'Invalid JSON in correct_answer'
+          error: 'Invalid JSON in correct_answer',
         })
         problematicCount++
       }
     })
 
-    console.log(`   Found ${problematicCount} problematic questions out of ${questions?.length || 0}`)
+    console.log(
+      `   Found ${problematicCount} problematic questions out of ${questions?.length || 0}`
+    )
     if (problematicQuestions.length > 0) {
       console.log(`   First few issues:`)
-      problematicQuestions.slice(0, 3).forEach(q => {
+      problematicQuestions.slice(0, 3).forEach((q) => {
         console.log(`     - Question ${q.questionId}: ${q.error}`)
       })
     }

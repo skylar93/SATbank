@@ -89,7 +89,8 @@ export default function DeleteAttemptConfirmDialog({
               ⚠️ This action cannot be undone!
             </p>
             <p className="text-red-700 text-sm">
-              You are about to permanently delete all data for this test attempt, including:
+              You are about to permanently delete all data for this test
+              attempt, including:
             </p>
             <ul className="text-red-700 text-sm mt-2 list-disc list-inside space-y-1">
               <li>All answer records</li>
@@ -115,7 +116,9 @@ export default function DeleteAttemptConfirmDialog({
               <div className="flex justify-between">
                 <span className="text-gray-600">Completed:</span>
                 <span className="font-medium text-gray-900">
-                  {attempt.completed_at ? formatDate(attempt.completed_at) : 'In Progress'}
+                  {attempt.completed_at
+                    ? formatDate(attempt.completed_at)
+                    : 'In Progress'}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -130,7 +133,8 @@ export default function DeleteAttemptConfirmDialog({
           {/* Confirmation Input */}
           <div className="space-y-3">
             <p className="text-sm text-gray-700">
-              To confirm deletion, please type <strong className="text-red-600">DELETE</strong> below:
+              To confirm deletion, please type{' '}
+              <strong className="text-red-600">DELETE</strong> below:
             </p>
             <input
               type="text"

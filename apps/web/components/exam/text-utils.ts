@@ -19,8 +19,10 @@ export function isVisibleTextNode(n: Node): n is Text {
 export function getTextWalker(root: Node) {
   return document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
     acceptNode(node) {
-      return isVisibleTextNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
-    }
+      return isVisibleTextNode(node)
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_REJECT
+    },
   })
 }
 
@@ -42,9 +44,11 @@ export function sanitizeHtmlContainer(div: HTMLDivElement): void {
     .forEach((el) => el.remove())
 
   // Remove MathQuill editing scaffolding that is hidden in the live view
-  div.querySelectorAll('.mq-textarea, .mq-cursor, .mq-selection').forEach((el) => {
-    el.remove()
-  })
+  div
+    .querySelectorAll('.mq-textarea, .mq-cursor, .mq-selection')
+    .forEach((el) => {
+      el.remove()
+    })
 
   // Remove orphan textarea/input nodes that are hidden via CSS in the real DOM
   div.querySelectorAll('textarea, input[type="hidden"]').forEach((el) => {
@@ -131,14 +135,20 @@ export function getNodeXPath(node: Node, container: Element): string {
 
     while (sibling) {
       if (sibling.nodeType === current.nodeType) {
-        if (sibling.nodeType === Node.TEXT_NODE || sibling.nodeName === current.nodeName) {
+        if (
+          sibling.nodeType === Node.TEXT_NODE ||
+          sibling.nodeName === current.nodeName
+        ) {
           index++
         }
       }
       sibling = sibling.previousSibling
     }
 
-    const tagName = current.nodeType === Node.TEXT_NODE ? 'text()' : current.nodeName.toLowerCase()
+    const tagName =
+      current.nodeType === Node.TEXT_NODE
+        ? 'text()'
+        : current.nodeName.toLowerCase()
     path.unshift(`${tagName}[${index + 1}]`)
     current = current.parentNode as Node
   }
@@ -236,7 +246,7 @@ export function findBestTextMatch(
     return {
       start: index,
       end: index + cleanTarget.length,
-      text: cleanTarget
+      text: cleanTarget,
     }
   }
 
@@ -246,7 +256,11 @@ export function findBestTextMatch(
 
   // Try contextual matching if we have context
   if (context.before || context.after) {
-    const contextualMatch = findContextualMatch(sourceText, cleanTarget, context)
+    const contextualMatch = findContextualMatch(
+      sourceText,
+      cleanTarget,
+      context
+    )
     if (contextualMatch) return contextualMatch
   }
 
@@ -292,7 +306,7 @@ function findContextualMatch(
       return {
         start: searchStart + match.start,
         end: searchStart + match.end,
-        text: match.text
+        text: match.text,
       }
     }
   } catch (error) {
@@ -330,7 +344,7 @@ function findPartialMatch(
       return {
         start: fullStart,
         end: fullEnd,
-        text: fullText
+        text: fullText,
       }
     }
   } catch (error) {
@@ -354,7 +368,10 @@ export function debugHighlightIssue(
   console.log('Normalized text length:', normalizedText.length)
   console.log('Normalized text preview:', normalizedText.substring(0, 200))
   console.log('Highlight:', highlight)
-  console.log('Expected text at range:', normalizedText.substring(highlight.start, highlight.end))
+  console.log(
+    'Expected text at range:',
+    normalizedText.substring(highlight.start, highlight.end)
+  )
 
   // Check for common issues
   if (highlight.start >= normalizedText.length) {

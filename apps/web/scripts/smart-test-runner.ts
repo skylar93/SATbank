@@ -11,7 +11,10 @@ import { execSync } from 'child_process'
 import { createClient } from '@supabase/supabase-js'
 import { writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
-import { generateExamTestCases, generateSmartTestData } from '../tests/utils/test-data-generator'
+import {
+  generateExamTestCases,
+  generateSmartTestData,
+} from '../tests/utils/test-data-generator'
 import { createTestExam } from '../tests/utils/test-exam-utils'
 
 const supabase = createClient(
@@ -51,20 +54,23 @@ async function main() {
     await generateReports(result, config)
 
     console.log('\n✅ Smart Testing Complete!')
-    console.log(`📊 Results: ${result.passed}/${result.totalTests} tests passed`)
+    console.log(
+      `📊 Results: ${result.passed}/${result.totalTests} tests passed`
+    )
 
     if (result.failed > 0) {
       console.log(`❌ ${result.failed} tests failed`)
       process.exit(1)
     }
-
   } catch (error) {
     console.error('💥 Smart Test Runner failed:', error)
     process.exit(1)
   }
 }
 
-async function runSmartTests(config: SmartTestConfig): Promise<TestExecutionResult> {
+async function runSmartTests(
+  config: SmartTestConfig
+): Promise<TestExecutionResult> {
   console.log(`🎯 Running tests in ${config.mode} mode\n`)
 
   const result: TestExecutionResult = {
@@ -74,7 +80,7 @@ async function runSmartTests(config: SmartTestConfig): Promise<TestExecutionResu
     skipped: 0,
     duration: 0,
     testResults: [],
-    recommendations: []
+    recommendations: [],
   }
 
   const startTime = Date.now()
@@ -112,7 +118,6 @@ async function runSmartTests(config: SmartTestConfig): Promise<TestExecutionResu
 
     // Step 4: Generate recommendations
     result.recommendations = generateRecommendations(result)
-
   } catch (error) {
     console.error('Test execution failed:', error)
     result.failed++
@@ -130,10 +135,13 @@ async function runQuickTests(result: TestExecutionResult, exams: any[]) {
       console.log(`\n📋 Testing: ${exam.title}`)
 
       // Basic validation test
-      const testResult = await runVitest('tests/integration/exam-scoring-validation.test.ts', {
-        timeout: 30000,
-        env: { TEST_EXAM_ID: exam.id }
-      })
+      const testResult = await runVitest(
+        'tests/integration/exam-scoring-validation.test.ts',
+        {
+          timeout: 30000,
+          env: { TEST_EXAM_ID: exam.id },
+        }
+      )
 
       result.totalTests++
       if (testResult.success) {
@@ -147,9 +155,8 @@ async function runQuickTests(result: TestExecutionResult, exams: any[]) {
       result.testResults.push({
         exam: exam.title,
         type: 'quick_validation',
-        result: testResult
+        result: testResult,
       })
-
     } catch (error) {
       result.failed++
       console.log(`💥 ${exam.title} - ERROR: ${error}`)
@@ -157,14 +164,29 @@ async function runQuickTests(result: TestExecutionResult, exams: any[]) {
   }
 }
 
-async function runComprehensiveTests(result: TestExecutionResult, exams: any[]) {
+async function runComprehensiveTests(
+  result: TestExecutionResult,
+  exams: any[]
+) {
   console.log('🎪 Running Comprehensive Test Suite...')
 
   const testTypes = [
-    { name: 'Integration Tests', file: 'tests/scoring/exam-scoring.integration.test.ts' },
-    { name: 'Validation Tests', file: 'tests/integration/exam-scoring-validation.test.ts' },
-    { name: 'Answer Checker Tests', file: 'tests/lib/__tests__/answer-checker.test.ts' },
-    { name: 'Grid-in Tests', file: 'tests/lib/__tests__/grid-in-validator.test.ts' }
+    {
+      name: 'Integration Tests',
+      file: 'tests/scoring/exam-scoring.integration.test.ts',
+    },
+    {
+      name: 'Validation Tests',
+      file: 'tests/integration/exam-scoring-validation.test.ts',
+    },
+    {
+      name: 'Answer Checker Tests',
+      file: 'tests/lib/__tests__/answer-checker.test.ts',
+    },
+    {
+      name: 'Grid-in Tests',
+      file: 'tests/lib/__tests__/grid-in-validator.test.ts',
+    },
   ]
 
   for (const testType of testTypes) {
@@ -173,7 +195,7 @@ async function runComprehensiveTests(result: TestExecutionResult, exams: any[]) 
 
       const testResult = await runVitest(testType.file, {
         timeout: 60000,
-        verbose: true
+        verbose: true,
       })
 
       result.totalTests++
@@ -187,9 +209,8 @@ async function runComprehensiveTests(result: TestExecutionResult, exams: any[]) 
 
       result.testResults.push({
         type: testType.name,
-        result: testResult
+        result: testResult,
       })
-
     } catch (error) {
       result.failed++
       console.log(`💥 ${testType.name} - ERROR: ${error}`)
@@ -206,25 +227,24 @@ async function runStressTests(result: TestExecutionResult, exams: any[]) {
   console.log('💪 Running Stress Tests...')
 
   // Bulk parallel testing
-  const bulkTests = exams.map(exam => ({
+  const bulkTests = exams.map((exam) => ({
     name: `Bulk test ${exam.title}`,
     test: async () => {
       const scenarios = generateExamTestCases().slice(0, 5) // Top 5 scenarios
       const examData = await createTestExam(exam.id)
 
       const results = await Promise.all(
-        scenarios.map(scenario =>
-          runSingleScenarioTest(examData, scenario)
-        )
+        scenarios.map((scenario) => runSingleScenarioTest(examData, scenario))
       )
 
-      return results.every(r => r.success)
-    }
+      return results.every((r) => r)
+    },
   }))
 
   // Execute stress tests
   const stressStartTime = Date.now()
-  for (const bulkTest of bulkTests.slice(0, 10)) { // Limit to 10 for stress test
+  for (const bulkTest of bulkTests.slice(0, 10)) {
+    // Limit to 10 for stress test
     try {
       console.log(`⚡ ${bulkTest.name}`)
       const success = await bulkTest.test()
@@ -237,7 +257,6 @@ async function runStressTests(result: TestExecutionResult, exams: any[]) {
         result.failed++
         console.log(`❌ FAILED`)
       }
-
     } catch (error) {
       result.failed++
       console.log(`💥 ERROR: ${error}`)
@@ -273,7 +292,6 @@ async function runRegressionTests(result: TestExecutionResult, exams: any[]) {
         result.failed++
         console.log(`⚠️ Regression detected!`)
       }
-
     } catch (error) {
       result.failed++
       console.log(`💥 Regression test failed: ${error}`)
@@ -281,14 +299,18 @@ async function runRegressionTests(result: TestExecutionResult, exams: any[]) {
   }
 }
 
-async function runCustomTests(result: TestExecutionResult, exams: any[], config: SmartTestConfig) {
+async function runCustomTests(
+  result: TestExecutionResult,
+  exams: any[],
+  config: SmartTestConfig
+) {
   console.log('🛠️ Running Custom Tests...')
 
   // Custom test logic based on specific patterns or requirements
   const customScenarios = [
     { name: 'Multiple Answer Focus', pattern: 'multiple_answers' },
     { name: 'Grid-in Edge Cases', pattern: 'grid_in_focus' },
-    { name: 'Error Handling', pattern: 'error_scenarios' }
+    { name: 'Error Handling', pattern: 'error_scenarios' },
   ]
 
   for (const scenario of customScenarios) {
@@ -305,7 +327,6 @@ async function runCustomTests(result: TestExecutionResult, exams: any[], config:
         result.failed++
         console.log(`❌ FAILED`)
       }
-
     } catch (error) {
       result.failed++
       console.log(`💥 ERROR: ${error}`)
@@ -330,7 +351,7 @@ async function runVitest(testFile: string, options: any = {}): Promise<any> {
       cwd: process.cwd(),
       timeout: options.timeout || 30000,
       encoding: 'utf8',
-      env: { ...process.env, ...options.env }
+      env: { ...process.env, ...options.env },
     })
 
     return { success: true, output }
@@ -339,13 +360,17 @@ async function runVitest(testFile: string, options: any = {}): Promise<any> {
   }
 }
 
-async function runExamComprehensiveTest(result: TestExecutionResult, exam: any) {
+async function runExamComprehensiveTest(
+  result: TestExecutionResult,
+  exam: any
+) {
   console.log(`\n🎪 Comprehensive test for: ${exam.title}`)
 
   const scenarios = generateExamTestCases()
   let scenarioPassed = 0
 
-  for (const scenario of scenarios.slice(0, 5)) { // Top 5 scenarios
+  for (const scenario of scenarios.slice(0, 5)) {
+    // Top 5 scenarios
     try {
       const examData = await createTestExam(exam.id)
       const success = await runSingleScenarioTest(examData, scenario)
@@ -356,23 +381,30 @@ async function runExamComprehensiveTest(result: TestExecutionResult, exam: any) 
       } else {
         console.log(`  ❌ ${scenario.scenario}`)
       }
-
     } catch (error) {
       console.log(`  💥 ${scenario.scenario} - ERROR`)
     }
   }
 
   result.totalTests++
-  if (scenarioPassed >= 3) { // At least 3/5 scenarios must pass
+  if (scenarioPassed >= 3) {
+    // At least 3/5 scenarios must pass
     result.passed++
-    console.log(`✅ ${exam.title} comprehensive test - PASSED (${scenarioPassed}/5)`)
+    console.log(
+      `✅ ${exam.title} comprehensive test - PASSED (${scenarioPassed}/5)`
+    )
   } else {
     result.failed++
-    console.log(`❌ ${exam.title} comprehensive test - FAILED (${scenarioPassed}/5)`)
+    console.log(
+      `❌ ${exam.title} comprehensive test - FAILED (${scenarioPassed}/5)`
+    )
   }
 }
 
-async function runSingleScenarioTest(examData: any, scenario: any): Promise<boolean> {
+async function runSingleScenarioTest(
+  examData: any,
+  scenario: any
+): Promise<boolean> {
   // This would integrate with the test-exam-utils
   // For now, return a mock result
   return Math.random() > 0.1 // 90% success rate for demo
@@ -380,7 +412,7 @@ async function runSingleScenarioTest(examData: any, scenario: any): Promise<bool
 
 async function runRegressionTestForExam(exam: any): Promise<any> {
   // Mock regression test - would actually re-run scoring
-  return { scores: { overall: 1200, english: 600, math: 600 }}
+  return { scores: { overall: 1200, english: 600, math: 600 } }
 }
 
 function compareResults(known: any, current: any): boolean {
@@ -404,15 +436,20 @@ function generateRecommendations(result: TestExecutionResult): string[] {
   const successRate = result.passed / result.totalTests
 
   if (successRate < 0.8) {
-    recommendations.push('⚠️ Success rate below 80% - Review failing test cases')
+    recommendations.push(
+      '⚠️ Success rate below 80% - Review failing test cases'
+    )
   }
 
-  if (result.duration > 300000) { // 5 minutes
+  if (result.duration > 300000) {
+    // 5 minutes
     recommendations.push('⚡ Tests taking too long - Consider optimization')
   }
 
   if (result.patternAnalysis?.commonErrors?.emptyAnswers > 0) {
-    recommendations.push('📝 Found questions with empty answers - Data cleanup needed')
+    recommendations.push(
+      '📝 Found questions with empty answers - Data cleanup needed'
+    )
   }
 
   if (successRate >= 0.95) {
@@ -422,7 +459,10 @@ function generateRecommendations(result: TestExecutionResult): string[] {
   return recommendations
 }
 
-async function generateReports(result: TestExecutionResult, config: SmartTestConfig) {
+async function generateReports(
+  result: TestExecutionResult,
+  config: SmartTestConfig
+) {
   if (!config.generateReports) return
 
   const reportsDir = join(process.cwd(), 'test-reports')
@@ -438,10 +478,12 @@ async function generateReports(result: TestExecutionResult, config: SmartTestCon
   console.log(`Total Tests: ${result.totalTests}`)
   console.log(`Passed: ${result.passed}`)
   console.log(`Failed: ${result.failed}`)
-  console.log(`Success Rate: ${((result.passed / result.totalTests) * 100).toFixed(1)}%`)
+  console.log(
+    `Success Rate: ${((result.passed / result.totalTests) * 100).toFixed(1)}%`
+  )
   console.log(`Duration: ${result.duration}ms`)
   console.log('\n💡 RECOMMENDATIONS:')
-  result.recommendations.forEach(rec => console.log(`  ${rec}`))
+  result.recommendations.forEach((rec) => console.log(`  ${rec}`))
 
   // JSON report
   if (config.outputFormat === 'json' || config.outputFormat === 'all') {
@@ -451,8 +493,8 @@ async function generateReports(result: TestExecutionResult, config: SmartTestCon
       results: result,
       environment: {
         node: process.version,
-        platform: process.platform
-      }
+        platform: process.platform,
+      },
     }
 
     writeFileSync(
@@ -465,15 +507,15 @@ async function generateReports(result: TestExecutionResult, config: SmartTestCon
   // HTML report
   if (config.outputFormat === 'html' || config.outputFormat === 'all') {
     const htmlReport = generateHTMLReport(result, timestamp)
-    writeFileSync(
-      join(reportsDir, `test-report-${timestamp}.html`),
-      htmlReport
-    )
+    writeFileSync(join(reportsDir, `test-report-${timestamp}.html`), htmlReport)
     console.log(`\n🌐 HTML report: test-reports/test-report-${timestamp}.html`)
   }
 }
 
-function generateHTMLReport(result: TestExecutionResult, timestamp: string): string {
+function generateHTMLReport(
+  result: TestExecutionResult,
+  timestamp: string
+): string {
   const successRate = ((result.passed / result.totalTests) * 100).toFixed(1)
 
   return `
@@ -518,7 +560,7 @@ function generateHTMLReport(result: TestExecutionResult, timestamp: string): str
 
     <div class="recommendations">
         <h3>💡 Recommendations</h3>
-        ${result.recommendations.map(rec => `<p>${rec}</p>`).join('')}
+        ${result.recommendations.map((rec) => `<p>${rec}</p>`).join('')}
     </div>
 </body>
 </html>
@@ -533,7 +575,7 @@ function parseArgs(args: string[]): SmartTestConfig {
     maxExamsToTest: 10,
     timeout: 60000,
     parallel: false,
-    outputFormat: 'console'
+    outputFormat: 'console',
   }
 
   for (let i = 0; i < args.length; i++) {

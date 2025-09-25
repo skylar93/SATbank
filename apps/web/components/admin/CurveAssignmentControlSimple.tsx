@@ -37,7 +37,9 @@ export function CurveAssignmentControl({
   const [isPending, startTransition] = useTransition()
 
   // Check if this curve type is needed based on scoring groups
-  const isRequired = scoringGroups ? Object.keys(scoringGroups).includes(curveType) : true
+  const isRequired = scoringGroups
+    ? Object.keys(scoringGroups).includes(curveType)
+    : true
 
   // If not required, don't render anything
   if (!isRequired) {

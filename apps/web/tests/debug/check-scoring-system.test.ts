@@ -20,7 +20,7 @@ describe('Scoring System Check', () => {
       console.log(`❌ Error: ${templatesError.message}`)
     } else {
       console.log(`Found ${templates?.length || 0} templates`)
-      templates?.forEach(template => {
+      templates?.forEach((template) => {
         console.log(`  - ${template.name} (id: ${template.id})`)
       })
     }
@@ -35,13 +35,15 @@ describe('Scoring System Check', () => {
       console.log(`❌ Error: ${curvesError.message}`)
     } else {
       console.log(`Found ${curves?.length || 0} curves`)
-      curves?.slice(0, 5).forEach(curve => {
+      curves?.slice(0, 5).forEach((curve) => {
         console.log(`  - ${curve.name} (id: ${curve.id})`)
       })
     }
 
     // Check table schema
-    const { data: templateCols } = await supabase.rpc('get_table_columns', { table_name: 'scoring_templates' })
+    const { data: templateCols } = await supabase.rpc('get_table_columns', {
+      table_name: 'scoring_templates',
+    })
     console.log('\n🗃️ Scoring Templates Schema:')
     console.log(templateCols)
 
@@ -52,8 +54,8 @@ describe('Scoring System Check', () => {
       id: 'english_only',
       name: 'English Only Section',
       scoring_groups: {
-        english: ['english1', 'english2']
-      }
+        english: ['english1', 'english2'],
+      },
     }
 
     const { data: createdTemplate, error: createError } = await supabase

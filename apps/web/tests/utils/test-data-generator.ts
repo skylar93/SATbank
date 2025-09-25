@@ -55,91 +55,93 @@ export function generateExamTestCases(): TestCase[] {
       scenario: 'perfect_score',
       config: {
         scenario: 'perfect_score',
-        includeMultipleAnswerTypes: true
+        includeMultipleAnswerTypes: true,
       },
-      description: 'All questions answered correctly with various input formats',
-      expectedBehavior: 'Maximum possible score for the exam'
+      description:
+        'All questions answered correctly with various input formats',
+      expectedBehavior: 'Maximum possible score for the exam',
     },
     {
       scenario: 'zero_score',
       config: {
-        scenario: 'zero_score'
+        scenario: 'zero_score',
       },
       description: 'All questions answered incorrectly',
-      expectedBehavior: 'Minimum SAT scores (200 per section)'
+      expectedBehavior: 'Minimum SAT scores (200 per section)',
     },
     {
       scenario: 'mixed_performance',
       config: {
         scenario: 'mixed_performance',
-        targetRawScore: 30
+        targetRawScore: 30,
       },
       description: 'Realistic mixed performance across modules',
-      expectedBehavior: 'Balanced scores across english and math sections'
+      expectedBehavior: 'Balanced scores across english and math sections',
     },
     {
       scenario: 'multiple_answers_focus',
       config: {
         scenario: 'multiple_answers_focus',
         includeMultipleAnswerTypes: true,
-        answerVariationTesting: true
+        answerVariationTesting: true,
       },
       description: 'Focus on questions with multiple correct answers',
-      expectedBehavior: 'All answer variations should be accepted'
+      expectedBehavior: 'All answer variations should be accepted',
     },
     {
       scenario: 'edge_cases',
       config: {
         scenario: 'edge_cases',
-        includeEdgeCases: true
+        includeEdgeCases: true,
       },
-      description: 'Test edge cases like whitespace, case sensitivity, number formats',
-      expectedBehavior: 'Robust handling of input variations'
+      description:
+        'Test edge cases like whitespace, case sensitivity, number formats',
+      expectedBehavior: 'Robust handling of input variations',
     },
     {
       scenario: 'module_type_variations',
       config: {
         scenario: 'module_type_variations',
-        moduleTypeFocus: ['english1', 'english2', 'math1', 'math2']
+        moduleTypeFocus: ['english1', 'english2', 'math1', 'math2'],
       },
       description: 'Test scoring across different module types',
-      expectedBehavior: 'Proper grouping and scoring by module type'
+      expectedBehavior: 'Proper grouping and scoring by module type',
     },
     {
       scenario: 'grid_in_focus',
       config: {
         scenario: 'grid_in_focus',
-        includeEdgeCases: true
+        includeEdgeCases: true,
       },
       description: 'Focus on grid-in questions with various number formats',
-      expectedBehavior: 'Equivalent numerical answers should be accepted'
+      expectedBehavior: 'Equivalent numerical answers should be accepted',
     },
     {
       scenario: 'partial_completion',
       config: {
-        scenario: 'partial_completion'
+        scenario: 'partial_completion',
       },
       description: 'Some questions left unanswered',
-      expectedBehavior: 'Unanswered questions should be scored as incorrect'
+      expectedBehavior: 'Unanswered questions should be scored as incorrect',
     },
     {
       scenario: 'stress_test',
       config: {
         scenario: 'stress_test',
         includeMultipleAnswerTypes: true,
-        includeEdgeCases: true
+        includeEdgeCases: true,
       },
       description: 'Combination of all challenging scenarios',
-      expectedBehavior: 'System should handle complexity gracefully'
+      expectedBehavior: 'System should handle complexity gracefully',
     },
     {
       scenario: 'random',
       config: {
-        scenario: 'random'
+        scenario: 'random',
       },
       description: 'Random realistic performance simulation',
-      expectedBehavior: 'Scores should reflect random performance distribution'
-    }
+      expectedBehavior: 'Scores should reflect random performance distribution',
+    },
   ]
 }
 
@@ -157,7 +159,9 @@ export async function generateTestAnswers(
     answers.push(answer)
   }
 
-  console.log(`📝 Generated ${answers.length} test answers for scenario: ${config.scenario}`)
+  console.log(
+    `📝 Generated ${answers.length} test answers for scenario: ${config.scenario}`
+  )
   return answers
 }
 
@@ -175,7 +179,7 @@ export async function generateSmartTestData(examId?: string) {
     gridInPatterns: patterns.gridIn,
     commonErrors: patterns.commonErrors,
     difficultyDistribution: patterns.difficulty,
-    moduleTypeDistribution: patterns.moduleTypes
+    moduleTypeDistribution: patterns.moduleTypes,
   }
 }
 
@@ -271,7 +275,10 @@ async function generateAnswerForQuestion(
     default:
       // Target specific raw score
       if (config.targetRawScore) {
-        const correctnessRate = Math.min(config.targetRawScore / examData.totalQuestions, 0.95)
+        const correctnessRate = Math.min(
+          config.targetRawScore / examData.totalQuestions,
+          0.95
+        )
         isIntentionallyCorrect = Math.random() < correctnessRate
       } else {
         isIntentionallyCorrect = Math.random() < 0.7
@@ -287,21 +294,24 @@ async function generateAnswerForQuestion(
     userAnswer,
     isIntentionallyCorrect,
     answerVariation,
-    testingEdgeCase
+    testingEdgeCase,
   }
 }
 
 /**
  * Generate a correct answer with possible variations
  */
-async function generateCorrectAnswer(correctAnswers: string[], config: TestScenarioConfig): Promise<string> {
+async function generateCorrectAnswer(
+  correctAnswers: string[],
+  config: TestScenarioConfig
+): Promise<string> {
   if (correctAnswers.length === 0) return 'A'
 
   const baseAnswer = correctAnswers[0]
 
   if (config.includeEdgeCases && Math.random() < 0.3) {
     // 30% chance to test variations when including edge cases
-    return generateAnswerVariation(correctAnswers).then(v => v.answer)
+    return generateAnswerVariation(correctAnswers).then((v) => v.answer)
   }
 
   return baseAnswer
@@ -310,14 +320,18 @@ async function generateCorrectAnswer(correctAnswers: string[], config: TestScena
 /**
  * Generate an incorrect answer
  */
-async function generateIncorrectAnswer(correctAnswers: string[], question: any): Promise<string> {
+async function generateIncorrectAnswer(
+  correctAnswers: string[],
+  question: any
+): Promise<string> {
   const wrongOptions = ['A', 'B', 'C', 'D']
 
   // Filter out correct answers
-  const availableWrong = wrongOptions.filter(opt =>
-    !correctAnswers.some(correct =>
-      correct.toLowerCase().trim() === opt.toLowerCase().trim()
-    )
+  const availableWrong = wrongOptions.filter(
+    (opt) =>
+      !correctAnswers.some(
+        (correct) => correct.toLowerCase().trim() === opt.toLowerCase().trim()
+      )
   )
 
   if (availableWrong.length > 0) {
@@ -338,15 +352,18 @@ async function generateIncorrectAnswer(correctAnswers: string[], question: any):
 /**
  * Generate answer variations for testing
  */
-async function generateAnswerVariation(correctAnswers: string[]): Promise<{answer: string, type: string}> {
-  const baseAnswer = correctAnswers[Math.floor(Math.random() * correctAnswers.length)]
+async function generateAnswerVariation(
+  correctAnswers: string[]
+): Promise<{ answer: string; type: string }> {
+  const baseAnswer =
+    correctAnswers[Math.floor(Math.random() * correctAnswers.length)]
 
   const variations = [
     { answer: baseAnswer.toLowerCase(), type: 'lowercase' },
     { answer: baseAnswer.toUpperCase(), type: 'uppercase' },
     { answer: ` ${baseAnswer} `, type: 'whitespace' },
     { answer: baseAnswer.replace(/\s+/g, ''), type: 'no_spaces' },
-    { answer: baseAnswer, type: 'original' }
+    { answer: baseAnswer, type: 'original' },
   ]
 
   return variations[Math.floor(Math.random() * variations.length)]
@@ -355,14 +372,17 @@ async function generateAnswerVariation(correctAnswers: string[]): Promise<{answe
 /**
  * Generate edge case answers for testing robustness
  */
-async function generateEdgeCaseAnswer(correctAnswers: string[], question: any): Promise<{answer: string, type: string}> {
+async function generateEdgeCaseAnswer(
+  correctAnswers: string[],
+  question: any
+): Promise<{ answer: string; type: string }> {
   const baseAnswer = correctAnswers[0] || 'A'
 
   const edgeCases = [
     { answer: `  ${baseAnswer}  `, type: 'extra_whitespace' },
     { answer: baseAnswer.toLowerCase(), type: 'case_insensitive' },
     { answer: baseAnswer + '\n', type: 'newline_suffix' },
-    { answer: '\t' + baseAnswer, type: 'tab_prefix' }
+    { answer: '\t' + baseAnswer, type: 'tab_prefix' },
   ]
 
   if (isGridInQuestion(question)) {
@@ -371,7 +391,10 @@ async function generateEdgeCaseAnswer(correctAnswers: string[], question: any): 
       edgeCases.push(
         { answer: num.toFixed(2), type: 'decimal_places' },
         { answer: String(num * 2) + '/' + '2', type: 'fraction_equivalent' },
-        { answer: num === Math.floor(num) ? String(num) + '.0' : String(num), type: 'decimal_format' }
+        {
+          answer: num === Math.floor(num) ? String(num) + '.0' : String(num),
+          type: 'decimal_format',
+        }
       )
     }
   }
@@ -382,7 +405,9 @@ async function generateEdgeCaseAnswer(correctAnswers: string[], question: any): 
 /**
  * Generate grid-in answer variations
  */
-async function generateGridInVariation(correctAnswer: string): Promise<{answer: string, type: string}> {
+async function generateGridInVariation(
+  correctAnswer: string
+): Promise<{ answer: string; type: string }> {
   const num = parseFloat(correctAnswer)
 
   if (isNaN(num)) {
@@ -392,7 +417,7 @@ async function generateGridInVariation(correctAnswer: string): Promise<{answer: 
   const variations = [
     { answer: String(num), type: 'standard' },
     { answer: num.toFixed(1), type: 'one_decimal' },
-    { answer: num.toFixed(2), type: 'two_decimals' }
+    { answer: num.toFixed(2), type: 'two_decimals' },
   ]
 
   // Add fraction equivalents for simple numbers
@@ -430,7 +455,7 @@ async function analyzeSATPatterns(examId?: string) {
     gridIn: analyzeGridInPatterns(questions),
     commonErrors: analyzeCommonErrors(questions),
     difficulty: analyzeDifficultyPatterns(questions),
-    moduleTypes: analyzeModuleTypeDistribution(questions)
+    moduleTypes: analyzeModuleTypeDistribution(questions),
   }
 
   console.log('✅ Pattern analysis complete')
@@ -442,15 +467,15 @@ async function analyzeSATPatterns(examId?: string) {
  */
 function analyzeMultipleChoicePatterns(questions: any[]) {
   return {
-    answerDistribution: ['A', 'B', 'C', 'D'].map(choice => ({
+    answerDistribution: ['A', 'B', 'C', 'D'].map((choice) => ({
       choice,
-      frequency: questions.filter(q =>
-        normalizeCorrectAnswers(q.correct_answer)[0] === choice
-      ).length
+      frequency: questions.filter(
+        (q) => normalizeCorrectAnswers(q.correct_answer)[0] === choice
+      ).length,
     })),
-    multipleAnswerFrequency: questions.filter(q =>
-      normalizeCorrectAnswers(q.correct_answer).length > 1
-    ).length
+    multipleAnswerFrequency: questions.filter(
+      (q) => normalizeCorrectAnswers(q.correct_answer).length > 1
+    ).length,
   }
 }
 
@@ -459,72 +484,83 @@ function analyzeGridInPatterns(questions: any[]) {
 
   return {
     numberTypes: {
-      integers: gridInQuestions.filter(q => {
+      integers: gridInQuestions.filter((q) => {
         const ans = normalizeCorrectAnswers(q.correct_answer)[0]
         return ans && !isNaN(Number(ans)) && Number.isInteger(Number(ans))
       }).length,
-      decimals: gridInQuestions.filter(q => {
+      decimals: gridInQuestions.filter((q) => {
         const ans = normalizeCorrectAnswers(q.correct_answer)[0]
         return ans && !isNaN(Number(ans)) && !Number.isInteger(Number(ans))
       }).length,
-      fractions: gridInQuestions.filter(q => {
+      fractions: gridInQuestions.filter((q) => {
         const ans = normalizeCorrectAnswers(q.correct_answer)[0]
         return ans && ans.includes('/')
-      }).length
+      }).length,
     },
     rangeDistribution: {
-      small: gridInQuestions.filter(q => {
+      small: gridInQuestions.filter((q) => {
         const num = parseFloat(normalizeCorrectAnswers(q.correct_answer)[0])
         return !isNaN(num) && num >= 0 && num <= 10
       }).length,
-      medium: gridInQuestions.filter(q => {
+      medium: gridInQuestions.filter((q) => {
         const num = parseFloat(normalizeCorrectAnswers(q.correct_answer)[0])
         return !isNaN(num) && num > 10 && num <= 100
       }).length,
-      large: gridInQuestions.filter(q => {
+      large: gridInQuestions.filter((q) => {
         const num = parseFloat(normalizeCorrectAnswers(q.correct_answer)[0])
         return !isNaN(num) && num > 100
-      }).length
-    }
+      }).length,
+    },
   }
 }
 
 function analyzeCommonErrors(questions: any[]) {
   return {
-    emptyAnswers: questions.filter(q => !normalizeCorrectAnswers(q.correct_answer)[0]).length,
-    malformedJson: questions.filter(q => {
+    emptyAnswers: questions.filter(
+      (q) => !normalizeCorrectAnswers(q.correct_answer)[0]
+    ).length,
+    malformedJson: questions.filter((q) => {
       try {
         JSON.parse(String(q.correct_answer))
         return false
       } catch {
-        return typeof q.correct_answer === 'string' && q.correct_answer.includes('[')
+        return (
+          typeof q.correct_answer === 'string' && q.correct_answer.includes('[')
+        )
       }
     }).length,
-    caseIssues: questions.filter(q => {
+    caseIssues: questions.filter((q) => {
       const answers = normalizeCorrectAnswers(q.correct_answer)
-      return answers.some(ans => ans && ans !== ans.toLowerCase() && ans !== ans.toUpperCase())
-    }).length
+      return answers.some(
+        (ans) => ans && ans !== ans.toLowerCase() && ans !== ans.toUpperCase()
+      )
+    }).length,
   }
 }
 
 function analyzeDifficultyPatterns(questions: any[]) {
   return {
     pointsDistribution: {
-      1: questions.filter(q => q.points === 1).length,
-      2: questions.filter(q => q.points === 2).length,
-      3: questions.filter(q => q.points === 3).length,
-      other: questions.filter(q => q.points > 3 || q.points < 1).length
-    }
+      1: questions.filter((q) => q.points === 1).length,
+      2: questions.filter((q) => q.points === 2).length,
+      3: questions.filter((q) => q.points === 3).length,
+      other: questions.filter((q) => q.points > 3 || q.points < 1).length,
+    },
   }
 }
 
 function analyzeModuleTypeDistribution(questions: any[]) {
-  const moduleTypes = [...new Set(questions.map(q => q.module_type))]
+  const moduleTypes = [...new Set(questions.map((q) => q.module_type))]
 
-  return moduleTypes.reduce((acc, moduleType) => {
-    acc[moduleType] = questions.filter(q => q.module_type === moduleType).length
-    return acc
-  }, {} as Record<string, number>)
+  return moduleTypes.reduce(
+    (acc, moduleType) => {
+      acc[moduleType] = questions.filter(
+        (q) => q.module_type === moduleType
+      ).length
+      return acc
+    },
+    {} as Record<string, number>
+  )
 }
 
 function isGridInQuestion(question: any): boolean {
@@ -544,17 +580,17 @@ function getDefaultPatterns() {
         { choice: 'A', frequency: 25 },
         { choice: 'B', frequency: 25 },
         { choice: 'C', frequency: 25 },
-        { choice: 'D', frequency: 25 }
+        { choice: 'D', frequency: 25 },
       ],
-      multipleAnswerFrequency: 5
+      multipleAnswerFrequency: 5,
     },
     gridIn: {
       numberTypes: { integers: 60, decimals: 30, fractions: 10 },
-      rangeDistribution: { small: 40, medium: 40, large: 20 }
+      rangeDistribution: { small: 40, medium: 40, large: 20 },
     },
     commonErrors: { emptyAnswers: 0, malformedJson: 0, caseIssues: 5 },
     difficulty: { pointsDistribution: { 1: 80, 2: 15, 3: 5, other: 0 } },
-    moduleTypes: { english1: 25, english2: 25, math1: 25, math2: 25 }
+    moduleTypes: { english1: 25, english2: 25, math1: 25, math2: 25 },
   }
 }
 

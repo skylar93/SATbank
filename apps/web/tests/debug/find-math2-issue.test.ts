@@ -13,7 +13,8 @@ describe('Find Math2 Issue', () => {
     // Look for test attempts that have math2 answers
     const { data: mathAttempts } = await supabase
       .from('user_answers')
-      .select(`
+      .select(
+        `
         test_attempt_id,
         module_type,
         test_attempts(
@@ -21,7 +22,8 @@ describe('Find Math2 Issue', () => {
           exam_id,
           exams(id, title, template_id)
         )
-      `)
+      `
+      )
       .like('module_type', '%math%')
       .limit(10)
 
@@ -29,12 +31,12 @@ describe('Find Math2 Issue', () => {
     if (mathAttempts) {
       const attemptGroups: { [key: string]: any } = {}
 
-      mathAttempts.forEach(answer => {
+      mathAttempts.forEach((answer) => {
         const attemptId = answer.test_attempt_id
         if (!attemptGroups[attemptId]) {
           attemptGroups[attemptId] = {
             attempt: answer.test_attempts,
-            moduleTypes: new Set()
+            moduleTypes: new Set(),
           }
         }
         attemptGroups[attemptId].moduleTypes.add(answer.module_type)
@@ -50,8 +52,13 @@ describe('Find Math2 Issue', () => {
           console.log(`   Modules: ${modules.join(', ')}`)
 
           // Check if this is the problematic case
-          if (modules.includes('math2') && exam.template_id === 'english_only') {
-            console.log(`   🚨 PROBLEM FOUND: Math module with English template!`)
+          if (
+            modules.includes('math2') &&
+            exam.template_id === 'english_only'
+          ) {
+            console.log(
+              `   🚨 PROBLEM FOUND: Math module with English template!`
+            )
             console.log(`   🔧 Should update to full_sat template`)
           }
         }
@@ -61,24 +68,30 @@ describe('Find Math2 Issue', () => {
     // Also check specific error case from previous run
     const { data: specificAttempt } = await supabase
       .from('test_attempts')
-      .select(`
+      .select(
+        `
         id,
         exam_id,
         exams(id, title, template_id),
         user_answers(module_type)
-      `)
+      `
+      )
       .eq('id', '7df87839-f738-4e10-98a1-9e588130e982')
       .single()
 
     if (specificAttempt) {
-      const moduleTypes = specificAttempt.user_answers?.map(a => a.module_type) || []
+      const moduleTypes =
+        specificAttempt.user_answers?.map((a) => a.module_type) || []
       console.log(`\n🎯 Specific Problem Attempt:`)
       console.log(`   ID: ${specificAttempt.id}`)
       console.log(`   Exam: ${specificAttempt.exams?.title}`)
       console.log(`   Template: ${specificAttempt.exams?.template_id}`)
       console.log(`   Modules: ${[...new Set(moduleTypes)].join(', ')}`)
 
-      if (moduleTypes.includes('math2') && specificAttempt.exams?.template_id === 'english_only') {
+      if (
+        moduleTypes.includes('math2') &&
+        specificAttempt.exams?.template_id === 'english_only'
+      ) {
         console.log(`\n🔧 Fixing exam template...`)
 
         const { error } = await supabase

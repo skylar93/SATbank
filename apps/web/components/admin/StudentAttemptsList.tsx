@@ -40,7 +40,8 @@ export default function StudentAttemptsList({
     new Set()
   )
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [attemptToDelete, setAttemptToDelete] = useState<TestAttemptWithVisibility | null>(null)
+  const [attemptToDelete, setAttemptToDelete] =
+    useState<TestAttemptWithVisibility | null>(null)
 
   const handleVisibilityToggle = async (
     attemptId: string,
@@ -86,9 +87,12 @@ export default function StudentAttemptsList({
     if (!attemptToDelete) return
 
     try {
-      const response = await fetch(`/api/admin/attempts/${attemptToDelete.id}`, {
-        method: 'DELETE',
-      })
+      const response = await fetch(
+        `/api/admin/attempts/${attemptToDelete.id}`,
+        {
+          method: 'DELETE',
+        }
+      )
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -102,7 +106,9 @@ export default function StudentAttemptsList({
       alert('Test attempt deleted successfully')
     } catch (error) {
       console.error('Error deleting attempt:', error)
-      alert(`Failed to delete attempt: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      alert(
+        `Failed to delete attempt: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
     }
   }
 

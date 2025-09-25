@@ -673,7 +673,9 @@ export class ExamService {
       `
       )
       .eq('attempt_id', attemptId)
-      .or('is_correct.eq.false,is_correct.is.null,user_answer.is.null,user_answer.eq.')
+      .or(
+        'is_correct.eq.false,is_correct.is.null,user_answer.is.null,user_answer.eq.'
+      )
 
     if (error) {
       console.error('❌ getIncorrectQuestionsForAttempt: Query error:', error)
@@ -690,10 +692,12 @@ export class ExamService {
 
     // Filter to only truly incorrect answers (false, null, empty, or whitespace-only)
     const trulyIncorrectAnswers = incorrectAnswers.filter((item: any) => {
-      return item.is_correct === false || 
-             item.is_correct === null || 
-             !item.user_answer || 
-             item.user_answer.trim() === ''
+      return (
+        item.is_correct === false ||
+        item.is_correct === null ||
+        !item.user_answer ||
+        item.user_answer.trim() === ''
+      )
     })
 
     console.log(

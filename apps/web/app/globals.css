@@ -91,7 +91,7 @@
 
 /* Enhanced highlighting styles for robust highlight system */
 mark[data-highlight-start] {
-  background-color: #FEF08A; /* yellow-200 */
+  background-color: #fef08a; /* yellow-200 */
   border-radius: 0.25rem;
   padding: 0.125rem 0.25rem;
   cursor: pointer;
@@ -100,30 +100,36 @@ mark[data-highlight-start] {
 }
 
 mark[data-highlight-start]:hover {
-  background-color: #FDE047; /* yellow-300 */
-  border-color: #EAB308; /* yellow-500 */
+  background-color: #fde047; /* yellow-300 */
+  border-color: #eab308; /* yellow-500 */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
 }
 
 /* Layered highlighting styles for overlapping highlights (legacy support) */
 mark.hl-layer-1 {
-  background-color: #FEF08A; /* yellow-200 */
+  background-color: #fef08a; /* yellow-200 */
 }
 
 mark.hl-layer-2 {
-  background-color: #FDE047; /* yellow-300 */
+  background-color: #fde047; /* yellow-300 */
 }
 
 mark.hl-layer-3 {
-  background-color: #FACC15; /* yellow-400 */
+  background-color: #facc15; /* yellow-400 */
 }
 
 /* Selection highlight animation */
 @keyframes highlight-pulse {
-  0% { background-color: #FEF08A; }
-  50% { background-color: #FDE047; }
-  100% { background-color: #FEF08A; }
+  0% {
+    background-color: #fef08a;
+  }
+  50% {
+    background-color: #fde047;
+  }
+  100% {
+    background-color: #fef08a;
+  }
 }
 
 mark.highlight-new {

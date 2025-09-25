@@ -18,9 +18,11 @@ describe('Template Assignment Check', () => {
     console.log('\n📋 Exam Template Status:')
     const examsWithoutTemplates: string[] = []
 
-    exams?.forEach(exam => {
+    exams?.forEach((exam) => {
       const status = exam.template_id ? '✅' : '❌'
-      console.log(`${status} ${exam.title}: ${exam.template_id || 'NO TEMPLATE'}`)
+      console.log(
+        `${status} ${exam.title}: ${exam.template_id || 'NO TEMPLATE'}`
+      )
       if (!exam.template_id) {
         examsWithoutTemplates.push(exam.id)
       }
@@ -31,7 +33,7 @@ describe('Template Assignment Check', () => {
       .select('id, name')
 
     console.log('\n📋 Available Templates:')
-    templates?.forEach(template => {
+    templates?.forEach((template) => {
       console.log(`  - ${template.name} (id: ${template.id})`)
     })
 
@@ -47,7 +49,9 @@ describe('Template Assignment Check', () => {
       console.log(`   Template ID: ${problemExam.template_id || 'NONE'}`)
     }
 
-    console.log(`\n📊 Summary: ${examsWithoutTemplates.length} exams without templates`)
+    console.log(
+      `\n📊 Summary: ${examsWithoutTemplates.length} exams without templates`
+    )
 
     // This test just provides info, always passes
     expect(true).toBe(true)

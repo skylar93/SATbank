@@ -1,7 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 import { ScoringService } from '../../lib/scoring-service'
 import { checkAnswer, normalizeCorrectAnswers } from '../../lib/answer-checker'
-import { GeneratedAnswer, TestExamData, TestScenarioConfig } from './test-data-generator'
+import {
+  GeneratedAnswer,
+  TestExamData,
+  TestScenarioConfig,
+} from './test-data-generator'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -58,23 +62,26 @@ export async function createTestExam(examId: string): Promise<TestExamData> {
   }
 
   // Analyze module breakdown
-  const moduleBreakdown = questions.reduce((acc, q) => {
-    const moduleType = q.module_type || 'unknown'
-    acc[moduleType] = (acc[moduleType] || 0) + 1
-    return acc
-  }, {} as Record<string, number>)
+  const moduleBreakdown = questions.reduce(
+    (acc, q) => {
+      const moduleType = q.module_type || 'unknown'
+      acc[moduleType] = (acc[moduleType] || 0) + 1
+      return acc
+    },
+    {} as Record<string, number>
+  )
 
   const examData: TestExamData = {
     examId,
-    questions: questions.map(q => ({
+    questions: questions.map((q) => ({
       id: q.id,
       correct_answer: q.correct_answer,
       module_type: q.module_type || 'unknown',
       points: q.points || 1,
-      question_type: determineQuestionType(q)
+      question_type: determineQuestionType(q),
     })),
     totalQuestions: questions.length,
-    moduleBreakdown
+    moduleBreakdown,
   }
 
   console.log(`📚 Created test exam with ${questions.length} questions`)
@@ -95,11 +102,15 @@ export async function submitExamAndScore(
   const result: TestResult = {
     scores: { overall: 0 },
     validationReport: { passed: true, issues: [] },
-    multipleAnswerValidation: { questionsFound: 0, allVariationsWork: true, failedVariations: [] },
+    multipleAnswerValidation: {
+      questionsFound: 0,
+      allVariationsWork: true,
+      failedVariations: [],
+    },
     edgeCaseValidation: { passed: true, edgeCasesTested: 0, failures: [] },
     moduleValidation: { allModulesScored: true, moduleBreakdown: {} },
     errorHandling: { gracefullyHandled: true, errors: [] },
-    performanceMetrics: { processingTimeMs: 0, questionsPerSecond: 0 }
+    performanceMetrics: { processingTimeMs: 0, questionsPerSecond: 0 },
   }
 
   try {
@@ -107,7 +118,10 @@ export async function submitExamAndScore(
     const attemptId = await createTestAttempt(answers, options.exam)
 
     // Calculate scores using the real scoring service
-    const finalScores = await ScoringService.calculateFinalScores(attemptId, true)
+    const finalScores = await ScoringService.calculateFinalScores(
+      attemptId,
+      true
+    )
 
     result.scores = finalScores
 
@@ -116,7 +130,6 @@ export async function submitExamAndScore(
     await validateMultipleAnswers(answers, result)
     await validateEdgeCases(answers, result)
     await validateModuleScoring(answers, result)
-
   } catch (error: any) {
     result.errorHandling.gracefullyHandled = false
     result.errorHandling.errors.push(error.message)
@@ -126,7 +139,8 @@ export async function submitExamAndScore(
 
   const endTime = Date.now()
   result.performanceMetrics.processingTimeMs = endTime - startTime
-  result.performanceMetrics.questionsPerSecond = answers.length / ((endTime - startTime) / 1000)
+  result.performanceMetrics.questionsPerSecond =
+    answers.length / ((endTime - startTime) / 1000)
 
   return result
 }
@@ -134,7 +148,10 @@ export async function submitExamAndScore(
 /**
  * Create a test attempt in the database
  */
-async function createTestAttempt(answers: GeneratedAnswer[] | any[], examOverride?: any): Promise<string> {
+async function createTestAttempt(
+  answers: GeneratedAnswer[] | any[],
+  examOverride?: any
+): Promise<string> {
   // Create a test user with proper UUID format
   const testUserId = crypto.randomUUID()
 
@@ -185,7 +202,7 @@ async function createTestAttempt(answers: GeneratedAnswer[] | any[], examOverrid
     const { error: userError } = await supabase.from('users').insert({
       id: testUserId,
       email: `test-${Date.now()}@example.com`,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     })
 
     if (userError) {
@@ -202,7 +219,7 @@ async function createTestAttempt(answers: GeneratedAnswer[] | any[], examOverrid
       user_id: finalUserId,
       exam_id: examId,
       status: 'in_progress',
-      started_at: new Date().toISOString()
+      started_at: new Date().toISOString(),
     })
     .select('id')
     .single()
@@ -225,12 +242,12 @@ async function createTestAttempt(answers: GeneratedAnswer[] | any[], examOverrid
   }
 
   // Insert user answers
-  const userAnswers = answers.map(answer => ({
+  const userAnswers = answers.map((answer) => ({
     attempt_id: attempt.id,
     question_id: answer.questionId || answer.id,
     user_answer: answer.userAnswer || answer.answer,
     time_spent_seconds: Math.floor(Math.random() * 120) + 30, // Random time between 30-150 seconds
-    is_correct: false // Will be calculated by the grading trigger
+    is_correct: false, // Will be calculated by the grading trigger
   }))
 
   const { error: answersError } = await supabase
@@ -254,14 +271,16 @@ async function gradeTestAttempt(attemptId: string) {
   // Get all user answers for this attempt
   const { data: userAnswers } = await supabase
     .from('user_answers')
-    .select(`
+    .select(
+      `
       id,
       question_id,
       user_answer,
       questions:question_id (
         correct_answer
       )
-    `)
+    `
+    )
     .eq('attempt_id', attemptId)
 
   if (!userAnswers) return
@@ -270,7 +289,9 @@ async function gradeTestAttempt(attemptId: string) {
   for (const answer of userAnswers) {
     if (!answer.questions) continue
 
-    const correctAnswers = normalizeCorrectAnswers(answer.questions.correct_answer)
+    const correctAnswers = normalizeCorrectAnswers(
+      (answer.questions as any)?.correct_answer
+    )
     const isCorrect = checkAnswer(answer.user_answer || '', correctAnswers)
 
     // Update the answer with the correct flag
@@ -284,7 +305,10 @@ async function gradeTestAttempt(attemptId: string) {
 /**
  * Validate answer processing logic
  */
-async function validateAnswerProcessing(answers: GeneratedAnswer[], result: TestResult) {
+async function validateAnswerProcessing(
+  answers: GeneratedAnswer[],
+  result: TestResult
+) {
   for (const answer of answers) {
     if ('isIntentionallyCorrect' in answer) {
       // For generated answers, verify the grading logic
@@ -296,19 +320,23 @@ async function validateAnswerProcessing(answers: GeneratedAnswer[], result: Test
           .single()
 
         if (question) {
-          const correctAnswers = normalizeCorrectAnswers(question.correct_answer)
+          const correctAnswers = normalizeCorrectAnswers(
+            question.correct_answer
+          )
           const actuallyCorrect = checkAnswer(answer.userAnswer, correctAnswers)
 
           if (answer.isIntentionallyCorrect !== actuallyCorrect) {
             result.validationReport.passed = false
             result.validationReport.issues.push(
               `Answer validation mismatch for question ${answer.questionId}: ` +
-              `Expected ${answer.isIntentionallyCorrect}, got ${actuallyCorrect}`
+                `Expected ${answer.isIntentionallyCorrect}, got ${actuallyCorrect}`
             )
           }
         }
       } catch (error: any) {
-        result.validationReport.issues.push(`Validation error for question ${answer.questionId}: ${error.message}`)
+        result.validationReport.issues.push(
+          `Validation error for question ${answer.questionId}: ${error.message}`
+        )
       }
     }
   }
@@ -317,8 +345,11 @@ async function validateAnswerProcessing(answers: GeneratedAnswer[], result: Test
 /**
  * Validate multiple answer handling
  */
-async function validateMultipleAnswers(answers: GeneratedAnswer[], result: TestResult) {
-  const questionIds = answers.map(a => a.questionId)
+async function validateMultipleAnswers(
+  answers: GeneratedAnswer[],
+  result: TestResult
+) {
+  const questionIds = answers.map((a) => a.questionId)
 
   const { data: questions } = await supabase
     .from('questions')
@@ -327,11 +358,12 @@ async function validateMultipleAnswers(answers: GeneratedAnswer[], result: TestR
 
   if (!questions) return
 
-  const multipleAnswerQuestions = questions.filter(q =>
-    normalizeCorrectAnswers(q.correct_answer).length > 1
+  const multipleAnswerQuestions = questions.filter(
+    (q) => normalizeCorrectAnswers(q.correct_answer).length > 1
   )
 
-  result.multipleAnswerValidation.questionsFound = multipleAnswerQuestions.length
+  result.multipleAnswerValidation.questionsFound =
+    multipleAnswerQuestions.length
 
   // Test variations for multiple answer questions
   for (const question of multipleAnswerQuestions) {
@@ -339,9 +371,9 @@ async function validateMultipleAnswers(answers: GeneratedAnswer[], result: TestR
 
     // Test all variations
     const testVariations = [
-      ...correctAnswers.map(ans => ans.toLowerCase()),
-      ...correctAnswers.map(ans => ans.toUpperCase()),
-      ...correctAnswers.map(ans => ` ${ans} `),
+      ...correctAnswers.map((ans) => ans.toLowerCase()),
+      ...correctAnswers.map((ans) => ans.toUpperCase()),
+      ...correctAnswers.map((ans) => ` ${ans} `),
     ]
 
     for (const variation of testVariations) {
@@ -359,8 +391,13 @@ async function validateMultipleAnswers(answers: GeneratedAnswer[], result: TestR
 /**
  * Validate edge case handling
  */
-async function validateEdgeCases(answers: GeneratedAnswer[], result: TestResult) {
-  const edgeCaseAnswers = answers.filter(a => 'testingEdgeCase' in a && a.testingEdgeCase)
+async function validateEdgeCases(
+  answers: GeneratedAnswer[],
+  result: TestResult
+) {
+  const edgeCaseAnswers = answers.filter(
+    (a) => 'testingEdgeCase' in a && a.testingEdgeCase
+  )
 
   result.edgeCaseValidation.edgeCasesTested = edgeCaseAnswers.length
 
@@ -376,7 +413,11 @@ async function validateEdgeCases(answers: GeneratedAnswer[], result: TestResult)
         const correctAnswers = normalizeCorrectAnswers(question.correct_answer)
         const isCorrect = checkAnswer(answer.userAnswer, correctAnswers)
 
-        if ('isIntentionallyCorrect' in answer && answer.isIntentionallyCorrect && !isCorrect) {
+        if (
+          'isIntentionallyCorrect' in answer &&
+          answer.isIntentionallyCorrect &&
+          !isCorrect
+        ) {
           result.edgeCaseValidation.passed = false
           result.edgeCaseValidation.failures.push(
             `Edge case failed for question ${answer.questionId}: "${answer.userAnswer}" should be accepted`
@@ -384,7 +425,9 @@ async function validateEdgeCases(answers: GeneratedAnswer[], result: TestResult)
         }
       }
     } catch (error: any) {
-      result.edgeCaseValidation.failures.push(`Edge case validation error: ${error.message}`)
+      result.edgeCaseValidation.failures.push(
+        `Edge case validation error: ${error.message}`
+      )
     }
   }
 }
@@ -392,8 +435,11 @@ async function validateEdgeCases(answers: GeneratedAnswer[], result: TestResult)
 /**
  * Validate module-based scoring
  */
-async function validateModuleScoring(answers: GeneratedAnswer[], result: TestResult) {
-  const questionIds = answers.map(a => a.questionId)
+async function validateModuleScoring(
+  answers: GeneratedAnswer[],
+  result: TestResult
+) {
+  const questionIds = answers.map((a) => a.questionId)
 
   const { data: questions } = await supabase
     .from('questions')
@@ -402,17 +448,22 @@ async function validateModuleScoring(answers: GeneratedAnswer[], result: TestRes
 
   if (!questions) return
 
-  const moduleBreakdown = questions.reduce((acc, q) => {
-    const moduleType = q.module_type || 'unknown'
-    acc[moduleType] = (acc[moduleType] || 0) + 1
-    return acc
-  }, {} as Record<string, number>)
+  const moduleBreakdown = questions.reduce(
+    (acc, q) => {
+      const moduleType = q.module_type || 'unknown'
+      acc[moduleType] = (acc[moduleType] || 0) + 1
+      return acc
+    },
+    {} as Record<string, number>
+  )
 
   result.moduleValidation.moduleBreakdown = moduleBreakdown
 
   // Check if all expected modules are present
   const expectedModules = ['english1', 'english2', 'math1', 'math2']
-  const hasAllModules = expectedModules.every(module => moduleBreakdown[module] > 0)
+  const hasAllModules = expectedModules.every(
+    (module) => moduleBreakdown[module] > 0
+  )
 
   if (!hasAllModules) {
     result.moduleValidation.allModulesScored = false
@@ -447,16 +498,10 @@ function determineQuestionType(question: any): string {
 export async function cleanupTestData(attemptId: string) {
   try {
     // Delete user answers
-    await supabase
-      .from('user_answers')
-      .delete()
-      .eq('attempt_id', attemptId)
+    await supabase.from('user_answers').delete().eq('attempt_id', attemptId)
 
     // Delete test attempt
-    await supabase
-      .from('test_attempts')
-      .delete()
-      .eq('id', attemptId)
+    await supabase.from('test_attempts').delete().eq('id', attemptId)
 
     console.log(`🧹 Cleaned up test data for attempt ${attemptId}`)
   } catch (error) {

@@ -16,12 +16,14 @@ describe('Fix Template Assignments', () => {
       .select('id, name')
 
     console.log('\n📋 Available Templates:')
-    templates?.forEach(template => {
+    templates?.forEach((template) => {
       console.log(`  - ${template.name} (id: ${template.id})`)
     })
 
     if (!templates || templates.length === 0) {
-      console.log('❌ No templates found! Need to check scoring_templates table')
+      console.log(
+        '❌ No templates found! Need to check scoring_templates table'
+      )
       expect(false).toBe(true) // Fail the test to highlight this issue
       return
     }
@@ -32,11 +34,13 @@ describe('Fix Template Assignments', () => {
       .select('id, title, template_id')
       .is('template_id', null)
 
-    console.log(`\n🎯 Found ${examsWithoutTemplates?.length || 0} exams without templates`)
+    console.log(
+      `\n🎯 Found ${examsWithoutTemplates?.length || 0} exams without templates`
+    )
 
     if (examsWithoutTemplates && examsWithoutTemplates.length > 0) {
       // Try to find a suitable template (english_only seems to be the standard)
-      const englishTemplate = templates.find(t => t.id === 'english_only')
+      const englishTemplate = templates.find((t) => t.id === 'english_only')
 
       if (englishTemplate) {
         console.log(`\n✅ Using template: ${englishTemplate.name}`)
@@ -66,7 +70,9 @@ describe('Fix Template Assignments', () => {
       .single()
 
     if (mockTest) {
-      console.log(`\n🎯 Mock Test after fix: ${mockTest.template_id || 'STILL NO TEMPLATE'}`)
+      console.log(
+        `\n🎯 Mock Test after fix: ${mockTest.template_id || 'STILL NO TEMPLATE'}`
+      )
     }
 
     expect(true).toBe(true)

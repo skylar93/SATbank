@@ -52,8 +52,10 @@ describe('Simple Scoring System Test', () => {
       expect(Array.isArray(exams)).toBe(true)
 
       if (exams && exams.length > 0) {
-        console.log(`✅ Database connection works! Found ${exams.length} exams:`)
-        exams.forEach(exam => console.log(`  - ${exam.title}`))
+        console.log(
+          `✅ Database connection works! Found ${exams.length} exams:`
+        )
+        exams.forEach((exam) => console.log(`  - ${exam.title}`))
       } else {
         console.log('⚠️ Database connected but no exams found')
       }
@@ -96,7 +98,9 @@ describe('Simple Scoring System Test', () => {
         // Test answer normalization on real data
         questions.forEach((q, i) => {
           const normalized = normalizeCorrectAnswers(q.correct_answer)
-          console.log(`  Question ${i+1}: ${normalized.length} correct answer(s)`)
+          console.log(
+            `  Question ${i + 1}: ${normalized.length} correct answer(s)`
+          )
 
           if (normalized.length > 1) {
             console.log(`    🔢 Multiple answers: ${normalized.join(', ')}`)
@@ -105,7 +109,6 @@ describe('Simple Scoring System Test', () => {
       } else {
         console.log('⚠️ No questions found for this exam')
       }
-
     } catch (error) {
       console.error('❌ Question fetching failed:', error)
       throw error
@@ -140,14 +143,17 @@ describe('Simple Scoring System Test', () => {
       )
 
       console.log(`🔄 Recalculated score: ${recalculatedScores.overall}`)
-      console.log(`📈 Difference: ${Math.abs(attempt.total_score - recalculatedScores.overall)}`)
+      console.log(
+        `📈 Difference: ${Math.abs(attempt.total_score - recalculatedScores.overall)}`
+      )
 
       // Should be reasonably close (allow for small differences due to rounding)
-      const scoreDifference = Math.abs(attempt.total_score - recalculatedScores.overall)
+      const scoreDifference = Math.abs(
+        attempt.total_score - recalculatedScores.overall
+      )
       expect(scoreDifference).toBeLessThan(20)
 
       console.log('✅ Scoring calculation works!')
-
     } catch (error) {
       console.error('❌ Scoring test failed:', error)
       throw error

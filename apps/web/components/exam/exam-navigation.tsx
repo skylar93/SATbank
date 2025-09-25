@@ -338,7 +338,8 @@ export function ExamNavigation({
             const questionNum = index + 1
             const isCorrect = correctQuestions.has(questionNum)
             const isIncorrect = incorrectQuestions.has(questionNum)
-            const isSecondTryCorrect = secondTryCorrectQuestions.has(questionNum)
+            const isSecondTryCorrect =
+              secondTryCorrectQuestions.has(questionNum)
             const isAnswered =
               answeredQuestions.has(questionNum) || isCorrect || isIncorrect
             const isCurrent = questionNum === currentQuestion

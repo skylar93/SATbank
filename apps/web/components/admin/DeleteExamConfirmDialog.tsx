@@ -36,16 +36,13 @@ export function DeleteExamConfirmDialog({
             <br />
             <br />
             <span className="text-red-600 font-medium">
-              This action cannot be undone. All associated questions, student attempts, and results will be permanently deleted.
+              This action cannot be undone. All associated questions, student
+              attempts, and results will be permanently deleted.
             </span>
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={onClose}
-            disabled={isDeleting}
-          >
+          <Button variant="outline" onClick={onClose} disabled={isDeleting}>
             Cancel
           </Button>
           <Button

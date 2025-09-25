@@ -57,7 +57,9 @@ export default function ReviewPage() {
       // Get the test attempt with answer visibility fields
       const { data: attempt, error } = await supabase
         .from('test_attempts')
-        .select('id, answers_visible, answers_visible_after, review_attempt_taken')
+        .select(
+          'id, answers_visible, answers_visible_after, review_attempt_taken'
+        )
         .eq('id', attemptId)
         .eq('user_id', user.id)
         .single()

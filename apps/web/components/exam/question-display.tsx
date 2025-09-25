@@ -23,7 +23,10 @@ import FloatingHighlightButton from './FloatingHighlightButton'
 import { AnswerRevealCard } from './AnswerRevealCard'
 import { ContentRenderer } from '../content-renderer'
 import { QuestionTimer } from './question-timer'
-import { parseCorrectAnswers, formatCorrectAnswersDisplay } from '../../lib/grid-in-validator'
+import {
+  parseCorrectAnswers,
+  formatCorrectAnswersDisplay,
+} from '../../lib/grid-in-validator'
 
 // HTML rendering function for content that is already in HTML format
 export const renderHtmlContent = (htmlContent: string) => {
@@ -37,11 +40,13 @@ export const renderHtmlContent = (htmlContent: string) => {
 
   // Check if content contains $...$ patterns and convert them for KaTeX rendering
   if (htmlContent.includes('$')) {
-    const processedHtml = htmlContent.replace(/\$([^$]+)\$/g, (match, latex) => {
-      return `<span data-math="${latex}" data-inline="true"></span>`
-    }).replace(/\$\$([^$]+)\$\$/g, (match, latex) => {
-      return `<span data-math="${latex}" data-inline="false"></span>`
-    })
+    const processedHtml = htmlContent
+      .replace(/\$([^$]+)\$/g, (match, latex) => {
+        return `<span data-math="${latex}" data-inline="true"></span>`
+      })
+      .replace(/\$\$([^$]+)\$\$/g, (match, latex) => {
+        return `<span data-math="${latex}" data-inline="false"></span>`
+      })
 
     // If we processed any math, use ContentRenderer
     if (processedHtml !== htmlContent) {
@@ -53,15 +58,19 @@ export const renderHtmlContent = (htmlContent: string) => {
   let processedContent = htmlContent
 
   // Pattern for simple equations like s=10+4t, x+y=5, etc.
-  const simpleEquationPattern = /\b([a-zA-Z]\s*[=+\-*/]\s*[\da-zA-Z+\-*/\s]+(?:[=+\-*/]\s*[\da-zA-Z+\-*/\s]*)*)\b/g
+  const simpleEquationPattern =
+    /\b([a-zA-Z]\s*[=+\-*/]\s*[\da-zA-Z+\-*/\s]+(?:[=+\-*/]\s*[\da-zA-Z+\-*/\s]*)*)\b/g
 
-  processedContent = processedContent.replace(simpleEquationPattern, (match) => {
-    // Only process if it looks like an equation (contains = or is a simple expression)
-    if (match.includes('=') || /^[a-zA-Z]\s*[+\-*/]\s*\d/.test(match)) {
-      return `<span data-math="${match.trim()}" data-inline="true"></span>`
+  processedContent = processedContent.replace(
+    simpleEquationPattern,
+    (match) => {
+      // Only process if it looks like an equation (contains = or is a simple expression)
+      if (match.includes('=') || /^[a-zA-Z]\s*[+\-*/]\s*\d/.test(match)) {
+        return `<span data-math="${match.trim()}" data-inline="true"></span>`
+      }
+      return match
     }
-    return match
-  })
+  )
 
   // If we processed any math expressions, use ContentRenderer
   if (processedContent !== htmlContent) {
@@ -85,12 +94,15 @@ export const renderTextWithFormattingAndMath = (text: string) => {
   let processedText = text
 
   // Pattern for simple equations like s=10+4t, x+y=5, etc.
-  const simpleEquationPattern = /\b([a-zA-Z]\s*[=+\-*/]\s*[\da-zA-Z+\-*/\s]+(?:[=+\-*/]\s*[\da-zA-Z+\-*/\s]*)*)\b/g
+  const simpleEquationPattern =
+    /\b([a-zA-Z]\s*[=+\-*/]\s*[\da-zA-Z+\-*/\s]+(?:[=+\-*/]\s*[\da-zA-Z+\-*/\s]*)*)\b/g
 
   processedText = processedText.replace(simpleEquationPattern, (match) => {
     // Only process if it looks like an equation and isn't already wrapped in $
-    if ((match.includes('=') || /^[a-zA-Z]\s*[+\-*/]\s*\d/.test(match)) &&
-        !text.includes(`$${match}$`)) {
+    if (
+      (match.includes('=') || /^[a-zA-Z]\s*[+\-*/]\s*\d/.test(match)) &&
+      !text.includes(`$${match}$`)
+    ) {
       return `$${match.trim()}$`
     }
     return match
@@ -475,11 +487,13 @@ export function QuestionDisplay({
   const [showFormattingHelp, setShowFormattingHelp] = useState(false)
 
   // Answer elimination state
-  const [eliminatedAnswers, setEliminatedAnswers] = useState<Set<string>>(new Set())
+  const [eliminatedAnswers, setEliminatedAnswers] = useState<Set<string>>(
+    new Set()
+  )
 
   // Handle answer elimination
   const toggleAnswerElimination = (answerKey: string) => {
-    setEliminatedAnswers(prev => {
+    setEliminatedAnswers((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(answerKey)) {
         newSet.delete(answerKey)
@@ -685,7 +699,9 @@ export function QuestionDisplay({
       correct_answers: parseCorrectAnswers(localQuestion),
       explanation: localQuestion.explanation || '',
       table_data: localQuestion.table_data || null,
-      content_format: localQuestion.content_format || (localQuestion.question_html ? 'html' : 'markdown'),
+      content_format:
+        localQuestion.content_format ||
+        (localQuestion.question_html ? 'html' : 'markdown'),
     })
 
     // THEN, enter edit mode
@@ -702,10 +718,13 @@ export function QuestionDisplay({
       correct_answers: parseCorrectAnswers(localQuestion),
       explanation: localQuestion.explanation || '',
       table_data: localQuestion.table_data || null,
-      content_format: localQuestion.content_format || (localQuestion.question_html ? 'html' : 'markdown'),
+      content_format:
+        localQuestion.content_format ||
+        (localQuestion.question_html ? 'html' : 'markdown'),
     })
     setCurrentEditorMode(
-      (localQuestion.content_format as 'markdown' | 'html') || (localQuestion.question_html ? 'html' : 'markdown')
+      (localQuestion.content_format as 'markdown' | 'html') ||
+        (localQuestion.question_html ? 'html' : 'markdown')
     )
     setIsEditing(false)
   }
@@ -1259,17 +1278,13 @@ export function QuestionDisplay({
           </div>
           {showExplanation && isCorrect === false && (
             <div className="space-y-3">
-              <div
-                className="p-4 border rounded-lg bg-green-100 border-2 border-green-500 ring-1 ring-green-200"
-              >
-                <p
-                  className="text-sm text-green-900 font-bold"
-                >
-                  <span
-                    className="bg-green-200 px-2 py-1 rounded font-bold"
-                  >
+              <div className="p-4 border rounded-lg bg-green-100 border-2 border-green-500 ring-1 ring-green-200">
+                <p className="text-sm text-green-900 font-bold">
+                  <span className="bg-green-200 px-2 py-1 rounded font-bold">
                     {localQuestion.question_type === 'grid_in'
-                      ? formatCorrectAnswersDisplay(parseCorrectAnswers(localQuestion))
+                      ? formatCorrectAnswersDisplay(
+                          parseCorrectAnswers(localQuestion)
+                        )
                       : localQuestion.correct_answer}
                   </span>
                 </p>
@@ -1817,11 +1832,14 @@ export function QuestionDisplay({
               ? 'Select your answer:'
               : 'Enter your answer:'}
           </h3>
-          {localQuestion.question_type === 'multiple_choice' && !isAdminPreview && !showExplanation && (
-            <p className="text-sm text-gray-600 mb-4">
-              💡 Right-click or double-click on answer choices to eliminate them
-            </p>
-          )}
+          {localQuestion.question_type === 'multiple_choice' &&
+            !isAdminPreview &&
+            !showExplanation && (
+              <p className="text-sm text-gray-600 mb-4">
+                💡 Right-click or double-click on answer choices to eliminate
+                them
+              </p>
+            )}
 
           {renderAnswerOptions()}
 
