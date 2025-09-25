@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { formatDuration } from '../../lib/utils'
+import { getDisplayScores } from '../../lib/score-display-utils'
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -15,6 +16,7 @@ interface AttemptData {
   completed_at: string
   duration_seconds: number
   final_scores: {
+    overall?: number
     english?: number
     math?: number
   } | null
@@ -23,6 +25,7 @@ interface AttemptData {
   student_email: string
   exam_id: string
   exam_title: string
+  template_id?: string | null
 }
 
 interface StudentData {
@@ -42,12 +45,6 @@ interface StudentReportRowProps {
 export default function StudentReportRow({ student }: StudentReportRowProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const calculateTotalScore = (finalScores: AttemptData['final_scores']) => {
-    if (!finalScores) return 0
-    const englishScore = finalScores.english || 0
-    const mathScore = finalScores.math || 0
-    return englishScore + mathScore
-  }
 
   return (
     <>
@@ -138,11 +135,7 @@ export default function StudentReportRow({ student }: StudentReportRowProps) {
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {student.attempts.map((attempt) => {
-                        const totalScore = calculateTotalScore(
-                          attempt.final_scores
-                        )
-                        const englishScore = attempt.final_scores?.english || 0
-                        const mathScore = attempt.final_scores?.math || 0
+                        const displayScores = getDisplayScores(attempt.final_scores, attempt.template_id)
 
                         return (
                           <tr
@@ -163,19 +156,33 @@ export default function StudentReportRow({ student }: StudentReportRowProps) {
                             </td>
                             <td className="px-4 py-3">
                               <div className="text-sm font-semibold text-gray-900">
-                                {totalScore}/1600
+                                {displayScores.overall}/{displayScores.maxTotal}
                               </div>
                             </td>
-                            <td className="px-4 py-3">
-                              <div className="text-sm text-gray-700">
-                                {englishScore}/800
-                              </div>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="text-sm text-gray-700">
-                                {mathScore}/800
-                              </div>
-                            </td>
+                            {displayScores.sections.showEnglish && (
+                              <td className="px-4 py-3">
+                                <div className="text-sm text-gray-700">
+                                  {displayScores.english || 0}/800
+                                </div>
+                              </td>
+                            )}
+                            {displayScores.sections.showMath && (
+                              <td className="px-4 py-3">
+                                <div className="text-sm text-gray-700">
+                                  {displayScores.math || 0}/800
+                                </div>
+                              </td>
+                            )}
+                            {!displayScores.sections.showEnglish && !displayScores.sections.showMath && (
+                              <>
+                                <td className="px-4 py-3">
+                                  <div className="text-sm text-gray-400">N/A</div>
+                                </td>
+                                <td className="px-4 py-3">
+                                  <div className="text-sm text-gray-400">N/A</div>
+                                </td>
+                              </>
+                            )}
                             <td className="px-4 py-3">
                               <div className="text-sm text-gray-700">
                                 {formatDuration(attempt.duration_seconds)}

@@ -582,11 +582,11 @@ async function createOrGetExam(testId, testName, totalQuestions) {
 
   // Clean up the test name to remove module info and Form parts
   let cleanedName = testName
-    .replace(/Module\s*[12]\s*/gi, '') // Remove "Module 1" or "Module 2" completely
-    .replace(/module\s*[12]\s*/gi, '') // Remove "module 1" or "module 2" completely
-    .replace(/Form\s*[A-Z]/gi, '')     // Remove "Form A", "Form B", etc.
-    .replace(/form\s*[a-z]/gi, '')     // Remove "form a", "form b", etc.
-    .replace(/\bUs\b/gi, 'US')         // Change "Us" to "US"
+    .replace(/Module\s*[12]\s*/gi, '') // Remove "Module 1" or "Module 2" completely with trailing space
+    .replace(/module\s*[12]\s*/gi, '') // Remove "module 1" or "module 2" completely with trailing space
+    .replace(/Form\s*[A-Z]\s*/gi, '')  // Remove "Form A", "Form B", etc. with trailing space
+    .replace(/form\s*[a-z]\s*/gi, '')  // Remove "form a", "form b", etc. with trailing space
+    .replace(/\bUs\b/gi, 'US')         // Change "Us" to "US" (case insensitive)
     .replace(/\s+/g, ' ')              // Normalize whitespace
     .trim();
 
@@ -609,11 +609,14 @@ async function createOrGetExam(testId, testName, totalQuestions) {
         title: examTitle,
         description: 'Math module auto import',
         time_limits: {
-          [moduleType]: moduleType === 'math1' ? 35 : 55, // Math1: 35min, Math2: 55min
+          [moduleType]: 35, // Both Math1 and Math2: 35min
           english1: 0,
           english2: 0,
           math1: moduleType === 'math1' ? 35 : 0,
-          math2: moduleType === 'math2' ? 55 : 0
+          math2: moduleType === 'math2' ? 35 : 0
+        },
+        module_composition: {
+          [moduleType]: true
         },
         total_questions: totalQuestions,
         is_active: true,

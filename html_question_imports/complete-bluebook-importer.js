@@ -567,12 +567,12 @@ async function createOrGetExam(testId, testName, totalQuestions) {
 
   // Clean up the test name to remove Module1/Module2 prefix, Form parts, and fix US capitalization
   let cleanedName = testName
-    .replace(/Module\s*[12]/gi, '')     // Remove Module1 or Module2
-    .replace(/module\s*[12]/gi, '')     // Remove module1 or module2
-    .replace(/Form\s*[A-Z]/gi, '')      // Remove Form A, Form B, etc.
-    .replace(/form\s*[a-z]/gi, '')      // Remove form a, form b, etc.
-    .replace(/\bUs\b/g, 'US')           // Fix Us to US
-    .replace(/\s+/g, ' ')               // Normalize whitespace
+    .replace(/Module\s*[12]\s*/gi, '')     // Remove Module1 or Module2 with trailing space
+    .replace(/module\s*[12]\s*/gi, '')     // Remove module1 or module2 with trailing space
+    .replace(/Form\s*[A-Z]\s*/gi, '')      // Remove Form A, Form B, etc. with trailing space
+    .replace(/form\s*[a-z]\s*/gi, '')      // Remove form a, form b, etc. with trailing space
+    .replace(/\bUs\b/gi, 'US')             // Fix Us to US (case insensitive)
+    .replace(/\s+/g, ' ')                  // Normalize whitespace
     .trim();
 
   // Format the cleaned name (capitalize first letter of each word)
@@ -608,7 +608,7 @@ async function createOrGetExam(testId, testName, totalQuestions) {
     
   if (examError && examError.code === 'PGRST116') {
     // Create new exam
-    // English modules: 32 minutes (27 questions), Math modules: different times
+    // English modules: 32 minutes, Math modules: different times
     const timeLimit = moduleType.includes('english') ? 32 : 70; // English: 32min, Math: 70min
 
     const { data: newExam, error: createError } = await supabase
@@ -622,6 +622,9 @@ async function createOrGetExam(testId, testName, totalQuestions) {
           english2: moduleType === 'english2' ? timeLimit : 0,
           math1: moduleType === 'math1' ? timeLimit : 0,
           math2: moduleType === 'math2' ? timeLimit : 0
+        },
+        module_composition: {
+          [moduleType]: true
         },
         total_questions: totalQuestions,
         is_active: true,

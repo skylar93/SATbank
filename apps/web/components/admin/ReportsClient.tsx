@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { formatDuration } from '../../lib/utils'
+import { getDisplayScores } from '../../lib/score-display-utils'
 import {
   MagnifyingGlassIcon,
   TableCellsIcon,
@@ -16,6 +17,7 @@ interface AttemptData {
   completed_at: string
   duration_seconds: number
   final_scores: {
+    overall?: number
     english?: number
     math?: number
   } | null
@@ -24,6 +26,7 @@ interface AttemptData {
   student_email: string
   exam_id: string
   exam_title: string
+  template_id?: string | null
 }
 
 interface StudentData {
@@ -66,9 +69,7 @@ export default function ReportsClient({ attempts }: ReportsClientProps) {
 
   const calculateTotalScore = (finalScores: AttemptData['final_scores']) => {
     if (!finalScores) return 0
-    const englishScore = finalScores.english || 0
-    const mathScore = finalScores.math || 0
-    return englishScore + mathScore
+    return finalScores.overall || 0
   }
 
   const studentsData = useMemo(() => {

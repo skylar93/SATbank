@@ -581,18 +581,39 @@ export async function createExamFromModules(data: {
   await checkAdminAuth(supabase)
 
   try {
-    // 1. Create the parent exam record with time limits
+    // 1. Get template info to determine which curves are needed
+    const { data: template, error: templateError } = await supabase
+      .from('exam_templates')
+      .select('scoring_groups')
+      .eq('id', data.templateId)
+      .single()
+
+    if (templateError) {
+      throw new Error(`Failed to fetch template: ${templateError.message}`)
+    }
+
+    // 2. Determine which curves are needed based on scoring groups
+    const hasEnglishModules = template.scoring_groups?.english?.length > 0
+    const hasMathModules = template.scoring_groups?.math?.length > 0
+
+    // 3. Create the parent exam record with appropriate curves only
     const examData: any = {
       title: data.title,
       description: data.description,
       template_id: data.templateId,
       module_composition: data.moduleAssignments,
       is_active: true, // Start as active so it can be assigned immediately
-      english_scoring_curve_id: 1, // Default English curve
-      math_scoring_curve_id: 2, // Default Math curve
     }
 
-    // Add time limits if provided
+    // Only assign curves if the template actually has those modules
+    if (hasEnglishModules) {
+      examData.english_scoring_curve_id = 1 // Default English curve
+    }
+    if (hasMathModules) {
+      examData.math_scoring_curve_id = 2 // Default Math curve
+    }
+
+    // 4. Add time limits if provided
     if (data.timeLimits) {
       examData.time_limits = data.timeLimits
     }
@@ -609,7 +630,7 @@ export async function createExamFromModules(data: {
 
     const newExamId = newExam.id
 
-    // 2. Populate the exam_questions junction table
+    // 5. Populate the exam_questions junction table
     for (const [moduleType, sourceExamId] of Object.entries(
       data.moduleAssignments
     )) {
@@ -644,7 +665,7 @@ export async function createExamFromModules(data: {
       }
     }
 
-    // 3. Revalidate the admin exams page
+    // 6. Revalidate the admin exams page
     revalidatePath('/admin/exams')
 
     return { success: true, examId: newExamId }
