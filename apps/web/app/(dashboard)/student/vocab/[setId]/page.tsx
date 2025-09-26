@@ -28,8 +28,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { Toast } from '@/components/ui/toast'
 import { supabase } from '@/lib/supabase'
+import { toast } from 'sonner'
 import {
   Plus,
   BookOpen,
@@ -114,11 +114,6 @@ export default function VocabSetDetailPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [masteryFilter, setMasteryFilter] = useState('all')
 
-  const [toast, setToast] = useState<{
-    message: string
-    type: 'success' | 'error'
-  } | null>(null)
-
   // Use the centralized Supabase client
   const { speak, isPlaying } = useTTS()
 
@@ -159,10 +154,7 @@ export default function VocabSetDetailPage() {
         data: { user },
       } = await supabase.auth.getUser()
       if (!user) {
-        setToast({
-          message: 'Please log in to access your vocabulary sets',
-          type: 'error',
-        })
+        toast.error('Please log in to access your vocabulary sets')
         router.push('/login')
         return
       }
@@ -179,7 +171,7 @@ export default function VocabSetDetailPage() {
 
       if (setError) {
         if (setError.code === 'PGRST116') {
-          setToast({ message: 'Vocabulary set not found', type: 'error' })
+          toast.error('Vocabulary set not found')
           router.push('/student/vocab')
           return
         }
@@ -201,7 +193,7 @@ export default function VocabSetDetailPage() {
       setEntries(entriesData || [])
     } catch (error) {
       console.error('Error fetching vocab set:', error)
-      setToast({ message: 'Failed to load vocabulary set', type: 'error' })
+      toast.error('Failed to load vocabulary set')
     } finally {
       setIsLoading(false)
     }
@@ -209,10 +201,7 @@ export default function VocabSetDetailPage() {
 
   const handleAddEntry = async () => {
     if (!newTerm.trim() || !newDefinition.trim()) {
-      setToast({
-        message: 'Please fill in both term and definition',
-        type: 'error',
-      })
+      toast.error('Please fill in both term and definition')
       return
     }
 
@@ -234,7 +223,7 @@ export default function VocabSetDetailPage() {
 
       if (error) throw error
 
-      setToast({ message: 'Word added successfully!', type: 'success' })
+      toast.success('Word added successfully!')
       setNewTerm('')
       setNewDefinition('')
       setNewExample('')
@@ -244,7 +233,7 @@ export default function VocabSetDetailPage() {
       fetchVocabSetAndEntries()
     } catch (error) {
       console.error('Error adding entry:', error)
-      setToast({ message: 'Failed to add word', type: 'error' })
+      toast.error('Failed to add word')
     } finally {
       setIsCreating(false)
     }
@@ -261,10 +250,7 @@ export default function VocabSetDetailPage() {
 
   const handleUpdateEntry = async () => {
     if (!editTerm.trim() || !editDefinition.trim()) {
-      setToast({
-        message: 'Please fill in both term and definition',
-        type: 'error',
-      })
+      toast.error('Please fill in both term and definition')
       return
     }
 
@@ -282,12 +268,12 @@ export default function VocabSetDetailPage() {
 
       if (error) throw error
 
-      setToast({ message: 'Word updated successfully!', type: 'success' })
+      toast.success('Word updated successfully!')
       setEditingEntry(null)
       fetchVocabSetAndEntries()
     } catch (error) {
       console.error('Error updating entry:', error)
-      setToast({ message: 'Failed to update word', type: 'error' })
+      toast.error('Failed to update word')
     } finally {
       setIsUpdating(false)
     }
@@ -304,20 +290,17 @@ export default function VocabSetDetailPage() {
 
       if (error) throw error
 
-      setToast({ message: 'Word deleted successfully!', type: 'success' })
+      toast.success('Word deleted successfully!')
       fetchVocabSetAndEntries()
     } catch (error) {
       console.error('Error deleting entry:', error)
-      setToast({ message: 'Failed to delete word', type: 'error' })
+      toast.error('Failed to delete word')
     }
   }
 
   const handleStartQuiz = () => {
     if (entries.length === 0) {
-      setToast({
-        message: 'Add some words before starting a quiz',
-        type: 'error',
-      })
+      toast.error('Add some words before starting a quiz')
       return
     }
 
@@ -340,10 +323,7 @@ export default function VocabSetDetailPage() {
             : entries
 
     if (filteredEntries.length === 0) {
-      setToast({
-        message: 'No words match the selected criteria',
-        type: 'error',
-      })
+      toast.error('No words match the selected criteria')
       return
     }
 
@@ -361,15 +341,12 @@ export default function VocabSetDetailPage() {
     words: { term: string; definition: string }[]
   ) => {
     try {
-      setToast({
-        message: `Successfully added ${words.length} words!`,
-        type: 'success',
-      })
+      toast.success(`Successfully added ${words.length} words!`)
       setIsBulkAddModalOpen(false)
       await fetchVocabSetAndEntries()
     } catch (error) {
       console.error('Error in bulk add handler:', error)
-      setToast({ message: 'Failed to add words', type: 'error' })
+      toast.error('Failed to add words')
     }
   }
 
@@ -1092,14 +1069,6 @@ export default function VocabSetDetailPage() {
           onAddWords={handleBulkAddWords}
           setId={parseInt(setId)}
         />
-
-        {toast && (
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            onClose={() => setToast(null)}
-          />
-        )}
       </div>
     </div>
   )

@@ -128,39 +128,51 @@ export default function ReviewPageClient({
   }
 
   // Get question status for navigation display using the exact same ordering as the hook
-  const { correctQuestions, incorrectQuestions, answeredQuestions } =
-    useMemo(() => {
-      const correct = new Set<number>()
-      const incorrect = new Set<number>()
-      const answered = new Set<number>()
+  const {
+    correctQuestions,
+    incorrectQuestions,
+    answeredQuestions,
+    secondTryCorrectQuestions,
+  } = useMemo(() => {
+    const correct = new Set<number>()
+    const incorrect = new Set<number>()
+    const answered = new Set<number>()
+    const secondTryCorrect = new Set<number>()
 
-      // Use the exact same ordered questions array as the hook to ensure perfect consistency
-      allQuestionsOrdered.forEach((question, index) => {
-        const userAnswer = reviewData.userAnswers.find(
-          (ua) => ua.question_id === question.id
-        )
-        const questionNumber = index + 1
+    // Use the exact same ordered questions array as the hook to ensure perfect consistency
+    allQuestionsOrdered.forEach((question, index) => {
+      const userAnswer = reviewData.userAnswers.find(
+        (ua) => ua.question_id === question.id
+      )
+      const questionNumber = index + 1
 
-        if (userAnswer?.user_answer) {
-          answered.add(questionNumber)
+      if (userAnswer?.user_answer) {
+        answered.add(questionNumber)
 
-          // Use the definitive is_correct value from the database (includes admin regrades)
-          const isCorrect = userAnswer.is_correct ?? false
+        // Use the definitive is_correct value from the database (includes admin regrades)
+        const isCorrect = userAnswer.is_correct ?? false
 
-          if (isCorrect) {
-            correct.add(questionNumber)
+        if (isCorrect) {
+          // Check if this was a second try (user viewed correct answer and then got it right)
+          const hasViewedCorrectAnswer = userAnswer.viewed_correct_answer_at
+          if (hasViewedCorrectAnswer) {
+            secondTryCorrect.add(questionNumber)
           } else {
-            incorrect.add(questionNumber)
+            correct.add(questionNumber)
           }
+        } else {
+          incorrect.add(questionNumber)
         }
-      })
-
-      return {
-        correctQuestions: correct,
-        incorrectQuestions: incorrect,
-        answeredQuestions: answered,
       }
-    }, [allQuestionsOrdered, reviewData.userAnswers])
+    })
+
+    return {
+      correctQuestions: correct,
+      incorrectQuestions: incorrect,
+      answeredQuestions: answered,
+      secondTryCorrectQuestions: secondTryCorrect,
+    }
+  }, [allQuestionsOrdered, reviewData.userAnswers])
 
   // Get all modules for navigation
   const allModules = getAllModules()
@@ -285,22 +297,35 @@ export default function ReviewPageClient({
           isCompact={true}
           correctQuestions={correctQuestions}
           incorrectQuestions={incorrectQuestions}
+          secondTryCorrectQuestions={secondTryCorrectQuestions}
         />
 
         {/* Question Display */}
         <div className="flex-1">
-          <QuestionDisplay
-            question={currentQuestion}
-            questionNumber={currentQuestionInModule}
-            totalQuestions={totalQuestionsInModule}
-            userAnswer={userAnswer || undefined}
-            onAnswerChange={() => {}} // No-op in review mode
-            showExplanation={showCorrectAnswers}
-            disabled={true} // All inputs disabled in review mode
-            isAdminPreview={false}
-            isCorrect={isCorrect}
-            moduleDisplayName={getModuleDisplayName(currentModule)}
-          />
+          {(() => {
+            // Determine if current question is second try correct
+            const currentUserAnswer = reviewData.userAnswers.find(
+              (ua) => ua.question_id === currentQuestion.id
+            )
+            const isSecondTryCorrect =
+              isCorrect && !!currentUserAnswer?.viewed_correct_answer_at
+
+            return (
+              <QuestionDisplay
+                question={currentQuestion}
+                questionNumber={currentQuestionInModule}
+                totalQuestions={totalQuestionsInModule}
+                userAnswer={userAnswer || undefined}
+                onAnswerChange={() => {}} // No-op in review mode
+                showExplanation={showCorrectAnswers}
+                disabled={true} // All inputs disabled in review mode
+                isAdminPreview={false}
+                isCorrect={isCorrect}
+                isSecondTryCorrect={isSecondTryCorrect}
+                moduleDisplayName={getModuleDisplayName(currentModule)}
+              />
+            )
+          })()}
         </div>
 
         {/* Review-specific Footer */}

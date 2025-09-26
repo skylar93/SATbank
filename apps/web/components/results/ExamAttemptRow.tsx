@@ -16,6 +16,7 @@ import {
   BoltIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline'
 import {
   getDisplayScore,
@@ -26,13 +27,16 @@ import {
 interface ExamAttemptRowProps {
   attempt: TestAttempt & { exam?: Exam }
   resultVisibility: any
+  onDelete?: (attemptId: string) => Promise<void>
 }
 
 export function ExamAttemptRow({
   attempt,
   resultVisibility,
+  onDelete,
 }: ExamAttemptRowProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const canShowResults = canShowAttemptResults(attempt, resultVisibility)
   const finalScores = attempt.final_scores
@@ -40,6 +44,23 @@ export function ExamAttemptRow({
 
   // For now, we'll disable accuracy calculation until we have access to user_answers
   const accuracy = null
+
+  const handleDelete = async () => {
+    if (!onDelete) return
+
+    if (!confirm('Are you sure you want to delete this exam attempt? This action cannot be undone.')) {
+      return
+    }
+
+    setIsDeleting(true)
+    try {
+      await onDelete(attempt.id)
+    } catch (error) {
+      console.error('Failed to delete attempt:', error)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   return (
     <>
@@ -233,13 +254,26 @@ export function ExamAttemptRow({
                 )}
 
                 {attempt.status === 'in_progress' && (
-                  <Link
-                    href={`/student/exam/${attempt.exam_id}`}
-                    className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:from-green-600 hover:to-emerald-600 transition-colors text-sm font-medium"
-                  >
-                    <BookOpenIcon className="w-4 h-4" />
-                    <span>Continue Exam</span>
-                  </Link>
+                  <>
+                    <Link
+                      href={`/student/exam/${attempt.exam_id}`}
+                      className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:from-green-600 hover:to-emerald-600 transition-colors text-sm font-medium"
+                    >
+                      <BookOpenIcon className="w-4 h-4" />
+                      <span>Continue Exam</span>
+                    </Link>
+
+                    {onDelete && (
+                      <button
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                        <span>{isDeleting ? 'Deleting...' : 'Delete'}</span>
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

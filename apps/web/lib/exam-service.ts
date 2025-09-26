@@ -78,6 +78,7 @@ export interface UserAnswer {
   is_correct: boolean | null
   time_spent_seconds: number
   answered_at: string
+  viewed_correct_answer_at: string | null
 }
 
 export interface CreateTestAttempt {
@@ -599,15 +600,10 @@ export class ExamService {
     if (!userAnswer || !question.correct_answer) return false
 
     if (question.question_type === 'grid_in') {
-      // For grid-in questions, check against all possible correct answers
-      const correctAnswers = question.correct_answers || [
-        question.correct_answer,
-      ]
-      return correctAnswers.some(
-        (correct) =>
-          String(correct).trim().toLowerCase() ===
-          String(userAnswer).trim().toLowerCase()
-      )
+      // Import the grid-in validator
+      const { validateGridInAnswer } = require('./grid-in-validator')
+      const result = validateGridInAnswer(question, userAnswer)
+      return result.isCorrect
     }
 
     // For multiple choice, direct comparison
@@ -665,16 +661,21 @@ export class ExamService {
     )
 
     // Get all incorrect answers for this attempt with question details
+    // Include: is_correct = false, is_correct = null, or user_answer is empty/null
     const { data: incorrectAnswers, error } = await supabase
       .from('user_answers')
       .select(
         `
         question_id,
+        user_answer,
+        is_correct,
         questions!inner (*)
       `
       )
       .eq('attempt_id', attemptId)
-      .eq('is_correct', false)
+      .or(
+        'is_correct.eq.false,is_correct.is.null,user_answer.is.null,user_answer.eq.'
+      )
 
     if (error) {
       console.error('❌ getIncorrectQuestionsForAttempt: Query error:', error)
@@ -682,15 +683,33 @@ export class ExamService {
     }
 
     console.log(
-      `✅ getIncorrectQuestionsForAttempt: Found ${incorrectAnswers?.length || 0} incorrect answers`
+      `✅ getIncorrectQuestionsForAttempt: Found ${incorrectAnswers?.length || 0} answers to check`
     )
 
     if (!incorrectAnswers || incorrectAnswers.length === 0) {
       return []
     }
 
+    // Filter to only truly incorrect answers (false, null, empty, or whitespace-only)
+    const trulyIncorrectAnswers = incorrectAnswers.filter((item: any) => {
+      return (
+        item.is_correct === false ||
+        item.is_correct === null ||
+        !item.user_answer ||
+        item.user_answer.trim() === ''
+      )
+    })
+
+    console.log(
+      `✅ getIncorrectQuestionsForAttempt: Found ${trulyIncorrectAnswers.length} truly incorrect answers`
+    )
+
+    if (trulyIncorrectAnswers.length === 0) {
+      return []
+    }
+
     // Extract questions and sort by module_type and question_number (original order)
-    const questions = incorrectAnswers
+    const questions = trulyIncorrectAnswers
       .map((item: any) => item.questions)
       .filter((question: Question | null) => question !== null) as Question[]
 

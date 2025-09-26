@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { formatDuration } from '../../lib/utils'
+import { getDisplayScores } from '../../lib/score-display-utils'
 import {
   MagnifyingGlassIcon,
   TableCellsIcon,
@@ -10,12 +11,14 @@ import {
 import AttemptsTable from './AttemptsTable'
 import StudentsTable from './StudentsTable'
 import FilterBar from './FilterBar'
+import { usePersistentState } from '@/lib/hooks/use-persistent-state'
 
 interface AttemptData {
   attempt_id: string
   completed_at: string
   duration_seconds: number
   final_scores: {
+    overall?: number
     english?: number
     math?: number
   } | null
@@ -24,6 +27,7 @@ interface AttemptData {
   student_email: string
   exam_id: string
   exam_title: string
+  template_id?: string | null
 }
 
 interface StudentData {
@@ -52,23 +56,21 @@ interface ReportsClientProps {
 }
 
 export default function ReportsClient({ attempts }: ReportsClientProps) {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [viewMode, setViewMode] = useState<'attempts' | 'students'>('attempts')
-  const [filters, setFilters] = useState<FilterState>({
+  const [searchTerm, setSearchTerm] = usePersistentState('admin-reports-search', '')
+  const [viewMode, setViewMode] = usePersistentState<'attempts' | 'students'>('admin-reports-view-mode', 'students')
+  const [filters, setFilters] = usePersistentState<FilterState>('admin-reports-filters', {
     examFilter: '',
     studentFilter: '',
     scoreRangeFilter: '',
   })
-  const [sortConfig, setSortConfig] = useState<SortConfig>({
+  const [sortConfig, setSortConfig] = usePersistentState<SortConfig>('admin-reports-sort', {
     key: 'completed_at',
     direction: 'desc',
   })
 
   const calculateTotalScore = (finalScores: AttemptData['final_scores']) => {
     if (!finalScores) return 0
-    const englishScore = finalScores.english || 0
-    const mathScore = finalScores.math || 0
-    return englishScore + mathScore
+    return finalScores.overall || 0
   }
 
   const studentsData = useMemo(() => {

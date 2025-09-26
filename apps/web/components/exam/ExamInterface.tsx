@@ -194,7 +194,6 @@ export function ExamInterface({
           isLastModule={currentModuleIndex >= modules.length - 1}
         />
       )}
-
     </div>
   )
 }

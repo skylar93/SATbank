@@ -18,11 +18,15 @@ import { ImageUpload } from '../image-upload'
 import { HelpCircle } from 'lucide-react'
 import { TableEditor } from '../admin/TableEditor'
 import { parseTableFromMarkdown, buildTableMarkdown } from '../../lib/utils'
-import { HighlightedTextRenderer } from './HighlightedTextRenderer'
+import { HighlightedTextRendererMemo } from './HighlightedTextRenderer'
 import FloatingHighlightButton from './FloatingHighlightButton'
 import { AnswerRevealCard } from './AnswerRevealCard'
 import { ContentRenderer } from '../content-renderer'
 import { QuestionTimer } from './question-timer'
+import {
+  parseCorrectAnswers,
+  formatCorrectAnswersDisplay,
+} from '../../lib/grid-in-validator'
 
 // HTML rendering function for content that is already in HTML format
 export const renderHtmlContent = (htmlContent: string) => {
@@ -32,6 +36,45 @@ export const renderHtmlContent = (htmlContent: string) => {
   if (htmlContent.includes('data-math')) {
     // Use ContentRenderer to handle math rendering
     return <ContentRenderer htmlContent={htmlContent} />
+  }
+
+  // Check if content contains $...$ patterns and convert them for KaTeX rendering
+  if (htmlContent.includes('$')) {
+    const processedHtml = htmlContent
+      .replace(/\$([^$]+)\$/g, (match, latex) => {
+        return `<span data-math="${latex}" data-inline="true"></span>`
+      })
+      .replace(/\$\$([^$]+)\$\$/g, (match, latex) => {
+        return `<span data-math="${latex}" data-inline="false"></span>`
+      })
+
+    // If we processed any math, use ContentRenderer
+    if (processedHtml !== htmlContent) {
+      return <ContentRenderer htmlContent={processedHtml} />
+    }
+  }
+
+  // Auto-detect simple mathematical expressions and wrap them in $ delimiters
+  let processedContent = htmlContent
+
+  // Pattern for simple equations like s=10+4t, x+y=5, etc.
+  const simpleEquationPattern =
+    /\b([a-zA-Z]\s*[=+\-*/]\s*[\da-zA-Z+\-*/\s]+(?:[=+\-*/]\s*[\da-zA-Z+\-*/\s]*)*)\b/g
+
+  processedContent = processedContent.replace(
+    simpleEquationPattern,
+    (match) => {
+      // Only process if it looks like an equation (contains = or is a simple expression)
+      if (match.includes('=') || /^[a-zA-Z]\s*[+\-*/]\s*\d/.test(match)) {
+        return `<span data-math="${match.trim()}" data-inline="true"></span>`
+      }
+      return match
+    }
+  )
+
+  // If we processed any math expressions, use ContentRenderer
+  if (processedContent !== htmlContent) {
+    return <ContentRenderer htmlContent={processedContent} />
   }
 
   return (
@@ -47,9 +90,27 @@ export const renderHtmlContent = (htmlContent: string) => {
 export const renderTextWithFormattingAndMath = (text: string) => {
   if (!text || typeof text !== 'string') return text
 
+  // Auto-detect simple mathematical expressions and wrap them in $ delimiters
+  let processedText = text
+
+  // Pattern for simple equations like s=10+4t, x+y=5, etc.
+  const simpleEquationPattern =
+    /\b([a-zA-Z]\s*[=+\-*/]\s*[\da-zA-Z+\-*/\s]+(?:[=+\-*/]\s*[\da-zA-Z+\-*/\s]*)*)\b/g
+
+  processedText = processedText.replace(simpleEquationPattern, (match) => {
+    // Only process if it looks like an equation and isn't already wrapped in $
+    if (
+      (match.includes('=') || /^[a-zA-Z]\s*[+\-*/]\s*\d/.test(match)) &&
+      !text.includes(`$${match}$`)
+    ) {
+      return `$${match.trim()}$`
+    }
+    return match
+  })
+
   // First, handle escaped dollar signs by replacing \$ with a unique placeholder
   const escapedDollarPlaceholder = '§§§DOLLAR§§§'
-  const processedText = text.replace(/\\\$/g, escapedDollarPlaceholder)
+  processedText = processedText.replace(/\\\$/g, escapedDollarPlaceholder)
 
   // Function to restore escaped dollars in final output
   const restoreEscapedDollars = (content: string): string => {
@@ -350,6 +411,7 @@ interface QuestionDisplayProps {
   isMarkedForReview?: boolean
   onToggleMarkForReview?: () => void
   isCorrect?: boolean
+  isSecondTryCorrect?: boolean
   moduleDisplayName?: string
   questionContentRef?: React.RefObject<HTMLDivElement>
   highlights?: Highlight[]
@@ -368,78 +430,6 @@ interface QuestionDisplayProps {
   examId?: string
 }
 
-// Helper function to parse correct answers for grid-in questions
-const parseCorrectAnswers = (question: Question): string[] => {
-  if (question.question_type !== 'grid_in') {
-    return []
-  }
-
-  let answers: string[] | string | null = question.correct_answers
-
-  // Handle null/undefined
-  if (!answers) {
-    return [question.correct_answer || '']
-  }
-
-  // Handle array case
-  if (Array.isArray(answers)) {
-    const parsedAnswers: string[] = []
-
-    for (const answer of answers) {
-      if (
-        typeof answer === 'string' &&
-        (answer.startsWith('[') || answer.startsWith('"'))
-      ) {
-        // Try to parse as JSON
-        try {
-          const parsed = JSON.parse(answer)
-
-          if (Array.isArray(parsed)) {
-            // If parsed result is an array, add all elements
-            parsedAnswers.push(
-              ...parsed.map((p: any) => String(p || '').trim())
-            )
-          } else {
-            // If parsed result is a single value, add it
-            parsedAnswers.push(String(parsed || '').trim())
-          }
-        } catch (error) {
-          // If parsing fails, treat as regular string
-          parsedAnswers.push(String(answer || '').trim())
-        }
-      } else {
-        // Regular string, just add it
-        parsedAnswers.push(String(answer || '').trim())
-      }
-    }
-
-    const filtered = parsedAnswers.filter((a: string) => a.length > 0)
-    return filtered.length > 0 ? filtered : [question.correct_answer || '']
-  }
-
-  // If it's a string, try to parse it as JSON
-  if (typeof answers === 'string') {
-    try {
-      answers = JSON.parse(answers)
-
-      if (Array.isArray(answers)) {
-        const filtered = answers
-          .map((a: any) => String(a || '').trim())
-          .filter((a: string) => a.length > 0)
-        return filtered.length > 0 ? filtered : [question.correct_answer || '']
-      } else {
-        return [String(answers).trim()]
-      }
-    } catch (error) {
-      // If parsing fails, treat as single answer
-      return [String(answers || '')]
-    }
-  }
-
-  // Fallback for other types
-  return [String(answers) || question.correct_answer || '']
-}
-
 export function QuestionDisplay({
   question,
   questionNumber,
@@ -453,6 +443,7 @@ export function QuestionDisplay({
   isMarkedForReview = false,
   onToggleMarkForReview,
   isCorrect,
+  isSecondTryCorrect = false,
   moduleDisplayName,
   questionContentRef,
   highlights = [],
@@ -494,6 +485,24 @@ export function QuestionDisplay({
   })
   const [saving, setSaving] = useState(false)
   const [showFormattingHelp, setShowFormattingHelp] = useState(false)
+
+  // Answer elimination state
+  const [eliminatedAnswers, setEliminatedAnswers] = useState<Set<string>>(
+    new Set()
+  )
+
+  // Handle answer elimination
+  const toggleAnswerElimination = (answerKey: string) => {
+    setEliminatedAnswers((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(answerKey)) {
+        newSet.delete(answerKey)
+      } else {
+        newSet.add(answerKey)
+      }
+      return newSet
+    })
+  }
 
   // Dual Mode state
   const [currentEditorMode, setCurrentEditorMode] = useState<
@@ -538,6 +547,8 @@ export function QuestionDisplay({
   // Update local question when prop changes
   useEffect(() => {
     setLocalQuestion(question)
+    // Reset eliminated answers when question changes
+    setEliminatedAnswers(new Set())
     // Reset the form directly with the new question's data.
     // The processing will be handled by handleEditClick when needed.
     setEditForm({
@@ -688,7 +699,9 @@ export function QuestionDisplay({
       correct_answers: parseCorrectAnswers(localQuestion),
       explanation: localQuestion.explanation || '',
       table_data: localQuestion.table_data || null,
-      content_format: localQuestion.content_format || 'markdown',
+      content_format:
+        localQuestion.content_format ||
+        (localQuestion.question_html ? 'html' : 'markdown'),
     })
 
     // THEN, enter edit mode
@@ -705,10 +718,13 @@ export function QuestionDisplay({
       correct_answers: parseCorrectAnswers(localQuestion),
       explanation: localQuestion.explanation || '',
       table_data: localQuestion.table_data || null,
-      content_format: localQuestion.content_format || 'markdown',
+      content_format:
+        localQuestion.content_format ||
+        (localQuestion.question_html ? 'html' : 'markdown'),
     })
     setCurrentEditorMode(
-      (localQuestion.content_format as 'markdown' | 'html') || 'markdown'
+      (localQuestion.content_format as 'markdown' | 'html') ||
+        (localQuestion.question_html ? 'html' : 'markdown')
     )
     setIsEditing(false)
   }
@@ -1089,6 +1105,7 @@ export function QuestionDisplay({
 
             const isCorrectAnswer = normalizedCorrectAnswer === normalizedKey
             const isUserAnswer = normalizedUserAnswer === normalizedKey
+            const isEliminated = eliminatedAnswers.has(key)
 
             return (
               <label
@@ -1096,6 +1113,7 @@ export function QuestionDisplay({
                 className={`
                 flex items-start p-3 rounded-lg transition-all
                 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                ${isEliminated ? 'opacity-40' : ''}
                 ${
                   // Priority 1: If this is the correct answer and student got it wrong, show green styling
                   showExplanation && isCorrectAnswer && !isUserAnswer
@@ -1105,7 +1123,9 @@ export function QuestionDisplay({
                       ? showExplanation || disabled
                         ? isCorrect !== undefined
                           ? isCorrect
-                            ? 'bg-green-50 border-2 border-green-500 ring-1 ring-green-200'
+                            ? isSecondTryCorrect
+                              ? 'bg-yellow-50 border-2 border-yellow-400 ring-2 ring-green-300 shadow-md'
+                              : 'bg-green-50 border-2 border-green-500 ring-1 ring-green-200'
                             : 'bg-red-50 border-2 border-red-500 ring-1 ring-red-200'
                           : 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200'
                         : 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200'
@@ -1115,6 +1135,18 @@ export function QuestionDisplay({
                         : 'bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }
               `}
+                onContextMenu={(e) => {
+                  e.preventDefault()
+                  if (!disabled && !showExplanation) {
+                    toggleAnswerElimination(key)
+                  }
+                }}
+                onDoubleClick={(e) => {
+                  e.preventDefault()
+                  if (!disabled && !showExplanation) {
+                    toggleAnswerElimination(key)
+                  }
+                }}
               >
                 <input
                   type="radio"
@@ -1127,46 +1159,15 @@ export function QuestionDisplay({
                     disabled || (showExplanation && !showPerQuestionAnswers)
                   }
                 />
-                <div className="flex-1">
+                <div className={`flex-1 ${isEliminated ? 'line-through' : ''}`}>
                   <div className="flex items-center mb-1">
                     <span className="font-semibold text-gray-700 mr-2">
                       {key}.
                     </span>
-                    {showExplanation && (
-                      <>
-                        {isCorrectAnswer && (
-                          <span
-                            className={`text-sm font-bold ${
-                              !isUserAnswer
-                                ? 'text-green-700 bg-green-100 px-2 py-1 rounded-full border border-green-300'
-                                : 'text-green-600 font-medium'
-                            }`}
-                          >
-                            ✓ Correct Answer
-                          </span>
-                        )}
-                        {isUserAnswer && (
-                          <span
-                            className={`text-sm font-medium ${
-                              isCorrect !== undefined
-                                ? isCorrect
-                                  ? 'text-green-600'
-                                  : 'text-red-600'
-                                : isCorrectAnswer
-                                  ? 'text-green-600'
-                                  : 'text-red-600'
-                            }`}
-                          >
-                            {isCorrect !== undefined
-                              ? isCorrect
-                                ? '✓ Your Answer (Correct)'
-                                : '✗ Your Answer (Incorrect)'
-                              : isCorrectAnswer
-                                ? '✓ Your Answer (Correct)'
-                                : '✗ Your Answer (Incorrect)'}
-                          </span>
-                        )}
-                      </>
+                    {isEliminated && (
+                      <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">
+                        Eliminated
+                      </span>
                     )}
                   </div>
                   <div className="text-gray-900 leading-relaxed">
@@ -1262,7 +1263,9 @@ export function QuestionDisplay({
                 disabled || (showExplanation && !showPerQuestionAnswers)
                   ? isCorrect !== undefined
                     ? isCorrect
-                      ? 'border-green-500 bg-green-50 cursor-not-allowed ring-1 ring-green-200'
+                      ? isSecondTryCorrect
+                        ? 'border-yellow-400 bg-yellow-50 cursor-not-allowed ring-2 ring-green-200'
+                        : 'border-green-500 bg-green-50 cursor-not-allowed ring-1 ring-green-200'
                       : 'border-red-500 bg-red-50 cursor-not-allowed ring-1 ring-red-200'
                     : 'border-gray-300 bg-gray-50 cursor-not-allowed'
                   : 'border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200'
@@ -1273,44 +1276,15 @@ export function QuestionDisplay({
               }
             />
           </div>
-          {showExplanation && (
+          {showExplanation && isCorrect === false && (
             <div className="space-y-3">
-              <div
-                className={`p-4 border rounded-lg ${
-                  isCorrect !== false
-                    ? 'bg-green-50 border-green-200'
-                    : 'bg-green-100 border-2 border-green-500 ring-1 ring-green-200'
-                }`}
-              >
-                <p
-                  className={`text-sm ${
-                    isCorrect !== false
-                      ? 'text-green-800'
-                      : 'text-green-900 font-bold'
-                  }`}
-                >
-                  <strong
-                    className={isCorrect === false ? 'text-green-800' : ''}
-                  >
-                    Correct Answer
-                    {(() => {
-                      if (localQuestion.question_type === 'grid_in') {
-                        const parsedAnswers = parseCorrectAnswers(localQuestion)
-                        return parsedAnswers.length > 1 ? 's' : ''
-                      }
-                      return ''
-                    })()}
-                    :
-                  </strong>{' '}
-                  <span
-                    className={
-                      isCorrect === false
-                        ? 'bg-green-200 px-2 py-1 rounded font-bold'
-                        : ''
-                    }
-                  >
+              <div className="p-4 border rounded-lg bg-green-100 border-2 border-green-500 ring-1 ring-green-200">
+                <p className="text-sm text-green-900 font-bold">
+                  <span className="bg-green-200 px-2 py-1 rounded font-bold">
                     {localQuestion.question_type === 'grid_in'
-                      ? parseCorrectAnswers(localQuestion).join(', ')
+                      ? formatCorrectAnswersDisplay(
+                          parseCorrectAnswers(localQuestion)
+                        )
                       : localQuestion.correct_answer}
                   </span>
                 </p>
@@ -1320,7 +1294,9 @@ export function QuestionDisplay({
                   className={`p-3 border rounded-lg ${
                     isCorrect !== undefined
                       ? isCorrect
-                        ? 'bg-green-50 border-green-200'
+                        ? isSecondTryCorrect
+                          ? 'bg-yellow-50 border-yellow-200 ring-1 ring-green-200'
+                          : 'bg-green-50 border-green-200'
                         : 'bg-red-50 border-red-200'
                       : 'bg-gray-50 border-gray-200'
                   }`}
@@ -1329,7 +1305,9 @@ export function QuestionDisplay({
                     className={`text-sm ${
                       isCorrect !== undefined
                         ? isCorrect
-                          ? 'text-green-800'
+                          ? isSecondTryCorrect
+                            ? 'text-yellow-800'
+                            : 'text-green-800'
                           : 'text-red-800'
                         : 'text-gray-800'
                     }`}
@@ -1789,7 +1767,7 @@ export function QuestionDisplay({
               ref={questionContentRef}
               className="text-gray-900 leading-relaxed relative overflow-visible min-h-[60px]"
             >
-              <HighlightedTextRenderer
+              <HighlightedTextRendererMemo
                 text={(() => {
                   // Simple priority-based rendering: HTML first, then fallback to markdown
                   if (
@@ -1818,6 +1796,22 @@ export function QuestionDisplay({
                   onHighlight={onAddHighlight}
                   examTitle={examTitle}
                   examId={examId}
+                  isHtml={
+                    !!(
+                      localQuestion.question_html &&
+                      !isEmptyHtml(localQuestion.question_html)
+                    )
+                  }
+                  originalText={(() => {
+                    if (
+                      localQuestion.question_html &&
+                      !isEmptyHtml(localQuestion.question_html)
+                    ) {
+                      return localQuestion.question_html
+                    } else {
+                      return localQuestion.question_text
+                    }
+                  })()}
                 />
               )}
             </div>
@@ -1849,11 +1843,19 @@ export function QuestionDisplay({
       {/* Answer Selection Area */}
       <div className="flex-1 lg:w-1/2 p-6 lg:pl-3">
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
             {localQuestion.question_type === 'multiple_choice'
               ? 'Select your answer:'
               : 'Enter your answer:'}
           </h3>
+          {localQuestion.question_type === 'multiple_choice' &&
+            !isAdminPreview &&
+            !showExplanation && (
+              <p className="text-sm text-gray-600 mb-4">
+                💡 Right-click or double-click on answer choices to eliminate
+                them
+              </p>
+            )}
 
           {renderAnswerOptions()}
 

@@ -53,10 +53,17 @@ function convertChoicesToOptions(choices) {
   
   const options = {};
   choices.forEach(choice => {
-    const match = choice.match(/^([A-D])\)\s*(.*)$/);
-    if (match) {
-      const [, letter, text] = match;
-      options[letter] = text.trim();
+    // Handle new object format: {images: [], letter: "A", text: "universal"}
+    if (typeof choice === 'object' && choice.letter && choice.text) {
+      options[choice.letter] = choice.text.trim();
+    }
+    // Handle old string format: "A) universal"
+    else if (typeof choice === 'string') {
+      const match = choice.match(/^([A-D])\)\s*(.*)$/);
+      if (match) {
+        const [, letter, text] = match;
+        options[letter] = text.trim();
+      }
     }
   });
   return options;
@@ -67,23 +74,53 @@ function extractCorrectAnswerLetter(correctAnswer, choices) {
   if (!correctAnswer || !choices) return 'A';
   
   for (const choice of choices) {
-    const match = choice.match(/^([A-D])\)\s*(.*)$/);
-    if (match) {
-      const [, letter, text] = match;
-      if (text.trim() === correctAnswer.trim()) {
-        return letter;
+    let letter, text;
+    
+    // Handle new object format: {images: [], letter: "A", text: "universal"}
+    if (typeof choice === 'object' && choice.letter && choice.text) {
+      letter = choice.letter;
+      text = choice.text;
+    }
+    // Handle old string format: "A) universal"
+    else if (typeof choice === 'string') {
+      const match = choice.match(/^([A-D])\)\s*(.*)$/);
+      if (match) {
+        [, letter, text] = match;
+      } else {
+        continue;
       }
+    } else {
+      continue;
+    }
+    
+    if (text.trim() === correctAnswer.trim()) {
+      return letter;
     }
   }
   
   // Fallback: partial match
   for (const choice of choices) {
-    const match = choice.match(/^([A-D])\)\s*(.*)$/);
-    if (match) {
-      const [, letter, text] = match;
-      if (correctAnswer.includes(text.trim()) || text.trim().includes(correctAnswer)) {
-        return letter;
+    let letter, text;
+    
+    // Handle new object format
+    if (typeof choice === 'object' && choice.letter && choice.text) {
+      letter = choice.letter;
+      text = choice.text;
+    }
+    // Handle old string format
+    else if (typeof choice === 'string') {
+      const match = choice.match(/^([A-D])\)\s*(.*)$/);
+      if (match) {
+        [, letter, text] = match;
+      } else {
+        continue;
       }
+    } else {
+      continue;
+    }
+    
+    if (correctAnswer.includes(text.trim()) || text.trim().includes(correctAnswer)) {
+      return letter;
     }
   }
   
@@ -526,10 +563,21 @@ function getTopicFromModuleType(moduleType) {
 
 // Create or get exam
 async function createOrGetExam(testId, testName, totalQuestions) {
-  // Format exam title: "August 2023 English1" (capitalize first letter of month and year, add module type)
   const moduleType = mapModuleType(testId);
-  let formattedDate = testName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  
+
+  // Clean up the test name to remove Module1/Module2 prefix, Form parts, and fix US capitalization
+  let cleanedName = testName
+    .replace(/Module\s*[12]\s*/gi, '')     // Remove Module1 or Module2 with trailing space
+    .replace(/module\s*[12]\s*/gi, '')     // Remove module1 or module2 with trailing space
+    .replace(/Form\s*[A-Z]\s*/gi, '')      // Remove Form A, Form B, etc. with trailing space
+    .replace(/form\s*[a-z]\s*/gi, '')      // Remove form a, form b, etc. with trailing space
+    .replace(/\bUs\b/gi, 'US')             // Fix Us to US (case insensitive)
+    .replace(/\s+/g, ' ')                  // Normalize whitespace
+    .trim();
+
+  // Format the cleaned name (capitalize first letter of each word)
+  let formattedDate = cleanedName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
   // Add module type to the title (English1, English2, Math1, Math2)
   let moduleTypeName;
   switch(moduleType) {
@@ -548,7 +596,7 @@ async function createOrGetExam(testId, testName, totalQuestions) {
     default:
       moduleTypeName = 'English1';
   }
-  
+
   const examTitle = `${formattedDate} ${moduleTypeName}`;
   
   // Check if exam exists
@@ -560,8 +608,9 @@ async function createOrGetExam(testId, testName, totalQuestions) {
     
   if (examError && examError.code === 'PGRST116') {
     // Create new exam
-    const timeLimit = moduleType.includes('english') ? 64 : 70; // English: 64min, Math: 70min
-    
+    // English modules: 32 minutes, Math modules: different times
+    const timeLimit = moduleType.includes('english') ? 32 : 70; // English: 32min, Math: 70min
+
     const { data: newExam, error: createError } = await supabase
       .from('exams')
       .insert([{
@@ -573,6 +622,9 @@ async function createOrGetExam(testId, testName, totalQuestions) {
           english2: moduleType === 'english2' ? timeLimit : 0,
           math1: moduleType === 'math1' ? timeLimit : 0,
           math2: moduleType === 'math2' ? timeLimit : 0
+        },
+        module_composition: {
+          [moduleType]: true
         },
         total_questions: totalQuestions,
         is_active: true,
@@ -660,7 +712,7 @@ async function processTestData(testFilter = null, questionLimit = null, dryRun =
     console.log('🚀 Starting Bluebook SAT Import Process...\n');
     
     // Load data
-    const dataPath = path.join(__dirname, 'bluebook-sat-problems-2025-09-01.json');
+    const dataPath = path.join(__dirname, 'bluebook-sat-problems-2025-09-24.json');
     const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
     
     console.log(`📊 Loaded data with ${data.tests.length} tests`);
@@ -708,6 +760,18 @@ async function processTestData(testFilter = null, questionLimit = null, dryRun =
         sampleQuestions.forEach((question, index) => {
           console.log(`   Question ${question.questionNumber}:`);
           console.log(`      Original choices: ${question.choices?.length || 0}`);
+          
+          // Show choice format
+          if (question.choices && question.choices.length > 0) {
+            const firstChoice = question.choices[0];
+            if (typeof firstChoice === 'object') {
+              console.log(`      Choice format: NEW (object with letter/text)`);
+              console.log(`      Sample choice: ${JSON.stringify(firstChoice)}`);
+            } else {
+              console.log(`      Choice format: OLD (string format)`);
+            }
+          }
+          
           console.log(`      Original correct: "${question.correctAnswer?.slice(0, 50)}..."`);
           console.log(`      Has meaningful images: ${hasMeaningfulImages(question.imageUrls) ? '✅' : '❌'}`);
           console.log(`      Total imageUrls: ${question.imageUrls?.length || 0}`);
@@ -718,12 +782,14 @@ async function processTestData(testFilter = null, questionLimit = null, dryRun =
             console.log(`      → Options: ${JSON.stringify(processed.options)}`);
             console.log(`      → Correct: ${processed.correct_answer}`);
             console.log(`      → Image URL: ${processed.question_image_url ? '✅' : '❌'}`);
-            console.log(`      → HTML content length: ${processed.question_html.length} chars`);
-            console.log(`      → Plain text length: ${processed.question_text.length} chars`);
+            console.log(`      → HTML content length: ${processed.question_html?.length || 0} chars`);
+            console.log(`      → Plain text length: ${processed.question_text?.length || 0} chars`);
             
             // Show HTML preview
-            const htmlPreview = processed.question_html.slice(0, 200).replace(/\n/g, ' ');
-            console.log(`      → HTML preview: "${htmlPreview}..."`);
+            if (processed.question_html) {
+              const htmlPreview = processed.question_html.slice(0, 200).replace(/\n/g, ' ');
+              console.log(`      → HTML preview: "${htmlPreview}..."`);
+            }
           }
           console.log('');
         });

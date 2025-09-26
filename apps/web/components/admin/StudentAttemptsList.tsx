@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { TrashIcon } from '@heroicons/react/24/outline'
+import DeleteAttemptConfirmDialog from './DeleteAttemptConfirmDialog'
 
 interface TestAttemptWithVisibility {
   id: string
@@ -26,15 +28,20 @@ interface TestAttemptWithVisibility {
 interface StudentAttemptsListProps {
   attempts: TestAttemptWithVisibility[]
   onVisibilityUpdate: () => void
+  studentName?: string
 }
 
 export default function StudentAttemptsList({
   attempts,
   onVisibilityUpdate,
+  studentName = 'Student',
 }: StudentAttemptsListProps) {
   const [updatingAttempts, setUpdatingAttempts] = useState<Set<string>>(
     new Set()
   )
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [attemptToDelete, setAttemptToDelete] =
+    useState<TestAttemptWithVisibility | null>(null)
 
   const handleVisibilityToggle = async (
     attemptId: string,
@@ -69,6 +76,45 @@ export default function StudentAttemptsList({
         return newSet
       })
     }
+  }
+
+  const handleDeleteClick = (attempt: TestAttemptWithVisibility) => {
+    setAttemptToDelete(attempt)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!attemptToDelete) return
+
+    try {
+      const response = await fetch(
+        `/api/admin/attempts/${attemptToDelete.id}`,
+        {
+          method: 'DELETE',
+        }
+      )
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to delete attempt')
+      }
+
+      // Refresh the data in the parent component
+      onVisibilityUpdate()
+
+      // Show success message (you can replace with toast notification)
+      alert('Test attempt deleted successfully')
+    } catch (error) {
+      console.error('Error deleting attempt:', error)
+      alert(
+        `Failed to delete attempt: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false)
+    setAttemptToDelete(null)
   }
 
   const getDisplayScore = (attempt: TestAttemptWithVisibility): number => {
@@ -252,6 +298,13 @@ export default function StudentAttemptsList({
                             View Results
                           </Link>
                         )}
+                        <button
+                          onClick={() => handleDeleteClick(attempt)}
+                          className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full transition-all duration-200 group"
+                          title="Delete this test attempt"
+                        >
+                          <TrashIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -261,6 +314,15 @@ export default function StudentAttemptsList({
           </table>
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteAttemptConfirmDialog
+        isOpen={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        attempt={attemptToDelete}
+        studentName={studentName}
+      />
     </div>
   )
 }

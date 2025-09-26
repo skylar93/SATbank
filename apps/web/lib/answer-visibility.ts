@@ -7,6 +7,7 @@ export interface TestAttemptWithVisibility {
   id: string
   answers_visible: boolean
   answers_visible_after: string | null
+  review_attempt_taken?: boolean
   [key: string]: any
 }
 
@@ -17,6 +18,11 @@ export interface TestAttemptWithVisibility {
  */
 export function canShowAnswers(attempt: TestAttemptWithVisibility): boolean {
   const now = new Date()
+
+  // If second chance review was completed, always show answers
+  if (attempt.review_attempt_taken) {
+    return true
+  }
 
   // If answers are explicitly set to visible
   if (attempt.answers_visible) {

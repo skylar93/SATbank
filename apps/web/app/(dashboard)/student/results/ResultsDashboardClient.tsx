@@ -290,6 +290,7 @@ export default function ResultsDashboardClient({
                       key={attempt.id}
                       attempt={attempt}
                       resultVisibility={resultVisibility}
+                      onDelete={handleDeleteAttempt}
                     />
                   ))}
                 </TableBody>

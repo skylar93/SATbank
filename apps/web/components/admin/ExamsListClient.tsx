@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
@@ -9,6 +9,9 @@ import AnswerReleaseModal from '@/components/admin/AnswerReleaseModal'
 import { ExamRow } from './ExamRow'
 import { Button } from '@/components/ui/button'
 import { CreateExamModal } from './CreateExamModal'
+import { usePersistentState } from '@/lib/hooks/use-persistent-state'
+import { useCachedData } from '@/lib/hooks/use-cached-data'
+import { LoadingOverlay } from '@/components/ui/loading-overlay'
 
 // Interface for the data returned by get_admin_exams_list RPC
 interface RpcExamData {
@@ -25,6 +28,7 @@ interface RpcExamData {
   latest_attempt_visibility: boolean | null
   latest_attempt_visible_after: string | null
   total_attempts_count: number
+  template_id: string | null
   default_answers_visible: boolean
   default_answers_visible_after: string | null
 }
@@ -39,6 +43,8 @@ interface ExamWithCurves {
   math_scoring_curve_id: number | null
   english_curve_name: string | null
   math_curve_name: string | null
+  template_id: string | null
+  scoring_groups?: { [key: string]: string[] }
   answer_release_setting?: {
     type: 'hidden' | 'immediate' | 'scheduled'
     scheduled_date?: Date
@@ -48,39 +54,49 @@ interface ExamWithCurves {
 export function ExamsListClient() {
   const { user, isAdmin, loading: authLoading } = useAuth()
   const router = useRouter()
-  const [exams, setExams] = useState<ExamWithCurves[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filteredExams, setFilteredExams] = useState<ExamWithCurves[]>([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const [modalState, setModalState] = useState<{
-    isOpen: boolean
-    examId: string
-    examTitle: string
-  }>({
-    isOpen: false,
-    examId: '',
-    examTitle: '',
-  })
 
-  // Fetch exams using the optimized RPC function
-  useEffect(() => {
-    if (user && isAdmin) {
-      fetchExamsOptimized()
-    }
-  }, [user, isAdmin])
+  // Template data with caching
+  const {
+    data: templates,
+    refresh: refreshTemplates,
+  } = useCachedData(
+    async () => {
+      const { data, error } = await supabase
+        .from('exam_templates')
+        .select('id, scoring_groups')
 
-  const fetchExamsOptimized = async () => {
-    setLoading(true)
-    try {
-      // Use the optimized RPC function for better performance
-      const { data: rpcData, error } = await supabase.rpc(
-        'get_admin_exams_list'
-      )
+      if (error) {
+        console.error('Error fetching templates:', error)
+        return {}
+      }
+
+      const templatesMap: {
+        [key: string]: { scoring_groups: { [key: string]: string[] } }
+      } = {}
+      data?.forEach((template) => {
+        templatesMap[template.id] = {
+          scoring_groups: template.scoring_groups || {},
+        }
+      })
+      return templatesMap
+    },
+    { key: 'admin-templates', ttl: 10 * 60 * 1000 } // 10 minutes cache
+  )
+
+  // Exam data with caching
+  const {
+    data: exams,
+    loading,
+    refresh: refreshExams,
+  } = useCachedData(
+    async () => {
+      if (!templates) return []
+
+      const { data: rpcData, error } = await supabase.rpc('get_admin_exams_list')
 
       if (error) {
         console.error('Error fetching exams:', error)
-        return
+        return []
       }
 
       // Transform RPC data to UI format
@@ -140,21 +156,55 @@ export function ExamsListClient() {
             math_scoring_curve_id: exam.math_curve_id,
             english_curve_name: exam.english_curve_name,
             math_curve_name: exam.math_curve_name,
+            template_id: exam.template_id,
+            scoring_groups: exam.template_id
+              ? templates[exam.template_id]?.scoring_groups
+              : undefined,
             answer_release_setting: answerReleaseSetting,
           }
         }
       )
 
-      setExams(transformedData)
-    } catch (error) {
-      console.error('Error:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+      return transformedData
+    },
+    { key: 'admin-exams', ttl: 2 * 60 * 1000 } // 2 minutes cache
+  )
+
+  const [filteredExams, setFilteredExams] = useState<ExamWithCurves[]>([])
+  const [searchTerm, setSearchTerm] = usePersistentState('admin-exams-search', '')
+  const [expandedDateGroups, setExpandedDateGroups] = usePersistentState<Set<string>>(
+    'admin-exams-expanded-dates',
+    new Set()
+  )
+  const [expandedTestTypes, setExpandedTestTypes] = usePersistentState<Set<string>>(
+    'admin-exams-expanded-types',
+    new Set()
+  )
+  const [expandedRegions, setExpandedRegions] = usePersistentState<Set<string>>(
+    'admin-exams-expanded-regions',
+    new Set()
+  )
+  const [allGroupsInitialized, setAllGroupsInitialized] = useState(false)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean
+    examId: string
+    examTitle: string
+  }>({
+    isOpen: false,
+    examId: '',
+    examTitle: '',
+  })
+
+  // Create a refresh function for the exam data after updates
+  const fetchExamsOptimized = useCallback(async () => {
+    await refreshExams()
+  }, [refreshExams])
 
   // Apply filtering when data or search changes
   useEffect(() => {
+    if (!exams) return
+
     if (!searchTerm.trim()) {
       setFilteredExams(exams)
     } else {
@@ -166,6 +216,37 @@ export function ExamsListClient() {
       setFilteredExams(filtered)
     }
   }, [exams, searchTerm])
+
+  // Initialize all groups as expanded when exams are loaded (only if no previous state exists)
+  useEffect(() => {
+    if (filteredExams.length > 0 && !allGroupsInitialized && expandedDateGroups.size === 0) {
+      const groupedExams = groupExamsByCategory(filteredExams)
+      const dateGroups = new Set<string>()
+      const testTypeGroups = new Set<string>()
+      const regionGroups = new Set<string>()
+
+      Object.keys(groupedExams).forEach((date) => {
+        dateGroups.add(date)
+
+        // Add all test types for this date
+        testTypeGroups.add(`${date}-fullTest`)
+        testTypeGroups.add(`${date}-sectionExam`)
+        testTypeGroups.add(`${date}-individualModule`)
+
+        // Add all regions for this date
+        regionGroups.add(`${date}-International`)
+        regionGroups.add(`${date}-US`)
+        regionGroups.add(`${date}-Other`)
+      })
+
+      setExpandedDateGroups(dateGroups)
+      setExpandedTestTypes(testTypeGroups)
+      setExpandedRegions(regionGroups)
+    }
+    if (filteredExams.length > 0) {
+      setAllGroupsInitialized(true)
+    }
+  }, [filteredExams, allGroupsInitialized, expandedDateGroups.size])
 
   const handleAnswerVisibilityUpdate = async (
     visibilityOption: 'hidden' | 'immediate' | 'scheduled' | 'per_question',
@@ -206,7 +287,7 @@ export function ExamsListClient() {
       )
 
       // Refresh data after update
-      await fetchExamsOptimized()
+      await refreshExams()
     } catch (error) {
       console.error('Error updating answer visibility:', error)
       alert('Failed to update answer visibility. Please try again.')
@@ -229,12 +310,429 @@ export function ExamsListClient() {
     })
   }
 
+  // Categorization helper functions
+  const parseExamTitle = (title: string) => {
+    // Extract date from title
+    const dateMatch = title.match(/(\w+)\s+(\d{4})/)
+    const date = dateMatch ? `${dateMatch[2]} ${dateMatch[1]}` : 'Unknown Date'
+
+    // Determine exam type
+    let examType: 'fullTest' | 'sectionExam' | 'individualModule' =
+      'individualModule'
+    let region: 'International' | 'US' | 'Other' = 'Other'
+
+    if (title.startsWith('SAT')) {
+      if (title.includes('International') || title.includes('US')) {
+        examType = 'fullTest'
+        region = title.includes('International') ? 'International' : 'US'
+      } else if (title.includes('English') || title.includes('Math')) {
+        examType = 'sectionExam'
+      }
+    } else {
+      // Individual modules
+      if (title.includes('International')) {
+        region = 'International'
+      } else if (title.includes('US')) {
+        region = 'US'
+      }
+    }
+
+    return { date, examType, region }
+  }
+
+  const groupExamsByCategory = (exams: ExamWithCurves[]) => {
+    const grouped: Record<
+      string,
+      {
+        fullTest: ExamWithCurves[]
+        sectionExam: ExamWithCurves[]
+        individualModule: {
+          International: ExamWithCurves[]
+          US: ExamWithCurves[]
+          Other: ExamWithCurves[]
+        }
+      }
+    > = {}
+
+    exams.forEach((exam) => {
+      const { date, examType, region } = parseExamTitle(exam.title)
+
+      if (!grouped[date]) {
+        grouped[date] = {
+          fullTest: [],
+          sectionExam: [],
+          individualModule: {
+            International: [],
+            US: [],
+            Other: [],
+          },
+        }
+      }
+
+      if (examType === 'fullTest') {
+        grouped[date].fullTest.push(exam)
+      } else if (examType === 'sectionExam') {
+        grouped[date].sectionExam.push(exam)
+      } else {
+        grouped[date].individualModule[region].push(exam)
+      }
+    })
+
+    return grouped
+  }
+
+  const toggleDateGroup = (date: string) => {
+    const newExpanded = new Set(expandedDateGroups)
+    if (newExpanded.has(date)) {
+      newExpanded.delete(date)
+    } else {
+      newExpanded.add(date)
+    }
+    setExpandedDateGroups(newExpanded)
+  }
+
+  const toggleTestType = (key: string) => {
+    const newExpanded = new Set(expandedTestTypes)
+    if (newExpanded.has(key)) {
+      newExpanded.delete(key)
+    } else {
+      newExpanded.add(key)
+    }
+    setExpandedTestTypes(newExpanded)
+  }
+
+  const toggleRegion = (key: string) => {
+    const newExpanded = new Set(expandedRegions)
+    if (newExpanded.has(key)) {
+      newExpanded.delete(key)
+    } else {
+      newExpanded.add(key)
+    }
+    setExpandedRegions(newExpanded)
+  }
+
+  const renderGroupedExams = () => {
+    const groupedExams = groupExamsByCategory(filteredExams)
+    const sortedDates = Object.keys(groupedExams).sort((a, b) => {
+      // Sort by year first, then by month
+      const [yearA, monthA] = a.split(' ')
+      const [yearB, monthB] = b.split(' ')
+      if (yearA !== yearB) return parseInt(yearB) - parseInt(yearA)
+      const months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+      ]
+      return months.indexOf(monthB) - months.indexOf(monthA)
+    })
+
+    return (
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-200 sticky top-0">
+            <tr>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-8"></th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-64">
+                Exam
+              </th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-24">
+                Created
+              </th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">
+                English Curve
+              </th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">
+                Math Curve
+              </th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">
+                Answer Visibility
+              </th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-20">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedDates.map((date) => {
+              const dateGroup = groupedExams[date]
+              const isDateExpanded = expandedDateGroups.has(date)
+
+              return (
+                <React.Fragment key={date}>
+                  {/* Date Group Header */}
+                  <tr className="bg-gray-100 border-t-2 border-gray-300">
+                    <td colSpan={7} className="px-3 py-2">
+                      <button
+                        onClick={() => toggleDateGroup(date)}
+                        className="flex items-center space-x-2 font-medium text-gray-800 hover:text-gray-900"
+                      >
+                        <span className="text-gray-500">
+                          {isDateExpanded ? '▼' : '▶'}
+                        </span>
+                        <span>{date}</span>
+                      </button>
+                    </td>
+                  </tr>
+
+                  {isDateExpanded && (
+                    <>
+                      {/* Full Test Section */}
+                      {dateGroup.fullTest.length > 0 && (
+                        <>
+                          <tr className="bg-blue-50">
+                            <td colSpan={7} className="px-6 py-1">
+                              <button
+                                onClick={() =>
+                                  toggleTestType(`${date}-fullTest`)
+                                }
+                                className="flex items-center space-x-2 text-sm font-medium text-blue-800 hover:text-blue-900"
+                              >
+                                <span className="text-blue-600 text-xs">
+                                  {expandedTestTypes.has(`${date}-fullTest`)
+                                    ? '▼'
+                                    : '▶'}
+                                </span>
+                                <span>
+                                  Full Test ({dateGroup.fullTest.length})
+                                </span>
+                              </button>
+                            </td>
+                          </tr>
+                          {expandedTestTypes.has(`${date}-fullTest`) &&
+                            dateGroup.fullTest.map((exam) => (
+                              <ExamRow
+                                key={exam.id}
+                                exam={exam}
+                                openAnswerModal={openAnswerModal}
+                                onExamDeleted={fetchExamsOptimized}
+                              />
+                            ))}
+                        </>
+                      )}
+
+                      {/* Section Exam */}
+                      {dateGroup.sectionExam.length > 0 && (
+                        <>
+                          <tr className="bg-green-50">
+                            <td colSpan={7} className="px-6 py-1">
+                              <button
+                                onClick={() =>
+                                  toggleTestType(`${date}-sectionExam`)
+                                }
+                                className="flex items-center space-x-2 text-sm font-medium text-green-800 hover:text-green-900"
+                              >
+                                <span className="text-green-600 text-xs">
+                                  {expandedTestTypes.has(`${date}-sectionExam`)
+                                    ? '▼'
+                                    : '▶'}
+                                </span>
+                                <span>
+                                  Section Exam ({dateGroup.sectionExam.length})
+                                </span>
+                              </button>
+                            </td>
+                          </tr>
+                          {expandedTestTypes.has(`${date}-sectionExam`) &&
+                            dateGroup.sectionExam.map((exam) => (
+                              <ExamRow
+                                key={exam.id}
+                                exam={exam}
+                                openAnswerModal={openAnswerModal}
+                                onExamDeleted={fetchExamsOptimized}
+                              />
+                            ))}
+                        </>
+                      )}
+
+                      {/* Individual Modules */}
+                      {(dateGroup.individualModule.International.length > 0 ||
+                        dateGroup.individualModule.US.length > 0 ||
+                        dateGroup.individualModule.Other.length > 0) && (
+                        <>
+                          <tr className="bg-purple-50">
+                            <td colSpan={7} className="px-6 py-1">
+                              <button
+                                onClick={() =>
+                                  toggleTestType(`${date}-individualModule`)
+                                }
+                                className="flex items-center space-x-2 text-sm font-medium text-purple-800 hover:text-purple-900"
+                              >
+                                <span className="text-purple-600 text-xs">
+                                  {expandedTestTypes.has(
+                                    `${date}-individualModule`
+                                  )
+                                    ? '▼'
+                                    : '▶'}
+                                </span>
+                                <span>
+                                  Individual Modules (
+                                  {dateGroup.individualModule.International
+                                    .length +
+                                    dateGroup.individualModule.US.length +
+                                    dateGroup.individualModule.Other.length}
+                                  )
+                                </span>
+                              </button>
+                            </td>
+                          </tr>
+                          {expandedTestTypes.has(
+                            `${date}-individualModule`
+                          ) && (
+                            <>
+                              {/* International Modules */}
+                              {dateGroup.individualModule.International.length >
+                                0 && (
+                                <>
+                                  <tr className="bg-orange-50">
+                                    <td colSpan={7} className="px-9 py-1">
+                                      <button
+                                        onClick={() =>
+                                          toggleRegion(`${date}-International`)
+                                        }
+                                        className="flex items-center space-x-2 text-sm font-medium text-orange-800 hover:text-orange-900"
+                                      >
+                                        <span className="text-orange-600 text-xs">
+                                          {expandedRegions.has(
+                                            `${date}-International`
+                                          )
+                                            ? '▼'
+                                            : '▶'}
+                                        </span>
+                                        <span>
+                                          International (
+                                          {
+                                            dateGroup.individualModule
+                                              .International.length
+                                          }
+                                          )
+                                        </span>
+                                      </button>
+                                    </td>
+                                  </tr>
+                                  {expandedRegions.has(
+                                    `${date}-International`
+                                  ) &&
+                                    dateGroup.individualModule.International.map(
+                                      (exam) => (
+                                        <ExamRow
+                                          key={exam.id}
+                                          exam={exam}
+                                          openAnswerModal={openAnswerModal}
+                                          onExamDeleted={fetchExamsOptimized}
+                                        />
+                                      )
+                                    )}
+                                </>
+                              )}
+
+                              {/* US Modules */}
+                              {dateGroup.individualModule.US.length > 0 && (
+                                <>
+                                  <tr className="bg-red-50">
+                                    <td colSpan={7} className="px-9 py-1">
+                                      <button
+                                        onClick={() =>
+                                          toggleRegion(`${date}-US`)
+                                        }
+                                        className="flex items-center space-x-2 text-sm font-medium text-red-800 hover:text-red-900"
+                                      >
+                                        <span className="text-red-600 text-xs">
+                                          {expandedRegions.has(`${date}-US`)
+                                            ? '▼'
+                                            : '▶'}
+                                        </span>
+                                        <span>
+                                          US (
+                                          {dateGroup.individualModule.US.length}
+                                          )
+                                        </span>
+                                      </button>
+                                    </td>
+                                  </tr>
+                                  {expandedRegions.has(`${date}-US`) &&
+                                    dateGroup.individualModule.US.map(
+                                      (exam) => (
+                                        <ExamRow
+                                          key={exam.id}
+                                          exam={exam}
+                                          openAnswerModal={openAnswerModal}
+                                          onExamDeleted={fetchExamsOptimized}
+                                        />
+                                      )
+                                    )}
+                                </>
+                              )}
+
+                              {/* Other Modules */}
+                              {dateGroup.individualModule.Other.length > 0 && (
+                                <>
+                                  <tr className="bg-gray-50">
+                                    <td colSpan={7} className="px-9 py-1">
+                                      <button
+                                        onClick={() =>
+                                          toggleRegion(`${date}-Other`)
+                                        }
+                                        className="flex items-center space-x-2 text-sm font-medium text-gray-800 hover:text-gray-900"
+                                      >
+                                        <span className="text-gray-600 text-xs">
+                                          {expandedRegions.has(`${date}-Other`)
+                                            ? '▼'
+                                            : '▶'}
+                                        </span>
+                                        <span>
+                                          Other (
+                                          {
+                                            dateGroup.individualModule.Other
+                                              .length
+                                          }
+                                          )
+                                        </span>
+                                      </button>
+                                    </td>
+                                  </tr>
+                                  {expandedRegions.has(`${date}-Other`) &&
+                                    dateGroup.individualModule.Other.map(
+                                      (exam) => (
+                                        <ExamRow
+                                          key={exam.id}
+                                          exam={exam}
+                                          openAnswerModal={openAnswerModal}
+                                          onExamDeleted={fetchExamsOptimized}
+                                        />
+                                      )
+                                    )}
+                                </>
+                              )}
+                            </>
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
+                </React.Fragment>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
   const handleExamCreated = (newExamId: string) => {
     setIsCreateModalOpen(false)
     router.push(`/admin/exams/${newExamId}/settings`)
   }
 
-  if (authLoading || loading) {
+  if (authLoading || loading || !exams) {
     return (
       <div className="p-6">
         <div className="text-center">
@@ -260,7 +758,9 @@ export function ExamsListClient() {
   }
 
   return (
-    <div className="h-full bg-gray-50">
+    <>
+      <LoadingOverlay isVisible={loading} message="Refreshing data..." />
+      <div className="h-full bg-gray-50">
       {/* Top Header Section */}
       <div className="bg-white px-6 py-6">
         <div className="flex items-center justify-between mb-6">
@@ -309,7 +809,7 @@ export function ExamsListClient() {
       </div>
 
       <div className="p-6">
-        {/* Exams Table */}
+        {/* Grouped Exams Display */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">All Exams</h2>
@@ -324,44 +824,7 @@ export function ExamsListClient() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-12">
-                      {/* Expand/Collapse column */}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-64">
-                      Exam
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-32">
-                      Created
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-40">
-                      English Curve
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-40">
-                      Math Curve
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-40">
-                      Answer Visibility
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-40">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-purple-100">
-                  {filteredExams.map((exam) => (
-                    <ExamRow
-                      key={exam.id}
-                      exam={exam}
-                      openAnswerModal={openAnswerModal}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <div className="p-6">{renderGroupedExams()}</div>
           )}
         </div>
 
@@ -411,6 +874,7 @@ export function ExamsListClient() {
         onClose={() => setIsCreateModalOpen(false)}
         onExamCreated={handleExamCreated}
       />
-    </div>
+      </div>
+    </>
   )
 }

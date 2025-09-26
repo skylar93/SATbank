@@ -123,59 +123,234 @@ function mapRawToScaled(rawScore: number, curveData: any[]): number {
   return scaledScore
 }
 
-// Calculate final scaled scores for a completed exam attempt
+// Calculate final scaled scores for a completed exam attempt using template-aware dynamic scoring
 async function calculateFinalScores(supabase: any, attemptId: string): Promise<FinalScores> {
-  // Step 1: Get the exam_id for the given attemptId
-  const { data: attemptData, error: attemptError } = await supabase
-    .from('test_attempts')
-    .select('exam_id')
-    .eq('id', attemptId)
-    .single()
+  // Step 1: Fetch essential data in parallel
+  const [attemptResult, answersResult] = await Promise.all([
+    supabase
+      .from('test_attempts')
+      .select('exam_id, user_id')
+      .eq('id', attemptId)
+      .maybeSingle(),
+    supabase
+      .from('user_answers')
+      .select(`
+        id,
+        user_answer,
+        is_correct,
+        time_spent_seconds,
+        questions:question_id!inner (
+          module_type,
+          points
+        )
+      `)
+      .eq('attempt_id', attemptId),
+  ])
 
-  if (attemptError) throw new Error(`Failed to get attempt data: ${attemptError.message}`)
-  if (!attemptData) throw new Error(`Test attempt ${attemptId} not found`)
+  if (attemptResult.error) {
+    throw new Error(`Failed to get attempt data: ${attemptResult.error.message}`)
+  }
+  if (!attemptResult.data) {
+    throw new Error(`Test attempt ${attemptId} not found`)
+  }
+  if (answersResult.error) {
+    throw new Error(`Failed to get user answers: ${answersResult.error.message}`)
+  }
 
-  // Step 2: Get the scoring curve IDs from the exam
+  const attemptData = attemptResult.data
+  const answers = answersResult.data || []
+
+  // Step 2: Get the parent exam and its template
   const { data: examData, error: examError } = await supabase
     .from('exams')
-    .select('english_scoring_curve_id, math_scoring_curve_id')
-    .eq('id', attemptData.exam_id)
-    .single()
-
-  if (examError) throw new Error(`Failed to get exam data: ${examError.message}`)
-  if (!examData?.english_scoring_curve_id || !examData?.math_scoring_curve_id) {
-    throw new Error(`Exam ${attemptData.exam_id} does not have scoring curves assigned`)
-  }
-
-  // Step 3: Get all user answers with question details (using inner join to ensure question data exists)
-  const { data: answers, error: answersError } = await supabase
-    .from('user_answers')
     .select(`
       id,
-      user_answer,
-      is_correct,
-      time_spent_seconds,
-      questions:question_id!inner (
-        module_type,
-        points
-      )
+      template_id,
+      english_scoring_curve_id,
+      math_scoring_curve_id
     `)
-    .eq('attempt_id', attemptId)
+    .eq('id', attemptData.exam_id)
+    .maybeSingle()
 
-  if (answersError) throw new Error(`Failed to get user answers: ${answersError.message}`)
-  
+  if (examError) {
+    throw new Error(`Failed to get exam data: ${examError.message}`)
+  }
+  if (!examData) {
+    throw new Error(`Exam ${attemptData.exam_id} not found`)
+  }
+  // Step 3: Fetch the "Blueprint" (Exam Template) or use fallback
+  let scoringGroups: { [key: string]: string[] }
+
+  if (!examData.template_id) {
+    console.warn(`Exam ${attemptData.exam_id} has no template assigned, using fallback scoring`)
+    // Use default Full SAT scoring as fallback
+    scoringGroups = {
+      english: ['english1', 'english2'],
+      math: ['math1', 'math2']
+    }
+  } else {
+    const { data: templateData, error: templateError } = await supabase
+      .from('exam_templates')
+      .select('id, name, scoring_groups')
+      .eq('id', examData.template_id)
+      .maybeSingle()
+
+    if (templateError) {
+      throw new Error(`Failed to get exam template: ${templateError.message}`)
+    }
+    if (!templateData) {
+      console.warn(`Exam template ${examData.template_id} not found, using fallback scoring`)
+      // Use default Full SAT scoring as fallback
+      scoringGroups = {
+        english: ['english1', 'english2'],
+        math: ['math1', 'math2']
+      }
+    } else {
+      scoringGroups = templateData.scoring_groups as {
+        [key: string]: string[]
+      }
+    }
+  }
+  console.log('📋 Scoring info:', {
+    templateId: examData.template_id,
+    scoringGroups,
+  })
+
   // Validate that all answers have question data
-  const invalidAnswers = answers?.filter(a => !validateAnswer(a)) || []
+  const invalidAnswers = answers.filter((a) => !validateAnswer(a))
   if (invalidAnswers.length > 0) {
-    console.warn(`${invalidAnswers.length} answers have invalid question data:`, invalidAnswers)
-    throw new Error(`${invalidAnswers.length} answers missing valid question data - possible database integrity issue`)
+    console.warn(
+      `${invalidAnswers.length} answers have invalid question data:`,
+      invalidAnswers
+    )
+    throw new Error(
+      `${invalidAnswers.length} answers missing valid question data - possible database integrity issue`
+    )
   }
 
-  // Step 4: Calculate raw scores by subject and module
-  let englishRawScore = 0
-  let mathRawScore = 0
-  
-  // Module-specific scores
+  // Step 4: Calculate Raw Scores by Group
+  const rawScoresByGroup: { [key: string]: number } = {}
+
+  // Initialize raw scores for each group
+  Object.keys(scoringGroups).forEach((group) => {
+    rawScoresByGroup[group] = 0
+  })
+
+  // Calculate raw scores
+  answers.forEach((answer: any) => {
+    if (!validateAnswer(answer)) {
+      console.warn('Invalid answer data, skipping:', answer)
+      return
+    }
+
+    if (answer.is_correct) {
+      const moduleType = answer.questions.module_type.toLowerCase().trim()
+      const points = Math.max(0, Number(answer.questions.points) || 1)
+
+      // Find which group this module_type belongs to
+      let groupFound = false
+      for (const [groupName, moduleTypes] of Object.entries(scoringGroups)) {
+        if (moduleTypes.includes(moduleType)) {
+          rawScoresByGroup[groupName] += points
+          groupFound = true
+          break
+        }
+      }
+
+      if (!groupFound) {
+        console.warn(
+          `Module type '${moduleType}' not found in any scoring group. Available groups:`,
+          scoringGroups
+        )
+      }
+    }
+  })
+
+  console.log('📊 Raw scores by group:', rawScoresByGroup)
+
+  // Step 5: Apply Scoring Curves Dynamically
+  const finalScores: any = { overall: 0 }
+  const curves: { [key: string]: any } = {}
+
+  // Fetch required scoring curves
+  const curvePromises: Promise<any>[] = []
+
+  for (const groupName of Object.keys(scoringGroups)) {
+    let curveId: number | null = null
+
+    if (groupName === 'english' && examData.english_scoring_curve_id) {
+      curveId = examData.english_scoring_curve_id
+    } else if (groupName === 'math' && examData.math_scoring_curve_id) {
+      curveId = examData.math_scoring_curve_id
+    }
+
+    if (curveId) {
+      curvePromises.push(
+        Promise.resolve(
+          supabase
+            .from('scoring_curves')
+            .select('id, curve_name, curve_data')
+            .eq('id', curveId)
+            .maybeSingle()
+            .then((result) => ({ groupName, result }))
+        )
+      )
+    } else {
+      console.warn(`No scoring curve found for group '${groupName}'`)
+    }
+  }
+
+  // Wait for all curves to be fetched
+  const curveResults = await Promise.all(curvePromises)
+
+  for (const { groupName, result } of curveResults) {
+    if (result.error) {
+      throw new Error(
+        `Failed to get ${groupName} scoring curve: ${result.error.message}`
+      )
+    }
+    if (!result.data) {
+      console.warn(`${groupName} scoring curve not found, skipping group`)
+      continue
+    }
+
+    curves[groupName] = result.data
+  }
+
+  // Step 6: Calculate scaled scores for each group
+  for (const [groupName, rawScore] of Object.entries(rawScoresByGroup)) {
+    const curve = curves[groupName]
+
+    if (!curve) {
+      console.warn(`No curve available for group '${groupName}', skipping`)
+      continue
+    }
+
+    console.log(`📋 ${groupName} curve info:`, {
+      id: curve.id,
+      name: curve.curve_name,
+    })
+
+    // Validate curve data and map raw score to scaled score
+    validateCurveData(curve.curve_data)
+    const scaledScore = mapRawToScaled(rawScore, curve.curve_data)
+
+    finalScores[groupName] = scaledScore
+    console.log(
+      `⚖️ ${groupName}: raw ${rawScore} → scaled ${scaledScore} (using curve: ${curve.curve_name})`
+    )
+  }
+
+  // Step 7: Calculate Final Overall Score
+  let overallScore = 0
+  for (const [key, value] of Object.entries(finalScores)) {
+    if (key !== 'overall' && typeof value === 'number') {
+      overallScore += value
+    }
+  }
+  finalScores.overall = overallScore
+
+  // Step 8: Add module-specific scores for backward compatibility
   const moduleScores = {
     english1: 0,
     english2: 0,
@@ -183,92 +358,25 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
     math2: 0
   }
 
-  console.log('📝 Processing answers:', answers?.length, 'total answers')
-  answers?.forEach((answer: any) => {
-    // Validate answer structure
-    if (!validateAnswer(answer)) {
-      console.warn('Invalid answer data, skipping:', answer)
-      return
-    }
-    
-    if (answer.is_correct) {
-      const moduleType = answer.questions.module_type.toLowerCase().trim()
-      const points = Math.max(0, Number(answer.questions.points) || 1)
+  answers.forEach((answer: any) => {
+    if (!validateAnswer(answer) || !answer.is_correct) return
 
-      // Add to overall subject scores
-      if (moduleType.includes('english')) {
-        englishRawScore += points
-      } else if (moduleType.includes('math')) {
-        mathRawScore += points
-      } else {
-        console.warn('Unknown module type:', moduleType, 'for answer:', answer.id)
-      }
+    const moduleType = answer.questions.module_type.toLowerCase().trim()
+    const points = Math.max(0, Number(answer.questions.points) || 1)
 
-      // Add to specific module scores
-      if (moduleType === 'english1') {
-        moduleScores.english1 += points
-      } else if (moduleType === 'english2') {
-        moduleScores.english2 += points
-      } else if (moduleType === 'math1') {
-        moduleScores.math1 += points
-      } else if (moduleType === 'math2') {
-        moduleScores.math2 += points
-      }
+    if (moduleType === 'english1') {
+      moduleScores.english1 += points
+    } else if (moduleType === 'english2') {
+      moduleScores.english2 += points
+    } else if (moduleType === 'math1') {
+      moduleScores.math1 += points
+    } else if (moduleType === 'math2') {
+      moduleScores.math2 += points
     }
   })
 
-  console.log('🔢 Raw scores calculated - English:', englishRawScore, 'Math:', mathRawScore)
-  console.log('🔢 Module scores calculated:', moduleScores)
+  finalScores.moduleScores = moduleScores
 
-  // Step 5: Fetch scoring curves with names for debugging
-  const { data: englishCurve, error: englishCurveError } = await supabase
-    .from('scoring_curves')
-    .select('id, curve_name, curve_data')
-    .eq('id', examData.english_scoring_curve_id)
-    .single()
-
-  if (englishCurveError) throw new Error(`Failed to get English scoring curve: ${englishCurveError.message}`)
-
-  const { data: mathCurve, error: mathCurveError } = await supabase
-    .from('scoring_curves')
-    .select('id, curve_name, curve_data')
-    .eq('id', examData.math_scoring_curve_id)
-    .single()
-
-  if (mathCurveError) throw new Error(`Failed to get Math scoring curve: ${mathCurveError.message}`)
-  
-  console.log('📋 English curve info:', { id: englishCurve.id, name: englishCurve.curve_name })
-  console.log('📋 Math curve info:', { id: mathCurve.id, name: mathCurve.curve_name })
-
-  // Step 6: Validate curve data and map raw scores to scaled scores
-  console.log('📊 English curve data:', englishCurve.curve_data)
-  console.log('📊 Math curve data:', mathCurve.curve_data)
-  
-  // Validate curve data before processing
-  validateCurveData(englishCurve.curve_data)
-  validateCurveData(mathCurve.curve_data)
-  
-  console.log(`🔢 Raw scores calculated - English: ${englishRawScore}, Math: ${mathRawScore}`)
-  
-  const englishScaledScore = mapRawToScaled(englishRawScore, englishCurve.curve_data)
-  const mathScaledScore = mapRawToScaled(mathRawScore, mathCurve.curve_data)
-  
-  console.log('⚖️ Scaled scores:')
-  console.log(`  - English raw ${englishRawScore} → scaled ${englishScaledScore} (using curve: ${englishCurve.curve_name})`)
-  console.log(`  - Math raw ${mathRawScore} → scaled ${mathScaledScore} (using curve: ${mathCurve.curve_name})`)
-
-  // Step 7: Calculate overall score
-  const overallScore = englishScaledScore + mathScaledScore
-  
-  console.log('🎯 Final overall score:', overallScore)
-
-  const finalScores = {
-    overall: overallScore,
-    english: englishScaledScore,
-    math: mathScaledScore,
-    moduleScores: moduleScores
-  }
-  
   console.log('📊 Final scores object:', finalScores)
   return finalScores
 }

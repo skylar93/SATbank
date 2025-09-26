@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { addWordsInBulk } from '@/lib/vocab-actions'
+import { toast } from 'sonner'
 
 interface BulkAddModalProps {
   isOpen: boolean
@@ -89,13 +90,18 @@ export function BulkAddModal({
         const result = await addWordsInBulk(setId, parsedWords)
 
         if (result.success) {
+          toast.success(
+            `Successfully added ${parsedWords.length} words to your vocabulary set!`
+          )
           await onAddWords(parsedWords)
           handleClose()
         } else {
+          toast.error(result.message || 'Failed to add words')
           setParseError(result.message || 'Failed to add words')
         }
       } catch (error) {
         console.error('Error adding words:', error)
+        toast.error('Failed to add words. Please try again.')
         setParseError('Failed to add words. Please try again.')
       }
     })

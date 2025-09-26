@@ -504,8 +504,11 @@ export const useExamStore = create<ExamState>((set, get) => ({
       )
 
       // Create a single "review" module containing all incorrect questions
+      // We'll use the first question's module type, but display will be handled dynamically
+      const firstQuestionModule =
+        incorrectQuestions[0]?.module_type || 'english1'
       const reviewModule: ModuleState = {
-        module: 'english1', // Use a dummy module type
+        module: firstQuestionModule, // Use first question's module type
         questions: incorrectQuestions,
         currentQuestionIndex: 0,
         answers: {},
@@ -564,11 +567,11 @@ export const useExamStore = create<ExamState>((set, get) => ({
       currentModuleIndex,
       currentQuestionStartTime,
     } = get()
-    
+
     // Allow operation in review mode (attempt is null) or normal in_progress mode
     const isReviewMode = !attempt && status === 'in_progress'
     const isNormalMode = attempt && status === 'in_progress'
-    
+
     if (!isReviewMode && !isNormalMode) return
 
     const currentModule = modules[currentModuleIndex]
@@ -616,13 +619,13 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
   saveModuleAnswers: async () => {
     const { attempt, status, modules, currentModuleIndex } = get()
-    
+
     // Allow operation in review mode (attempt is null) or normal in_progress mode
     const isReviewMode = !attempt && status === 'in_progress'
     const isNormalMode = attempt && status === 'in_progress'
-    
+
     if (!isReviewMode && !isNormalMode) return
-    
+
     // Skip database operations in review mode
     if (isReviewMode) return
 
@@ -1379,6 +1382,17 @@ export const useExamStore = create<ExamState>((set, get) => ({
   addHighlight: (questionId: string, newHighlight: Highlight) => {
     const { highlightsByQuestion, attempt } = get()
 
+    // 🔍 DEBUG: 받은 하이라이트 데이터 확인
+    console.log('🎯 addHighlight received in store:', {
+      questionId,
+      newHighlight: {
+        start: newHighlight.start,
+        end: newHighlight.end,
+        text: newHighlight.text?.slice(0, 50) + '...',
+        fullData: newHighlight
+      }
+    })
+
     const newHighlights = { ...highlightsByQuestion }
     if (!newHighlights[questionId]) {
       newHighlights[questionId] = []
@@ -1388,8 +1402,15 @@ export const useExamStore = create<ExamState>((set, get) => ({
     newHighlights[questionId].push(newHighlight)
     newHighlights[questionId].sort((a, b) => a.start - b.start)
 
+    console.log('🎯 After adding to array:', {
+      totalHighlights: newHighlights[questionId].length,
+      latestHighlight: newHighlights[questionId][newHighlights[questionId].length - 1]
+    })
+
     // Update React state for immediate UI re-render
     set({ highlightsByQuestion: newHighlights })
+
+    console.log('🎯 Updated store state with highlights')
 
     // Persist to localStorage
     if (attempt?.id) {
@@ -1397,6 +1418,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
         `highlights_${attempt.id}`,
         JSON.stringify(newHighlights)
       )
+      console.log('🎯 Highlights saved to localStorage')
     }
   },
 
@@ -1429,11 +1451,11 @@ export const useExamStore = create<ExamState>((set, get) => ({
       getCurrentQuestion,
       currentQuestionStartTime,
     } = get()
-    
+
     // Allow operation in review mode (attempt is null) or normal in_progress mode
     const isReviewMode = !attempt && status === 'in_progress'
     const isNormalMode = attempt && status === 'in_progress'
-    
+
     if (!isReviewMode && !isNormalMode) return
 
     const currentModule = modules[currentModuleIndex]

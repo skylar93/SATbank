@@ -7,6 +7,7 @@ import {
   getScoreColorClassName,
   getDurationWarning,
 } from '../../lib/styling-utils'
+import { getDisplayScores, getScoreString } from '../../lib/score-display-utils'
 import { Eye, PenSquare, AlertTriangle } from 'lucide-react'
 import { TableRow, TableCell } from '@/components/ui/table'
 
@@ -15,6 +16,7 @@ interface AttemptData {
   completed_at: string
   duration_seconds: number
   final_scores: {
+    overall?: number
     english?: number
     math?: number
   } | null
@@ -23,6 +25,7 @@ interface AttemptData {
   student_email: string
   exam_id: string
   exam_title: string
+  template_id?: string | null
 }
 
 interface AttemptRowProps {
@@ -30,22 +33,16 @@ interface AttemptRowProps {
 }
 
 export default function AttemptRow({ attempt }: AttemptRowProps) {
-  const calculateTotalScore = (finalScores: AttemptData['final_scores']) => {
-    if (!finalScores) return 0
-    const englishScore = finalScores.english || 0
-    const mathScore = finalScores.math || 0
-    return englishScore + mathScore
-  }
-
-  const totalScore = calculateTotalScore(attempt.final_scores)
-  const englishScore = attempt.final_scores?.english || 0
-  const mathScore = attempt.final_scores?.math || 0
+  const displayScores = getDisplayScores(
+    attempt.final_scores,
+    attempt.template_id
+  )
 
   return (
     <TableRow
       className="group hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200 cursor-pointer"
       onClick={() =>
-        window.open(`/admin/results/${attempt.attempt_id}`, '_blank')
+        window.open(`/admin/results/${attempt.attempt_id}`, '_blank', 'noopener,noreferrer')
       }
     >
       <TableCell className="px-6 py-4 whitespace-nowrap">
@@ -65,20 +62,40 @@ export default function AttemptRow({ attempt }: AttemptRowProps) {
 
       <TableCell className="px-6 py-4 whitespace-nowrap">
         <div className="text-sm">
-          <span className={getScoreColorClassName(totalScore)}>
-            {totalScore}
+          <span className={getScoreColorClassName(displayScores.overall)}>
+            {displayScores.overall}
           </span>
-          <span className="text-gray-400">/1600</span>
+          <span className="text-gray-400">/{displayScores.maxTotal}</span>
         </div>
       </TableCell>
 
-      <TableCell className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm text-gray-900">{englishScore}/800</div>
-      </TableCell>
+      {displayScores.sections.showEnglish && (
+        <TableCell className="px-6 py-4 whitespace-nowrap">
+          <div className="text-sm text-gray-900">
+            {displayScores.english || 0}/800
+          </div>
+        </TableCell>
+      )}
 
-      <TableCell className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm text-gray-900">{mathScore}/800</div>
-      </TableCell>
+      {displayScores.sections.showMath && (
+        <TableCell className="px-6 py-4 whitespace-nowrap">
+          <div className="text-sm text-gray-900">
+            {displayScores.math || 0}/800
+          </div>
+        </TableCell>
+      )}
+
+      {!displayScores.sections.showEnglish &&
+        !displayScores.sections.showMath && (
+          <>
+            <TableCell className="px-6 py-4 whitespace-nowrap">
+              <div className="text-sm text-gray-400">N/A</div>
+            </TableCell>
+            <TableCell className="px-6 py-4 whitespace-nowrap">
+              <div className="text-sm text-gray-400">N/A</div>
+            </TableCell>
+          </>
+        )}
 
       <TableCell className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center space-x-2">
@@ -107,22 +124,34 @@ export default function AttemptRow({ attempt }: AttemptRowProps) {
 
       <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium">
         <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Link
-            href={`/admin/results/${attempt.attempt_id}`}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              window.open(`/admin/results/${attempt.attempt_id}`, '_blank', 'noopener,noreferrer')
+            }}
             className="p-2 hover:bg-gray-100 rounded"
             title="View Details"
-            onClick={(e) => e.stopPropagation()}
           >
             <Eye className="h-4 w-4" />
-          </Link>
-          <Link
-            href={`/admin/results/${attempt.attempt_id}/review`}
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              window.open(
+                `/admin/results/${attempt.attempt_id}/review`,
+                '_blank',
+                'noopener,noreferrer'
+              )
+            }}
             className="p-2 hover:bg-gray-100 rounded"
             title="Edit / Regrade"
-            onClick={(e) => e.stopPropagation()}
           >
             <PenSquare className="h-4 w-4" />
-          </Link>
+          </button>
         </div>
       </TableCell>
     </TableRow>
