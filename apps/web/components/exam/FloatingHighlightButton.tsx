@@ -421,9 +421,10 @@ export default function FloatingHighlightButton({
       }
 
       if (!selection || !containerRef.current || selection.rangeCount === 0) {
-        // Only hide if we don't have sticky selection
-        if (isStickyRef.current) return
-        // Non-sticky mode: delay hide to allow user interaction
+        if (isStickyRef.current) {
+          return
+        }
+
         if (!selectedText) {
           scheduleHide(1500)
         }
@@ -643,12 +644,24 @@ export default function FloatingHighlightButton({
     }
 
     const handleClickOutside = (e: MouseEvent) => {
-      // Don't hide immediately if clicking on the button
-      if (buttonRef.current && buttonRef.current.contains(e.target as Node)) {
+      const target = e.target as Node
+
+      // Don't hide immediately if clicking on the button itself
+      if (buttonRef.current && buttonRef.current.contains(target)) {
         return
       }
 
-      // Give user more time to move to the button
+      const clickedInsideContainer =
+        containerRef.current && containerRef.current.contains(target)
+
+      if (!clickedInsideContainer) {
+        // User clicked completely outside → release sticky mode
+        isStickyRef.current = false
+        storedRangeRef.current = null
+        setSelectedText('')
+        setSelectionRange(null)
+      }
+
       scheduleHide(2000)
     }
 
