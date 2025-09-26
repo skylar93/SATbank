@@ -42,7 +42,7 @@ export default function AttemptRow({ attempt }: AttemptRowProps) {
     <TableRow
       className="group hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200 cursor-pointer"
       onClick={() =>
-        window.open(`/admin/results/${attempt.attempt_id}`, '_blank')
+        window.open(`/admin/results/${attempt.attempt_id}`, '_blank', 'noopener,noreferrer')
       }
     >
       <TableCell className="px-6 py-4 whitespace-nowrap">
@@ -129,7 +129,7 @@ export default function AttemptRow({ attempt }: AttemptRowProps) {
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
-              window.open(`/admin/results/${attempt.attempt_id}`, '_blank')
+              window.open(`/admin/results/${attempt.attempt_id}`, '_blank', 'noopener,noreferrer')
             }}
             className="p-2 hover:bg-gray-100 rounded"
             title="View Details"
@@ -143,7 +143,8 @@ export default function AttemptRow({ attempt }: AttemptRowProps) {
               e.stopPropagation()
               window.open(
                 `/admin/results/${attempt.attempt_id}/review`,
-                '_blank'
+                '_blank',
+                'noopener,noreferrer'
               )
             }}
             className="p-2 hover:bg-gray-100 rounded"

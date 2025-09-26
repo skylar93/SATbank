@@ -1382,6 +1382,17 @@ export const useExamStore = create<ExamState>((set, get) => ({
   addHighlight: (questionId: string, newHighlight: Highlight) => {
     const { highlightsByQuestion, attempt } = get()
 
+    // 🔍 DEBUG: 받은 하이라이트 데이터 확인
+    console.log('🎯 addHighlight received in store:', {
+      questionId,
+      newHighlight: {
+        start: newHighlight.start,
+        end: newHighlight.end,
+        text: newHighlight.text?.slice(0, 50) + '...',
+        fullData: newHighlight
+      }
+    })
+
     const newHighlights = { ...highlightsByQuestion }
     if (!newHighlights[questionId]) {
       newHighlights[questionId] = []
@@ -1391,8 +1402,15 @@ export const useExamStore = create<ExamState>((set, get) => ({
     newHighlights[questionId].push(newHighlight)
     newHighlights[questionId].sort((a, b) => a.start - b.start)
 
+    console.log('🎯 After adding to array:', {
+      totalHighlights: newHighlights[questionId].length,
+      latestHighlight: newHighlights[questionId][newHighlights[questionId].length - 1]
+    })
+
     // Update React state for immediate UI re-render
     set({ highlightsByQuestion: newHighlights })
+
+    console.log('🎯 Updated store state with highlights')
 
     // Persist to localStorage
     if (attempt?.id) {
@@ -1400,6 +1418,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
         `highlights_${attempt.id}`,
         JSON.stringify(newHighlights)
       )
+      console.log('🎯 Highlights saved to localStorage')
     }
   },
 

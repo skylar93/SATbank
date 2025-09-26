@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
@@ -9,6 +9,9 @@ import AnswerReleaseModal from '@/components/admin/AnswerReleaseModal'
 import { ExamRow } from './ExamRow'
 import { Button } from '@/components/ui/button'
 import { CreateExamModal } from './CreateExamModal'
+import { usePersistentState } from '@/lib/hooks/use-persistent-state'
+import { useCachedData } from '@/lib/hooks/use-cached-data'
+import { LoadingOverlay } from '@/components/ui/loading-overlay'
 
 // Interface for the data returned by get_admin_exams_list RPC
 interface RpcExamData {
@@ -51,50 +54,20 @@ interface ExamWithCurves {
 export function ExamsListClient() {
   const { user, isAdmin, loading: authLoading } = useAuth()
   const router = useRouter()
-  const [exams, setExams] = useState<ExamWithCurves[]>([])
-  const [loading, setLoading] = useState(true)
-  const [templates, setTemplates] = useState<{
-    [key: string]: { scoring_groups: { [key: string]: string[] } }
-  }>({})
-  const [filteredExams, setFilteredExams] = useState<ExamWithCurves[]>([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [expandedDateGroups, setExpandedDateGroups] = useState<Set<string>>(
-    new Set()
-  )
-  const [expandedTestTypes, setExpandedTestTypes] = useState<Set<string>>(
-    new Set()
-  )
-  const [expandedRegions, setExpandedRegions] = useState<Set<string>>(new Set())
-  const [allGroupsInitialized, setAllGroupsInitialized] = useState(false)
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const [modalState, setModalState] = useState<{
-    isOpen: boolean
-    examId: string
-    examTitle: string
-  }>({
-    isOpen: false,
-    examId: '',
-    examTitle: '',
-  })
 
-  // Fetch templates first, then exams
-  useEffect(() => {
-    if (user && isAdmin) {
-      fetchTemplates().then(() => {
-        fetchExamsOptimized()
-      })
-    }
-  }, [user, isAdmin])
-
-  const fetchTemplates = async () => {
-    try {
+  // Template data with caching
+  const {
+    data: templates,
+    refresh: refreshTemplates,
+  } = useCachedData(
+    async () => {
       const { data, error } = await supabase
         .from('exam_templates')
         .select('id, scoring_groups')
 
       if (error) {
         console.error('Error fetching templates:', error)
-        return
+        return {}
       }
 
       const templatesMap: {
@@ -105,23 +78,25 @@ export function ExamsListClient() {
           scoring_groups: template.scoring_groups || {},
         }
       })
-      setTemplates(templatesMap)
-    } catch (error) {
-      console.error('Error fetching templates:', error)
-    }
-  }
+      return templatesMap
+    },
+    { key: 'admin-templates', ttl: 10 * 60 * 1000 } // 10 minutes cache
+  )
 
-  const fetchExamsOptimized = async () => {
-    setLoading(true)
-    try {
-      // Use the optimized RPC function for better performance
-      const { data: rpcData, error } = await supabase.rpc(
-        'get_admin_exams_list'
-      )
+  // Exam data with caching
+  const {
+    data: exams,
+    loading,
+    refresh: refreshExams,
+  } = useCachedData(
+    async () => {
+      if (!templates) return []
+
+      const { data: rpcData, error } = await supabase.rpc('get_admin_exams_list')
 
       if (error) {
         console.error('Error fetching exams:', error)
-        return
+        return []
       }
 
       // Transform RPC data to UI format
@@ -190,16 +165,46 @@ export function ExamsListClient() {
         }
       )
 
-      setExams(transformedData)
-    } catch (error) {
-      console.error('Error:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+      return transformedData
+    },
+    { key: 'admin-exams', ttl: 2 * 60 * 1000 } // 2 minutes cache
+  )
+
+  const [filteredExams, setFilteredExams] = useState<ExamWithCurves[]>([])
+  const [searchTerm, setSearchTerm] = usePersistentState('admin-exams-search', '')
+  const [expandedDateGroups, setExpandedDateGroups] = usePersistentState<Set<string>>(
+    'admin-exams-expanded-dates',
+    new Set()
+  )
+  const [expandedTestTypes, setExpandedTestTypes] = usePersistentState<Set<string>>(
+    'admin-exams-expanded-types',
+    new Set()
+  )
+  const [expandedRegions, setExpandedRegions] = usePersistentState<Set<string>>(
+    'admin-exams-expanded-regions',
+    new Set()
+  )
+  const [allGroupsInitialized, setAllGroupsInitialized] = useState(false)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean
+    examId: string
+    examTitle: string
+  }>({
+    isOpen: false,
+    examId: '',
+    examTitle: '',
+  })
+
+  // Create a refresh function for the exam data after updates
+  const fetchExamsOptimized = useCallback(async () => {
+    await refreshExams()
+  }, [refreshExams])
 
   // Apply filtering when data or search changes
   useEffect(() => {
+    if (!exams) return
+
     if (!searchTerm.trim()) {
       setFilteredExams(exams)
     } else {
@@ -212,9 +217,9 @@ export function ExamsListClient() {
     }
   }, [exams, searchTerm])
 
-  // Initialize all groups as expanded when exams are loaded
+  // Initialize all groups as expanded when exams are loaded (only if no previous state exists)
   useEffect(() => {
-    if (filteredExams.length > 0 && !allGroupsInitialized) {
+    if (filteredExams.length > 0 && !allGroupsInitialized && expandedDateGroups.size === 0) {
       const groupedExams = groupExamsByCategory(filteredExams)
       const dateGroups = new Set<string>()
       const testTypeGroups = new Set<string>()
@@ -237,9 +242,11 @@ export function ExamsListClient() {
       setExpandedDateGroups(dateGroups)
       setExpandedTestTypes(testTypeGroups)
       setExpandedRegions(regionGroups)
+    }
+    if (filteredExams.length > 0) {
       setAllGroupsInitialized(true)
     }
-  }, [filteredExams, allGroupsInitialized])
+  }, [filteredExams, allGroupsInitialized, expandedDateGroups.size])
 
   const handleAnswerVisibilityUpdate = async (
     visibilityOption: 'hidden' | 'immediate' | 'scheduled' | 'per_question',
@@ -280,7 +287,7 @@ export function ExamsListClient() {
       )
 
       // Refresh data after update
-      await fetchExamsOptimized()
+      await refreshExams()
     } catch (error) {
       console.error('Error updating answer visibility:', error)
       alert('Failed to update answer visibility. Please try again.')
@@ -725,7 +732,7 @@ export function ExamsListClient() {
     router.push(`/admin/exams/${newExamId}/settings`)
   }
 
-  if (authLoading || loading) {
+  if (authLoading || loading || !exams) {
     return (
       <div className="p-6">
         <div className="text-center">
@@ -751,7 +758,9 @@ export function ExamsListClient() {
   }
 
   return (
-    <div className="h-full bg-gray-50">
+    <>
+      <LoadingOverlay isVisible={loading} message="Refreshing data..." />
+      <div className="h-full bg-gray-50">
       {/* Top Header Section */}
       <div className="bg-white px-6 py-6">
         <div className="flex items-center justify-between mb-6">
@@ -865,6 +874,7 @@ export function ExamsListClient() {
         onClose={() => setIsCreateModalOpen(false)}
         onExamCreated={handleExamCreated}
       />
-    </div>
+      </div>
+    </>
   )
 }

@@ -25,85 +25,50 @@ function computeOffsetsWithoutTrim(
 ) {
   // For HTML content, use DOM-based position calculation
   if (isHtml && originalTextContent) {
-    let normalizedContainer: HTMLElement | null = null
     try {
       console.log('🔍 DOM-based position calculation starting...')
 
       // Create the same normalized container as HighlightedTextRenderer
-      const result = createNormalizedContainer(originalTextContent)
-      normalizedContainer = result.container
-      const plainText = result.plainText
+      const { container: normalizedContainer, plainText } = createNormalizedContainer(originalTextContent)
 
-      console.log('🎯 Direct text search approach')
-      console.log('Search text:', JSON.stringify(textRaw.slice(0, 50)))
-      console.log('Plain text preview:', JSON.stringify(plainText.slice(0, 100)))
+      // Calculate the actual position by walking the DOM tree
+      const startOffset = getTextOffsetInContainer(normalizedContainer, range.startContainer, range.startOffset)
+      const endOffset = getTextOffsetInContainer(normalizedContainer, range.endContainer, range.endOffset)
 
-      // 1. Try direct exact match
-      let directIndex = plainText.indexOf(textRaw)
-      console.log('Direct match result:', directIndex)
+      console.log('DOM position calculation result:', {
+        startOffset,
+        endOffset,
+        selectedLength: endOffset - startOffset,
+        actualTextFromPosition: plainText.substring(startOffset, endOffset),
+        providedText: textRaw,
+        plainTextLength: plainText.length
+      })
+
+      // Verify the extracted text matches
+      const extractedText = plainText.substring(startOffset, endOffset)
+      if (extractedText === textRaw || extractedText.replace(/\s+/g, ' ') === textRaw.replace(/\s+/g, ' ')) {
+        console.log('✅ DOM position calculation successful!')
+        return {
+          start: startOffset,
+          end: endOffset,
+          textForHighlight: textRaw
+        }
+      }
+
+      console.log('❌ Text mismatch, falling back to text search...')
+
+      // Fallback: try to find the text
+      const directIndex = plainText.indexOf(textRaw)
+      console.log('Direct index result:', directIndex)
 
       if (directIndex >= 0) {
-        console.log('✅ Found direct match:', { start: directIndex, end: directIndex + textRaw.length })
-        return { start: directIndex, end: directIndex + textRaw.length, textForHighlight: textRaw }
+        const start = directIndex
+        const end = directIndex + textRaw.length
+        console.log('Found direct match:', { start, end })
+        return { start, end, textForHighlight: textRaw }
       }
 
-      // 2. Try newline variations first (common issue)
-      if (textRaw.includes('\n')) {
-        console.log('🔄 Trying comprehensive newline variations...')
-        const variations = [
-          textRaw.replace(/\n\n/g, '.'),        // \n\n -> .
-          textRaw.replace(/\n\n/g, '. '),       // \n\n -> . (with space)
-          textRaw.replace(/\n\n/g, '.Tom '),    // \n\n -> .Tom (specific case)
-          textRaw.replace(/\n/g, ' '),          // all \n -> space
-          textRaw.replace(/\n+/g, ' '),         // multiple \n -> space
-          textRaw.replace(/\n\n/g, ''),         // remove \n\n entirely
-          textRaw.replace(/\n/g, ''),           // remove all \n
-          textRaw.replace(/\s*\n\s*/g, ' '),    // \n with surrounding spaces -> space
-        ]
-
-        for (const variation of variations) {
-          const index = plainText.indexOf(variation)
-          console.log(`  Trying "${variation.slice(0,30)}...": ${index}`)
-          if (index >= 0) {
-            console.log('✅ Found with newline variation at:', index)
-            return { start: index, end: index + variation.length, textForHighlight: textRaw }
-          }
-        }
-
-        // Try partial matching from the beginning of the text
-        console.log('🔍 Trying partial matching from text start...')
-        const words = textRaw.split(/\s+/)
-        if (words.length > 3) {
-          // Try matching the first few words
-          const firstPart = words.slice(0, Math.min(5, words.length)).join(' ')
-          const partialIndex = plainText.indexOf(firstPart)
-          console.log(`  Trying first part "${firstPart}": ${partialIndex}`)
-
-          if (partialIndex >= 0) {
-            console.log('✅ Found partial match, using as base position:', partialIndex)
-            return { start: partialIndex, end: partialIndex + textRaw.length, textForHighlight: textRaw }
-          }
-        }
-      }
-
-      // 3. Try with normalized whitespace
-      const normalizedSearch = textRaw.replace(/\s+/g, ' ').trim()
-      const normalizedIndex = plainText.replace(/\s+/g, ' ').indexOf(normalizedSearch)
-      console.log('Normalized search result:', normalizedIndex)
-
-      if (normalizedIndex >= 0) {
-        // Find approximate position in original text
-        const searchWords = normalizedSearch.split(' ')
-        const firstWord = searchWords[0]
-        const firstWordIndex = plainText.indexOf(firstWord)
-
-        if (firstWordIndex >= 0) {
-          console.log('✅ Found via normalized search at:', firstWordIndex)
-          return { start: firstWordIndex, end: firstWordIndex + textRaw.length, textForHighlight: textRaw }
-        }
-      }
-
-      console.log('⚠️ Direct text search failed, trying more flexible matching...')
+      console.log('⚠️  DOM calculation failed, trying fallback text search...')
 
       // Simple fallback: just try to find the text as-is
       const fallbackIndex = plainText.indexOf(textRaw.trim())
@@ -119,13 +84,12 @@ function computeOffsetsWithoutTrim(
       console.error('❌ Complete failure - could not locate text anywhere')
       return { start: 0, end: textRaw.length, textForHighlight: textRaw }
 
+      } finally {
+        normalizedContainer.remove()
+      }
     } catch (error) {
       console.warn('HTML-based offset calculation failed:', error)
       return { start: 0, end: textRaw.length, textForHighlight: textRaw }
-    } finally {
-      if (normalizedContainer) {
-        normalizedContainer.remove()
-      }
     }
   }
 

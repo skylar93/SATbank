@@ -1796,6 +1796,22 @@ export function QuestionDisplay({
                   onHighlight={onAddHighlight}
                   examTitle={examTitle}
                   examId={examId}
+                  isHtml={
+                    !!(
+                      localQuestion.question_html &&
+                      !isEmptyHtml(localQuestion.question_html)
+                    )
+                  }
+                  originalText={(() => {
+                    if (
+                      localQuestion.question_html &&
+                      !isEmptyHtml(localQuestion.question_html)
+                    ) {
+                      return localQuestion.question_html
+                    } else {
+                      return localQuestion.question_text
+                    }
+                  })()}
                 />
               )}
             </div>

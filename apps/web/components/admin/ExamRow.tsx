@@ -7,6 +7,7 @@ import { CurveAssignmentControl } from './CurveAssignmentControlSimple'
 import { AnswerVisibilityControl } from './AnswerVisibilityControlSimple'
 import { DeleteExamConfirmDialog } from './DeleteExamConfirmDialog'
 import { supabase } from '@/lib/supabase'
+import { usePersistentState } from '@/lib/hooks/use-persistent-state'
 
 interface ScoringCurve {
   id: number
@@ -42,7 +43,7 @@ export function ExamRow({
   openAnswerModal,
   onExamDeleted,
 }: ExamRowProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = usePersistentState(`exam-row-expanded-${exam.id}`, false)
   const [allCurves, setAllCurves] = useState<ScoringCurve[]>([])
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -158,6 +159,8 @@ export function ExamRow({
           <div className="flex items-center space-x-1">
             <Link
               href={`/admin/exams/${exam.id}/settings`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
               title="Settings"
             >
@@ -165,6 +168,8 @@ export function ExamRow({
             </Link>
             <Link
               href={`/admin/exams/${exam.id}/preview`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="p-1 text-green-600 hover:text-green-800 hover:bg-green-50 rounded transition-colors"
               title="Preview & Edit"
             >
@@ -224,12 +229,16 @@ export function ExamRow({
                 <div className="flex flex-wrap gap-2">
                   <Link
                     href={`/admin/exams/${exam.id}/settings`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
                   >
                     Settings
                   </Link>
                   <Link
                     href={`/admin/exams/${exam.id}/preview`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
                   >
                     Preview

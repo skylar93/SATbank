@@ -11,6 +11,7 @@ import {
 import AttemptsTable from './AttemptsTable'
 import StudentsTable from './StudentsTable'
 import FilterBar from './FilterBar'
+import { usePersistentState } from '@/lib/hooks/use-persistent-state'
 
 interface AttemptData {
   attempt_id: string
@@ -55,14 +56,14 @@ interface ReportsClientProps {
 }
 
 export default function ReportsClient({ attempts }: ReportsClientProps) {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [viewMode, setViewMode] = useState<'attempts' | 'students'>('students')
-  const [filters, setFilters] = useState<FilterState>({
+  const [searchTerm, setSearchTerm] = usePersistentState('admin-reports-search', '')
+  const [viewMode, setViewMode] = usePersistentState<'attempts' | 'students'>('admin-reports-view-mode', 'students')
+  const [filters, setFilters] = usePersistentState<FilterState>('admin-reports-filters', {
     examFilter: '',
     studentFilter: '',
     scoreRangeFilter: '',
   })
-  const [sortConfig, setSortConfig] = useState<SortConfig>({
+  const [sortConfig, setSortConfig] = usePersistentState<SortConfig>('admin-reports-sort', {
     key: 'completed_at',
     direction: 'desc',
   })
