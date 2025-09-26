@@ -56,119 +56,129 @@ export function ExamsListClient() {
   const router = useRouter()
 
   // Template data with caching
+  const fetchTemplates = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('exam_templates')
+      .select('id, scoring_groups')
+
+    if (error) {
+      console.error('Error fetching templates:', error)
+      return {}
+    }
+
+    const templatesMap: {
+      [key: string]: { scoring_groups: { [key: string]: string[] } }
+    } = {}
+    data?.forEach((template) => {
+      templatesMap[template.id] = {
+        scoring_groups: template.scoring_groups || {},
+      }
+    })
+    return templatesMap
+  }, [])
+
   const {
     data: templates,
     refresh: refreshTemplates,
-  } = useCachedData(
-    async () => {
-      const { data, error } = await supabase
-        .from('exam_templates')
-        .select('id, scoring_groups')
-
-      if (error) {
-        console.error('Error fetching templates:', error)
-        return {}
-      }
-
-      const templatesMap: {
-        [key: string]: { scoring_groups: { [key: string]: string[] } }
-      } = {}
-      data?.forEach((template) => {
-        templatesMap[template.id] = {
-          scoring_groups: template.scoring_groups || {},
-        }
-      })
-      return templatesMap
-    },
-    { key: 'admin-templates', ttl: 10 * 60 * 1000 } // 10 minutes cache
-  )
+  } = useCachedData(fetchTemplates, {
+    key: 'admin-templates',
+    ttl: 10 * 60 * 1000,
+  }) // 10 minutes cache
 
   // Exam data with caching
-  const {
-    data: exams,
-    loading,
-    refresh: refreshExams,
-  } = useCachedData(
-    async () => {
-      if (!templates) return []
+  const fetchExams = useCallback(async () => {
+    if (!templates) return []
 
-      const { data: rpcData, error } = await supabase.rpc('get_admin_exams_list')
+    const { data: rpcData, error } = await supabase.rpc('get_admin_exams_list')
 
-      if (error) {
-        console.error('Error fetching exams:', error)
-        return []
-      }
+    if (error) {
+      console.error('Error fetching exams:', error)
+      return []
+    }
 
-      // Transform RPC data to UI format
-      const transformedData: ExamWithCurves[] = (rpcData || []).map(
-        (exam: RpcExamData) => {
-          // Determine answer release setting based on RPC data
-          let answerReleaseSetting
-          if (exam.latest_attempt_visibility === null) {
-            // No attempts exist: use exam default settings
-            if (!exam.default_answers_visible) {
-              answerReleaseSetting = {
-                type: 'hidden' as const,
-              }
-            } else if (
-              exam.default_answers_visible &&
-              !exam.default_answers_visible_after
-            ) {
-              answerReleaseSetting = {
-                type: 'immediate' as const,
-              }
-            } else if (
-              exam.default_answers_visible &&
-              exam.default_answers_visible_after
-            ) {
-              answerReleaseSetting = {
-                type: 'scheduled' as const,
-                scheduled_date: new Date(exam.default_answers_visible_after),
-              }
-            }
-          } else if (!exam.latest_attempt_visibility) {
+    // Transform RPC data to UI format
+    const transformedData: ExamWithCurves[] = (rpcData || []).map(
+      (exam: RpcExamData) => {
+        // Determine answer release setting based on RPC data
+        let answerReleaseSetting
+        if (exam.latest_attempt_visibility === null) {
+          // No attempts exist: use exam default settings
+          if (!exam.default_answers_visible) {
             answerReleaseSetting = {
               type: 'hidden' as const,
             }
           } else if (
-            exam.latest_attempt_visibility &&
-            !exam.latest_attempt_visible_after
+            exam.default_answers_visible &&
+            !exam.default_answers_visible_after
           ) {
             answerReleaseSetting = {
               type: 'immediate' as const,
             }
           } else if (
-            exam.latest_attempt_visibility &&
-            exam.latest_attempt_visible_after
+            exam.default_answers_visible &&
+            exam.default_answers_visible_after
           ) {
             answerReleaseSetting = {
               type: 'scheduled' as const,
-              scheduled_date: new Date(exam.latest_attempt_visible_after),
+              scheduled_date: new Date(exam.default_answers_visible_after),
             }
           }
-
-          return {
-            id: exam.id,
-            title: exam.title,
-            description: exam.description,
-            created_at: exam.created_at,
-            english_scoring_curve_id: exam.english_curve_id,
-            math_scoring_curve_id: exam.math_curve_id,
-            english_curve_name: exam.english_curve_name,
-            math_curve_name: exam.math_curve_name,
-            template_id: exam.template_id,
-            scoring_groups: exam.template_id
-              ? templates[exam.template_id]?.scoring_groups
-              : undefined,
-            answer_release_setting: answerReleaseSetting,
+        } else if (!exam.latest_attempt_visibility) {
+          answerReleaseSetting = {
+            type: 'hidden' as const,
+          }
+        } else if (
+          exam.latest_attempt_visibility &&
+          !exam.latest_attempt_visible_after
+        ) {
+          answerReleaseSetting = {
+            type: 'immediate' as const,
+          }
+        } else if (
+          exam.latest_attempt_visibility &&
+          exam.latest_attempt_visible_after
+        ) {
+          answerReleaseSetting = {
+            type: 'scheduled' as const,
+            scheduled_date: new Date(exam.latest_attempt_visible_after),
           }
         }
-      )
 
-      return transformedData
-    },
-    { key: 'admin-exams', ttl: 2 * 60 * 1000 } // 2 minutes cache
-  )
+        return {
+          id: exam.id,
+          title: exam.title,
+          description: exam.description,
+          created_at: exam.created_at,
+          english_scoring_curve_id: exam.english_curve_id,
+          math_scoring_curve_id: exam.math_curve_id,
+          english_curve_name: exam.english_curve_name,
+          math_curve_name: exam.math_curve_name,
+          template_id: exam.template_id,
+          scoring_groups: exam.template_id
+            ? templates[exam.template_id]?.scoring_groups
+            : undefined,
+          answer_release_setting: answerReleaseSetting,
+        }
+      }
+    )
+
+    return transformedData
+  }, [templates])
+
+  const {
+    data: exams,
+    loading,
+    refresh: refreshExams,
+  } = useCachedData(fetchExams, {
+    key: 'admin-exams',
+    ttl: 2 * 60 * 1000,
+  }) // 2 minutes cache
+
+  // Ensure exams refresh once template data resolves so we don't cache an empty list
+  useEffect(() => {
+    if (!templates) return
+    refreshExams()
+  }, [templates, refreshExams])
 
   const [filteredExams, setFilteredExams] = useState<ExamWithCurves[]>([])
   const [searchTerm, setSearchTerm] = usePersistentState('admin-exams-search', '')

@@ -1394,13 +1394,15 @@ export const useExamStore = create<ExamState>((set, get) => ({
     })
 
     const newHighlights = { ...highlightsByQuestion }
-    if (!newHighlights[questionId]) {
-      newHighlights[questionId] = []
-    }
+    const existingHighlights = newHighlights[questionId]
+      ? [...newHighlights[questionId]]
+      : []
 
     // Add the new highlight and sort by start position
-    newHighlights[questionId].push(newHighlight)
-    newHighlights[questionId].sort((a, b) => a.start - b.start)
+    existingHighlights.push(newHighlight)
+    existingHighlights.sort((a, b) => a.start - b.start)
+
+    newHighlights[questionId] = existingHighlights
 
     console.log('🎯 After adding to array:', {
       totalHighlights: newHighlights[questionId].length,
