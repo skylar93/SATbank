@@ -222,15 +222,29 @@ function applyHighlightsToHTML(htmlContent: string, highlights: Highlight[]): st
         return false
       }
 
-      // More lenient text validation
+      // More lenient text validation with comprehensive newline handling
       const expectedText = plainText.substring(highlight.start, highlight.end)
-      const normalizeSpace = (s: string) => s.replace(/\s+/g, ' ').trim()
-      if (normalizeSpace(expectedText) !== normalizeSpace(highlight.text)) {
+
+      // Use same newline normalization as FloatingHighlightButton
+      const normalizeForComparison = (text: string) => {
+        return text
+          .replace(/\n\n+/g, ' ')  // Double+ newlines to single space
+          .replace(/\n/g, ' ')     // Single newlines to space
+          .replace(/\s+/g, ' ')    // Multiple spaces to single space
+          .trim()
+      }
+
+      const normalizedExpected = normalizeForComparison(expectedText)
+      const normalizedHighlight = normalizeForComparison(highlight.text)
+
+      if (normalizedExpected !== normalizedHighlight) {
         console.warn('Highlight text mismatch (normalized):', {
-          expected: normalizeSpace(highlight.text),
-          found: normalizeSpace(expectedText),
+          expected: normalizedHighlight,
+          found: normalizedExpected,
           start: highlight.start,
           end: highlight.end,
+          rawExpected: expectedText,
+          rawHighlight: highlight.text
         })
         // Continue anyway for better compatibility
       }
@@ -306,7 +320,9 @@ function applyHighlightRobust(container: Element, highlight: Highlight, plainTex
     mark.style.fontWeight = 'bold' // 굵은 글씨
     mark.style.border = '2px solid #f59e0b' // 디버깅용 테두리
     mark.style.zIndex = '999'
-    mark.style.display = 'inline' // 연결되게 하기 위함
+    mark.style.display = 'inline-block' // 연결되게 하기 위함
+    mark.style.whiteSpace = 'nowrap' // 줄바꿈 방지
+    mark.style.boxDecorationBreak = 'clone' // 끊어져도 연결되게
 
     mark.className = 'bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors'
     mark.title = 'Click to remove highlight'
@@ -351,17 +367,33 @@ function applyHighlightViaTextReplacementSingle(container: HTMLElement, highligh
   
   let htmlWithHighlight = container.innerHTML
   
-  // Simple text replacement as fallback
-  const regex = new RegExp(`(${escapedText})`, 'g')
+  // Enhanced text replacement with newline handling
+  const normalizeForRegex = (text: string) => {
+    return text
+      .replace(/\n\n+/g, ' ')  // Double+ newlines to single space
+      .replace(/\n/g, ' ')     // Single newlines to space
+      .replace(/\s+/g, ' ')    // Multiple spaces to single space
+      .trim()
+  }
+
+  const normalizedText = normalizeForRegex(textToReplace)
+  const escapedNormalizedText = normalizedText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+  // Create flexible regex that matches both normalized and original text
+  const flexiblePattern = escapedNormalizedText
+    .replace(/\s+/g, '\\s+') // Allow any whitespace to match
+
+  const regex = new RegExp(`(${flexiblePattern})`, 'gi')
   let matchCount = 0
+
   htmlWithHighlight = htmlWithHighlight.replace(regex, (match, p1) => {
     matchCount++
     // Only replace the first match to avoid duplicates
     if (matchCount === 1) {
       return `<mark class="bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors"
-               style="background-color: #fef08a; padding: 2px 4px; border-radius: 4px; font-weight: bold; border: 2px solid #f59e0b; z-index: 999; display: inline;"
+               style="background-color: #fef08a; padding: 2px 4px; border-radius: 4px; font-weight: bold; border: 2px solid #f59e0b; z-index: 999; display: inline-block; white-space: nowrap; box-decoration-break: clone;"
                title="Click to remove highlight"
-               data-highlight-text="${textToReplace}" 
+               data-highlight-text="${textToReplace}"
                data-highlight-index="${highlightIndex}">${p1}</mark>`
     }
     return match // Return original for subsequent matches
