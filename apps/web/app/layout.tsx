@@ -9,10 +9,10 @@ const nunito = Nunito({
   weight: ['300', '400', '500', '700', '900'],
 })
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'SAT Mock Exam & Problem Bank',
   description: 'Practice SAT exams and improve your scores',
-}
+} satisfies Metadata
 
 export default function RootLayout({
   children,

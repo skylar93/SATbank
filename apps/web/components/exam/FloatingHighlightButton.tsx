@@ -27,98 +27,82 @@ function computeOffsetsWithoutTrim(
   if (isHtml && originalTextContent) {
     let normalizedContainer: HTMLElement | null = null
     try {
-      console.log('🔍 DOM-based position calculation starting...')
+      const { container: tempContainer, plainText } =
+        createNormalizedContainer(originalTextContent)
+      normalizedContainer = tempContainer
 
-      // Create the same normalized container as HighlightedTextRenderer
-      const result = createNormalizedContainer(originalTextContent)
-      normalizedContainer = result.container
-      const plainText = result.plainText
+      // Compute offsets directly from the live DOM selection
+      const startOffsetInDom = getTextOffsetInContainer(
+        container,
+        range.startContainer,
+        range.startOffset
+      )
+      const endOffsetInDom = getTextOffsetInContainer(
+        container,
+        range.endContainer,
+        range.endOffset
+      )
 
-      console.log('🎯 Direct text search approach')
-      console.log('Search text:', JSON.stringify(textRaw.slice(0, 50)))
-      console.log('Plain text preview:', JSON.stringify(plainText.slice(0, 100)))
+      const domStart = Math.max(0, Math.min(startOffsetInDom, endOffsetInDom))
+      const domEnd = Math.max(domStart, Math.max(startOffsetInDom, endOffsetInDom))
 
-      // 1. Try direct exact match
-      let directIndex = plainText.indexOf(textRaw)
-      console.log('Direct match result:', directIndex)
+      const domPlainText = getVisiblePlainText(container)
+      const domSelectedText =
+        domPlainText.slice(domStart, domEnd) || textRaw || ''
+      const cleanDomSelected = domSelectedText.trim() || textRaw.trim()
 
-      if (directIndex >= 0) {
-        console.log('✅ Found direct match:', { start: directIndex, end: directIndex + textRaw.length })
-        return { start: directIndex, end: directIndex + textRaw.length, textForHighlight: textRaw }
+      const beforeContext = domPlainText.slice(Math.max(0, domStart - 80), domStart)
+      const afterContext = domPlainText.slice(domEnd, domEnd + 80)
+
+      // First try: locate the DOM selection inside the normalized text
+      let normalizedMatch = findBestTextMatch(plainText, cleanDomSelected, {
+        before: beforeContext,
+        after: afterContext,
+      })
+
+      if (!normalizedMatch && cleanDomSelected) {
+        normalizedMatch = findFlexibleWhitespaceMatch(plainText, cleanDomSelected)
       }
 
-      // 2. Try newline variations first (common issue)
-      if (textRaw.includes('\n')) {
-        console.log('🔄 Trying comprehensive newline variations...')
-        const variations = [
-          textRaw.replace(/\n\n/g, '.'),        // \n\n -> .
-          textRaw.replace(/\n\n/g, '. '),       // \n\n -> . (with space)
-          textRaw.replace(/\n\n/g, '.Tom '),    // \n\n -> .Tom (specific case)
-          textRaw.replace(/\n/g, ' '),          // all \n -> space
-          textRaw.replace(/\n+/g, ' '),         // multiple \n -> space
-          textRaw.replace(/\n\n/g, ''),         // remove \n\n entirely
-          textRaw.replace(/\n/g, ''),           // remove all \n
-          textRaw.replace(/\s*\n\s*/g, ' '),    // \n with surrounding spaces -> space
-        ]
-
-        for (const variation of variations) {
-          const index = plainText.indexOf(variation)
-          console.log(`  Trying "${variation.slice(0,30)}...": ${index}`)
-          if (index >= 0) {
-            console.log('✅ Found with newline variation at:', index)
-            return { start: index, end: index + variation.length, textForHighlight: textRaw }
-          }
-        }
-
-        // Try partial matching from the beginning of the text
-        console.log('🔍 Trying partial matching from text start...')
-        const words = textRaw.split(/\s+/)
-        if (words.length > 3) {
-          // Try matching the first few words
-          const firstPart = words.slice(0, Math.min(5, words.length)).join(' ')
-          const partialIndex = plainText.indexOf(firstPart)
-          console.log(`  Trying first part "${firstPart}": ${partialIndex}`)
-
-          if (partialIndex >= 0) {
-            console.log('✅ Found partial match, using as base position:', partialIndex)
-            return { start: partialIndex, end: partialIndex + textRaw.length, textForHighlight: textRaw }
-          }
-        }
+      if (!normalizedMatch && textRaw) {
+        normalizedMatch = findBestTextMatch(plainText, textRaw, {
+          before: beforeContext,
+          after: afterContext,
+        })
       }
 
-      // 3. Try with normalized whitespace
-      const normalizedSearch = textRaw.replace(/\s+/g, ' ').trim()
-      const normalizedIndex = plainText.replace(/\s+/g, ' ').indexOf(normalizedSearch)
-      console.log('Normalized search result:', normalizedIndex)
-
-      if (normalizedIndex >= 0) {
-        // Find approximate position in original text
-        const searchWords = normalizedSearch.split(' ')
-        const firstWord = searchWords[0]
-        const firstWordIndex = plainText.indexOf(firstWord)
-
-        if (firstWordIndex >= 0) {
-          console.log('✅ Found via normalized search at:', firstWordIndex)
-          return { start: firstWordIndex, end: firstWordIndex + textRaw.length, textForHighlight: textRaw }
-        }
+      if (!normalizedMatch && textRaw) {
+        normalizedMatch = findFlexibleWhitespaceMatch(plainText, textRaw)
       }
 
-      console.log('⚠️ Direct text search failed, trying more flexible matching...')
-
-      // Simple fallback: just try to find the text as-is
-      const fallbackIndex = plainText.indexOf(textRaw.trim())
-      if (fallbackIndex >= 0) {
-        console.log('✅ Found with fallback search at:', fallbackIndex)
+      if (normalizedMatch) {
+        const { start, end, text } = normalizedMatch
         return {
-          start: fallbackIndex,
-          end: fallbackIndex + textRaw.length,
-          textForHighlight: textRaw
+          start,
+          end,
+          textForHighlight: text || cleanDomSelected || textRaw,
         }
       }
 
-      console.error('❌ Complete failure - could not locate text anywhere')
-      return { start: 0, end: textRaw.length, textForHighlight: textRaw }
+      // Fallback: align DOM offsets to normalized plain text length proportionally
+      const ratio = plainText.length / Math.max(domPlainText.length, 1)
+      const approxStart = Math.max(0, Math.floor(domStart * ratio))
+      let approxEnd = Math.max(approxStart, Math.floor(domEnd * ratio))
+      const minimumLength = cleanDomSelected.length || textRaw.trim().length
+      if (approxEnd <= approxStart && minimumLength > 0) {
+        approxEnd = Math.min(
+          plainText.length,
+          approxStart + Math.max(Math.round(minimumLength * ratio) || minimumLength, 1)
+        )
+      }
+      const fallbackText =
+        plainText.slice(approxStart, approxEnd) || cleanDomSelected || textRaw
 
+      return {
+        start: approxStart,
+        end: approxEnd,
+        textForHighlight: fallbackText,
+      }
     } catch (error) {
       console.warn('HTML-based offset calculation failed:', error)
       return { start: 0, end: textRaw.length, textForHighlight: textRaw }
@@ -680,8 +664,12 @@ export default function FloatingHighlightButton({
             clearTimeout(hideTimeoutRef.current)
             hideTimeoutRef.current = null
           }
-          // Restore selection when user approaches the button
-          restoreSelection()
+
+          const selection = window.getSelection()
+          if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+            // Only restore if selection has been lost or collapsed
+            restoreSelection()
+          }
         }
       }
     }
@@ -818,7 +806,10 @@ export default function FloatingHighlightButton({
     }
 
     // Restore selection when hovering over button
-    restoreSelection()
+    const selection = window.getSelection()
+    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+      restoreSelection()
+    }
   }
 
   const handleMouseLeave = () => {
@@ -830,7 +821,10 @@ export default function FloatingHighlightButton({
   const onButtonMouseDown: React.MouseEventHandler = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    restoreSelection()
+    const selection = window.getSelection()
+    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+      restoreSelection()
+    }
   }
 
   if (!isVisible || !containerRef.current) return null

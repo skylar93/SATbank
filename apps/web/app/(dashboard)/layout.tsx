@@ -3,10 +3,10 @@ import { SidebarProvider } from '../../contexts/sidebar-context'
 import { Sidebar } from '../../components/sidebar'
 import { ImpersonationBanner } from '../../components/admin/ImpersonationBanner'
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'SAT Practice - Dashboard',
   description: 'Access your SAT mock exams and practice tests',
-}
+} satisfies Metadata
 
 export default function DashboardLayout({
   children,

@@ -706,7 +706,7 @@ async function processTestData(testFilter = null, questionLimit = null, dryRun =
     console.log('🚀 Starting Math Bluebook SAT Import Process...\n');
 
     // Load data
-    const defaultJsonFile = 'bluebook-sat-problems-march2025module2.json';
+    const defaultJsonFile = 'bluebook-sat-problems-june2025usamodule2.json';
     const fileName = jsonFile || defaultJsonFile;
     const dataPath = path.join(__dirname, fileName);
 
