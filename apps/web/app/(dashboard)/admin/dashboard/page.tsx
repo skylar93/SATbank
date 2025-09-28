@@ -68,12 +68,6 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (user) {
-      loadDashboardData()
-    }
-  }, [user, loadDashboardData])
-
   const calculatePercentageChange = (
     current: number,
     previous: number
@@ -327,6 +321,12 @@ export default function AdminDashboard() {
       setLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    if (user) {
+      loadDashboardData()
+    }
+  }, [user, loadDashboardData])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

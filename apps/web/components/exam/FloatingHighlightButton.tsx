@@ -27,8 +27,25 @@ function computeOffsetsWithoutTrim(
   if (isHtml && originalTextContent) {
     let normalizedContainer: HTMLElement | null = null
     try {
-      const { container: tempContainer, plainText } =
-        createNormalizedContainer(originalTextContent)
+      const preferredHtml = originalTextContent?.trim().length
+        ? originalTextContent
+        : ''
+
+      let { container: tempContainer, plainText } = createNormalizedContainer(
+        preferredHtml || container.innerHTML
+      )
+
+      if (
+        preferredHtml &&
+        domSelectedText.trim().length > 0 &&
+        !plainText.includes(domSelectedText.trim())
+      ) {
+        // Fallback to actual rendered HTML when provided original content no longer matches
+        tempContainer.remove()
+        ;({ container: tempContainer, plainText } = createNormalizedContainer(
+          container.innerHTML
+        ))
+      }
       normalizedContainer = tempContainer
 
       let domStart = 0
@@ -318,6 +335,15 @@ function computeOffsetsWithoutTrim(
         }
       }
 
+      const plainTextSlice = plainText.slice(approxWindowStart, approxWindowEnd)
+      console.error('⚠️ highlight mapping failed', {
+        domSelectedText,
+        cleanDomSelected,
+        textRaw,
+        plainTextSlice,
+        originalTextContent,
+      })
+
       throw new Error('Unable to map highlighted text to normalized question content')
     } catch (error) {
       throw error instanceof Error ? error : new Error('Failed to compute HTML highlight offsets')
@@ -583,6 +609,14 @@ export default function FloatingHighlightButton({
   const isStickyRef = useRef(false) // Sticky selection mode
   const isRestoringRef = useRef(false) // Prevent selection change loops
   const isPointerDownRef = useRef(false) // Track pointer state to avoid interrupting drags
+
+  // Clear cached selection/range info whenever the underlying content swaps out
+  useEffect(() => {
+    storedRangeRef.current = null
+    isStickyRef.current = false
+    isRestoringRef.current = false
+    isPointerDownRef.current = false
+  }, [originalText, containerRef])
 
   const scheduleHide = (ms: number) => {
     if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
@@ -920,10 +954,19 @@ export default function FloatingHighlightButton({
 
     document.addEventListener('selectionchange', handleSelectionChange)
     document.addEventListener('mousedown', handleClickOutside)
+    // Also gate selection handling on classic mouse events for broader browser support
+    const setMouseDown = () => {
+      isPointerDownRef.current = true
+    }
+    const setMouseUp = () => {
+      isPointerDownRef.current = false
+    }
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('pointerdown', handlePointerDown)
     document.addEventListener('pointerup', handlePointerUp)
     document.addEventListener('pointercancel', handlePointerUp)
+    document.addEventListener('mouseup', setMouseUp)
+    document.addEventListener('mousedown', setMouseDown)
 
     return () => {
       document.removeEventListener('selectionchange', handleSelectionChange)
@@ -932,6 +975,8 @@ export default function FloatingHighlightButton({
       document.removeEventListener('pointerdown', handlePointerDown)
       document.removeEventListener('pointerup', handlePointerUp)
       document.removeEventListener('pointercancel', handlePointerUp)
+      document.removeEventListener('mouseup', setMouseUp)
+      document.removeEventListener('mousedown', setMouseDown)
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current)
       }

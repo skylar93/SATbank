@@ -1867,7 +1867,11 @@ export function QuestionDisplay({
                     </div>
                     {/* Render prompt without highlights below */}
                     {split.promptHtml && (
-                      <div className="mt-2">
+                      <div
+                        className="mt-2 select-none"
+                        // Make prompt text non-selectable so drags don't jump across boundary
+                        data-role="prompt"
+                      >
                         {renderHtmlContent(split.promptHtml)}
                       </div>
                     )}
