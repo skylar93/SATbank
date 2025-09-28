@@ -825,7 +825,13 @@ export function QuestionDisplay({
           return (
             <div className="space-y-2">
               {parsed.text && (
-                <div>{renderTextWithFormattingAndMath(parsed.text)}</div>
+                <div>
+                  {/* Check if text contains HTML tags - if so, render as HTML */}
+                  {parsed.text.includes('<') && parsed.text.includes('>') ?
+                    renderHtmlContent(parsed.text) :
+                    renderTextWithFormattingAndMath(parsed.text)
+                  }
+                </div>
               )}
               {parsed.imageUrl && (
                 <img
@@ -871,7 +877,10 @@ export function QuestionDisplay({
         }
 
         // If parsed is a string or primitive, use it directly
-        return renderTextWithFormattingAndMath(String(parsed))
+        const textContent = String(parsed)
+        return textContent.includes('<') && textContent.includes('>') ?
+          renderHtmlContent(textContent) :
+          renderTextWithFormattingAndMath(textContent)
       } catch (e) {
         // Not JSON, continue with regular text rendering
       }
@@ -898,6 +907,11 @@ export function QuestionDisplay({
           }}
         />
       )
+    }
+
+    // Check if the value contains HTML tags - if so, render as HTML instead of markdown
+    if (value.includes('<') && value.includes('>')) {
+      return renderHtmlContent(value)
     }
 
     // Regular text rendering - use markdown renderer for proper formatting

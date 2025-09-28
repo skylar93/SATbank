@@ -60,6 +60,22 @@ function extractLatexFromHtml(htmlContent) {
     return placeholder;
   });
 
+  // Enhanced MathQuill extraction that preserves individual numerator/denominator values
+  function extractMathQuillContent(htmlSpan) {
+    // Extract numerator from mathquill span
+    const numMatch = htmlSpan.match(/<span class="mq-numerator"[^>]*>.*?<span[^>]*>(\d+)<\/span>.*?<\/span>/);
+    // Extract denominator from mathquill span
+    const denMatch = htmlSpan.match(/<span class="mq-denominator"[^>]*>.*?<span[^>]*>(\d+)<\/span>.*?<\/span>/);
+
+    if (numMatch && denMatch) {
+      return `\\frac{${numMatch[1]}}{${denMatch[1]}}`;
+    }
+
+    // Fallback to latex-data attribute if direct extraction fails
+    const latexMatch = htmlSpan.match(/latex-data="([^"]*)"/);
+    return latexMatch ? latexMatch[1] : null;
+  }
+
   // Improved: Use balanced bracket matching to completely remove mathquill structures
   function findCompleteSpan(text, startIndex) {
     let depth = 0;
@@ -110,15 +126,23 @@ function extractLatexFromHtml(htmlContent) {
     let spanEnd = findCompleteSpan(processed, spanStart);
     if (spanEnd === -1) continue;
 
-    // Clean LaTeX content
-    let latex = data.latex
-      .replace(/\\cdot/g, '\\cdot')
-      .replace(/\\times/g, '\\times')
-      .replace(/\\div/g, '\\div')
-      .replace(/\\pm/g, '\\pm')
-      .replace(/\\sqrt{([^}]*)}/g, '\\sqrt{$1}')
-      .replace(/\\frac{([^}]*)}{([^}]*)}/g, '\\frac{$1}{$2}')
-      .trim();
+    // Extract the complete MathQuill HTML span for enhanced processing
+    const fullSpan = processed.substring(spanStart, spanEnd);
+
+    // Try enhanced extraction first (for fractions with different values)
+    let latex = extractMathQuillContent(fullSpan);
+
+    if (!latex) {
+      // Fallback to original method
+      latex = data.latex
+        .replace(/\\cdot/g, '\\cdot')
+        .replace(/\\times/g, '\\times')
+        .replace(/\\div/g, '\\div')
+        .replace(/\\pm/g, '\\pm')
+        .replace(/\\sqrt{([^}]*)}/g, '\\sqrt{$1}')
+        .replace(/\\frac{([^}]*)}{([^}]*)}/g, '\\frac{$1}{$2}')
+        .trim();
+    }
 
     // Replace with placeholder for now
     let beforeSpan = processed.substring(0, spanStart);
@@ -370,6 +394,19 @@ function extractCorrectAnswerLetter(correctAnswer, choices) {
   const normalizedCorrect = normalizeMathExpression(cleanCorrectAnswer);
 
   console.log(`   🔍 Finding match for: "${correctAnswer}" (cleaned: "${cleanCorrectAnswer}")`);
+
+  // First, check for duplicate choice content (a sign of extraction problems)
+  const choiceTexts = choices.map(c => typeof c === 'object' ? c.text : c);
+  const uniqueTexts = new Set(choiceTexts);
+
+  if (uniqueTexts.size === 1 && choices.length > 1) {
+    console.warn(`   🚨 CRITICAL: All choices have identical content: "${choiceTexts[0]}"`);
+    console.warn(`   🔧 This indicates an HTML extraction problem in the original data.`);
+    console.warn(`   📝 Question may need manual review and correction.`);
+
+    // For now, still return A but flag this as needing review
+    return 'A';
+  }
 
   for (const choice of choices) {
     let letter, text;
