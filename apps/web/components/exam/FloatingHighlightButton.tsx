@@ -31,6 +31,8 @@ function computeOffsetsWithoutTrim(
         ? originalTextContent
         : ''
 
+      let domSelectedText = range.toString() || textRaw || ''
+
       let { container: tempContainer, plainText } = createNormalizedContainer(
         preferredHtml || container.innerHTML
       )
@@ -50,7 +52,6 @@ function computeOffsetsWithoutTrim(
 
       let domStart = 0
       let domEnd = 0
-      let domSelectedText = range.toString() || textRaw || ''
 
       // Primary: compute offsets via walker-based node offsets (consistent with renderer)
       const startOffsetInDom = getTextOffsetInContainer(

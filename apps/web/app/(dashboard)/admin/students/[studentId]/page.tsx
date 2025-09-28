@@ -57,12 +57,6 @@ export default function StudentDetailPage() {
 
   const studentId = params.studentId as string
 
-  useEffect(() => {
-    if (user && studentId) {
-      loadStudentData()
-    }
-  }, [user, studentId, loadStudentData])
-
   const loadStudentData = useCallback(async () => {
     try {
       // Load student profile
@@ -101,6 +95,12 @@ export default function StudentDetailPage() {
       setLoading(false)
     }
   }, [studentId])
+
+  useEffect(() => {
+    if (user && studentId) {
+      loadStudentData()
+    }
+  }, [user, studentId, loadStudentData])
 
   const loadAttemptDetails = async (attemptId: string) => {
     setDetailsLoading(true)

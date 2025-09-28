@@ -409,7 +409,7 @@ export default function AdminStudentsPage() {
                       onChange={(e) =>
                         setFilters({
                           ...filters,
-                          sortBy: e.target.value as 'name' | 'grade' | 'score' | 'recent',
+                          sortBy: e.target.value as 'name' | 'score' | 'attempts' | 'date',
                         })
                       }
                       className="flex-1 px-3 py-2 border border-purple-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"

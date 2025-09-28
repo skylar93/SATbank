@@ -34,40 +34,6 @@ export default function AdminReviewPage() {
 
   const attemptId = params.attemptId as string
 
-  const checkAdminAccess = useCallback(async () => {
-    if (!user) return
-
-    try {
-      // Check if user is admin
-      const { data: profileData, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-
-      if (profileError || !profileData) {
-        throw new Error('Unable to verify user permissions')
-      }
-
-      if (profileData.role !== 'admin') {
-        throw new Error('Admin access required')
-      }
-
-      // Admin has access, proceed to load data
-      await loadReviewData()
-    } catch (err: unknown) {
-      console.error('Admin access check failed:', err)
-      setError(err instanceof Error ? err.message : 'Admin access check failed')
-      setLoading(false)
-    }
-  }, [user, attemptId, loadReviewData])
-
-  useEffect(() => {
-    if (user && attemptId) {
-      checkAdminAccess()
-    }
-  }, [user, attemptId, checkAdminAccess])
-
   const loadReviewData = useCallback(async () => {
     if (!user) return
 
@@ -182,6 +148,40 @@ export default function AdminReviewPage() {
       setLoading(false)
     }
   }, [user, attemptId])
+
+  const checkAdminAccess = useCallback(async () => {
+    if (!user) return
+
+    try {
+      // Check if user is admin
+      const { data: profileData, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+
+      if (profileError || !profileData) {
+        throw new Error('Unable to verify user permissions')
+      }
+
+      if (profileData.role !== 'admin') {
+        throw new Error('Admin access required')
+      }
+
+      // Admin has access, proceed to load data
+      await loadReviewData()
+    } catch (err: unknown) {
+      console.error('Admin access check failed:', err)
+      setError(err instanceof Error ? err.message : 'Admin access check failed')
+      setLoading(false)
+    }
+  }, [user, attemptId, loadReviewData])
+
+  useEffect(() => {
+    if (user && attemptId) {
+      checkAdminAccess()
+    }
+  }, [user, attemptId, checkAdminAccess])
 
   if (loading) {
     return (
