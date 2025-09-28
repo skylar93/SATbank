@@ -92,10 +92,6 @@ function ExamPageContent() {
 
   // Reset initialization flag when examId changes
   useEffect(() => {
-    console.log('🔄 ExamId changed, resetting initialization flag:', {
-      examId,
-      hasInitialized,
-    })
     setHasInitialized(false)
   }, [examId])
   const forcingExitRef = useRef(false)
@@ -127,21 +123,9 @@ function ExamPageContent() {
     // Check for review mode
     const reviewForAttemptId = searchParams.get('review_for')
 
-    console.log('ExamPage useEffect: Checking initialization conditions', {
-      authLoading,
-      user: !!user,
-      examId,
-      hasInitialized,
-      loading,
-      userProfile: user?.profile,
-      reviewForAttemptId,
-      shouldInitialize:
-        !authLoading && user && examId && !hasInitialized && !loading,
-    })
 
     // Don't do anything if auth is still loading
     if (authLoading) {
-      console.log('⏳ Auth still loading, waiting...')
       return
     }
 

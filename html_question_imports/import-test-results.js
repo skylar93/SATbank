@@ -33,8 +33,8 @@ async function importTestResults() {
       title: 'Test HTML Cleaning Results - English Module 1',
       description: 'Test import of cleaned HTML question data',
       time_limits: { 
-        english1: 64,  // 64 minutes for English module 1
-        english2: 35,  // Default values for other modules
+        english1: 32,  // 64 minutes for English module 1
+        english2: 32,  // Default values for other modules
         math1: 35,
         math2: 55 
       },

@@ -60,7 +60,7 @@ export default function AdminReviewPage() {
       setError(err instanceof Error ? err.message : 'Admin access check failed')
       setLoading(false)
     }
-  }, [user, attemptId])
+  }, [user, attemptId, loadReviewData])
 
   useEffect(() => {
     if (user && attemptId) {
@@ -68,7 +68,7 @@ export default function AdminReviewPage() {
     }
   }, [user, attemptId, checkAdminAccess])
 
-  const loadReviewData = async () => {
+  const loadReviewData = useCallback(async () => {
     if (!user) return
 
     try {
@@ -134,16 +134,9 @@ export default function AdminReviewPage() {
               _module_type: eq.module_type,
             }))
 
-          console.log(
-            '🔍 [Admin] Template system loaded questions:',
-            allQuestions.length
-          )
         }
       } else {
         // OLD SYSTEM: Direct exam_id connection in questions table
-        console.log(
-          '🔍 [Admin] Loading questions via direct exam_id connection'
-        )
         const { data: questions, error: questionsError } = await supabase
           .from('questions')
           .select('*')
@@ -161,13 +154,8 @@ export default function AdminReviewPage() {
         }
 
         allQuestions = questions || []
-        console.log(
-          '🔍 [Admin] Direct system loaded questions:',
-          allQuestions.length
-        )
       }
 
-      console.log('🔍 [Admin] Total questions loaded:', allQuestions.length)
 
       // Get user answers for this attempt
       const { data: userAnswers, error: answersError } = await supabase
@@ -188,13 +176,12 @@ export default function AdminReviewPage() {
       }
 
       setReviewData(reviewData)
-    } catch (err: any) {
-      console.error('Error loading review data:', err)
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
-  }
+  }, [user, attemptId])
 
   if (loading) {
     return (

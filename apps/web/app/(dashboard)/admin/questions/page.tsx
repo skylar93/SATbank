@@ -157,7 +157,7 @@ export default function ManageExamsPage() {
         setLoading(false)
       }
     },
-    [selectedModule, selectedExam]
+    [selectedExam]
   )
 
   useEffect(() => {

@@ -190,7 +190,7 @@ async function fetchPreviousMonthStats(userId: string) {
 
   const scores = attempts
     .map((attempt) => {
-      return (attempt as any).final_scores?.overall || attempt.total_score || 0
+      return (attempt as { final_scores?: { overall?: number }; total_score?: number }).final_scores?.overall || attempt.total_score || 0
     })
     .filter((score) => score > 0)
 
@@ -297,7 +297,7 @@ async function fetchUserSubjectScores(
     math2: { correct: 0, total: 0 },
   }
 
-  answers.forEach((answer: any) => {
+  answers.forEach((answer: { questions?: { module_type?: string }; is_correct?: boolean }) => {
     const question = answer.questions
     if (question && question.module_type) {
       moduleStats[question.module_type as keyof typeof moduleStats].total++
@@ -354,8 +354,8 @@ export default function StudentDashboard() {
       const { data, canShowResults: canShow } = await getDashboardData(user.id)
       setDashboardData(data)
       setCanShowResults(canShow)
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }

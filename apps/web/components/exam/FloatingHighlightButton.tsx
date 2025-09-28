@@ -31,7 +31,11 @@ function computeOffsetsWithoutTrim(
         createNormalizedContainer(originalTextContent)
       normalizedContainer = tempContainer
 
-      // Compute offsets directly from the live DOM selection
+      let domStart = 0
+      let domEnd = 0
+      let domSelectedText = range.toString() || textRaw || ''
+
+      // Primary: compute offsets via walker-based node offsets (consistent with renderer)
       const startOffsetInDom = getTextOffsetInContainer(
         container,
         range.startContainer,
@@ -42,70 +46,281 @@ function computeOffsetsWithoutTrim(
         range.endContainer,
         range.endOffset
       )
-
-      const domStart = Math.max(0, Math.min(startOffsetInDom, endOffsetInDom))
-      const domEnd = Math.max(domStart, Math.max(startOffsetInDom, endOffsetInDom))
+      domStart = Math.max(0, Math.min(startOffsetInDom, endOffsetInDom))
+      domEnd = Math.max(domStart, Math.max(startOffsetInDom, endOffsetInDom))
 
       const domPlainText = getVisiblePlainText(container)
-      const domSelectedText =
-        domPlainText.slice(domStart, domEnd) || textRaw || ''
+      if (domEnd <= domStart) {
+        domEnd = domStart + domSelectedText.length
+      }
+      const domSlice = domPlainText.slice(domStart, domEnd)
+      domSelectedText = domSlice || domSelectedText || textRaw || ''
       const cleanDomSelected = domSelectedText.trim() || textRaw.trim()
+
+      // Heuristic boundary: avoid spilling into question stems like
+      // "As used in the text", "Which choice", etc.
+      const boundaryPatterns = [
+        /\bAs used in the text\b/i,
+        /\bWhich choice\b/i,
+        /\bWhich statement\b/i,
+        /\bWhich of the following\b/i,
+        /\bWhat is the value of\b/i,
+        /\bBased on the passage\b/i,
+      ]
+      const findBoundary = (s: string) => {
+        let idx = -1
+        for (const re of boundaryPatterns) {
+          const m = s.search(re)
+          if (m >= 0) idx = idx === -1 ? m : Math.min(idx, m)
+        }
+        return idx
+      }
+      const domBoundary = findBoundary(domPlainText)
+      if (domBoundary >= 0 && domStart < domBoundary && domEnd > domBoundary) {
+        // Clamp selection end to stay within passage
+        domEnd = domBoundary
+      }
 
       const beforeContext = domPlainText.slice(Math.max(0, domStart - 80), domStart)
       const afterContext = domPlainText.slice(domEnd, domEnd + 80)
 
-      // First try: locate the DOM selection inside the normalized text
+      const normalizeForComparison = (value: string) =>
+        value
+          ? value
+              .replace(/\u00a0/g, ' ')
+              .replace(/[“”]/g, '"')
+              .replace(/[‘’]/g, "'")
+              .replace(/\s+/g, ' ')
+              .trim()
+          : ''
+
+      const targetNormalized = normalizeForComparison(domSelectedText)
+
+      const generateCandidateVariations = (input: string): string[] => {
+        if (!input) return []
+        const variations = new Set<string>()
+        const push = (value: string | null | undefined) => {
+          if (!value) return
+          const normalized = value
+            .replace(/\u00a0/g, ' ')
+            .replace(/[“”]/g, '"')
+            .replace(/[‘’]/g, "'")
+          if (normalized.length) variations.add(normalized)
+        }
+
+        push(input)
+        push(input.trim())
+        push(input.replace(/\s+/g, ' '))
+        push(input.replace(/\s+/g, ''))
+        push(input.replace(/\s*\n\s*/g, ' '))
+        push(input.replace(/\s*\n\s*/g, ''))
+        push(input.replace(/\n+/g, ' '))
+        push(input.replace(/\n+/g, ''))
+        push(input.replace(/\s{2,}/g, ' '))
+        push(input.replace(/\s{2,}/g, ''))
+        push(input.replace(/\s+/g, ' ').trim())
+
+        return Array.from(variations).filter(Boolean)
+      }
+
+      const ratioToNormalized =
+        plainText.length > 0 && domPlainText.length > 0
+          ? domStart / domPlainText.length
+          : 0
+      const clampedRatio = Math.min(Math.max(ratioToNormalized, 0), 1)
+      const approxNormalizedStart = Math.floor(clampedRatio * plainText.length)
+      const approxWindowRadius = Math.max(
+        200,
+        Math.min(
+          600,
+          (domSelectedText.length || cleanDomSelected.length || textRaw.length || 1) * 2
+        )
+      )
+      let approxWindowStart = Math.max(0, approxNormalizedStart - approxWindowRadius)
+      let approxWindowEnd = Math.min(plainText.length, approxNormalizedStart + approxWindowRadius)
+      // Apply boundary to normalized window as well
+      const normalizedBoundary = (() => {
+        // Map domBoundary proportionally to normalized plainText space
+        if (domBoundary >= 0 && domPlainText.length > 0) {
+          return Math.floor((domBoundary / domPlainText.length) * plainText.length)
+        }
+        return -1
+      })()
+      if (normalizedBoundary >= 0) {
+        approxWindowEnd = Math.min(approxWindowEnd, normalizedBoundary)
+        if (approxWindowStart >= approxWindowEnd) {
+          // Keep a small window ending at boundary
+          approxWindowStart = Math.max(0, normalizedBoundary - approxWindowRadius)
+        }
+      }
+      const approxWindowText = plainText.slice(approxWindowStart, approxWindowEnd)
+      const positionTolerance = Math.max(
+        80,
+        Math.min(
+          400,
+          (domEnd - domStart || cleanDomSelected.length || textRaw.length || 20) * 3
+        )
+      )
+
+      console.log('🎯 highlight window debug', {
+        domStart,
+        domEnd,
+        domSelectedTextPreview: domSelectedText.slice(0, 120),
+        domPlainTextAroundStart: domPlainText.slice(
+          Math.max(0, domStart - 40),
+          Math.min(domPlainText.length, domEnd + 40)
+        ),
+        approxNormalizedStart,
+        approxWindowStart,
+        approxWindowEnd,
+        approxWindowSnippet: plainText.slice(
+          approxWindowStart,
+          Math.min(plainText.length, approxWindowStart + 160)
+        ),
+      })
+
+      const logMatch = (
+        label: string,
+        start: number,
+        end: number,
+        snippetSource?: string | null
+      ) => {
+        const snippet =
+          snippetSource ?? plainText.slice(Math.max(0, start), Math.max(0, end))
+        console.log('✅ highlight match', {
+          label,
+          start,
+          end,
+          snippetPreview: snippet.slice(0, 160),
+        })
+        return {
+          start: Math.max(0, Math.min(start, end)),
+          end: Math.max(0, Math.max(start, end)),
+          textForHighlight: snippet,
+        }
+      }
+
+      const tryMatchInWindow = (targets: (string | null | undefined)[]) => {
+        for (const target of targets) {
+          if (!target) continue
+          for (const variation of generateCandidateVariations(target)) {
+            const directIndex = approxWindowText.indexOf(variation)
+            if (directIndex >= 0) {
+              const start = approxWindowStart + directIndex
+              const end = start + variation.length
+              const snippet = plainText.slice(start, end)
+              if (normalizeForComparison(snippet) === targetNormalized) {
+                return { start, end, text: snippet }
+              }
+            }
+
+            const flexibleMatch = findFlexibleWhitespaceMatch(approxWindowText, variation)
+            if (flexibleMatch) {
+              const start = approxWindowStart + flexibleMatch.start
+              const end = approxWindowStart + flexibleMatch.end
+              const snippet = plainText.slice(start, end)
+              if (normalizeForComparison(snippet) === targetNormalized) {
+                return { start, end, text: snippet }
+              }
+            }
+          }
+        }
+        return null
+      }
+
+      const verifyAndReturnMatch = (
+        match: { start: number; end: number; text?: string | null } | null,
+        label: string
+      ) => {
+        if (!match) return null
+        const snippet = match.text ?? plainText.slice(match.start, match.end)
+        if (!snippet) return null
+        const normalizedSnippet = normalizeForComparison(snippet)
+        if (!normalizedSnippet) return null
+        if (normalizedSnippet !== targetNormalized) {
+          return null
+        }
+        const safeStart = Math.max(0, Math.min(match.start, match.end))
+        const safeEnd = Math.max(safeStart, Math.max(match.start, match.end))
+        if (Math.abs(safeStart - approxNormalizedStart) > positionTolerance) {
+          console.log('⛔ highlight match rejected (position mismatch)', {
+            label,
+            safeStart,
+            expectedStart: approxNormalizedStart,
+            positionTolerance,
+          })
+          return null
+        }
+        return {
+          start: safeStart,
+          end: safeEnd,
+          textForHighlight: snippet,
+        }
+      }
+
+      const candidateMatches = tryMatchInWindow([
+        domSelectedText,
+        cleanDomSelected,
+        textRaw,
+        targetNormalized,
+      ])
+      const verifiedWindowMatch = verifyAndReturnMatch(candidateMatches, 'window')
+      if (verifiedWindowMatch) {
+        return logMatch('window', verifiedWindowMatch.start, verifiedWindowMatch.end)
+      }
+
       let normalizedMatch = findBestTextMatch(plainText, cleanDomSelected, {
         before: beforeContext,
         after: afterContext,
       })
+      let verified = verifyAndReturnMatch(normalizedMatch, 'bestText-cleanDom')
+      if (verified)
+        return logMatch('bestText-cleanDom', verified.start, verified.end)
 
-      if (!normalizedMatch && cleanDomSelected) {
-        normalizedMatch = findFlexibleWhitespaceMatch(plainText, cleanDomSelected)
-      }
+      normalizedMatch = findFlexibleWhitespaceMatch(plainText, cleanDomSelected)
+      verified = verifyAndReturnMatch(normalizedMatch, 'flex-cleanDom')
+      if (verified)
+        return logMatch('flex-cleanDom', verified.start, verified.end)
 
-      if (!normalizedMatch && textRaw) {
-        normalizedMatch = findBestTextMatch(plainText, textRaw, {
-          before: beforeContext,
-          after: afterContext,
-        })
-      }
+      normalizedMatch = findBestTextMatch(plainText, textRaw, {
+        before: beforeContext,
+        after: afterContext,
+      })
+      verified = verifyAndReturnMatch(normalizedMatch, 'bestText-textRaw')
+      if (verified) return logMatch('bestText-textRaw', verified.start, verified.end)
 
-      if (!normalizedMatch && textRaw) {
-        normalizedMatch = findFlexibleWhitespaceMatch(plainText, textRaw)
-      }
-
-      if (normalizedMatch) {
-        const { start, end, text } = normalizedMatch
-        return {
-          start,
-          end,
-          textForHighlight: text || cleanDomSelected || textRaw,
-        }
-      }
+      normalizedMatch = findFlexibleWhitespaceMatch(plainText, textRaw)
+      verified = verifyAndReturnMatch(normalizedMatch, 'flex-textRaw')
+      if (verified) return logMatch('flex-textRaw', verified.start, verified.end)
 
       // Fallback: align DOM offsets to normalized plain text length proportionally
       const ratio = plainText.length / Math.max(domPlainText.length, 1)
       const approxStart = Math.max(0, Math.floor(domStart * ratio))
       let approxEnd = Math.max(approxStart, Math.floor(domEnd * ratio))
-      const minimumLength = cleanDomSelected.length || textRaw.trim().length
+      const minimumLength =
+        domSelectedText.length || cleanDomSelected.length || textRaw.trim().length
       if (approxEnd <= approxStart && minimumLength > 0) {
         approxEnd = Math.min(
           plainText.length,
           approxStart + Math.max(Math.round(minimumLength * ratio) || minimumLength, 1)
         )
       }
-      const fallbackText =
-        plainText.slice(approxStart, approxEnd) || cleanDomSelected || textRaw
-
-      return {
-        start: approxStart,
-        end: approxEnd,
-        textForHighlight: fallbackText,
+      const fallbackText = plainText.slice(approxStart, approxEnd)
+      if (normalizeForComparison(fallbackText) === targetNormalized) {
+        if (Math.abs(approxStart - approxNormalizedStart) > positionTolerance) {
+          console.log('⛔ highlight fallback rejected (position mismatch)', {
+            approxStart,
+            expectedStart: approxNormalizedStart,
+            positionTolerance,
+          })
+        } else {
+          return logMatch('fallback-ratio', approxStart, approxEnd, fallbackText)
+        }
       }
+
+      throw new Error('Unable to map highlighted text to normalized question content')
     } catch (error) {
-      console.warn('HTML-based offset calculation failed:', error)
-      return { start: 0, end: textRaw.length, textForHighlight: textRaw }
+      throw error instanceof Error ? error : new Error('Failed to compute HTML highlight offsets')
     } finally {
       if (normalizedContainer) {
         normalizedContainer.remove()
@@ -126,18 +341,6 @@ function computeOffsetsWithoutTrim(
     let end = -1
     let textForHighlight = textRaw.trim() // Use local variable instead of mutating parameter
 
-    // Debug logging for offset computation
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Offset computation debug:', {
-        originalTextLength: originalText.length,
-        normalizedTextLength: visibleText.length,
-        rawTextLength: textRaw.length,
-        trimmedTextLength: textForHighlight.length,
-        originalTextPreview: originalText.substring(0, 100),
-        normalizedTextPreview: visibleText.substring(0, 100),
-        rawTextPreview: textRaw.substring(0, 100)
-      })
-    }
 
     try {
       // Map original range nodes to normalized container
@@ -151,7 +354,6 @@ function computeOffsetsWithoutTrim(
         end = mappedOffsets.end
       }
     } catch (error) {
-      console.warn('Range mapping failed, falling back to text search:', error)
     }
 
     // Improved fallback: Try multiple text matching approaches
@@ -308,7 +510,6 @@ function mapRangeToNormalizedContainer(
 
     return null
   } catch (error) {
-    console.warn('Range mapping failed:', error)
     return null
   }
 }
@@ -335,7 +536,6 @@ function createNormalizedContainerForSelection(
     // Apply same sanitization as HighlightedTextRenderer
     sanitizeHtmlContainer(tempDiv)
   } catch (error) {
-    console.warn('Failed to sanitize HTML container:', error)
   }
 
   return tempDiv
@@ -382,6 +582,7 @@ export default function FloatingHighlightButton({
   const storedRangeRef = useRef<Range | null>(null) // Store the actual Range object
   const isStickyRef = useRef(false) // Sticky selection mode
   const isRestoringRef = useRef(false) // Prevent selection change loops
+  const isPointerDownRef = useRef(false) // Track pointer state to avoid interrupting drags
 
   const scheduleHide = (ms: number) => {
     if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
@@ -393,90 +594,96 @@ export default function FloatingHighlightButton({
   }
 
   useEffect(() => {
-    const handleSelectionChange = () => {
-      if (isRestoringRef.current) return
-
-      const selection = window.getSelection()
-
-      // Clear any pending hide timeout when selection changes
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current)
-        hideTimeoutRef.current = null
-      }
-
-      if (!selection || !containerRef.current || selection.rangeCount === 0) {
-        if (isStickyRef.current) {
-          return
+    // Heuristic: clamp selection to the start block when it crosses into another block
+    const getClosestBlockElement = (node: Node | null): Element | null => {
+      let el: Node | null = node
+      while (el && el.nodeType !== Node.ELEMENT_NODE) el = el.parentNode
+      while (el && el.nodeType === Node.ELEMENT_NODE) {
+        const elem = el as Element
+        const tag = elem.tagName
+        const display = window.getComputedStyle(elem).display
+        if (
+          display === 'block' ||
+          display === 'list-item' ||
+          display === 'table' ||
+          display === 'flex' ||
+          display === 'grid' ||
+          /^(P|DIV|LI|UL|OL|H[1-6]|SECTION|ARTICLE|ASIDE|NAV)$/i.test(tag)
+        ) {
+          return elem
         }
+        el = elem.parentNode
+      }
+      return null
+    }
 
-        if (!selectedText) {
-          scheduleHide(1500)
+    const getLastVisibleTextPositionIn = (
+      scopeEl: Element
+    ): { node: Text; offset: number } | null => {
+      try {
+        const walker = getTextWalker(scopeEl)
+        let lastText: Text | null = null
+        while (walker.nextNode()) {
+          const n = walker.currentNode as Text
+          if ((n.nodeValue || '').length > 0) lastText = n
         }
-        return
-      }
-
-      // Skip processing if selection is collapsed (cursor position)
-      if (selection.isCollapsed) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Skipping collapsed selection')
+        if (lastText) {
+          return { node: lastText, offset: lastText.data.length }
         }
-        return
+      } catch {}
+      return null
+    }
+
+    const processSelection = (selection: Selection) => {
+      if (!containerRef.current) return
+
+      let range = selection.getRangeAt(0)
+
+      // Clamp cross-paragraph selections to the start block to avoid bleeding into question stem
+      const startBlock = getClosestBlockElement(range.startContainer)
+      const endBlock = getClosestBlockElement(range.endContainer)
+      if (
+        startBlock &&
+        endBlock &&
+        startBlock !== endBlock &&
+        containerRef.current.contains(startBlock) &&
+        containerRef.current.contains(endBlock)
+      ) {
+        const lastPos = getLastVisibleTextPositionIn(startBlock)
+        if (lastPos) {
+          const clamped = range.cloneRange()
+          try {
+            clamped.setEnd(lastPos.node, Math.max(0, lastPos.offset))
+            range = clamped
+          } catch {}
+        }
       }
 
-      const range = selection.getRangeAt(0)
-      const textRaw = selection.toString()
+      const textRaw = range.toString()
 
-      // Debug the actual selection
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Raw selection debug:', {
-          rangeText: range.toString(),
-          selectionText: textRaw,
-          rangeStartContainer: range.startContainer,
-          rangeEndContainer: range.endContainer,
-          rangeStartOffset: range.startOffset,
-          rangeEndOffset: range.endOffset,
-          rangeCollapsed: range.collapsed
-        })
-      }
 
-      // Check for empty or whitespace-only selection
       if (!textRaw || textRaw.trim().length === 0) {
-        // Only hide if we don't have sticky selection
         if (!isStickyRef.current && !selectedText) {
           scheduleHide(1500)
         }
         return
       }
 
-      // More robust container check - ensure both start and end are within container
-      // Also allow selection within highlighted text (mark elements)
       const startWithinContainer = containerRef.current.contains(range.startContainer)
       const endWithinContainer = containerRef.current.contains(range.endContainer)
 
       if (!startWithinContainer || !endWithinContainer) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Selection outside container:', {
-            startWithinContainer,
-            endWithinContainer,
-            startContainer: range.startContainer,
-            endContainer: range.endContainer
-          })
-        }
-        // Only hide if we don't have sticky selection
         if (!isStickyRef.current && !selectedText) {
           scheduleHide(1500)
         }
         return
       }
 
-      // Valid selection found → activate sticky mode
       isStickyRef.current = true
       storedRangeRef.current = range.cloneRange()
 
-      // Calculate text offsets using improved approach
       const containerElement = containerRef.current
 
-      // Validate that the range is within our container
       if (!containerElement.contains(range.commonAncestorContainer)) {
         console.warn('Selection range is outside target container')
         return
@@ -491,7 +698,6 @@ export default function FloatingHighlightButton({
           originalText
         )
 
-        // Additional validation
         if (start < 0 || end <= start || textForHighlight.trim().length === 0) {
           console.warn('Invalid selection offsets calculated:', {
             start,
@@ -501,114 +707,93 @@ export default function FloatingHighlightButton({
           return
         }
 
-        // Debug logging (can be enabled for troubleshooting)
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Selection processed in FloatingHighlightButton:', {
-            selectedText: textForHighlight,
-            selectedLength: textForHighlight.length,
-            calculatedStart: start,
-            calculatedEnd: end,
-            isHtml,
-            originalTextLength: originalText.length,
-            containerHTML: containerElement.innerHTML.substring(0, 200),
-            visibleTextPreview: getVisiblePlainText(containerElement).substring(0, 200),
-            originalTextPreview: originalText.substring(0, 200)
-          })
-        }
 
-        // Get selection position for floating button
         const rect = range.getBoundingClientRect()
         const containerRect = containerElement.getBoundingClientRect()
 
-        // Improved positioning algorithm for better handling of single-line questions
-        const buttonWidth = 90 // Width for both buttons together
-        const buttonHeight = 40
-        const offset = 8
-        const minDistance = 5 // Minimum distance from container edges
+        const minimalOffset = 8
+        const buttonWidth = 88
+        const buttonHeight = 44
 
-        // Get the cursor position (end of selection)
-        const tempRange = document.createRange()
-        tempRange.setStart(range.endContainer, range.endOffset)
-        tempRange.setEnd(range.endContainer, range.endOffset)
-        const cursorRect = tempRange.getBoundingClientRect()
+        const selectionRect = rect.width || rect.height
+          ? rect
+          : range.endContainer.parentElement?.getBoundingClientRect() || rect
 
-        // Get viewport and container dimensions
-        const containerWidth = containerElement.offsetWidth
-        const containerHeight = containerElement.offsetHeight
-        const viewportHeight = window.innerHeight
+        let buttonX =
+          selectionRect.left - containerRect.left + selectionRect.width / 2
+        let buttonY = selectionRect.top - containerRect.top - buttonHeight - minimalOffset
 
-        // Calculate available space in all directions
-        const spaceRight = containerWidth - (rect.right - containerRect.left)
-        const spaceLeft = rect.left - containerRect.left
-        const spaceBelow = containerHeight - (rect.bottom - containerRect.top)
-        const spaceAbove = rect.top - containerRect.top
+        const containerHeight = containerRect.height
+        const containerWidth = containerRect.width
+        const spaceAbove = selectionRect.top - containerRect.top
+        const spaceBelow = containerHeight - (selectionRect.bottom - containerRect.top)
 
-        let buttonX = 0
-        let buttonY = 0
-
-        // Horizontal positioning: prefer right, fallback to left if not enough space
-        if (spaceRight >= buttonWidth + offset + minDistance) {
-          // Position to the right of the cursor
-          buttonX = cursorRect.right - containerRect.left + offset
-        } else if (spaceLeft >= buttonWidth + offset + minDistance) {
-          // Position to the left of selection
-          buttonX = rect.left - containerRect.left - buttonWidth - offset
-        } else {
-          // Center horizontally if neither side has enough space
-          buttonX = Math.max(minDistance, (containerWidth - buttonWidth) / 2)
-        }
-
-        // Vertical positioning: for single-line questions, be more aggressive about positioning
-        if (spaceBelow >= buttonHeight + offset + minDistance) {
-          // Position below selection
-          buttonY = rect.bottom - containerRect.top + offset
-        } else if (spaceAbove >= buttonHeight + offset + minDistance) {
-          // Position above selection
-          buttonY = rect.top - containerRect.top - buttonHeight - offset
-        } else {
-          // For very tight spaces (like single-line questions), position at a safe distance
-          // Try to position below first, but with minimal offset
-          const minimalOffset = 3
-          if (
-            rect.bottom - containerRect.top + buttonHeight + minimalOffset <=
-            containerHeight
-          ) {
-            buttonY = rect.bottom - containerRect.top + minimalOffset
-          } else if (
-            rect.top - containerRect.top - buttonHeight - minimalOffset >=
-            0
-          ) {
+        if (buttonY < minimalOffset) {
+          if (spaceBelow >= buttonHeight + minimalOffset * 2) {
             buttonY =
-              rect.top - containerRect.top - buttonHeight - minimalOffset
+              selectionRect.bottom - containerRect.top + minimalOffset
+          } else if (spaceAbove >= buttonHeight + minimalOffset * 2) {
+            buttonY =
+              selectionRect.top - containerRect.top - buttonHeight - minimalOffset
           } else {
-            // For extremely tight single-line cases, position the buttons to overlay slightly
-            // This ensures they're always visible even if space is very limited
-            const selectionMiddleY =
-              rect.top + rect.height / 2 - containerRect.top
-            if (
-              selectionMiddleY - buttonHeight / 2 >= 0 &&
-              selectionMiddleY + buttonHeight / 2 <= containerHeight
-            ) {
-              // Center vertically on the selection
-              buttonY = selectionMiddleY - buttonHeight / 2
-            } else {
-              // Final fallback: position at the edge with the most space
-              buttonY =
-                spaceBelow > spaceAbove
-                  ? Math.max(0, containerHeight - buttonHeight)
-                  : 0
-            }
+            buttonY = Math.max(minimalOffset, containerHeight - buttonHeight - minimalOffset)
           }
         }
 
-        // Final boundary enforcement with more generous margins for single-line cases
+        if (buttonX < minimalOffset) {
+          buttonX = minimalOffset
+        } else if (buttonX > containerWidth - buttonWidth - minimalOffset) {
+          buttonX = containerWidth - buttonWidth - minimalOffset
+        }
+
+        if (selectionRect.top - containerRect.top < minimalOffset) {
+          buttonY =
+            selectionRect.bottom - containerRect.top + minimalOffset
+        } else if (
+          selectionRect.bottom - containerRect.top >
+          containerHeight - buttonHeight - minimalOffset
+        ) {
+          buttonY =
+            selectionRect.top - containerRect.top - buttonHeight - minimalOffset
+        }
+
+        if (
+          buttonY < minimalOffset &&
+          selectionRect.bottom - containerRect.top + buttonHeight + minimalOffset <=
+            containerHeight
+        ) {
+          buttonY =
+            selectionRect.bottom - containerRect.top + minimalOffset
+        } else if (
+          buttonY + buttonHeight > containerHeight - minimalOffset &&
+          selectionRect.top - containerRect.top - buttonHeight - minimalOffset >=
+            0
+        ) {
+          buttonY =
+            selectionRect.top - containerRect.top - buttonHeight - minimalOffset
+        } else {
+          const selectionMiddleY =
+            rect.top + rect.height / 2 - containerRect.top
+          if (
+            selectionMiddleY - buttonHeight / 2 >= 0 &&
+            selectionMiddleY + buttonHeight / 2 <= containerHeight
+          ) {
+            buttonY = selectionMiddleY - buttonHeight / 2
+          } else {
+            buttonY =
+              spaceBelow > spaceAbove
+                ? Math.max(0, containerHeight - buttonHeight)
+                : 0
+          }
+        }
+
         buttonX = Math.max(
-          minDistance,
-          Math.min(buttonX, containerWidth - buttonWidth - minDistance)
+          minimalOffset,
+          Math.min(buttonX, containerWidth - buttonWidth - minimalOffset)
         )
         buttonY = Math.max(
-          minDistance,
-          Math.min(buttonY, containerHeight - buttonHeight - minDistance)
+          minimalOffset,
+          Math.min(buttonY, containerHeight - buttonHeight - minimalOffset)
         )
 
         setPosition({
@@ -621,10 +806,75 @@ export default function FloatingHighlightButton({
         setIsVisible(true)
       } catch (error) {
         console.error('Error processing text selection:', error)
-        // Reset state on error
         isStickyRef.current = false
         storedRangeRef.current = null
+        if (error instanceof Error) {
+          toast.error(
+            error.message.includes('Unable to map')
+              ? '선택한 문장을 정확히 찾지 못했어요. 조금 더 짧게 선택하거나 다시 시도해 주세요.'
+              : '하이라이트를 적용할 수 없었어요. 다시 시도해 주세요.'
+          )
+        } else {
+          toast.error('하이라이트를 적용할 수 없었어요. 다시 시도해 주세요.')
+        }
       }
+    }
+
+    const handleSelectionChange = () => {
+      if (isRestoringRef.current) return
+
+      const selection = window.getSelection()
+
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current)
+        hideTimeoutRef.current = null
+      }
+
+      if (!selection || !containerRef.current || selection.rangeCount === 0) {
+        if (!isStickyRef.current && !selectedText) {
+          scheduleHide(1500)
+        }
+        return
+      }
+
+      if (selection.isCollapsed) {
+        return
+      }
+
+      if (isPointerDownRef.current) {
+        return
+      }
+
+      processSelection(selection)
+    }
+
+    const handlePointerDown = () => {
+      isPointerDownRef.current = true
+    }
+
+    const handlePointerUp = () => {
+      isPointerDownRef.current = false
+
+      if (isRestoringRef.current) return
+      if (!containerRef.current) return
+
+      const selection = window.getSelection()
+      if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+        return
+      }
+
+      const anchorNode = selection.anchorNode
+      const focusNode = selection.focusNode
+      if (
+        !anchorNode ||
+        !focusNode ||
+        !containerRef.current.contains(anchorNode) ||
+        !containerRef.current.contains(focusNode)
+      ) {
+        return
+      }
+
+      processSelection(selection)
     }
 
     const handleClickOutside = (e: MouseEvent) => {
@@ -664,12 +914,6 @@ export default function FloatingHighlightButton({
             clearTimeout(hideTimeoutRef.current)
             hideTimeoutRef.current = null
           }
-
-          const selection = window.getSelection()
-          if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
-            // Only restore if selection has been lost or collapsed
-            restoreSelection()
-          }
         }
       }
     }
@@ -677,11 +921,17 @@ export default function FloatingHighlightButton({
     document.addEventListener('selectionchange', handleSelectionChange)
     document.addEventListener('mousedown', handleClickOutside)
     document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('pointerup', handlePointerUp)
+    document.addEventListener('pointercancel', handlePointerUp)
 
     return () => {
       document.removeEventListener('selectionchange', handleSelectionChange)
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('pointerup', handlePointerUp)
+      document.removeEventListener('pointercancel', handlePointerUp)
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current)
       }
@@ -710,21 +960,12 @@ export default function FloatingHighlightButton({
     // Force re-enable selection handling after DOM updates
     setTimeout(() => {
       isRestoringRef.current = false
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Selection cleared and ready for new selections')
-      }
+      console.log('Selection cleared and ready for new selections')
     }, 50)
   }
 
   const handleHighlight = () => {
     if (selectionRange && selectedText) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Applying highlight:', {
-          start: selectionRange.start,
-          end: selectionRange.end,
-          text: selectedText
-        })
-      }
 
       onHighlight({
         start: selectionRange.start,

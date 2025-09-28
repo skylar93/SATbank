@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../../contexts/auth-context'
 import {
@@ -72,7 +72,7 @@ export default function AdminDashboard() {
     if (user) {
       loadDashboardData()
     }
-  }, [user])
+  }, [user, loadDashboardData])
 
   const calculatePercentageChange = (
     current: number,
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
     }
   }
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       // Get current date ranges
       const now = new Date()
@@ -326,7 +326,7 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

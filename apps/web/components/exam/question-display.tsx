@@ -86,6 +86,31 @@ export const renderHtmlContent = (htmlContent: string) => {
   )
 }
 
+// Heuristic: split a question HTML into passage (highlightable) and prompt (non-highlightable)
+function splitHtmlAtBoundary(html: string): { passageHtml: string; promptHtml: string } | null {
+  try {
+    const patterns = [
+      'As used in the text',
+      'Which choice',
+      'Which statement',
+      'Which of the following',
+      'What is the value of',
+      'Based on the passage',
+    ]
+    const lower = html.toLowerCase()
+    for (const p of patterns) {
+      const idx = lower.indexOf(p.toLowerCase())
+      if (idx > 0) {
+        return {
+          passageHtml: html.slice(0, idx),
+          promptHtml: html.slice(idx),
+        }
+      }
+    }
+  } catch {}
+  return null
+}
+
 // Legacy text rendering function for markdown (kept for backward compatibility)
 export const renderTextWithFormattingAndMath = (text: string) => {
   if (!text || typeof text !== 'string') return text
@@ -1763,57 +1788,92 @@ export function QuestionDisplay({
               </div>
             </div>
           ) : (
-            <div
-              ref={questionContentRef}
-              className="text-gray-900 leading-relaxed relative overflow-visible min-h-[60px]"
-            >
-              <HighlightedTextRendererMemo
-                text={(() => {
-                  // Simple priority-based rendering: HTML first, then fallback to markdown
-                  if (
-                    localQuestion.question_html &&
-                    !isEmptyHtml(localQuestion.question_html)
-                  ) {
-                    // HTML content exists and is not empty - render as HTML
-                    return localQuestion.question_html
-                  } else {
-                    // No HTML or empty HTML - render markdown text
-                    return localQuestion.question_text
-                  }
-                })()}
-                highlights={highlights}
-                onRemoveHighlight={onRemoveHighlight}
-                isHtml={
-                  !!(
-                    localQuestion.question_html &&
-                    !isEmptyHtml(localQuestion.question_html)
+            <div className="text-gray-900 leading-relaxed relative overflow-visible min-h-[60px]">
+              {(() => {
+                const isHtml = !!(
+                  localQuestion.question_html &&
+                  !isEmptyHtml(localQuestion.question_html)
+                )
+                if (!isHtml) {
+                  // Markdown path (unchanged)
+                  return (
+                    <div ref={questionContentRef}>
+                      <HighlightedTextRendererMemo
+                        text={localQuestion.question_text}
+                        highlights={highlights}
+                        onRemoveHighlight={onRemoveHighlight}
+                        isHtml={false}
+                      />
+                      {!isAdminPreview && questionContentRef && onAddHighlight && (
+                        <FloatingHighlightButton
+                          containerRef={questionContentRef}
+                          onHighlight={onAddHighlight}
+                          examTitle={examTitle}
+                          examId={examId}
+                          isHtml={false}
+                          originalText={localQuestion.question_text}
+                        />
+                      )}
+                    </div>
                   )
                 }
-              />
-              {!isAdminPreview && questionContentRef && onAddHighlight && (
-                <FloatingHighlightButton
-                  containerRef={questionContentRef}
-                  onHighlight={onAddHighlight}
-                  examTitle={examTitle}
-                  examId={examId}
-                  isHtml={
-                    !!(
-                      localQuestion.question_html &&
-                      !isEmptyHtml(localQuestion.question_html)
-                    )
-                  }
-                  originalText={(() => {
-                    if (
-                      localQuestion.question_html &&
-                      !isEmptyHtml(localQuestion.question_html)
-                    ) {
-                      return localQuestion.question_html
-                    } else {
-                      return localQuestion.question_text
-                    }
-                  })()}
-                />
-              )}
+
+                // HTML path: split passage and prompt; highlight only passage
+                const html = localQuestion.question_html as string
+                const split = splitHtmlAtBoundary(html)
+                if (!split) {
+                  // Fallback: keep current behavior if no boundary found
+                  return (
+                    <div ref={questionContentRef}>
+                      <HighlightedTextRendererMemo
+                        text={html}
+                        highlights={highlights}
+                        onRemoveHighlight={onRemoveHighlight}
+                        isHtml={true}
+                      />
+                      {!isAdminPreview && questionContentRef && onAddHighlight && (
+                        <FloatingHighlightButton
+                          containerRef={questionContentRef}
+                          onHighlight={onAddHighlight}
+                          examTitle={examTitle}
+                          examId={examId}
+                          isHtml={true}
+                          originalText={html}
+                        />
+                      )}
+                    </div>
+                  )
+                }
+
+                return (
+                  <>
+                    <div ref={questionContentRef}>
+                      <HighlightedTextRendererMemo
+                        text={split.passageHtml}
+                        highlights={highlights}
+                        onRemoveHighlight={onRemoveHighlight}
+                        isHtml={true}
+                      />
+                      {!isAdminPreview && questionContentRef && onAddHighlight && (
+                        <FloatingHighlightButton
+                          containerRef={questionContentRef}
+                          onHighlight={onAddHighlight}
+                          examTitle={examTitle}
+                          examId={examId}
+                          isHtml={true}
+                          originalText={split.passageHtml}
+                        />
+                      )}
+                    </div>
+                    {/* Render prompt without highlights below */}
+                    {split.promptHtml && (
+                      <div className="mt-2">
+                        {renderHtmlContent(split.promptHtml)}
+                      </div>
+                    )}
+                  </>
+                )
+              })()}
             </div>
           )}
 
