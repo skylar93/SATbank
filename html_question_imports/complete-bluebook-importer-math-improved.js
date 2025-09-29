@@ -144,6 +144,9 @@ function extractLatexFromHtml(htmlContent) {
         .trim();
     }
 
+    // Clean \left \right brackets for simpler LaTeX
+    latex = cleanLeftRightBrackets(latex);
+
     // Replace with placeholder for now
     let beforeSpan = processed.substring(0, spanStart);
     let afterSpan = processed.substring(spanEnd);
@@ -165,6 +168,25 @@ function extractLatexFromHtml(htmlContent) {
   });
 
   return processed;
+}
+
+// Clean \left \right brackets for simpler LaTeX
+function cleanLeftRightBrackets(latex) {
+  if (!latex || typeof latex !== 'string') return latex;
+
+  return latex
+    // Remove \left and \right with their corresponding brackets
+    .replace(/\\left\s*\(/g, '(')
+    .replace(/\\right\s*\)/g, ')')
+    .replace(/\\left\s*\[/g, '[')
+    .replace(/\\right\s*\]/g, ']')
+    .replace(/\\left\s*\{/g, '{')
+    .replace(/\\right\s*\}/g, '}')
+    .replace(/\\left\s*\|/g, '|')
+    .replace(/\\right\s*\|/g, '|')
+    // Handle any remaining \left \right pairs
+    .replace(/\\left\s*/g, '')
+    .replace(/\\right\s*/g, '');
 }
 
 // Normalize math expressions for better matching
@@ -370,14 +392,26 @@ function convertChoicesToOptions(choices) {
   choices.forEach(choice => {
     if (typeof choice === 'object' && choice.letter && choice.text) {
       // Process LaTeX content if present
-      const processedText = extractLatexFromHtml(choice.text);
+      let processedText = extractLatexFromHtml(choice.text);
+      // If no HTML processing occurred, just use the text directly
+      if (processedText === choice.text) {
+        processedText = choice.text;
+      }
+      // Clean \left \right brackets
+      processedText = cleanLeftRightBrackets(processedText);
       options[choice.letter] = processedText.trim();
     } else if (typeof choice === 'string') {
       const match = choice.match(/^([A-D])\)\s*(.*)$/);
       if (match) {
         const [, letter, text] = match;
         // Process LaTeX content if present
-        const processedText = extractLatexFromHtml(text);
+        let processedText = extractLatexFromHtml(text);
+        // If no HTML processing occurred, just use the text directly
+        if (processedText === text) {
+          processedText = text;
+        }
+        // Clean \left \right brackets
+        processedText = cleanLeftRightBrackets(processedText);
         options[letter] = processedText.trim();
       }
     }
@@ -539,11 +573,21 @@ function processQuestion(question, testId, examId) {
 
     // Process question content
     if (question.questionHTML) {
-      processedQuestion.question_html = extractMainContentFromHtml(question.questionHTML);
-      processedQuestion.question_text = question.questionText || '';
+      let questionHtml = extractMainContentFromHtml(question.questionHTML);
+      // Clean \left \right brackets from question HTML
+      questionHtml = cleanLeftRightBrackets(questionHtml);
+      processedQuestion.question_html = questionHtml;
+
+      let questionText = question.questionText || '';
+      // Clean \left \right brackets from question text
+      questionText = cleanLeftRightBrackets(questionText);
+      processedQuestion.question_text = questionText;
     } else {
+      let questionText = question.questionText || '';
+      // Clean \left \right brackets from question text
+      questionText = cleanLeftRightBrackets(questionText);
       processedQuestion.question_html = null;
-      processedQuestion.question_text = question.questionText || '';
+      processedQuestion.question_text = questionText;
       processedQuestion.content_format = 'markdown';
     }
 
@@ -743,7 +787,7 @@ async function processTestData(testFilter = null, questionLimit = null, dryRun =
     console.log('🚀 Starting Math Bluebook SAT Import Process...\n');
 
     // Load data
-    const defaultJsonFile = 'bluebook-sat-problems-june2025usamodule2.json';
+    const defaultJsonFile = 'bluebook-sat-problems-2025-09-29.json';
     const fileName = jsonFile || defaultJsonFile;
     const dataPath = path.join(__dirname, fileName);
 
