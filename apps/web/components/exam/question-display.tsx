@@ -1824,10 +1824,6 @@ export function QuestionDisplay({
                         <FloatingHighlightButton
                           containerRef={questionContentRef}
                           onHighlight={onAddHighlight}
-                          examTitle={examTitle}
-                          examId={examId}
-                          isHtml={false}
-                          originalText={localQuestion.question_text}
                           isHighlightMode={isHighlightMode}
                         />
                       )}
@@ -1852,10 +1848,6 @@ export function QuestionDisplay({
                         <FloatingHighlightButton
                           containerRef={questionContentRef}
                           onHighlight={onAddHighlight}
-                          examTitle={examTitle}
-                          examId={examId}
-                          isHtml={true}
-                          originalText={html}
                           isHighlightMode={isHighlightMode}
                         />
                       )}
@@ -1876,10 +1868,6 @@ export function QuestionDisplay({
                         <FloatingHighlightButton
                           containerRef={questionContentRef}
                           onHighlight={onAddHighlight}
-                          examTitle={examTitle}
-                          examId={examId}
-                          isHtml={true}
-                          originalText={split.passageHtml}
                           isHighlightMode={isHighlightMode}
                         />
                       )}
