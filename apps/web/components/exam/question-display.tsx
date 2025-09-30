@@ -453,6 +453,7 @@ interface QuestionDisplayProps {
   isPaused?: boolean
   examTitle?: string
   examId?: string
+  isHighlightMode?: boolean
 }
 
 export function QuestionDisplay({
@@ -485,6 +486,7 @@ export function QuestionDisplay({
   isPaused = false,
   examTitle,
   examId,
+  isHighlightMode = false,
 }: QuestionDisplayProps) {
   // Early return if question is not provided
   if (!question) {
@@ -1826,6 +1828,7 @@ export function QuestionDisplay({
                           examId={examId}
                           isHtml={false}
                           originalText={localQuestion.question_text}
+                          isHighlightMode={isHighlightMode}
                         />
                       )}
                     </div>
@@ -1853,6 +1856,7 @@ export function QuestionDisplay({
                           examId={examId}
                           isHtml={true}
                           originalText={html}
+                          isHighlightMode={isHighlightMode}
                         />
                       )}
                     </div>
@@ -1876,6 +1880,7 @@ export function QuestionDisplay({
                           examId={examId}
                           isHtml={true}
                           originalText={split.passageHtml}
+                          isHighlightMode={isHighlightMode}
                         />
                       )}
                     </div>

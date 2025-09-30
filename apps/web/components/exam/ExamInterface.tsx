@@ -1,11 +1,12 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { ExamTimer } from './exam-timer'
 import { QuestionDisplay } from './question-display'
 import { ExamNavigation } from './exam-navigation'
 import { ReferenceSheetModal } from './ReferenceSheetModal'
 import { TimeExpiredOverlay } from './TimeExpiredOverlay'
+import { HighlightToolbar } from './HighlightToolbar'
 import { ModuleType } from '../../lib/exam-service'
 
 interface ExamInterfaceProps {
@@ -92,9 +93,34 @@ export function ExamInterface({
   removeHighlight,
   getAnsweredQuestions,
 }: ExamInterfaceProps) {
+  // Highlight mode state
+  const [isHighlightMode, setIsHighlightMode] = useState(false)
+
+  // Reset highlight mode when question changes
+  useEffect(() => {
+    setIsHighlightMode(false)
+  }, [currentQuestion.id])
+
   const isLastQuestion =
     currentModule.currentQuestionIndex === currentModule.questions.length - 1
   const isLastModule = currentModuleIndex === modules.length - 1
+
+  // Toggle highlight mode function
+  const toggleHighlightMode = () => {
+    setIsHighlightMode(!isHighlightMode)
+    // Clear selection when toggling mode
+    if (window.getSelection) {
+      window.getSelection()?.removeAllRanges()
+    }
+  }
+
+  // Clear all highlights for current question
+  const clearAllHighlights = () => {
+    const highlights = highlightsByQuestion[currentQuestion.id] || []
+    highlights.forEach((highlight: any) => {
+      removeHighlight(currentQuestion.id, highlight)
+    })
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -121,6 +147,13 @@ export function ExamInterface({
           </div>
 
           <div className="flex items-center space-x-4">
+            <HighlightToolbar
+              isHighlightMode={isHighlightMode}
+              onToggleMode={toggleHighlightMode}
+              onClearAll={clearAllHighlights}
+              highlightCount={(highlightsByQuestion[currentQuestion.id] || []).length}
+              disabled={status !== 'in_progress' || (timeExpiredRef.current ?? false)}
+            />
             <ExamTimer
               initialTimeSeconds={currentModule.timeRemaining}
               onTimeExpired={onTimeExpired}
@@ -166,6 +199,7 @@ export function ExamInterface({
           }
           examTitle={exam.title}
           examId={exam.id}
+          isHighlightMode={isHighlightMode}
         />
       </div>
 

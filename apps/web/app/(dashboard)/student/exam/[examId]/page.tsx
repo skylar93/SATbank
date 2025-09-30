@@ -10,6 +10,7 @@ import { QuestionDisplay } from '../../../../../components/exam/question-display
 import { ExamNavigation } from '../../../../../components/exam/exam-navigation'
 import { ReferenceSheetModal } from '../../../../../components/exam/ReferenceSheetModal'
 import { TimeExpiredOverlay } from '../../../../../components/exam/TimeExpiredOverlay'
+import { HighlightToolbar } from '../../../../../components/exam/HighlightToolbar'
 import {
   Dialog,
   DialogContent,
@@ -88,12 +89,38 @@ function ExamPageContent() {
     isCorrect: boolean
   } | null>(null)
   const [shouldShowCorrectAnswer, setShouldShowCorrectAnswer] = useState(false)
+  const [isHighlightMode, setIsHighlightMode] = useState(false)
   const questionContentRef = useRef<HTMLDivElement>(null)
 
   // Reset initialization flag when examId changes
   useEffect(() => {
     setHasInitialized(false)
   }, [examId])
+
+  // Reset highlight mode when question changes
+  useEffect(() => {
+    setIsHighlightMode(false)
+  }, [getCurrentQuestion()?.id])
+
+  // Toggle highlight mode function
+  const toggleHighlightMode = () => {
+    setIsHighlightMode(!isHighlightMode)
+    // Clear selection when toggling mode
+    if (window.getSelection) {
+      window.getSelection()?.removeAllRanges()
+    }
+  }
+
+  // Clear all highlights for current question
+  const clearAllHighlights = () => {
+    const currentQuestion = getCurrentQuestion()
+    if (currentQuestion) {
+      const highlights = highlightsByQuestion[currentQuestion.id] || []
+      highlights.forEach((highlight: any) => {
+        removeHighlight(currentQuestion.id, highlight)
+      })
+    }
+  }
   const forcingExitRef = useRef(false)
   const timeExpiredRef = useRef(false)
   const isAdvancingModuleRef = useRef(false)
@@ -945,6 +972,13 @@ function ExamPageContent() {
           </div>
 
           <div className="flex items-center space-x-4">
+            <HighlightToolbar
+              isHighlightMode={isHighlightMode}
+              onToggleMode={toggleHighlightMode}
+              onClearAll={clearAllHighlights}
+              highlightCount={getCurrentQuestion() ? (highlightsByQuestion[getCurrentQuestion()!.id] || []).length : 0}
+              disabled={status !== 'in_progress' || timeExpiredRef.current}
+            />
             <ExamTimer
               initialTimeSeconds={currentModule.timeRemaining}
               onTimeExpired={handleTimeExpired}
@@ -984,6 +1018,9 @@ function ExamPageContent() {
           showCorrectAnswer={shouldShowCorrectAnswer}
           module={currentModule.module}
           isPaused={status !== 'in_progress' || timeExpiredRef.current}
+          examTitle={exam.title}
+          examId={exam.id}
+          isHighlightMode={isHighlightMode}
         />
       </div>
 
