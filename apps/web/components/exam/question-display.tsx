@@ -1825,6 +1825,7 @@ export function QuestionDisplay({
                           containerRef={questionContentRef}
                           onHighlight={onAddHighlight}
                           isHighlightMode={isHighlightMode}
+                          isHtml={false}
                         />
                       )}
                     </div>
@@ -1849,6 +1850,7 @@ export function QuestionDisplay({
                           containerRef={questionContentRef}
                           onHighlight={onAddHighlight}
                           isHighlightMode={isHighlightMode}
+                          isHtml={true}
                         />
                       )}
                     </div>
@@ -1869,6 +1871,7 @@ export function QuestionDisplay({
                           containerRef={questionContentRef}
                           onHighlight={onAddHighlight}
                           isHighlightMode={isHighlightMode}
+                          isHtml={true}
                         />
                       )}
                     </div>

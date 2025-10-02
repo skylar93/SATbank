@@ -1382,21 +1382,36 @@ export const useExamStore = create<ExamState>((set, get) => ({
   addHighlight: (questionId: string, newHighlight: Highlight) => {
     const { highlightsByQuestion, attempt } = get()
 
-    // 🔍 DEBUG: 받은 하이라이트 데이터 확인
-    console.log('🎯 addHighlight received in store:', {
-      questionId,
-      newHighlight: {
-        start: newHighlight.start,
-        end: newHighlight.end,
-        text: newHighlight.text?.slice(0, 50) + '...',
-        fullData: newHighlight
-      }
-    })
-
     const newHighlights = { ...highlightsByQuestion }
     const existingHighlights = newHighlights[questionId]
       ? [...newHighlights[questionId]]
       : []
+
+    // Toggle behaviour: if the exact highlight already exists, remove it instead of duplicating
+    const duplicateIndex = existingHighlights.findIndex(
+      (h) => h.start === newHighlight.start && h.end === newHighlight.end
+    )
+
+    if (duplicateIndex >= 0) {
+      existingHighlights.splice(duplicateIndex, 1)
+
+      if (existingHighlights.length === 0) {
+        delete newHighlights[questionId]
+      } else {
+        newHighlights[questionId] = existingHighlights
+      }
+
+      set({ highlightsByQuestion: newHighlights })
+
+      if (attempt?.id) {
+        localStorage.setItem(
+          `highlights_${attempt.id}`,
+          JSON.stringify(newHighlights)
+        )
+      }
+
+      return
+    }
 
     // Add the new highlight and sort by start position
     existingHighlights.push(newHighlight)
@@ -1404,15 +1419,8 @@ export const useExamStore = create<ExamState>((set, get) => ({
 
     newHighlights[questionId] = existingHighlights
 
-    console.log('🎯 After adding to array:', {
-      totalHighlights: newHighlights[questionId].length,
-      latestHighlight: newHighlights[questionId][newHighlights[questionId].length - 1]
-    })
-
     // Update React state for immediate UI re-render
     set({ highlightsByQuestion: newHighlights })
-
-    console.log('🎯 Updated store state with highlights')
 
     // Persist to localStorage
     if (attempt?.id) {
@@ -1420,7 +1428,6 @@ export const useExamStore = create<ExamState>((set, get) => ({
         `highlights_${attempt.id}`,
         JSON.stringify(newHighlights)
       )
-      console.log('🎯 Highlights saved to localStorage')
     }
   },
 

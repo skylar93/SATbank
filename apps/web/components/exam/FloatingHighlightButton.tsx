@@ -1,202 +1,178 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { toast } from 'sonner'
+import { useEffect } from 'react'
 import {
   Highlight,
   getVisiblePlainText,
   getTextOffsetInContainer,
+  createNormalizedContainer,
+  findBestTextMatch,
 } from './text-utils'
 
 interface FloatingHighlightButtonProps {
   containerRef: React.RefObject<HTMLElement>
   onHighlight: (highlight: Highlight) => void
   isHighlightMode: boolean
-}
-
-interface PointerState {
-  active: boolean
-  pointerId: number | null
-  startIndex: number | null
-  lastIndex: number | null
-  plainText: string
-}
-
-const INITIAL_POINTER_STATE: PointerState = {
-  active: false,
-  pointerId: null,
-  startIndex: null,
-  lastIndex: null,
-  plainText: '',
-}
-
-function getCaretRangeFromPoint(
-  doc: Document,
-  x: number,
-  y: number
-): Range | null {
-  if ((doc as any).caretRangeFromPoint) {
-    return (doc as any).caretRangeFromPoint(x, y)
-  }
-
-  const caretPosition = (doc as any).caretPositionFromPoint?.(x, y)
-  if (!caretPosition) return null
-
-  const range = doc.createRange()
-  range.setStart(caretPosition.offsetNode, caretPosition.offset)
-  range.collapse(true)
-  return range
+  isHtml?: boolean
 }
 
 export default function FloatingHighlightButton({
   containerRef,
   onHighlight,
   isHighlightMode,
+  isHtml = false,
 }: FloatingHighlightButtonProps) {
-  const pointerStateRef = useRef<PointerState>({ ...INITIAL_POINTER_STATE })
-
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
 
     const doc = container.ownerDocument || document
 
-    const resetPointerState = () => {
-      pointerStateRef.current = { ...INITIAL_POINTER_STATE }
+    const clearSelection = () => {
+      const selection = doc.getSelection?.()
+      selection?.removeAllRanges()
     }
 
-    const getOffsetFromEvent = (event: PointerEvent): number | null => {
-      const range = getCaretRangeFromPoint(doc, event.clientX, event.clientY)
-      if (!range) return null
-
-      const { startContainer, startOffset } = range
-      if (!container.contains(startContainer)) {
-        return null
-      }
-
-      return getTextOffsetInContainer(container, startContainer, startOffset)
-    }
-
-    const handlePointerDown = (event: PointerEvent) => {
+    const handleMouseUp = () => {
       if (!isHighlightMode) return
-      if (event.button !== 0) return
-      if (!container.contains(event.target as Node)) return
 
-      doc.getSelection?.()?.removeAllRanges()
-
-      const offset = getOffsetFromEvent(event)
-      if (offset === null) {
+      const selection = doc.getSelection?.()
+      if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
         return
       }
 
-      pointerStateRef.current = {
-        active: true,
-        pointerId: event.pointerId,
-        startIndex: offset,
-        lastIndex: offset,
-        plainText: getVisiblePlainText(container),
+      const range = selection.getRangeAt(0)
+
+      const startContainer = range.startContainer
+      const endContainer = range.endContainer
+
+      if (
+        !container.contains(startContainer) ||
+        !container.contains(endContainer)
+      ) {
+        clearSelection()
+        return
       }
+
+      let normalizedContainer: HTMLElement | null = null
 
       try {
-        container.setPointerCapture?.(event.pointerId)
-      } catch {}
-    }
+        const rawSelection = range.toString()
+        const trimmedSelection = rawSelection.trim()
 
-    const handlePointerMove = (event: PointerEvent) => {
-      const state = pointerStateRef.current
-      if (!state.active || state.pointerId !== event.pointerId) return
+        if (!trimmedSelection) {
+          clearSelection()
+          return
+        }
 
-      const offset = getOffsetFromEvent(event)
-      if (offset === null) return
+        const domPlainText = getVisiblePlainText(container)
 
-      state.lastIndex = offset
-    }
+        const startOffsetDom = getTextOffsetInContainer(
+          container,
+          startContainer,
+          range.startOffset
+        )
+        const endOffsetDom = getTextOffsetInContainer(
+          container,
+          endContainer,
+          range.endOffset
+        )
 
-    const finalizeHighlight = (endIndex: number | null) => {
-      const state = pointerStateRef.current
-      if (!state.active || state.startIndex === null) return
+        const domStart = Math.max(0, Math.min(startOffsetDom, endOffsetDom))
 
-      const finalEndIndex =
-        endIndex !== null ? endIndex : state.lastIndex ?? state.startIndex
+        let plainText = domPlainText
 
-      const start = Math.min(state.startIndex, finalEndIndex)
-      const end = Math.max(state.startIndex, finalEndIndex)
+        if (isHtml) {
+          const normalized = createNormalizedContainer(container.innerHTML)
+          normalizedContainer = normalized.container
+          plainText = normalized.plainText
+        }
 
-      if (end - start <= 0) {
-        resetPointerState()
-        return
+        if (!plainText.trim()) {
+          clearSelection()
+          return
+        }
+
+        const ratio = domPlainText.length > 0
+          ? domStart / domPlainText.length
+          : 0
+        const clampedRatio = Math.min(Math.max(ratio, 0), 1)
+        const approxNormalizedStart = Math.floor(clampedRatio * plainText.length)
+
+        const windowRadius = Math.max(
+          80,
+          Math.min(400, Math.max(trimmedSelection.length * 4, 120))
+        )
+
+        const beforeContext = plainText.slice(
+          Math.max(0, approxNormalizedStart - windowRadius),
+          approxNormalizedStart
+        )
+        const afterContext = plainText.slice(
+          approxNormalizedStart,
+          Math.min(plainText.length, approxNormalizedStart + windowRadius)
+        )
+
+        let match = findBestTextMatch(plainText, rawSelection, {
+          before: beforeContext,
+          after: afterContext,
+        })
+
+        if (!match) {
+          match = findBestTextMatch(plainText, trimmedSelection, {
+            before: beforeContext,
+            after: afterContext,
+          })
+        }
+
+        if (!match) {
+          const directIndex = plainText.indexOf(trimmedSelection)
+          if (directIndex >= 0) {
+            match = {
+              start: directIndex,
+              end: directIndex + trimmedSelection.length,
+              text: trimmedSelection,
+            }
+          }
+        }
+
+        if (!match) {
+          clearSelection()
+          return
+        }
+
+        const safeStart = Math.max(0, Math.min(match.start, plainText.length))
+        const safeEnd = Math.max(safeStart, Math.min(match.end, plainText.length))
+        const highlightText = plainText.slice(safeStart, safeEnd)
+        if (!highlightText.trim()) {
+          clearSelection()
+          return
+        }
+
+        onHighlight({
+          start: safeStart,
+          end: safeEnd,
+          text: highlightText,
+        })
+      } finally {
+        normalizedContainer?.remove()
+        clearSelection()
       }
-
-      const plainText = state.plainText || getVisiblePlainText(container)
-      const selectedText = plainText.slice(start, end)
-
-      if (!selectedText.trim()) {
-        resetPointerState()
-        return
-      }
-
-      doc.getSelection?.()?.removeAllRanges()
-
-      onHighlight({
-        start,
-        end,
-        text: selectedText,
-      })
-
-      toast.success('하이라이트가 추가되었어요.')
-      resetPointerState()
     }
 
-    const handlePointerUp = (event: PointerEvent) => {
-      const state = pointerStateRef.current
-      if (!state.active || state.pointerId !== event.pointerId) return
-
-      try {
-        container.releasePointerCapture?.(event.pointerId)
-      } catch {}
-
-      const offset = getOffsetFromEvent(event)
-      finalizeHighlight(offset)
-    }
-
-    const handlePointerCancel = (event: PointerEvent) => {
-      const state = pointerStateRef.current
-      if (!state.active || state.pointerId !== event.pointerId) return
-      resetPointerState()
-    }
-
-    const addEventListeners = () => {
-      container.addEventListener('pointerdown', handlePointerDown)
-      container.addEventListener('pointermove', handlePointerMove)
-      doc.addEventListener('pointerup', handlePointerUp)
-      doc.addEventListener('pointercancel', handlePointerCancel)
-    }
-
-    const removeEventListeners = () => {
-      container.removeEventListener('pointerdown', handlePointerDown)
-      container.removeEventListener('pointermove', handlePointerMove)
-      doc.removeEventListener('pointerup', handlePointerUp)
-      doc.removeEventListener('pointercancel', handlePointerCancel)
-    }
-
-    if (isHighlightMode) {
-      container.style.userSelect = 'none'
-      container.style.cursor = 'text'
-      addEventListeners()
-    } else {
-      container.style.userSelect = ''
-      container.style.cursor = ''
-      removeEventListeners()
-      resetPointerState()
-    }
+    doc.addEventListener('mouseup', handleMouseUp)
 
     return () => {
-      removeEventListeners()
-      container.style.userSelect = ''
-      container.style.cursor = ''
-      resetPointerState()
+      doc.removeEventListener('mouseup', handleMouseUp)
     }
   }, [containerRef, isHighlightMode, onHighlight])
+
+  useEffect(() => {
+    if (!isHighlightMode) {
+      const selection = document.getSelection?.()
+      selection?.removeAllRanges()
+    }
+  }, [isHighlightMode])
 
   return null
 }

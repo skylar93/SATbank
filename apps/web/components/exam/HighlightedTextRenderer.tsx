@@ -337,7 +337,8 @@ function applyHighlightRobust(container: Element, highlight: Highlight, plainTex
     mark.style.whiteSpace = 'pre-wrap'
     mark.style.boxDecorationBreak = 'clone'
 
-    mark.className = 'bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors'
+    mark.className =
+      'bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors'
     mark.title = 'Click to remove highlight'
     mark.setAttribute('data-highlight-start', String(start))
     mark.setAttribute('data-highlight-end', String(end))
@@ -406,6 +407,8 @@ function applyHighlightViaTextReplacementSingle(container: HTMLElement, highligh
       return `<mark class="bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors"
                style="background-color: #fef08a; padding: 2px 4px; border-radius: 4px; font-weight: bold; display: inline; white-space: pre-wrap; box-decoration-break: clone;"
                title="Click to remove highlight"
+               data-highlight-start="${highlight.start}"
+               data-highlight-end="${highlight.end}"
                data-highlight-text="${textToReplace}"
                data-highlight-index="${highlightIndex}">${p1}</mark>`
     }
@@ -532,26 +535,26 @@ export function HighlightedTextRenderer({
       )
     }
 
-    const highlightedText = text.substring(h.start, h.end)
-    parts.push(
-      <mark
-        key={`mark-${i}`}
-        className="bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors"
-        title="Click to remove highlight"
-        onClick={() => onRemoveHighlight?.(h)}
-        style={{
-          backgroundColor: '#fef08a',
-          padding: '2px 4px',
-          borderRadius: '4px',
-          fontWeight: 'bold',
-          display: 'inline',
-          whiteSpace: 'pre-wrap',
-          boxDecorationBreak: 'clone',
-        }}
-      >
-        {renderTextWithFormattingAndMath(highlightedText)}
-      </mark>
-    )
+  const highlightedText = text.substring(h.start, h.end)
+  parts.push(
+    <mark
+      key={`mark-${i}`}
+      className="bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors"
+      title="Click to remove highlight"
+      onClick={() => onRemoveHighlight?.(h)}
+      style={{
+        backgroundColor: '#fef08a',
+        padding: '2px 4px',
+        borderRadius: '4px',
+        fontWeight: 'bold',
+        display: 'inline',
+        whiteSpace: 'pre-wrap',
+        boxDecorationBreak: 'clone',
+      }}
+    >
+      {renderTextWithFormattingAndMath(highlightedText)}
+    </mark>
+  )
 
     lastIndex = h.end
   })
