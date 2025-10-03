@@ -50,82 +50,128 @@ function mapModuleType(testId) {
 // Convert choices array to options object
 function convertChoicesToOptions(choices) {
   if (!choices || !Array.isArray(choices)) return {};
-  
+
   const options = {};
-  choices.forEach(choice => {
+  choices.forEach((choice) => {
     // Handle new object format: {images: [], letter: "A", text: "universal"}
     if (typeof choice === 'object' && choice.letter && choice.text) {
-      options[choice.letter] = choice.text.trim();
+      options[choice.letter] = (choice.text || '').trim();
     }
     // Handle old string format: "A) universal"
     else if (typeof choice === 'string') {
       const match = choice.match(/^([A-D])\)\s*(.*)$/);
       if (match) {
         const [, letter, text] = match;
-        options[letter] = text.trim();
+        options[letter] = (text || '').trim();
       }
     }
   });
   return options;
 }
 
+function cleanInvisibleCharacters(value) {
+  if (!value) return '';
+  return String(value).replace(/[\u200B-\u200D\uFEFF]/g, '');
+}
+
+function normalizeAnswerForComparison(value) {
+  if (!value) return '';
+
+  let normalized = cleanInvisibleCharacters(String(value));
+
+  normalized = normalized
+    // Remove LaTeX delimiters
+    .replace(/\$|\\\(|\\\)|\\\[|\\\]/g, '')
+    // Convert common LaTeX constructs to plain text equivalents
+    .replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, '$1/$2')
+    .replace(/\\sqrt\{([^}]*)\}/g, 'sqrt($1)')
+    .replace(/\\left|\\right/g, '')
+    .replace(/\\mathrm\{([^}]*)\}/g, '$1')
+    .replace(/\\operatorname\{([^}]*)\}/g, '$1')
+    .replace(/\\text\{([^}]*)\}/g, '$1')
+    .replace(/\\cdot/g, '*')
+    .replace(/\\times/g, '*')
+    .replace(/[×·]/g, '*')
+    .replace(/\\pm/g, '±')
+    .replace(/\\leq?/g, '<=')
+    .replace(/\\geq?/g, '>=')
+    .replace(/≤/g, '<=')
+    .replace(/≥/g, '>=')
+    .replace(/−|—/g, '-')
+    .replace(/\\percent/g, '%')
+    .replace(/\\!/g, '')
+    .replace(/\\,/g, '')
+    .replace(/\\;/g, '')
+    .replace(/[{}]/g, '')
+    .replace(/\^/g, '')
+    .replace(/_/g, '')
+    .trim();
+
+  // Remove remaining LaTeX commands that start with \ before dropping backslashes
+  normalized = normalized.replace(/\\[a-zA-Z]+/g, '');
+
+  normalized = normalized
+    .replace(/\\/g, '')
+    .replace(/\s+/g, '')
+    .toLowerCase();
+
+  return normalized;
+}
+
+function sanitizeCorrectAnswer(answer) {
+  if (!answer && answer !== 0) return '';
+  return cleanInvisibleCharacters(String(answer)).trim();
+}
+
 // Extract correct answer letter from choices
 function extractCorrectAnswerLetter(correctAnswer, choices) {
-  if (!correctAnswer || !choices) return 'A';
-  
+  if (!correctAnswer || !choices || !Array.isArray(choices)) return null;
+
+  const cleanedCorrectAnswer = cleanInvisibleCharacters(correctAnswer).trim();
+
+  // If the correct answer is already a letter (A-D), return it directly
+  const directLetterMatch = cleanedCorrectAnswer.match(/^[A-D]$/i);
+  if (directLetterMatch) {
+    return directLetterMatch[0].toUpperCase();
+  }
+
+  const normalizedCorrect = normalizeAnswerForComparison(cleanedCorrectAnswer);
+  if (!normalizedCorrect) {
+    return null;
+  }
+
   for (const choice of choices) {
-    let letter, text;
-    
-    // Handle new object format: {images: [], letter: "A", text: "universal"}
-    if (typeof choice === 'object' && choice.letter && choice.text) {
+    let letter;
+    let text;
+
+    if (typeof choice === 'object' && choice.letter && typeof choice.text === 'string') {
       letter = choice.letter;
       text = choice.text;
-    }
-    // Handle old string format: "A) universal"
-    else if (typeof choice === 'string') {
+    } else if (typeof choice === 'string') {
       const match = choice.match(/^([A-D])\)\s*(.*)$/);
       if (match) {
         [, letter, text] = match;
-      } else {
-        continue;
       }
-    } else {
-      continue;
     }
-    
-    if (text.trim() === correctAnswer.trim()) {
-      return letter;
+
+    if (!letter || text === undefined) continue;
+
+    const normalizedChoice = normalizeAnswerForComparison(text);
+
+    if (normalizedChoice && normalizedChoice === normalizedCorrect) {
+      return letter.toUpperCase();
+    }
+
+    if (
+      normalizedChoice &&
+      (normalizedChoice.includes(normalizedCorrect) ||
+        normalizedCorrect.includes(normalizedChoice))
+    ) {
+      return letter.toUpperCase();
     }
   }
-  
-  // Fallback: partial match
-  for (const choice of choices) {
-    let letter, text;
-    
-    // Handle new object format
-    if (typeof choice === 'object' && choice.letter && choice.text) {
-      letter = choice.letter;
-      text = choice.text;
-    }
-    // Handle old string format
-    else if (typeof choice === 'string') {
-      const match = choice.match(/^([A-D])\)\s*(.*)$/);
-      if (match) {
-        [, letter, text] = match;
-      } else {
-        continue;
-      }
-    } else {
-      continue;
-    }
-    
-    if (correctAnswer.includes(text.trim()) || text.trim().includes(correctAnswer)) {
-      return letter;
-    }
-  }
-  
-  console.warn(`⚠️ Could not match correct answer: "${correctAnswer}"`);
-  return 'A';
+
+  return null;
 }
 
 // Extract main image URL (first URL, not base64)
@@ -510,9 +556,8 @@ function processQuestion(question, testId, examId) {
   try {
     const moduleType = mapModuleType(testId);
     const options = convertChoicesToOptions(question.choices);
-    const correctAnswerLetter = extractCorrectAnswerLetter(question.correctAnswer, question.choices);
     const mainImageUrl = extractMainImageUrl(question.imageUrls);
-    
+
     // Preserve HTML format
     const questionHtmlContent = preserveHtmlFormat(
       question.questionHTML, 
@@ -523,21 +568,54 @@ function processQuestion(question, testId, examId) {
     // Check if HTML already contains choices to avoid duplication
     const hasHtmlChoices = htmlContainsChoices(questionHtmlContent);
     const shouldStoreOptions = !hasHtmlChoices && Object.keys(options).length > 0;
-    
+    const hasChoiceData = Array.isArray(question.choices) && question.choices.length > 0;
+
+    // Determine if this question should be treated as grid-in
+    const isGridInQuestion =
+      question.questionType === 'grid_in' ||
+      !hasChoiceData;
+
     // If HTML content exists and has meaningful content, use HTML format
     const isHtmlFormat = questionHtmlContent && questionHtmlContent.length > 50;
-    
+
+    const sanitizedCorrectAnswer = sanitizeCorrectAnswer(question.correctAnswer);
+
+    let correctAnswerValue = 'A';
+    let correctAnswersArray = null;
+    let storedOptions = shouldStoreOptions ? options : null;
+
+    if (isGridInQuestion) {
+      // Grid-in questions use free-form numeric/text answers
+      correctAnswerValue = sanitizedCorrectAnswer;
+      correctAnswersArray = sanitizedCorrectAnswer ? [sanitizedCorrectAnswer] : null;
+      storedOptions = null;
+    } else {
+      const correctAnswerLetter = extractCorrectAnswerLetter(
+        sanitizedCorrectAnswer,
+        question.choices
+      );
+
+      if (!correctAnswerLetter) {
+        console.warn(
+          `⚠️ Could not determine correct option letter for question ${question.questionNumber}. Falling back to 'A'.`
+        );
+      }
+
+      correctAnswerValue = (correctAnswerLetter || 'A').toUpperCase();
+    }
+
     return {
       exam_id: examId,
       question_number: question.questionNumber,
       module_type: moduleType,
-      question_type: question.questionType === 'grid_in' ? 'grid_in' : 'multiple_choice',
+      question_type: isGridInQuestion ? 'grid_in' : 'multiple_choice',
       question_html: isHtmlFormat ? questionHtmlContent : null,
       question_text: question.questionText || '', // Keep original text as fallback
       question_markdown_backup: question.questionText || questionHtmlContent || 'No content available', // Required backup field
-      options: shouldStoreOptions ? options : null,
-      options_markdown_backup: shouldStoreOptions ? options : null, // Backup for options if needed
-      correct_answer: [correctAnswerLetter],
+      options: storedOptions,
+      options_markdown_backup: storedOptions, // Backup for options if needed
+      correct_answer: correctAnswerValue,
+      correct_answers: correctAnswersArray,
       explanation: question.explanation || null,
       explanation_markdown_backup: question.explanation || null, // Backup for explanation
       difficulty_level: 'medium',

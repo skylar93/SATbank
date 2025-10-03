@@ -143,15 +143,119 @@ export default function FloatingHighlightButton({
 
         const safeStart = Math.max(0, Math.min(match.start, plainText.length))
         const safeEnd = Math.max(safeStart, Math.min(match.end, plainText.length))
-        const highlightText = plainText.slice(safeStart, safeEnd)
+
+        const rawHighlightText = plainText.slice(safeStart, safeEnd)
+        const leadingTrim = rawHighlightText.length -
+          rawHighlightText.trimStart().length
+        const trailingTrim = rawHighlightText.length -
+          rawHighlightText.trimEnd().length
+
+        const finalStart = safeStart + leadingTrim
+        const finalEnd = safeEnd - trailingTrim
+
+        if (finalEnd <= finalStart) {
+          clearSelection()
+          return
+        }
+
+        const selectionSlice = plainText.slice(finalStart, finalEnd)
+        if (!selectionSlice.trim()) {
+          clearSelection()
+          return
+        }
+
+        const segments: Array<{
+          start: number
+          end: number
+          indented: boolean
+        }> = []
+        const walker = doc.createTreeWalker(
+          container,
+          NodeFilter.SHOW_TEXT,
+          {
+            acceptNode(node) {
+              if (!(node instanceof Text)) return NodeFilter.FILTER_REJECT
+              return node.nodeValue && node.nodeValue.trim().length > 0
+                ? NodeFilter.FILTER_ACCEPT
+                : NodeFilter.FILTER_SKIP
+            },
+          }
+        )
+
+        while (walker.nextNode()) {
+          const textNode = walker.currentNode as Text
+          if (!range.intersectsNode(textNode)) continue
+
+          const nodeText = textNode.data
+          if (!nodeText.trim()) continue
+
+          const nodeGlobalStart = getTextOffsetInContainer(
+            container,
+            textNode,
+            0
+          )
+          const nodeGlobalEnd = nodeGlobalStart + nodeText.length
+
+          const overlapStart = Math.max(nodeGlobalStart, finalStart)
+          const overlapEnd = Math.min(nodeGlobalEnd, finalEnd)
+
+          if (overlapEnd <= overlapStart) continue
+
+          const overlapText = plainText.slice(overlapStart, overlapEnd)
+          if (!overlapText.trim()) continue
+
+          const overlapLeading = overlapText.length - overlapText.trimStart().length
+          const overlapTrailing = overlapText.length - overlapText.trimEnd().length
+
+          const chunkStart = overlapStart + overlapLeading
+          const chunkEnd = overlapEnd - overlapTrailing
+
+          if (chunkEnd <= chunkStart) continue
+
+          const chunkText = plainText.slice(chunkStart, chunkEnd)
+          if (!chunkText.trim()) continue
+
+          segments.push({
+            start: chunkStart,
+            end: chunkEnd,
+            indented: overlapLeading > 0,
+          })
+        }
+
+        if (segments.length === 0) {
+          clearSelection()
+          return
+        }
+
+        let candidateSegments = segments
+        const indentedSegments = segments.filter((seg) => seg.indented)
+        if (indentedSegments.length > 0 && indentedSegments.length < segments.length) {
+          candidateSegments = indentedSegments
+        }
+
+        const highlightStart = candidateSegments.reduce(
+          (acc, seg) => Math.min(acc, seg.start),
+          candidateSegments[0].start
+        )
+        const highlightEnd = candidateSegments.reduce(
+          (acc, seg) => Math.max(acc, seg.end),
+          candidateSegments[0].end
+        )
+
+        if (highlightEnd <= highlightStart) {
+          clearSelection()
+          return
+        }
+
+        const highlightText = plainText.slice(highlightStart, highlightEnd)
         if (!highlightText.trim()) {
           clearSelection()
           return
         }
 
         onHighlight({
-          start: safeStart,
-          end: safeEnd,
+          start: highlightStart,
+          end: highlightEnd,
           text: highlightText,
         })
       } finally {
