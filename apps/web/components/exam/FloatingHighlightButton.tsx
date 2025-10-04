@@ -79,6 +79,7 @@ export default function FloatingHighlightButton({
         )
 
         const domStart = Math.max(0, Math.min(startOffsetDom, endOffsetDom))
+        const domEnd = Math.max(domStart, Math.max(startOffsetDom, endOffsetDom))
 
         let plainText = domPlainText
 
@@ -104,34 +105,98 @@ export default function FloatingHighlightButton({
           Math.min(400, Math.max(trimmedSelection.length * 4, 120))
         )
 
-        const beforeContext = plainText.slice(
-          Math.max(0, approxNormalizedStart - windowRadius),
-          approxNormalizedStart
-        )
-        const afterContext = plainText.slice(
-          approxNormalizedStart,
-          Math.min(plainText.length, approxNormalizedStart + windowRadius)
+        const windowStart = Math.max(0, approxNormalizedStart - windowRadius)
+        const windowEnd = Math.min(plainText.length, approxNormalizedStart + windowRadius)
+        const windowText = plainText.slice(windowStart, windowEnd)
+
+        const domSelectionSlice = domPlainText.slice(domStart, domEnd)
+        const normalizedDomSlice = domSelectionSlice.replace(/\s+/g, ' ').trim()
+        const variations = Array.from(
+          new Set(
+            [
+              rawSelection,
+              trimmedSelection,
+              rawSelection.replace(/\s+/g, ' ').trim(),
+              trimmedSelection.replace(/\s+/g, ' '),
+              domSelectionSlice,
+              domSelectionSlice.trim(),
+              normalizedDomSlice,
+            ].filter(Boolean)
+          )
         )
 
-        let match = findBestTextMatch(plainText, rawSelection, {
-          before: beforeContext,
-          after: afterContext,
-        })
+        const findNearestIndex = (
+          source: string,
+          target: string,
+          preferredStart: number
+        ): number => {
+          let idx = source.indexOf(target)
+          if (idx < 0) return -1
+          let best = idx
+          let bestDistance = Math.abs(idx - preferredStart)
+          while (true) {
+            idx = source.indexOf(target, idx + 1)
+            if (idx < 0) break
+            const distance = Math.abs(idx - preferredStart)
+            if (distance < bestDistance) {
+              bestDistance = distance
+              best = idx
+            }
+          }
+          return best
+        }
+
+        const tryWindowMatch = (): { start: number; end: number; text: string } | null => {
+          for (const variant of variations) {
+            const idx = findNearestIndex(
+              windowText,
+              variant,
+              approxNormalizedStart - windowStart
+            )
+            if (idx >= 0) {
+              const start = windowStart + idx
+              return { start, end: start + variant.length, text: variant }
+            }
+          }
+          return null
+        }
+
+        let match = tryWindowMatch()
 
         if (!match) {
-          match = findBestTextMatch(plainText, trimmedSelection, {
+          const beforeContext = plainText.slice(windowStart, approxNormalizedStart)
+          const afterContext = plainText.slice(
+            approxNormalizedStart,
+            windowEnd
+          )
+
+          match = findBestTextMatch(plainText, rawSelection, {
             before: beforeContext,
             after: afterContext,
           })
+
+          if (!match) {
+            match = findBestTextMatch(plainText, trimmedSelection, {
+              before: beforeContext,
+              after: afterContext,
+            })
+          }
         }
 
         if (!match) {
-          const directIndex = plainText.indexOf(trimmedSelection)
-          if (directIndex >= 0) {
-            match = {
-              start: directIndex,
-              end: directIndex + trimmedSelection.length,
-              text: trimmedSelection,
+          for (const variant of variations) {
+            const directIndex = findNearestIndex(
+              plainText,
+              variant,
+              approxNormalizedStart
+            )
+            if (directIndex >= 0) {
+              match = {
+                start: directIndex,
+                end: directIndex + variant.length,
+                text: variant,
+              }
+              break
             }
           }
         }
@@ -143,119 +208,15 @@ export default function FloatingHighlightButton({
 
         const safeStart = Math.max(0, Math.min(match.start, plainText.length))
         const safeEnd = Math.max(safeStart, Math.min(match.end, plainText.length))
-
-        const rawHighlightText = plainText.slice(safeStart, safeEnd)
-        const leadingTrim = rawHighlightText.length -
-          rawHighlightText.trimStart().length
-        const trailingTrim = rawHighlightText.length -
-          rawHighlightText.trimEnd().length
-
-        const finalStart = safeStart + leadingTrim
-        const finalEnd = safeEnd - trailingTrim
-
-        if (finalEnd <= finalStart) {
-          clearSelection()
-          return
-        }
-
-        const selectionSlice = plainText.slice(finalStart, finalEnd)
-        if (!selectionSlice.trim()) {
-          clearSelection()
-          return
-        }
-
-        const segments: Array<{
-          start: number
-          end: number
-          indented: boolean
-        }> = []
-        const walker = doc.createTreeWalker(
-          container,
-          NodeFilter.SHOW_TEXT,
-          {
-            acceptNode(node) {
-              if (!(node instanceof Text)) return NodeFilter.FILTER_REJECT
-              return node.nodeValue && node.nodeValue.trim().length > 0
-                ? NodeFilter.FILTER_ACCEPT
-                : NodeFilter.FILTER_SKIP
-            },
-          }
-        )
-
-        while (walker.nextNode()) {
-          const textNode = walker.currentNode as Text
-          if (!range.intersectsNode(textNode)) continue
-
-          const nodeText = textNode.data
-          if (!nodeText.trim()) continue
-
-          const nodeGlobalStart = getTextOffsetInContainer(
-            container,
-            textNode,
-            0
-          )
-          const nodeGlobalEnd = nodeGlobalStart + nodeText.length
-
-          const overlapStart = Math.max(nodeGlobalStart, finalStart)
-          const overlapEnd = Math.min(nodeGlobalEnd, finalEnd)
-
-          if (overlapEnd <= overlapStart) continue
-
-          const overlapText = plainText.slice(overlapStart, overlapEnd)
-          if (!overlapText.trim()) continue
-
-          const overlapLeading = overlapText.length - overlapText.trimStart().length
-          const overlapTrailing = overlapText.length - overlapText.trimEnd().length
-
-          const chunkStart = overlapStart + overlapLeading
-          const chunkEnd = overlapEnd - overlapTrailing
-
-          if (chunkEnd <= chunkStart) continue
-
-          const chunkText = plainText.slice(chunkStart, chunkEnd)
-          if (!chunkText.trim()) continue
-
-          segments.push({
-            start: chunkStart,
-            end: chunkEnd,
-            indented: overlapLeading > 0,
-          })
-        }
-
-        if (segments.length === 0) {
-          clearSelection()
-          return
-        }
-
-        let candidateSegments = segments
-        const indentedSegments = segments.filter((seg) => seg.indented)
-        if (indentedSegments.length > 0 && indentedSegments.length < segments.length) {
-          candidateSegments = indentedSegments
-        }
-
-        const highlightStart = candidateSegments.reduce(
-          (acc, seg) => Math.min(acc, seg.start),
-          candidateSegments[0].start
-        )
-        const highlightEnd = candidateSegments.reduce(
-          (acc, seg) => Math.max(acc, seg.end),
-          candidateSegments[0].end
-        )
-
-        if (highlightEnd <= highlightStart) {
-          clearSelection()
-          return
-        }
-
-        const highlightText = plainText.slice(highlightStart, highlightEnd)
+        const highlightText = plainText.slice(safeStart, safeEnd)
         if (!highlightText.trim()) {
           clearSelection()
           return
         }
 
         onHighlight({
-          start: highlightStart,
-          end: highlightEnd,
+          start: safeStart,
+          end: safeEnd,
           text: highlightText,
         })
       } finally {

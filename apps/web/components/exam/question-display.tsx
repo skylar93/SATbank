@@ -111,6 +111,23 @@ function splitHtmlAtBoundary(html: string): { passageHtml: string; promptHtml: s
   return null
 }
 
+function separatePrefaceFromPassage(html: string): {
+  prefaceHtml: string
+  passageHtml: string
+} | null {
+  try {
+    const lower = html.toLowerCase()
+    const blockquoteIdx = lower.indexOf('<blockquote')
+    if (blockquoteIdx > 0) {
+      return {
+        prefaceHtml: html.slice(0, blockquoteIdx),
+        passageHtml: html.slice(blockquoteIdx),
+      }
+    }
+  } catch {}
+  return null
+}
+
 // Legacy text rendering function for markdown (kept for backward compatibility)
 export const renderTextWithFormattingAndMath = (text: string) => {
   if (!text || typeof text !== 'string') return text
@@ -1835,33 +1852,20 @@ export function QuestionDisplay({
                 // HTML path: split passage and prompt; highlight only passage
                 const html = localQuestion.question_html as string
                 const split = splitHtmlAtBoundary(html)
-                if (!split) {
-                  // Fallback: keep current behavior if no boundary found
-                  return (
-                    <div ref={questionContentRef}>
-                      <HighlightedTextRendererMemo
-                        text={html}
-                        highlights={highlights}
-                        onRemoveHighlight={onRemoveHighlight}
-                        isHtml={true}
-                      />
-                      {!isAdminPreview && questionContentRef && onAddHighlight && (
-                        <FloatingHighlightButton
-                          containerRef={questionContentRef}
-                          onHighlight={onAddHighlight}
-                          isHighlightMode={isHighlightMode}
-                          isHtml={true}
-                        />
-                      )}
-                    </div>
-                  )
-                }
-
-                return (
+                const renderPassageBlock = (
+                  passageHtml: string,
+                  promptHtml?: string,
+                  prefaceHtml?: string
+                ) => (
                   <>
+                    {prefaceHtml && (
+                      <div className="select-none">
+                        {renderHtmlContent(prefaceHtml)}
+                      </div>
+                    )}
                     <div ref={questionContentRef}>
                       <HighlightedTextRendererMemo
-                        text={split.passageHtml}
+                        text={passageHtml}
                         highlights={highlights}
                         onRemoveHighlight={onRemoveHighlight}
                         isHtml={true}
@@ -1875,18 +1879,37 @@ export function QuestionDisplay({
                         />
                       )}
                     </div>
-                    {/* Render prompt without highlights below */}
-                    {split.promptHtml && (
-                      <div
-                        className="mt-2 select-none"
-                        // Make prompt text non-selectable so drags don't jump across boundary
-                        data-role="prompt"
-                      >
-                        {renderHtmlContent(split.promptHtml)}
+                    {promptHtml && (
+                      <div className="mt-2 select-none" data-role="prompt">
+                        {renderHtmlContent(promptHtml)}
                       </div>
                     )}
                   </>
                 )
+
+                if (!split) {
+                  const separated = separatePrefaceFromPassage(html)
+                  if (separated) {
+                    return renderPassageBlock(
+                      separated.passageHtml,
+                      undefined,
+                      separated.prefaceHtml
+                    )
+                  }
+
+                  return renderPassageBlock(html)
+                }
+
+                const separated = separatePrefaceFromPassage(split.passageHtml)
+                if (separated) {
+                  return renderPassageBlock(
+                    separated.passageHtml,
+                    split.promptHtml,
+                    separated.prefaceHtml
+                  )
+                }
+
+                return renderPassageBlock(split.passageHtml, split.promptHtml)
               })()}
             </div>
           )}
