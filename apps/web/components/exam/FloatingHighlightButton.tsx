@@ -208,15 +208,33 @@ export default function FloatingHighlightButton({
 
         const safeStart = Math.max(0, Math.min(match.start, plainText.length))
         const safeEnd = Math.max(safeStart, Math.min(match.end, plainText.length))
-        const highlightText = plainText.slice(safeStart, safeEnd)
+
+        const rawSlice = plainText.slice(safeStart, safeEnd)
+        if (!rawSlice.trim()) {
+          clearSelection()
+          return
+        }
+
+        const trimmedLeading = rawSlice.length - rawSlice.trimStart().length
+        const trimmedTrailing = rawSlice.length - rawSlice.trimEnd().length
+
+        const finalStart = safeStart + trimmedLeading
+        const finalEnd = safeEnd - trimmedTrailing
+
+        if (finalEnd <= finalStart) {
+          clearSelection()
+          return
+        }
+
+        const highlightText = plainText.slice(finalStart, finalEnd)
         if (!highlightText.trim()) {
           clearSelection()
           return
         }
 
         onHighlight({
-          start: safeStart,
-          end: safeEnd,
+          start: finalStart,
+          end: finalEnd,
           text: highlightText,
         })
       } finally {
