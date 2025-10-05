@@ -25,7 +25,7 @@ export function HighlightToolbar({
         onClick={onToggleMode}
         disabled={disabled}
         className={`
-          flex items-center space-x-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200
+          flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200
           ${
             isHighlightMode
               ? 'bg-yellow-100 text-yellow-800 border border-yellow-300 shadow-sm'
@@ -45,7 +45,6 @@ export function HighlightToolbar({
           size={16}
           className={isHighlightMode ? 'text-yellow-600' : 'text-gray-500'}
         />
-        <span>{isHighlightMode ? 'Exit' : 'Highlight'}</span>
         {isHighlightMode && (
           <div className="w-2 h-2 bg-yellow-500 rounded-full" />
         )}

@@ -165,6 +165,14 @@ export default function FloatingHighlightButton({
       )
 
       pointerStartDomRef.current = offsetDom
+
+      const selection = doc.getSelection?.()
+      if (selection) {
+        try {
+          selection.removeAllRanges()
+          selection.addRange(caretRange)
+        } catch {}
+      }
     }
 
     const handleMouseUp = () => {
@@ -416,58 +424,70 @@ export default function FloatingHighlightButton({
     }
 
     container.addEventListener('pointerdown', handlePointerDown)
+    container.addEventListener('pointermove', handlePointerMove)
     doc.addEventListener('mouseup', handleMouseUp)
+
     const handleSelectionChange = () => {
       if (!isHighlightMode) return
       if (isAdjustingSelectionRef.current) return
       if (pointerStartDomRef.current === null) return
+      if (!pointerHasMovedRef.current) return
 
-      const selection = doc.getSelection?.()
-      if (!selection || selection.rangeCount === 0) return
-
-      const range = selection.getRangeAt(0)
-      const focusNode = selection.focusNode ?? range.endContainer
-      const focusOffset = selection.focusNode
-        ? selection.focusOffset ?? range.endOffset
-        : range.endOffset
-
-      if (!container.contains(focusNode)) return
-
-      const focusDomOffset = getTextOffsetInContainer(
-        container,
-        focusNode,
-        focusOffset
-      )
-
-      const anchorDom = Math.max(0, pointerStartDomRef.current)
-      const focusDom = Math.max(0, focusDomOffset)
-
-      if (anchorDom === focusDom) return
-
-      const startOffset = Math.min(anchorDom, focusDom)
-      const endOffset = Math.max(anchorDom, focusDom)
-
-      const startPos = resolveDomPosition(container, startOffset)
-      const endPos = resolveDomPosition(container, endOffset)
-
-      if (!startPos || !endPos) return
-
-      isAdjustingSelectionRef.current = true
-      try {
-        const newRange = doc.createRange()
-        newRange.setStart(startPos.node, startPos.offset)
-        newRange.setEnd(endPos.node, endPos.offset)
-        selection.removeAllRanges()
-        selection.addRange(newRange)
-      } finally {
-        isAdjustingSelectionRef.current = false
+      if (scheduledAdjustmentRef.current !== null) {
+        cancelAnimationFrame(scheduledAdjustmentRef.current)
       }
+
+      scheduledAdjustmentRef.current = requestAnimationFrame(() => {
+        scheduledAdjustmentRef.current = null
+
+        const selection = doc.getSelection?.()
+        if (!selection || selection.rangeCount === 0) return
+
+        const range = selection.getRangeAt(0)
+        const focusNode = selection.focusNode ?? range.endContainer
+        const focusOffset = selection.focusNode
+          ? selection.focusOffset ?? range.endOffset
+          : range.endOffset
+
+        if (!container.contains(focusNode)) return
+
+        const focusDomOffset = getTextOffsetInContainer(
+          container,
+          focusNode,
+          focusOffset
+        )
+
+        const anchorDom = Math.max(0, pointerStartDomRef.current!)
+        const focusDom = Math.max(0, focusDomOffset)
+
+        if (anchorDom === focusDom) return
+
+        const startOffset = Math.min(anchorDom, focusDom)
+        const endOffset = Math.max(anchorDom, focusDom)
+
+        const startPos = resolveDomPosition(container, startOffset)
+        const endPos = resolveDomPosition(container, endOffset)
+
+        if (!startPos || !endPos) return
+
+        isAdjustingSelectionRef.current = true
+        try {
+          const newRange = doc.createRange()
+          newRange.setStart(startPos.node, startPos.offset)
+          newRange.setEnd(endPos.node, endPos.offset)
+          selection.removeAllRanges()
+          selection.addRange(newRange)
+        } finally {
+          isAdjustingSelectionRef.current = false
+        }
+      })
     }
 
     doc.addEventListener('selectionchange', handleSelectionChange)
 
     return () => {
       container.removeEventListener('pointerdown', handlePointerDown)
+      container.removeEventListener('pointermove', handlePointerMove)
       doc.removeEventListener('mouseup', handleMouseUp)
       doc.removeEventListener('selectionchange', handleSelectionChange)
     }
@@ -479,6 +499,11 @@ export default function FloatingHighlightButton({
       selection?.removeAllRanges()
       pointerStartDomRef.current = null
       isAdjustingSelectionRef.current = false
+      pointerHasMovedRef.current = false
+      if (scheduledAdjustmentRef.current !== null) {
+        cancelAnimationFrame(scheduledAdjustmentRef.current)
+        scheduledAdjustmentRef.current = null
+      }
     }
   }, [isHighlightMode])
 

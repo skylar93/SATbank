@@ -8,6 +8,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { FileText } from 'lucide-react'
 
 export function ReferenceSheetModal() {
   const referenceSheetUrl = process.env.NEXT_PUBLIC_REFERENCE_SHEET_URL
@@ -19,8 +20,8 @@ export function ReferenceSheetModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          Reference
+        <Button variant="outline" size="sm" title="Reference Sheet">
+          <FileText size={16} />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl h-[90vh] flex flex-col bg-white">

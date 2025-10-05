@@ -1426,8 +1426,8 @@ export function QuestionDisplay({
                   `}
                 >
                   {isMarkedForReview
-                    ? '🏷️ Marked for Review'
-                    : '🏷️ Mark for Review'}
+                    ? '🏷️ Marked'
+                    : '🏷️ Mark'}
                 </button>
               )}
               {isAdminPreview && (
@@ -1945,14 +1945,6 @@ export function QuestionDisplay({
               ? 'Select your answer:'
               : 'Enter your answer:'}
           </h3>
-          {localQuestion.question_type === 'multiple_choice' &&
-            !isAdminPreview &&
-            !showExplanation && (
-              <p className="text-sm text-gray-600 mb-4">
-                💡 Right-click or double-click on answer choices to eliminate
-                them
-              </p>
-            )}
 
           {renderAnswerOptions()}
 

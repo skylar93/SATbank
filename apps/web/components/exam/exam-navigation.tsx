@@ -299,14 +299,14 @@ export function ExamNavigation({
               disabled={disabled}
               className="px-4 py-2 text-purple-700 bg-white/60 border border-purple-200 rounded-lg hover:bg-white/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium backdrop-blur-sm"
             >
-              ← Previous
+              ←
             </button>
             <button
               onClick={onNext}
               disabled={disabled}
               className="px-4 py-2 text-purple-700 bg-white/60 border border-purple-200 rounded-lg hover:bg-white/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium backdrop-blur-sm"
             >
-              Next →
+              →
             </button>
             <div className="text-sm text-purple-700 font-medium">
               Module {currentModuleIndex + 1} of {allModules.length} • Question{' '}
@@ -421,7 +421,7 @@ export function ExamNavigation({
                 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
               "
             >
-              ← Previous
+              ←
             </button>
 
             {/* Next Button */}
@@ -435,7 +435,7 @@ export function ExamNavigation({
                 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
               "
             >
-              Next →
+              →
             </button>
           </div>
 
