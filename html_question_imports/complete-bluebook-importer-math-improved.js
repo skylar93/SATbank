@@ -62,18 +62,21 @@ function extractLatexFromHtml(htmlContent) {
 
   // Enhanced MathQuill extraction that preserves individual numerator/denominator values
   function extractMathQuillContent(htmlSpan) {
-    // Extract numerator from mathquill span
-    const numMatch = htmlSpan.match(/<span class="mq-numerator"[^>]*>.*?<span[^>]*>(\d+)<\/span>.*?<\/span>/);
-    // Extract denominator from mathquill span
-    const denMatch = htmlSpan.match(/<span class="mq-denominator"[^>]*>.*?<span[^>]*>(\d+)<\/span>.*?<\/span>/);
+    // Prefer MathQuill's own LaTeX representation when available
+    const latexMatch = htmlSpan.match(/latex-data="([^"]*)"/);
+    if (latexMatch) {
+      return latexMatch[1];
+    }
+
+    // Legacy fallback: try to reconstruct simple numeric fractions
+    const numMatch = htmlSpan.match(/<span class="mq-numerator"[^>]*>.*?<span[^>]*>([\w+-]+)<\/span>.*?<\/span>/);
+    const denMatch = htmlSpan.match(/<span class="mq-denominator"[^>]*>.*?<span[^>]*>([\w+-]+)<\/span>.*?<\/span>/);
 
     if (numMatch && denMatch) {
       return `\\frac{${numMatch[1]}}{${denMatch[1]}}`;
     }
 
-    // Fallback to latex-data attribute if direct extraction fails
-    const latexMatch = htmlSpan.match(/latex-data="([^"]*)"/);
-    return latexMatch ? latexMatch[1] : null;
+    return null;
   }
 
   // Improved: Use balanced bracket matching to completely remove mathquill structures
@@ -187,6 +190,17 @@ function cleanLeftRightBrackets(latex) {
     // Handle any remaining \left \right pairs
     .replace(/\\left\s*/g, '')
     .replace(/\\right\s*/g, '');
+}
+
+function simplifyOptionHtml(content) {
+  if (!content || typeof content !== 'string') return content;
+
+  return content
+    .replace(/<\/?div[^>]*>/gi, ' ')
+    .replace(/<\/?span[^>]*>/gi, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 // Normalize math expressions for better matching
@@ -390,29 +404,56 @@ function convertChoicesToOptions(choices) {
 
   const options = {};
   choices.forEach(choice => {
-    if (typeof choice === 'object' && choice.letter && choice.text) {
-      // Process LaTeX content if present
-      let processedText = extractLatexFromHtml(choice.text);
-      // If no HTML processing occurred, just use the text directly
-      if (processedText === choice.text) {
-        processedText = choice.text;
+    if (typeof choice === 'object' && choice.letter) {
+      const rawHtmlSource = choice.html || '';
+      const rawTextSource = choice.text || '';
+
+      const processedFromHtml = simplifyOptionHtml(cleanLeftRightBrackets(extractLatexFromHtml(rawHtmlSource)) || '');
+      const processedFromText = simplifyOptionHtml(cleanLeftRightBrackets(extractLatexFromHtml(rawTextSource)) || '') || simplifyOptionHtml(rawTextSource);
+
+      const htmlHasComplexMath = /\\frac|\\sqrt|\\pi|\\theta|\\beta|\\alpha|\\pm|\\cdot|\\times|\\div|\\log|\\sin|\\cos|\\tan|\\int|\\sum|\\prod/.test(processedFromHtml);
+
+      let processedText = processedFromHtml;
+      if (!processedText || processedText.length === 0) {
+        processedText = processedFromText;
+      } else if (processedFromText && processedFromText.trim().length > 0) {
+        if (!htmlHasComplexMath && processedFromText !== processedFromHtml) {
+          processedText = processedFromText;
+        } else if (processedFromText.length > processedFromHtml.length + 2) {
+          processedText = processedFromText;
+        }
       }
-      // Clean \left \right brackets
-      processedText = cleanLeftRightBrackets(processedText);
-      options[choice.letter] = processedText.trim();
+
+      if (processedFromHtml && processedFromHtml.includes('\\frac') && processedFromText && !processedFromText.includes('\\frac')) {
+        const fractionMatch = processedFromHtml.match(/\^\{\\frac\{[^}]+\}\{[^}]+\}\}/);
+        if (fractionMatch) {
+          const replaced = processedFromText.replace(/\^\{?t[^}]*\}?|\^\(t[^)]*\)/, fractionMatch[0]);
+          processedText = replaced !== processedFromText
+            ? replaced
+            : `${processedFromText.split('^')[0]}${fractionMatch[0]}`;
+        }
+      }
+
+      let sanitizedText = (processedText || '').replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+
+      if (sanitizedText.length === 0 && Array.isArray(choice.images) && choice.images.length > 0) {
+        processedText = choice.images.map(src => `<img src="${src}" alt="Option ${choice.letter}" />`).join('<br>');
+        sanitizedText = processedText;
+      }
+
+      options[choice.letter] = sanitizedText.length > 0 ? sanitizedText : processedText.trim();
     } else if (typeof choice === 'string') {
       const match = choice.match(/^([A-D])\)\s*(.*)$/);
       if (match) {
         const [, letter, text] = match;
         // Process LaTeX content if present
         let processedText = extractLatexFromHtml(text);
-        // If no HTML processing occurred, just use the text directly
         if (processedText === text) {
           processedText = text;
         }
-        // Clean \left \right brackets
-        processedText = cleanLeftRightBrackets(processedText);
-        options[letter] = processedText.trim();
+        processedText = simplifyOptionHtml(cleanLeftRightBrackets(processedText));
+        const sanitizedText = processedText.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+        options[letter] = sanitizedText.length > 0 ? sanitizedText : processedText.trim();
       }
     }
   });
@@ -425,6 +466,12 @@ function extractCorrectAnswerLetter(correctAnswer, choices) {
 
   // Clean the correct answer first
   const cleanCorrectAnswer = cleanAnswerString(correctAnswer);
+
+  // If the cleaned answer is already a multiple-choice letter, trust it immediately.
+  if (/^[A-D]$/i.test(cleanCorrectAnswer)) {
+    return cleanCorrectAnswer.toUpperCase();
+  }
+
   const normalizedCorrect = normalizeMathExpression(cleanCorrectAnswer);
 
   console.log(`   🔍 Finding match for: "${correctAnswer}" (cleaned: "${cleanCorrectAnswer}")`);
@@ -506,6 +553,13 @@ function extractCorrectAnswerLetter(correctAnswer, choices) {
 
   console.warn(`   ⚠️ Could not match correct answer: "${correctAnswer}" (cleaned: "${cleanCorrectAnswer}")`);
   console.warn(`   Available choices:`, choices.map(c => typeof c === 'object' ? `${c.letter}: ${c.text}` : c));
+
+  // Fallback: if the original string contains a recognizable letter, use it.
+  const fallbackMatch = correctAnswer.match(/([A-D])/i);
+  if (fallbackMatch) {
+    return fallbackMatch[1].toUpperCase();
+  }
+
   return 'A';
 }
 

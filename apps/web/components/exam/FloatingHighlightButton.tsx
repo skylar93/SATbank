@@ -124,6 +124,8 @@ export default function FloatingHighlightButton({
 }: FloatingHighlightButtonProps) {
   const pointerStartDomRef = useRef<number | null>(null)
   const isAdjustingSelectionRef = useRef(false)
+  const pointerHasMovedRef = useRef(false)
+  const scheduledAdjustmentRef = useRef<number | null>(null)
 
   useEffect(() => {
     const container = containerRef.current
@@ -139,11 +141,13 @@ export default function FloatingHighlightButton({
     const handlePointerDown = (event: PointerEvent) => {
       if (!isHighlightMode) {
         pointerStartDomRef.current = null
+        pointerHasMovedRef.current = false
         return
       }
 
       if (!container.contains(event.target as Node)) {
         pointerStartDomRef.current = null
+        pointerHasMovedRef.current = false
         return
       }
 
@@ -155,6 +159,7 @@ export default function FloatingHighlightButton({
 
       if (!caretRange) {
         pointerStartDomRef.current = null
+        pointerHasMovedRef.current = false
         return
       }
 
@@ -165,6 +170,12 @@ export default function FloatingHighlightButton({
       )
 
       pointerStartDomRef.current = offsetDom
+      pointerHasMovedRef.current = false
+
+      if (scheduledAdjustmentRef.current !== null) {
+        cancelAnimationFrame(scheduledAdjustmentRef.current)
+        scheduledAdjustmentRef.current = null
+      }
 
       const selection = doc.getSelection?.()
       if (selection) {
@@ -172,6 +183,64 @@ export default function FloatingHighlightButton({
           selection.removeAllRanges()
           selection.addRange(caretRange)
         } catch {}
+      }
+    }
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!isHighlightMode) return
+
+      const pointerAnchor = pointerStartDomRef.current
+      if (pointerAnchor === null) return
+
+      if (event.buttons === 0) return
+
+      const caretRange = getCaretRangeFromPoint(
+        doc,
+        event.clientX,
+        event.clientY
+      )
+
+      if (!caretRange) return
+      if (!container.contains(caretRange.startContainer)) return
+
+      const focusDomOffset = getTextOffsetInContainer(
+        container,
+        caretRange.startContainer,
+        caretRange.startOffset
+      )
+
+      if (!Number.isFinite(focusDomOffset)) return
+
+      const hasMoved = focusDomOffset !== pointerAnchor
+      if (!hasMoved && !pointerHasMovedRef.current) {
+        return
+      }
+
+      pointerHasMovedRef.current = pointerHasMovedRef.current || hasMoved
+
+      const selection = doc.getSelection?.()
+      if (!selection) return
+
+      const anchorPos = resolveDomPosition(container, pointerAnchor)
+      const focusPos = resolveDomPosition(container, focusDomOffset)
+
+      if (!anchorPos || !focusPos) return
+
+      isAdjustingSelectionRef.current = true
+      try {
+        const range = doc.createRange()
+        if (focusDomOffset >= pointerAnchor) {
+          range.setStart(anchorPos.node, anchorPos.offset)
+          range.setEnd(focusPos.node, focusPos.offset)
+        } else {
+          range.setStart(focusPos.node, focusPos.offset)
+          range.setEnd(anchorPos.node, anchorPos.offset)
+        }
+
+        selection.removeAllRanges()
+        selection.addRange(range)
+      } finally {
+        isAdjustingSelectionRef.current = false
       }
     }
 
@@ -420,6 +489,11 @@ export default function FloatingHighlightButton({
         normalizedContainer?.remove()
         clearSelection()
         pointerStartDomRef.current = null
+        pointerHasMovedRef.current = false
+        if (scheduledAdjustmentRef.current !== null) {
+          cancelAnimationFrame(scheduledAdjustmentRef.current)
+          scheduledAdjustmentRef.current = null
+        }
       }
     }
 
