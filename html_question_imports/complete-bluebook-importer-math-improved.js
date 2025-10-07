@@ -203,6 +203,11 @@ function simplifyOptionHtml(content) {
     .trim();
 }
 
+function normalizeCaretNotation(text) {
+  if (!text || typeof text !== 'string') return text;
+  return text.replace(/\^\(([^)]+)\)/g, '^{$1}');
+}
+
 // Normalize math expressions for better matching
 function normalizeMathExpression(expr) {
   if (!expr || typeof expr !== 'string') return '';
@@ -434,6 +439,7 @@ function convertChoicesToOptions(choices) {
         }
       }
 
+      processedText = normalizeCaretNotation(processedText);
       let sanitizedText = (processedText || '').replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
 
       if (sanitizedText.length === 0 && Array.isArray(choice.images) && choice.images.length > 0) {
@@ -452,6 +458,7 @@ function convertChoicesToOptions(choices) {
           processedText = text;
         }
         processedText = simplifyOptionHtml(cleanLeftRightBrackets(processedText));
+        processedText = normalizeCaretNotation(processedText);
         const sanitizedText = processedText.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
         options[letter] = sanitizedText.length > 0 ? sanitizedText : processedText.trim();
       }
