@@ -51,6 +51,7 @@ export function CreateExamClient() {
   >({})
   const [isCreating, setIsCreating] = useState(false)
   const [showEnglishOnly, setShowEnglishOnly] = useState(false)
+  const [showMathOnly, setShowMathOnly] = useState(false)
   const [groupByDate, setGroupByDate] = useState(true)
   const [timeLimits, setTimeLimits] = useState<Record<string, number>>({})
   const [moduleSearchTerms, setModuleSearchTerms] = useState<
@@ -106,13 +107,13 @@ export function CreateExamClient() {
   useEffect(() => {
     if (selectedTemplate) {
       const defaultLimits: Record<string, number> = {}
-      // Set default times: English modules 35 minutes, Math modules 32 minutes
+      // Set default times: English and Math modules 35 minutes
       const requiredSlots = getRequiredModuleSlots()
       requiredSlots.forEach((slot) => {
         if (slot.includes('english')) {
           defaultLimits[slot] = 35
         } else if (slot.includes('math')) {
-          defaultLimits[slot] = 32
+          defaultLimits[slot] = 35
         } else {
           defaultLimits[slot] = 30 // Default for other types
         }
@@ -199,6 +200,13 @@ export function CreateExamClient() {
     )
   }
 
+  const hasMathSection = (module: ImportedModule): boolean => {
+    if (!module.module_composition) return false
+    return !!(
+      module.module_composition.math1 || module.module_composition.math2
+    )
+  }
+
   const groupModulesByDate = (modules: ImportedModule[]) => {
     const grouped: Record<string, ImportedModule[]> = {}
 
@@ -240,6 +248,10 @@ export function CreateExamClient() {
     // Apply English-only filter if enabled
     if (showEnglishOnly) {
       filteredModules = filteredModules.filter(hasEnglishSection)
+    }
+
+    if (showMathOnly) {
+      filteredModules = filteredModules.filter(hasMathSection)
     }
 
     // Apply search filter if search term exists for this module type
@@ -424,6 +436,19 @@ export function CreateExamClient() {
 
                 <div className="flex items-center space-x-2">
                   <Checkbox
+                    id="mathOnly"
+                    checked={showMathOnly}
+                    onCheckedChange={(checked) =>
+                      setShowMathOnly(checked === true)
+                    }
+                  />
+                  <Label htmlFor="mathOnly" className="text-sm">
+                    Math sections only
+                  </Label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
                     id="groupByDate"
                     checked={groupByDate}
                     onCheckedChange={(checked) =>
@@ -533,7 +558,7 @@ export function CreateExamClient() {
                           moduleType.includes('english')
                             ? '35'
                             : moduleType.includes('math')
-                              ? '32'
+                              ? '35'
                               : '30'
                         }
                       />
@@ -542,7 +567,7 @@ export function CreateExamClient() {
                         {moduleType.includes('english')
                           ? '35'
                           : moduleType.includes('math')
-                            ? '32'
+                            ? '35'
                             : '30'}{' '}
                         minutes
                       </p>

@@ -918,10 +918,12 @@ export const useExamStore = create<ExamState>((set, get) => ({
     console.log('Attempting to advance to module index:', nextModuleIndex)
 
     try {
-      // Note: Answers are now saved in real-time via debounce, so no need for bulk save here
+      // Ensure current module answers are fully evaluated before advancing
       console.log(
-        'Real-time saving ensures answers are already saved, proceeding to next module...'
+        '[nextModule] Persisting and scoring current module answers before advancing...'
       )
+      await saveModuleAnswers()
+      console.log('[nextModule] Current module answers saved.')
 
       if (nextModuleIndex >= modules.length) {
         // Complete exam
