@@ -399,6 +399,10 @@ function generateAcceptableAnswers(correctAnswer) {
     });
   }
 
+  if (cleanAnswer.includes(',')) {
+    answers.delete(cleanAnswer);
+  }
+
   // Remove empty strings and return array
   return Array.from(answers).filter(ans => ans && ans.length > 0);
 }
@@ -721,20 +725,39 @@ function extractMainImageUrl(imageUrls) {
 // Create or get exam
 async function createOrGetExam(testId, testName, totalQuestions) {
   const moduleType = mapModuleType(testId);
+  const normalizedId = testId.replace(/_/g, ' ').toLowerCase();
+  const normalizedName = testName.replace(/_/g, ' ').toLowerCase();
 
-  // Clean up the test name to remove module info and Form parts
-  let cleanedName = testName
-    .replace(/Module\s*[12]\s*/gi, '') // Remove "Module 1" or "Module 2" completely with trailing space
-    .replace(/module\s*[12]\s*/gi, '') // Remove "module 1" or "module 2" completely with trailing space
-    .replace(/Form\s*[A-Z]\s*/gi, '')  // Remove "Form A", "Form B", etc. with trailing space
-    .replace(/form\s*[a-z]\s*/gi, '')  // Remove "form a", "form b", etc. with trailing space
-    .replace(/\bUs\b/gi, 'US')         // Change "Us" to "US" (case insensitive)
-    .replace(/\s+/g, ' ')              // Normalize whitespace
-    .trim();
+  function capitalizeWords(str) {
+    return str.replace(/\b\w/g, char => char.toUpperCase());
+  }
 
-  let formattedDate = cleanedName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  let moduleTypeName = moduleType === 'math1' ? 'Math1' : 'Math2';
-  const examTitle = `${formattedDate} ${moduleTypeName}`;
+  const monthRegex = /(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{4}/i;
+  const regionRegex = /\b(international|us)\b/i;
+  const formRegex = /form\s*([a-z])/i;
+
+  const sourceString = normalizedId || normalizedName;
+  const monthMatch = sourceString.match(monthRegex);
+  const regionMatch = sourceString.match(regionRegex);
+  const formMatch = sourceString.match(formRegex);
+
+  const titleParts = [];
+  if (monthMatch) {
+    titleParts.push(capitalizeWords(monthMatch[0]));
+  }
+  if (regionMatch) {
+    const region = regionMatch[1].toLowerCase() === 'us' ? 'US' : capitalizeWords(regionMatch[1]);
+    titleParts.push(region);
+  }
+  if (formMatch) {
+    titleParts.push(formMatch[1].toUpperCase());
+  }
+
+  const moduleLabel = moduleType === 'math1' ? 'Math1' : 'Math2';
+  titleParts.push(moduleLabel);
+
+  const fallbackTitle = capitalizeWords(normalizedName || normalizedId).trim() || `Math Module ${moduleLabel}`;
+  const examTitle = titleParts.filter(Boolean).length > 0 ? titleParts.join(' ') : `${fallbackTitle} ${moduleLabel}`;
 
   // Check if exam exists
   let { data: existingExam, error: examError } = await supabase
@@ -751,11 +774,10 @@ async function createOrGetExam(testId, testName, totalQuestions) {
         title: examTitle,
         description: 'Math module auto import',
         time_limits: {
-          [moduleType]: 35, // Both Math1 and Math2: 35min
-          english1: 0,
-          english2: 0,
           math1: moduleType === 'math1' ? 35 : 0,
-          math2: moduleType === 'math2' ? 35 : 0
+          math2: moduleType === 'math2' ? 35 : 0,
+          english1: 0,
+          english2: 0
         },
         module_composition: {
           [moduleType]: true
@@ -763,7 +785,10 @@ async function createOrGetExam(testId, testName, totalQuestions) {
         total_questions: totalQuestions,
         is_active: true,
         is_mock_exam: false,
-        is_custom_assignment: true,
+        is_custom_assignment: false,
+        is_module_source: true,
+        math_scoring_curve_id: 2,
+        english_scoring_curve_id: 1,
         answer_check_mode: 'exam_end'
       }])
       .select()
