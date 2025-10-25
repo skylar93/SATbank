@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { QuestionDisplay } from '../../../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../../../components/exam/exam-navigation'
@@ -33,6 +33,20 @@ export default function ReviewPageClient({
   attemptId,
   isAdminView = false,
 }: ReviewPageClientProps) {
+  const [questions, setQuestions] = useState(reviewData.questions)
+
+  useEffect(() => {
+    setQuestions(reviewData.questions)
+  }, [reviewData.questions])
+
+  const reviewDataWithUpdates = useMemo(
+    () => ({
+      ...reviewData,
+      questions,
+    }),
+    [reviewData.attempt, reviewData.exam, reviewData.userAnswers, questions]
+  )
+
   const {
     currentQuestionIndex,
     currentQuestion,
@@ -47,11 +61,19 @@ export default function ReviewPageClient({
     getAllModules,
     getCurrentModuleIndex,
     allQuestionsOrdered,
-  } = useExamReviewState(reviewData)
+  } = useExamReviewState(reviewDataWithUpdates)
 
   // Admin regrade functionality
   const [regrading, setRegrading] = useState(false)
   const [regradeError, setRegradeError] = useState<string | null>(null)
+
+  const handleQuestionUpdate = useCallback((updatedQuestion: Question) => {
+    setQuestions((prev) =>
+      prev.map((question) =>
+        question.id === updatedQuestion.id ? updatedQuestion : question
+      )
+    )
+  }, [])
 
   // Handle regrade question
   const handleRegrade = async () => {
@@ -189,13 +211,34 @@ export default function ReviewPageClient({
   // Add keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Only handle arrow keys and ignore if user is typing in an input field
-      if (
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement ||
-        event.target instanceof HTMLSelectElement
-      ) {
+      if (event.defaultPrevented) {
         return
+      }
+
+      const targetNode = event.target as Node | null
+
+      if (targetNode) {
+        let currentNode: Node | null = targetNode
+
+        while (currentNode) {
+          if (
+            currentNode instanceof HTMLInputElement ||
+            currentNode instanceof HTMLTextAreaElement ||
+            currentNode instanceof HTMLSelectElement
+          ) {
+            return
+          }
+
+          if (
+            currentNode instanceof HTMLElement &&
+            (currentNode.isContentEditable ||
+              currentNode.getAttribute('data-disable-exam-navigation') === 'true')
+          ) {
+            return
+          }
+
+          currentNode = currentNode.parentNode
+        }
       }
 
       switch (event.key) {
@@ -319,7 +362,8 @@ export default function ReviewPageClient({
                 onAnswerChange={() => {}} // No-op in review mode
                 showExplanation={showCorrectAnswers}
                 disabled={true} // All inputs disabled in review mode
-                isAdminPreview={false}
+                isAdminPreview={isAdminView}
+                onQuestionUpdate={isAdminView ? handleQuestionUpdate : undefined}
                 isCorrect={isCorrect}
                 isSecondTryCorrect={isSecondTryCorrect}
                 moduleDisplayName={getModuleDisplayName(currentModule)}

@@ -23,9 +23,12 @@ BEGIN
     WHERE ta.id = NEW.attempt_id
     ON CONFLICT (user_id, question_id) 
     DO UPDATE SET
-      -- If the question already exists in mistake_bank, we can optionally update the last review date
-      -- For now, we'll just ignore duplicates to preserve the original first_mistaken_at
-      user_id = EXCLUDED.user_id; -- This is a no-op, just to satisfy the DO UPDATE requirement
+      -- Reactivate the mistake if the student misses it again
+      status = 'unmastered'::mistake_status,
+      -- Clear any previous mastery review timestamp so it surfaces again
+      last_reviewed_at = NULL,
+      -- Preserve the earliest mistake timestamp
+      first_mistaken_at = LEAST(mistake_bank.first_mistaken_at, EXCLUDED.first_mistaken_at);
     
     -- Log the insertion for debugging purposes
     RAISE LOG 'Added question % for user from attempt % to mistake_bank (triggered by user_answer %)', 

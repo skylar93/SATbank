@@ -126,12 +126,22 @@ export default function FloatingHighlightButton({
   const isAdjustingSelectionRef = useRef(false)
   const pointerHasMovedRef = useRef(false)
   const scheduledAdjustmentRef = useRef<number | null>(null)
+  const highlightModeRef = useRef(isHighlightMode)
+
+  useEffect(() => {
+    highlightModeRef.current = isHighlightMode
+  }, [isHighlightMode])
 
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
-
     const doc = container.ownerDocument || document
+
+    pointerStartDomRef.current = null
+    pointerHasMovedRef.current = false
+    if (!isHighlightMode) {
+      return
+    }
 
     const clearSelection = () => {
       const selection = doc.getSelection?.()
@@ -139,7 +149,7 @@ export default function FloatingHighlightButton({
     }
 
     const handlePointerDown = (event: PointerEvent) => {
-      if (!isHighlightMode) {
+      if (!highlightModeRef.current) {
         pointerStartDomRef.current = null
         pointerHasMovedRef.current = false
         return
@@ -187,7 +197,7 @@ export default function FloatingHighlightButton({
     }
 
     const handlePointerMove = (event: PointerEvent) => {
-      if (!isHighlightMode) return
+      if (!highlightModeRef.current) return
 
       const pointerAnchor = pointerStartDomRef.current
       if (pointerAnchor === null) return
@@ -245,7 +255,7 @@ export default function FloatingHighlightButton({
     }
 
     const handleMouseUp = () => {
-      if (!isHighlightMode) return
+      if (!highlightModeRef.current) return
 
       const selection = doc.getSelection?.()
       if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
@@ -502,7 +512,7 @@ export default function FloatingHighlightButton({
     doc.addEventListener('mouseup', handleMouseUp)
 
     const handleSelectionChange = () => {
-      if (!isHighlightMode) return
+      if (!highlightModeRef.current) return
       if (isAdjustingSelectionRef.current) return
       if (pointerStartDomRef.current === null) return
       if (!pointerHasMovedRef.current) return
@@ -564,6 +574,13 @@ export default function FloatingHighlightButton({
       container.removeEventListener('pointermove', handlePointerMove)
       doc.removeEventListener('mouseup', handleMouseUp)
       doc.removeEventListener('selectionchange', handleSelectionChange)
+      pointerStartDomRef.current = null
+      pointerHasMovedRef.current = false
+      if (scheduledAdjustmentRef.current !== null) {
+        cancelAnimationFrame(scheduledAdjustmentRef.current)
+        scheduledAdjustmentRef.current = null
+      }
+      isAdjustingSelectionRef.current = false
     }
   }, [containerRef, isHighlightMode, onHighlight, isHtml])
 

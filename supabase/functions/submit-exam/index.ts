@@ -475,7 +475,10 @@ serve(async (req) => {
             console.log(`📚 Found ${mistakes.length} mistakes to add to mistake bank`)
             const { error: mistakeError } = await supabase
               .from('mistake_bank')
-              .upsert(mistakes, { onConflict: 'user_id, question_id' })
+              .upsert(mistakes, {
+                onConflict: 'user_id, question_id',
+                ignoreDuplicates: true,
+              })
 
             if (mistakeError) {
               console.error('❌ Failed to populate mistake bank:', mistakeError.message)

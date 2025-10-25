@@ -937,6 +937,63 @@ export function QuestionDisplay({
     return renderTextWithFormattingAndMath(value)
   }
 
+  const renderOptionContent = (value: any, optionKey?: string) => {
+    if (typeof value === 'object' && value !== null) {
+      const objValue = value as any
+
+      if (objValue.headers && objValue.rows) {
+        return renderTable(objValue, true)
+      }
+
+      if (
+        objValue.table_data &&
+        objValue.table_data.headers &&
+        objValue.table_data.rows
+      ) {
+        return renderTable(objValue.table_data, true)
+      }
+
+      if (objValue.text || objValue.imageUrl) {
+        return (
+          <div className="space-y-2">
+            {objValue.text && (
+              <div>{renderTextWithFormattingAndMath(objValue.text)}</div>
+            )}
+            {objValue.imageUrl && (
+              <img
+                src={objValue.imageUrl}
+                alt="Answer choice image"
+                className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
+                onError={(e) => {
+                  console.error(
+                    'Answer option object image failed to load:',
+                    objValue.imageUrl
+                  )
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            )}
+          </div>
+        )
+      }
+
+      return (
+        <div className="text-sm text-red-600 bg-red-50 p-2 rounded border">
+          <div className="font-medium">
+            {optionKey
+              ? `Debug: Object detected in option ${optionKey}`
+              : 'Debug: Object detected in option'}
+          </div>
+          <pre className="text-xs mt-1 whitespace-pre-wrap">
+            {JSON.stringify(value, null, 2)}
+          </pre>
+        </div>
+      )
+    }
+
+    return renderAnswerChoiceContent(String(value))
+  }
+
   const renderAnswerOptions = () => {
     if (
       localQuestion.question_type === 'multiple_choice' ||
@@ -1229,70 +1286,7 @@ export function QuestionDisplay({
                     )}
                   </div>
                   <div className="text-gray-900 leading-relaxed">
-                    {(() => {
-                      // Handle cases where value is already an object (not a string)
-                      if (typeof value === 'object' && value !== null) {
-                        const objValue = value as any // Type assertion to fix TypeScript error
-
-                        // Check if it has table structure
-                        if (objValue.headers && objValue.rows) {
-                          return renderTable(objValue, true)
-                        }
-
-                        // Check if it has nested table_data
-                        if (
-                          objValue.table_data &&
-                          objValue.table_data.headers &&
-                          objValue.table_data.rows
-                        ) {
-                          return renderTable(objValue.table_data, true)
-                        }
-
-                        // Check for text/image content
-                        if (objValue.text || objValue.imageUrl) {
-                          return (
-                            <div className="space-y-2">
-                              {objValue.text && (
-                                <div>
-                                  {renderTextWithFormattingAndMath(
-                                    objValue.text
-                                  )}
-                                </div>
-                              )}
-                              {objValue.imageUrl && (
-                                <img
-                                  src={objValue.imageUrl}
-                                  alt="Answer choice image"
-                                  className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
-                                  onError={(e) => {
-                                    console.error(
-                                      'Answer option object image failed to load:',
-                                      objValue.imageUrl
-                                    )
-                                    e.currentTarget.style.display = 'none'
-                                  }}
-                                />
-                              )}
-                            </div>
-                          )
-                        }
-
-                        // Fallback for unrecognized object structure
-                        return (
-                          <div className="text-sm text-red-600 bg-red-50 p-2 rounded border">
-                            <div className="font-medium">
-                              Debug: Object detected in option {key}
-                            </div>
-                            <pre className="text-xs mt-1 whitespace-pre-wrap">
-                              {JSON.stringify(value, null, 2)}
-                            </pre>
-                          </div>
-                        )
-                      }
-
-                      // Handle string values normally
-                      return renderAnswerChoiceContent(String(value))
-                    })()}
+                    {renderOptionContent(value, key)}
                   </div>
                 </div>
               </label>
@@ -1381,6 +1375,86 @@ export function QuestionDisplay({
     }
 
     return null
+  }
+
+  const renderAdminCorrectAnswerPreview = () => {
+    if (!isAdminPreview || disabled || isEditing) {
+      return null
+    }
+
+    const correctAnswers = parseCorrectAnswers(localQuestion)
+      .map((answer) => answer?.toString().trim())
+      .filter((answer): answer is string => !!answer && answer.length > 0)
+
+    if (correctAnswers.length === 0) {
+      return null
+    }
+
+    const isChoiceQuestion =
+      localQuestion.question_type === 'multiple_choice' ||
+      localQuestion.question_type === 'multiple_select'
+
+    if (isChoiceQuestion) {
+      return (
+        <div className="mt-6 p-4 bg-purple-50 border border-purple-200 rounded-lg shadow-sm">
+          <h4 className="font-semibold text-purple-800 mb-2">
+            Admin Preview · Correct Answer
+            {correctAnswers.length > 1 ? 's' : ''}
+          </h4>
+          <div className="space-y-3">
+            {correctAnswers.map((answer, index) => {
+              const trimmedAnswer = answer.trim()
+              const uppercaseKey = trimmedAnswer.toUpperCase()
+              const options = localQuestion.options || {}
+              const optionValue =
+                options[trimmedAnswer] ??
+                options[uppercaseKey] ??
+                options[trimmedAnswer.toLowerCase()]
+
+              return (
+                <div
+                  key={`${trimmedAnswer}-${index}`}
+                  className="flex items-start gap-3 bg-white border border-purple-100 rounded-md p-3"
+                >
+                  <span className="font-semibold text-purple-700">
+                    {uppercaseKey}
+                  </span>
+                  <div className="flex-1 text-gray-900">
+                    {optionValue
+                      ? renderOptionContent(optionValue, uppercaseKey)
+                      : renderTextWithFormattingAndMath(answer)}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )
+    }
+
+    if (localQuestion.question_type === 'grid_in') {
+      return (
+        <div className="mt-6 p-4 bg-purple-50 border border-purple-200 rounded-lg shadow-sm">
+          <h4 className="font-semibold text-purple-800 mb-2">
+            Admin Preview · Acceptable Answers
+          </h4>
+          <div className="text-gray-900">
+            {formatCorrectAnswersDisplay(correctAnswers)}
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="mt-6 p-4 bg-purple-50 border border-purple-200 rounded-lg shadow-sm">
+        <h4 className="font-semibold text-purple-800 mb-2">
+          Admin Preview · Correct Answer
+        </h4>
+        <div className="text-gray-900">
+          {formatCorrectAnswersDisplay(correctAnswers)}
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -1947,6 +2021,8 @@ export function QuestionDisplay({
           </h3>
 
           {renderAnswerOptions()}
+
+          {renderAdminCorrectAnswerPreview()}
 
           {/* Check Answer Button for per-question mode */}
           {showPerQuestionAnswers &&

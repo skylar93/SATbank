@@ -92,7 +92,14 @@ export default function MistakeNotebookPage() {
               answered_at,
               attempt_id,
               test_attempts!inner (
-                user_id
+                id,
+                user_id,
+                exam_id,
+                is_practice_mode,
+                exams (
+                  id,
+                  title
+                )
               )
             `
             )
@@ -103,12 +110,28 @@ export default function MistakeNotebookPage() {
             .limit(5) // Get last 5 incorrect attempts
 
           const incorrectAttempts =
-            incorrectAnswers?.map((answer) => ({
-              id: answer.id,
-              user_answer: answer.user_answer,
-              answered_at: answer.answered_at,
-              attempt_id: answer.attempt_id,
-            })) || []
+            incorrectAnswers?.map((answer) => {
+              const attempt: any = (answer as any).test_attempts
+              const examTitle =
+                attempt?.exams?.title ||
+                (attempt?.is_practice_mode ? 'Practice Session' : 'Unknown Exam')
+
+              return {
+                id: answer.id,
+                user_answer: answer.user_answer,
+                answered_at: answer.answered_at,
+                attempt_id: answer.attempt_id,
+                exam_title: examTitle,
+              }
+            }) || []
+
+          const examTitles = Array.from(
+            new Set(
+              incorrectAttempts
+                .map((attempt) => attempt.exam_title)
+                .filter((title): title is string => Boolean(title))
+            )
+          )
 
           const question = mistake.questions as any
           return {
@@ -118,15 +141,20 @@ export default function MistakeNotebookPage() {
             question_type: question.question_type,
             difficulty_level: question.difficulty_level,
             question_text: question.question_text,
+            question_html: question.question_html,
             options: question.options,
+            options_html: question.options_html,
             correct_answer: question.correct_answer,
+            correct_answers: question.correct_answers,
             explanation: question.explanation,
+            explanation_html: question.explanation_html,
             topic_tags: question.topic_tags,
             mistakeId: mistake.id,
             masteryStatus: mistake.status,
             firstMistakenAt: mistake.first_mistaken_at,
             lastReviewedAt: mistake.last_reviewed_at,
             incorrectAttempts,
+            examTitles,
           }
         }) || []
       )

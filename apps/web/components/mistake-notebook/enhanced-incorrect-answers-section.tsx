@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '../../contexts/auth-context'
 import { supabase } from '../../lib/supabase'
 import Link from 'next/link'
@@ -8,6 +8,11 @@ import { useRouter } from 'next/navigation'
 import { renderHtmlContent } from '../exam/question-display'
 import { isEmptyHtml } from '../../lib/content-converter'
 import { ContentRenderer } from '../content-renderer'
+import { toast } from 'sonner'
+import {
+  parseCorrectAnswers,
+  validateGridInAnswer,
+} from '../../lib/grid-in-validator'
 
 interface Question {
   id: string
@@ -20,6 +25,7 @@ interface Question {
   options: any
   options_html?: any
   correct_answer: string
+  correct_answers?: any
   explanation: string
   explanation_html?: string | null
   topic_tags: string[]
@@ -32,7 +38,9 @@ interface Question {
     user_answer: string
     answered_at: string
     attempt_id: string
+    exam_title?: string
   }>
+  examTitles?: string[]
 }
 
 interface EnhancedIncorrectAnswersSectionProps {
@@ -55,8 +63,115 @@ export function EnhancedIncorrectAnswersSection({
   const [masteryFilter, setMasteryFilter] = useState<
     'all' | 'unmastered' | 'mastered'
   >('all')
+  const [examFilter, setExamFilter] = useState<string>('all')
   const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null)
   const [selectedQuestions, setSelectedQuestions] = useState<string[]>([])
+  const [userResponses, setUserResponses] = useState<Record<string, string>>({})
+  const [revealState, setRevealState] = useState<
+    Record<string, { revealed: boolean; isCorrect: boolean | null }>
+  >({})
+
+  const examOptions = useMemo(() => {
+    const exams = new Set<string>()
+    questions.forEach((q) => {
+      q.examTitles?.forEach((title) => {
+        if (title) {
+          exams.add(title)
+        }
+      })
+    })
+    return Array.from(exams).sort((a, b) => a.localeCompare(b))
+  }, [questions])
+
+  const getRevealInfo = (questionId: string) =>
+    revealState[questionId] || { revealed: false, isCorrect: null }
+
+  const handleResetQuestion = (questionId: string) => {
+    setUserResponses((prev) => {
+      const updated = { ...prev }
+      delete updated[questionId]
+      return updated
+    })
+    setRevealState((prev) => {
+      const updated = { ...prev }
+      delete updated[questionId]
+      return updated
+    })
+  }
+
+  const ensurePendingRevealState = (questionId: string) => {
+    setRevealState((prev) => {
+      const current = prev[questionId]
+      if (current && current.revealed === true) {
+        return prev
+      }
+      return {
+        ...prev,
+        [questionId]: { revealed: false, isCorrect: null },
+      }
+    })
+  }
+
+  const handleMultipleChoiceSelection = (questionId: string, value: string) => {
+    setUserResponses((prev) => ({ ...prev, [questionId]: value }))
+    ensurePendingRevealState(questionId)
+  }
+
+  const handleGridInputChange = (questionId: string, value: string) => {
+    setUserResponses((prev) => ({ ...prev, [questionId]: value }))
+    ensurePendingRevealState(questionId)
+  }
+
+  const handleSubmitAnswer = (question: Question) => {
+    const response = (userResponses[question.id] || '').trim()
+    const questionType = question.question_type
+
+    if (
+      !response &&
+      (questionType === 'multiple_choice' || questionType === 'grid_in')
+    ) {
+      toast('답을 선택하거나 입력해 주세요.')
+      return
+    }
+
+    let isCorrect: boolean | null = null
+
+    if (questionType === 'multiple_choice') {
+      const normalizedAttempt = response.toUpperCase()
+      const normalizedCorrect = (question.correct_answer || '').trim().toUpperCase()
+      if (normalizedAttempt.length === 0) {
+        toast('보기를 선택한 후 제출해 주세요.')
+        return
+      }
+      isCorrect = normalizedAttempt === normalizedCorrect
+    } else if (questionType === 'grid_in') {
+      if (!response) {
+        toast('답을 입력한 후 제출해 주세요.')
+        return
+      }
+      const validation = validateGridInAnswer(
+        {
+          correct_answers: question.correct_answers,
+          correct_answer: question.correct_answer,
+        },
+        response
+      )
+      isCorrect = validation.isCorrect
+    }
+
+    setRevealState((prev) => ({
+      ...prev,
+      [question.id]: { revealed: true, isCorrect },
+    }))
+
+    if (isCorrect === true) {
+      toast.success('정답입니다! 🎉')
+    } else if (isCorrect === false) {
+      toast.error('오답이에요. 정답을 확인해 보세요.')
+    } else {
+      toast('정답을 확인했어요.')
+    }
+  }
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -117,8 +232,13 @@ export function EnhancedIncorrectAnswersSection({
   const getGroupedQuestions = () => {
     // First, apply mastery status filter
     const filteredQuestions = questions.filter((q) => {
-      if (masteryFilter === 'all') return true
-      return q.masteryStatus === masteryFilter
+      const matchesMastery =
+        masteryFilter === 'all' ? true : q.masteryStatus === masteryFilter
+      const matchesExam =
+        examFilter === 'all'
+          ? true
+          : q.examTitles?.includes(examFilter) ?? false
+      return matchesMastery && matchesExam
     })
 
     const grouped: { [key: string]: Question[] } = {}
@@ -191,8 +311,13 @@ export function EnhancedIncorrectAnswersSection({
 
   const handleSelectAll = () => {
     const filteredQuestions = questions.filter((q) => {
-      if (masteryFilter === 'all') return true
-      return q.masteryStatus === masteryFilter
+      const matchesMastery =
+        masteryFilter === 'all' ? true : q.masteryStatus === masteryFilter
+      const matchesExam =
+        examFilter === 'all'
+          ? true
+          : q.examTitles?.includes(examFilter) ?? false
+      return matchesMastery && matchesExam
     })
 
     const filteredQuestionIds = filteredQuestions.map((q) => q.id)
@@ -241,7 +366,7 @@ export function EnhancedIncorrectAnswersSection({
         questions: selectedQuestions,
         settings: {
           shuffleQuestions: false,
-          showExplanations: false, // Disabled to match exam behavior
+          showExplanations: true,
           timeLimit: 0,
           isMistakeReview: true,
         },
@@ -289,7 +414,7 @@ export function EnhancedIncorrectAnswersSection({
         questions: questions.map((q) => q.id),
         settings: {
           shuffleQuestions: true,
-          showExplanations: false, // Disabled to match exam behavior
+          showExplanations: true,
           timeLimit: 0,
           isMistakeReview: true,
         },
@@ -348,8 +473,13 @@ export function EnhancedIncorrectAnswersSection({
 
   const groupedQuestions = getGroupedQuestions()
   const filteredQuestions = questions.filter((q) => {
-    if (masteryFilter === 'all') return true
-    return q.masteryStatus === masteryFilter
+    const matchesMastery =
+      masteryFilter === 'all' ? true : q.masteryStatus === masteryFilter
+    const matchesExam =
+      examFilter === 'all'
+        ? true
+        : q.examTitles?.includes(examFilter) ?? false
+    return matchesMastery && matchesExam
   })
 
   return (
@@ -394,6 +524,7 @@ export function EnhancedIncorrectAnswersSection({
               Review and practice questions you've answered incorrectly
               {masteryFilter !== 'all' &&
                 ` • Showing ${masteryFilter} questions only`}
+              {examFilter !== 'all' && ` • Exam: ${examFilter}`}
             </p>
           </div>
           <div className="flex items-center space-x-3">
@@ -455,8 +586,29 @@ export function EnhancedIncorrectAnswersSection({
             </div>
           </div>
 
+          {/* Exam Filter */}
+          {examOptions.length > 0 && (
+            <div className="mb-4">
+              <span className="text-sm font-medium text-gray-700 mr-4">
+                Exam:
+              </span>
+              <select
+                value={examFilter}
+                onChange={(event) => setExamFilter(event.target.value)}
+                className="py-2 px-4 rounded-xl border border-purple-200 bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+              >
+                <option value="all">All Exams</option>
+                {examOptions.map((exam) => (
+                  <option key={exam} value={exam}>
+                    {exam}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Group By Controls */}
-          <div>
+        <div>
             <span className="text-sm font-medium text-gray-700 mr-4">
               Group by:
             </span>
@@ -600,6 +752,25 @@ export function EnhancedIncorrectAnswersSection({
 
                 {/* Topics and Footer */}
                 <div className="px-6 pb-6">
+                  {question.examTitles && question.examTitles.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {question.examTitles.slice(0, 3).map((title, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
+                        >
+                          <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-1.5" />
+                          {title}
+                        </span>
+                      ))}
+                      {question.examTitles.length > 3 && (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600 border border-blue-200">
+                          +{question.examTitles.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   {question.topic_tags && question.topic_tags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-3">
                       {question.topic_tags
@@ -645,250 +816,463 @@ export function EnhancedIncorrectAnswersSection({
                 </div>
 
                 {/* Expanded Question Details */}
-                {expandedQuestion === question.id && (
-                  <div className="border-t border-purple-200 bg-purple-50/30 rounded-b-2xl mx-0">
-                    <div className="p-6">
-                      <div className="space-y-4">
-                        {/* Full Question */}
-                        <div>
-                          <h5 className="font-medium text-gray-900 mb-2">
-                            Question:
-                          </h5>
-                          <div className="text-gray-700">
-                            {(() => {
-                              // HTML-first rendering for full question
-                              if (
-                                question.question_html &&
-                                !isEmptyHtml(question.question_html)
-                              ) {
-                                // Check if content contains LaTeX math expressions
-                                if (
-                                  question.question_html.includes('data-math')
-                                ) {
-                                  return (
-                                    <ContentRenderer
-                                      htmlContent={question.question_html}
-                                    />
-                                  )
-                                } else {
-                                  return renderHtmlContent(
-                                    question.question_html
-                                  )
-                                }
-                              } else {
-                                return (
-                                  <div className="whitespace-pre-wrap">
-                                    {question.question_text}
-                                  </div>
-                                )
-                              }
-                            })()}
-                          </div>
-                        </div>
+                {expandedQuestion === question.id &&
+                  (() => {
+                    const revealInfo = getRevealInfo(question.id)
+                    const userSelection = (userResponses[question.id] || '').trim()
+                    const normalizedCorrect = (question.correct_answer || '')
+                      .trim()
+                      .toUpperCase()
+                    const correctAnswers = parseCorrectAnswers({
+                      correct_answers: question.correct_answers,
+                      correct_answer: question.correct_answer,
+                    })
+                    const hasExplanation =
+                      !!question.explanation ||
+                      (question.explanation_html &&
+                        !isEmptyHtml(question.explanation_html))
 
-                        {/* Options and Correct Answer */}
-                        {question.question_type === 'multiple_choice' &&
-                          question.options && (
+                    const renderOptionValue = (key: string, value: any) => {
+                      if (
+                        question.options_html &&
+                        question.options_html[key] &&
+                        !isEmptyHtml(question.options_html[key])
+                      ) {
+                        const html = question.options_html[key]
+                        return html.includes('data-math') ? (
+                          <ContentRenderer htmlContent={html} />
+                        ) : (
+                          <span
+                            className="text-gray-900 leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: html }}
+                          />
+                        )
+                      }
+                      if (typeof value === 'string' && value.includes('<')) {
+                        return renderHtmlContent(value)
+                      }
+                      if (value && typeof value === 'object') {
+                        if ('text' in value && value.text) {
+                          if (
+                            typeof value.text === 'string' &&
+                            value.text.includes('<')
+                          ) {
+                            return renderHtmlContent(value.text)
+                          }
+                          return value.text
+                        }
+                        if ('html' in value && !isEmptyHtml(value.html)) {
+                          return renderHtmlContent(value.html)
+                        }
+                        return (
+                          <span className="whitespace-pre-wrap text-sm text-gray-600">
+                            {JSON.stringify(value, null, 2)}
+                          </span>
+                        )
+                      }
+                      return (
+                        <span className="whitespace-pre-wrap">
+                          {String(value)}
+                        </span>
+                      )
+                    }
+
+                    return (
+                      <div className="border-t border-purple-200 bg-purple-50/30 rounded-b-2xl mx-0">
+                        <div className="p-6">
+                          <div className="space-y-5">
                             <div>
                               <h5 className="font-medium text-gray-900 mb-2">
-                                Options:
+                                Question:
                               </h5>
-                              <div className="space-y-1">
-                                {Object.entries(question.options).map(
-                                  ([key, value]) => (
-                                    <div
-                                      key={key}
-                                      className={`p-2 rounded-lg ${
-                                        key === question.correct_answer
-                                          ? 'bg-purple-100 border border-purple-300'
-                                          : question.incorrectAttempts?.some(
-                                                (att) => att.user_answer === key
-                                              )
-                                            ? 'bg-red-100 border border-red-300'
-                                            : 'bg-gray-50'
-                                      }`}
-                                    >
-                                      <span className="font-medium">
-                                        {key}.
-                                      </span>{' '}
-                                      <span className="text-gray-900">
-                                        {(() => {
-                                          // Check if options_html exists and has this key
-                                          if (
-                                            question.options_html &&
-                                            question.options_html[key] &&
-                                            !isEmptyHtml(
-                                              question.options_html[key]
-                                            )
-                                          ) {
-                                            // If HTML content contains math expressions, render properly
-                                            if (
-                                              question.options_html[
-                                                key
-                                              ].includes('data-math')
-                                            ) {
-                                              return (
-                                                <ContentRenderer
-                                                  htmlContent={
-                                                    question.options_html[key]
-                                                  }
-                                                />
-                                              )
-                                            } else {
-                                              return (
-                                                <span
-                                                  dangerouslySetInnerHTML={{
-                                                    __html:
-                                                      question.options_html[
-                                                        key
-                                                      ],
-                                                  }}
-                                                />
-                                              )
-                                            }
-                                          } else {
-                                            // Fallback to regular text option
-                                            return value as string
-                                          }
-                                        })()}
-                                      </span>
-                                      {key === question.correct_answer && (
-                                        <span className="ml-2 text-purple-600 font-medium">
-                                          (Correct)
-                                        </span>
-                                      )}
-                                      {question.incorrectAttempts?.some(
-                                        (att) => att.user_answer === key
-                                      ) && (
-                                        <span className="ml-2 text-red-600 font-medium">
-                                          (Your Answer)
-                                        </span>
-                                      )}
-                                    </div>
-                                  )
-                                )}
-                              </div>
-                            </div>
-                          )}
-
-                        {/* Grid-in answer */}
-                        {question.question_type === 'grid_in' && (
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <h5 className="font-medium text-gray-900 mb-2">
-                                Correct Answer:
-                              </h5>
-                              <div className="p-2 rounded-lg bg-purple-100 border border-purple-300">
-                                <span className="font-medium text-purple-800">
-                                  {question.correct_answer}
-                                </span>
-                              </div>
-                            </div>
-                            <div>
-                              <h5 className="font-medium text-gray-900 mb-2">
-                                Your Answer:
-                              </h5>
-                              <div className="p-2 rounded-lg bg-red-100 border border-red-300">
-                                <span className="font-medium text-red-800">
-                                  {question.incorrectAttempts?.[0]
-                                    ?.user_answer || 'N/A'}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Explanation */}
-                        {(question.explanation ||
-                          (question.explanation_html &&
-                            !isEmptyHtml(question.explanation_html))) && (
-                          <div>
-                            <h5 className="font-medium text-gray-900 mb-2">
-                              Explanation:
-                            </h5>
-                            <div className="p-3 bg-purple-50 rounded-lg">
-                              <div className="text-gray-800">
+                              <div className="text-gray-700">
                                 {(() => {
-                                  // HTML-first rendering for explanation
                                   if (
-                                    question.explanation_html &&
-                                    !isEmptyHtml(question.explanation_html)
+                                    question.question_html &&
+                                    !isEmptyHtml(question.question_html)
                                   ) {
-                                    // Check if content contains LaTeX math expressions
                                     if (
-                                      question.explanation_html.includes(
+                                      question.question_html.includes(
                                         'data-math'
                                       )
                                     ) {
                                       return (
                                         <ContentRenderer
-                                          htmlContent={
-                                            question.explanation_html
-                                          }
+                                          htmlContent={question.question_html}
                                         />
                                       )
-                                    } else {
-                                      return renderHtmlContent(
-                                        question.explanation_html
-                                      )
                                     }
-                                  } else if (question.explanation) {
-                                    return (
-                                      <div className="whitespace-pre-wrap">
-                                        {question.explanation}
-                                      </div>
+                                    return renderHtmlContent(
+                                      question.question_html
                                     )
                                   }
-                                  return null
+                                  return (
+                                    <div className="whitespace-pre-wrap">
+                                      {question.question_text}
+                                    </div>
+                                  )
                                 })()}
                               </div>
                             </div>
-                          </div>
-                        )}
 
-                        {/* All Incorrect Attempts */}
-                        {question.incorrectAttempts &&
-                          question.incorrectAttempts.length > 1 && (
-                            <div>
-                              <h5 className="font-medium text-gray-900 mb-2">
-                                All Incorrect Attempts:
-                              </h5>
-                              <div className="space-y-2">
-                                {question.incorrectAttempts.map(
-                                  (attempt, index) => (
-                                    <div
-                                      key={attempt.id}
-                                      className="bg-red-50 border border-red-200 rounded p-2"
-                                    >
-                                      <div className="flex justify-between items-center">
-                                        <span className="text-sm">
-                                          <span className="font-medium">
-                                            Answer:
-                                          </span>{' '}
-                                          {attempt.user_answer}
-                                        </span>
-                                        <span className="text-xs text-gray-500">
-                                          {new Date(
-                                            attempt.answered_at
-                                          ).toLocaleDateString('en-US', {
-                                            year: 'numeric',
-                                            month: 'short',
-                                            day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                          })}
+                            {question.question_type === 'multiple_choice' &&
+                              question.options && (
+                                <div className="space-y-3">
+                                  <h5 className="font-medium text-gray-900">
+                                    답을 고르고 Submit을 누르면 정답이 공개돼요.
+                                  </h5>
+                                  <div className="space-y-2">
+                                    {Object.entries(question.options).map(
+                                      ([key, value]) => {
+                                        const optionKey = key.trim()
+                                        const isSelected =
+                                          userSelection.toUpperCase() ===
+                                          optionKey.toUpperCase()
+                                        const isCorrectOption =
+                                          normalizedCorrect.length > 0 &&
+                                          normalizedCorrect ===
+                                            optionKey.toUpperCase()
+
+                                        let optionClasses =
+                                          'flex items-start gap-3 p-3 border rounded-lg transition-colors'
+
+                                        if (revealInfo.revealed) {
+                                          if (isCorrectOption) {
+                                            optionClasses +=
+                                              ' bg-green-50 border-green-400 shadow-sm'
+                                          } else if (isSelected) {
+                                            optionClasses +=
+                                              ' bg-red-50 border-red-300 shadow-sm'
+                                          } else {
+                                            optionClasses +=
+                                              ' bg-white border-gray-200'
+                                          }
+                                        } else {
+                                          optionClasses += isSelected
+                                            ? ' bg-purple-50 border-purple-300 shadow-sm'
+                                            : ' bg-white border-gray-200 hover:border-purple-300'
+                                        }
+
+                                        return (
+                                          <label
+                                            key={key}
+                                            className={optionClasses}
+                                          >
+                                            <input
+                                              type="radio"
+                                              name={`mistake-retry-${question.id}`}
+                                              value={optionKey}
+                                              checked={isSelected}
+                                              onChange={() =>
+                                                handleMultipleChoiceSelection(
+                                                  question.id,
+                                                  optionKey
+                                                )
+                                              }
+                                              disabled={revealInfo.revealed}
+                                              className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500"
+                                            />
+                                            <div className="flex-1">
+                                              <div className="flex items-center gap-2 mb-1">
+                                                <span className="font-semibold text-gray-900">
+                                                  {key}.
+                                                </span>
+                                                {revealInfo.revealed &&
+                                                  isCorrectOption && (
+                                                    <span className="text-xs font-semibold text-green-700 uppercase tracking-wide">
+                                                      Correct
+                                                    </span>
+                                                  )}
+                                                {revealInfo.revealed &&
+                                                  isSelected &&
+                                                  !isCorrectOption && (
+                                                    <span className="text-xs font-semibold text-red-600">
+                                                      Your choice
+                                                    </span>
+                                                  )}
+                                                {!revealInfo.revealed &&
+                                                  isSelected && (
+                                                    <span className="text-xs font-medium text-purple-600">
+                                                      Selected
+                                                    </span>
+                                                  )}
+                                              </div>
+                                              <div className="text-gray-900 leading-relaxed">
+                                                {renderOptionValue(key, value)}
+                                              </div>
+                                            </div>
+                                          </label>
+                                        )
+                                      }
+                                    )}
+                                  </div>
+                                  <div className="flex flex-wrap items-center gap-3">
+                                    {!revealInfo.revealed ? (
+                                      <>
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            handleSubmitAnswer(question)
+                                          }
+                                          className="px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                          disabled={!userSelection}
+                                        >
+                                          Submit & Reveal Answer
+                                        </button>
+                                        {userSelection && (
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              handleResetQuestion(question.id)
+                                            }
+                                            className="px-3 py-2 text-sm font-medium text-purple-700 hover:text-purple-900"
+                                          >
+                                            Reset
+                                          </button>
+                                        )}
+                                      </>
+                                    ) : (
+                                      <>
+                                        <div
+                                          className={`px-4 py-2 rounded-lg text-sm font-medium border ${
+                                            revealInfo.isCorrect
+                                              ? 'bg-green-100 text-green-700 border-green-200'
+                                              : 'bg-red-100 text-red-700 border-red-200'
+                                          }`}
+                                        >
+                                          {revealInfo.isCorrect
+                                            ? '정답입니다! 계속 이렇게 해봐요.'
+                                            : `오답입니다. 정답은 ${question.correct_answer} 입니다.`}
+                                        </div>
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            handleResetQuestion(question.id)
+                                          }
+                                          className="px-3 py-2 text-sm font-medium text-purple-700 hover:text-purple-900"
+                                        >
+                                          Try Again
+                                        </button>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                            {question.question_type === 'grid_in' && (
+                              <div className="space-y-3">
+                                <h5 className="font-medium text-gray-900">
+                                  답을 입력하고 Submit을 누르면 정답이 공개돼요.
+                                </h5>
+                                <input
+                                  type="text"
+                                  value={userResponses[question.id] || ''}
+                                  onChange={(e) =>
+                                    handleGridInputChange(
+                                      question.id,
+                                      e.target.value
+                                    )
+                                  }
+                                  disabled={revealInfo.revealed}
+                                  placeholder="예: 3/4, 0.75"
+                                  className={`w-full p-3 text-lg border-2 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-purple-400 ${
+                                    revealInfo.revealed
+                                      ? 'bg-gray-100 border-gray-300 cursor-not-allowed'
+                                      : 'border-gray-300 bg-white'
+                                  }`}
+                                />
+                                <div className="flex flex-wrap items-center gap-3">
+                                  {!revealInfo.revealed ? (
+                                    <>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          handleSubmitAnswer(question)
+                                        }
+                                        className="px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled={!userSelection}
+                                      >
+                                        Submit & Reveal Answer
+                                      </button>
+                                      {userSelection && (
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            handleResetQuestion(question.id)
+                                          }
+                                          className="px-3 py-2 text-sm font-medium text-purple-700 hover:text-purple-900"
+                                        >
+                                          Reset
+                                        </button>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium border ${
+                                          revealInfo.isCorrect
+                                            ? 'bg-green-100 text-green-700 border-green-200'
+                                            : 'bg-red-100 text-red-700 border-red-200'
+                                        }`}
+                                      >
+                                        {revealInfo.isCorrect
+                                          ? '정답입니다! 계속 연습해 봐요.'
+                                          : '오답입니다. 아래의 정답을 확인해 보세요.'}
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          handleResetQuestion(question.id)
+                                        }
+                                        className="px-3 py-2 text-sm font-medium text-purple-700 hover:text-purple-900"
+                                      >
+                                        Try Again
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                                {revealInfo.revealed && (
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                      <h5 className="font-medium text-gray-900 mb-2">
+                                        Correct Answer:
+                                      </h5>
+                                      <div className="p-3 rounded-lg bg-purple-100 border border-purple-300">
+                                        <span className="font-semibold text-purple-800">
+                                          {correctAnswers.length > 0
+                                            ? correctAnswers.join(', ')
+                                            : question.correct_answer}
                                         </span>
                                       </div>
                                     </div>
-                                  )
+                                    <div>
+                                      <h5 className="font-medium text-gray-900 mb-2">
+                                        Your Answer:
+                                      </h5>
+                                      <div className="p-3 rounded-lg bg-white border border-gray-200">
+                                        <span className="font-semibold text-gray-800">
+                                          {userSelection ||
+                                            question.incorrectAttempts?.[0]
+                                              ?.user_answer ||
+                                            'N/A'}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
                                 )}
                               </div>
-                            </div>
-                          )}
+                            )}
+
+                            {hasExplanation &&
+                              (revealInfo.revealed ? (
+                                <div>
+                                  <h5 className="font-medium text-gray-900 mb-2">
+                                    Explanation:
+                                  </h5>
+                                  <div className="p-3 bg-purple-50 rounded-lg">
+                                    <div className="text-gray-800">
+                                      {(() => {
+                                        if (
+                                          question.explanation_html &&
+                                          !isEmptyHtml(
+                                            question.explanation_html
+                                          )
+                                        ) {
+                                          if (
+                                            question.explanation_html.includes(
+                                              'data-math'
+                                            )
+                                          ) {
+                                            return (
+                                              <ContentRenderer
+                                                htmlContent={
+                                                  question.explanation_html
+                                                }
+                                              />
+                                            )
+                                          }
+                                          return renderHtmlContent(
+                                            question.explanation_html
+                                          )
+                                        }
+                                        if (question.explanation) {
+                                          return (
+                                            <div className="whitespace-pre-wrap">
+                                              {question.explanation}
+                                            </div>
+                                          )
+                                        }
+                                        return null
+                                      })()}
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="p-3 bg-white border border-purple-100 rounded-lg text-sm text-purple-700">
+                                  해설은 답안을 제출한 뒤에 확인할 수 있어요.
+                                </div>
+                              ))}
+
+                            {question.incorrectAttempts &&
+                              question.incorrectAttempts.length > 1 && (
+                                <div>
+                                  <h5 className="font-medium text-gray-900 mb-2">
+                                    All Incorrect Attempts:
+                                  </h5>
+                                  <div className="space-y-2">
+                                    {question.incorrectAttempts.map(
+                                      (attempt, index) => (
+                                        <div
+                                          key={attempt.id}
+                                          className="bg-white border border-purple-100 rounded-lg p-3 space-y-1.5"
+                                        >
+                                          <div className="flex justify-between items-center text-sm text-gray-600">
+                                            <span className="font-medium text-gray-700">
+                                              Attempt #{index + 1}
+                                            </span>
+                                            <span className="text-xs text-gray-500">
+                                              {new Date(
+                                                attempt.answered_at
+                                              ).toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                              })}
+                                            </span>
+                                          </div>
+                                          {attempt.exam_title && (
+                                            <div className="text-xs text-blue-600 bg-blue-50 border border-blue-100 rounded px-2 py-1 inline-flex items-center gap-1">
+                                              <span className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
+                                              {attempt.exam_title}
+                                            </div>
+                                          )}
+                                          <div className="flex justify-between items-center text-sm text-gray-700">
+                                            <span>
+                                              Your answer:{' '}
+                                              <span className="font-semibold">
+                                                {attempt.user_answer}
+                                              </span>
+                                            </span>
+                                            <Link
+                                              href={`/student/results/${attempt.attempt_id}/review`}
+                                              className="text-purple-600 hover:text-purple-800 text-xs font-semibold"
+                                            >
+                                              Review Attempt
+                                            </Link>
+                                          </div>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                    )
+                  })()}
               </div>
             ))}
           </div>

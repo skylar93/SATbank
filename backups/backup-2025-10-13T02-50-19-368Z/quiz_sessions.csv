@@ -1,0 +1,7 @@
+"id","user_id","set_id","quiz_type","quiz_format","score_percentage","questions_total","questions_correct","completed_at"
+"43b0ddc8-6ae9-42a8-9b9d-f659bbf1e5e9","5b4c2783-8afa-420e-b3a5-f761b472a503","1","term_to_def","multiple_choice","","1","0","2025-08-25T22:22:36.522225+00:00"
+"4d485dcc-bbb1-4125-b1e4-f39c096119df","5b4c2783-8afa-420e-b3a5-f761b472a503","1","term_to_def","multiple_choice","","1","0","2025-08-25T22:22:36.60051+00:00"
+"6ddc811f-db0a-47a9-b8a2-c7d81c038b15","203dafeb-518f-4f26-8bb2-3552f22d5647","3","term_to_def","multiple_choice","","1","0","2025-09-12T22:28:34.121834+00:00"
+"ea13f1b3-5e3a-4e4e-8d15-974a568fa781","203dafeb-518f-4f26-8bb2-3552f22d5647","3","term_to_def","multiple_choice","100","1","1","2025-09-12T22:28:42.17+00:00"
+"a7c8d1f2-0108-49df-9cad-634e926ab57f","a401eb6c-89fe-4325-b0bc-f682c00f6f58","4","term_to_def","multiple_choice","","4","0","2025-10-04T19:30:00.563055+00:00"
+"c3b1fe6d-c575-49a6-82ec-0b0e6833bd47","a401eb6c-89fe-4325-b0bc-f682c00f6f58","4","term_to_def","multiple_choice","25","4","1","2025-10-04T19:30:21.62+00:00"
