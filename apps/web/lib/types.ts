@@ -135,7 +135,7 @@ export interface ExamFormData {
 
 export interface QuestionFormData {
   question_text: string
-  question_type: 'multiple_choice' | 'grid_in' | 'essay'
+  question_type: 'multiple_choice' | 'multiple_select' | 'grid_in' | 'essay'
   difficulty_level: 'easy' | 'medium' | 'hard'
   options: Record<string, any> | null
   correct_answer: string
@@ -181,7 +181,7 @@ export interface SearchFilters {
   query: string
   module_type: ModuleType | 'all'
   difficulty_level: 'easy' | 'medium' | 'hard' | 'all'
-  question_type: 'multiple_choice' | 'grid_in' | 'essay' | 'all'
+  question_type: 'multiple_choice' | 'multiple_select' | 'grid_in' | 'essay' | 'all'
 }
 
 // Mistake Bank Types

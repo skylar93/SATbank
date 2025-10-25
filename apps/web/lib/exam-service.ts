@@ -29,7 +29,7 @@ export interface Question {
   exam_id: string
   module_type: ModuleType
   question_number: number
-  question_type: 'multiple_choice' | 'grid_in' | 'essay'
+  question_type: 'multiple_choice' | 'multiple_select' | 'grid_in' | 'essay'
   difficulty_level: 'easy' | 'medium' | 'hard'
   question_text: string
   question_html?: string | null // HTML version of question content
