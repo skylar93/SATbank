@@ -55,6 +55,7 @@ export default function AdminAssignmentsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [examSearchTerm, setExamSearchTerm] = useState('')
   const [showAllExams, setShowAllExams] = useState(false)
+  const [showAssignedExams, setShowAssignedExams] = useState(false)
   const [studentSearchTerm, setStudentSearchTerm] = useState('')
 
   // Edit assignment states
@@ -91,13 +92,17 @@ export default function AdminAssignmentsPage() {
     return map
   }, [exams])
 
-  const isPriorityExam = (exam: Exam) => {
+  const getModuleCount = (exam: Exam) => {
     const composition = exam.module_composition || {}
-    const moduleCount = Object.values(composition).filter(Boolean).length
-    if (exam.template_id) return true
-    if (moduleCount > 1) return true
-    return exam.is_module_source !== true
+    return Object.values(composition).filter(Boolean).length
   }
+
+  const isTemplateExam = (exam: Exam) => Boolean(exam.template_id)
+
+  const isMultiModuleExam = (exam: Exam) => getModuleCount(exam) > 1
+
+  const isPriorityExam = (exam: Exam) =>
+    isTemplateExam(exam) || isMultiModuleExam(exam)
 
   useEffect(() => {
     if (user) {
@@ -312,24 +317,45 @@ export default function AdminAssignmentsPage() {
   const filteredExams = useMemo(() => {
     const normalizedSearch = examSearchTerm.trim().toLowerCase()
     const bypassPriority = showAllExams || normalizedSearch.length > 0
+    const hideAlreadyAssigned =
+      !showAssignedExams && selectedStudents.length > 0
+
+    const examMatchesSearch = (exam: Exam) => {
+      if (!normalizedSearch) return true
+      const title = exam.title?.toLowerCase() || ''
+      const description = exam.description?.toLowerCase() || ''
+      return title.includes(normalizedSearch) || description.includes(normalizedSearch)
+    }
+
+    const examPassesPriority = (exam: Exam) =>
+      bypassPriority || isPriorityExam(exam)
+
+    const examNotAssignedToAllSelected = (exam: Exam) => {
+      if (!hideAlreadyAssigned) return true
+      return !selectedStudents.every((studentId) => {
+        const assignedExamIds = assignmentsByStudent.get(studentId)
+        return assignedExamIds ? assignedExamIds.has(exam.id) : false
+      })
+    }
 
     return exams
-      .filter((exam) => {
-        if (!normalizedSearch) return true
-        const title = exam.title?.toLowerCase() || ''
-        const description = exam.description?.toLowerCase() || ''
-        return (
-          title.includes(normalizedSearch) || description.includes(normalizedSearch)
-        )
-      })
-      .filter((exam) => bypassPriority || isPriorityExam(exam))
+      .filter((exam) => examMatchesSearch(exam))
+      .filter((exam) => examPassesPriority(exam))
+      .filter((exam) => examNotAssignedToAllSelected(exam))
       .sort((a, b) => {
         const priorityScore =
           Number(isPriorityExam(b)) - Number(isPriorityExam(a))
         if (priorityScore !== 0) return priorityScore
         return a.title.localeCompare(b.title)
       })
-  }, [exams, examSearchTerm, showAllExams])
+  }, [
+    exams,
+    examSearchTerm,
+    showAllExams,
+    showAssignedExams,
+    selectedStudents,
+    assignmentsByStudent,
+  ])
 
   const filteredStudents = students.filter(
     (student) =>
@@ -553,21 +579,46 @@ export default function AdminAssignmentsPage() {
                     />
                   </div>
                 </div>
-                <div className="flex items-center justify-between mb-3">
-                  <label className="inline-flex items-center text-sm text-gray-600">
-                    <input
-                      type="checkbox"
-                      checked={showAllExams}
-                      onChange={(e) => setShowAllExams(e.target.checked)}
-                      className="mr-2 text-purple-600 focus:ring-purple-500"
-                    />
-                    <span>Show single-module exams</span>
-                  </label>
-                  {!showAllExams && (
-                    <span className="text-xs text-gray-500">
-                      Showing multi-module & template exams by default
-                    </span>
-                  )}
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <label className="inline-flex items-center text-sm text-gray-600">
+                      <input
+                        type="checkbox"
+                        checked={showAllExams}
+                        onChange={(e) => setShowAllExams(e.target.checked)}
+                        className="mr-2 text-purple-600 focus:ring-purple-500"
+                      />
+                      <span>Show single-module exams</span>
+                    </label>
+                    {selectedStudents.length > 0 && (
+                      <label className="inline-flex items-center text-sm text-gray-600">
+                        <input
+                          type="checkbox"
+                          checked={showAssignedExams}
+                          onChange={(e) =>
+                            setShowAssignedExams(e.target.checked)
+                          }
+                          className="mr-2 text-purple-600 focus:ring-purple-500"
+                        />
+                        <span>Include exams already assigned</span>
+                      </label>
+                    )}
+                  </div>
+                  {(() => {
+                    const hints: string[] = []
+                    if (!showAllExams) {
+                      hints.push('Showing multi-module & template exams by default')
+                    }
+                    if (!showAssignedExams && selectedStudents.length > 0) {
+                      hints.push('Hiding exams already assigned to all selected students')
+                    }
+                    if (hints.length === 0) return null
+                    return (
+                      <span className="text-xs text-gray-500">
+                        {hints.join(' • ')}
+                      </span>
+                    )
+                  })()}
                 </div>
                 <div className="border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
                   {filteredExams.length === 0 ? (

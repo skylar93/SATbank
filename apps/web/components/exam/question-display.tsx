@@ -1419,7 +1419,7 @@ export function QuestionDisplay({
                   <span className="font-semibold text-purple-700">
                     {uppercaseKey}
                   </span>
-                  <div className="flex-1 text-gray-900">
+                  <div className="flex-1 text-gray-900 leading-relaxed [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_p]:my-1">
                     {optionValue
                       ? renderOptionContent(optionValue, uppercaseKey)
                       : renderTextWithFormattingAndMath(answer)}
@@ -1438,7 +1438,7 @@ export function QuestionDisplay({
           <h4 className="font-semibold text-purple-800 mb-2">
             Admin Preview · Acceptable Answers
           </h4>
-          <div className="text-gray-900">
+          <div className="text-gray-900 leading-relaxed [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_p]:my-1">
             {formatCorrectAnswersDisplay(correctAnswers)}
           </div>
         </div>
@@ -1450,7 +1450,7 @@ export function QuestionDisplay({
         <h4 className="font-semibold text-purple-800 mb-2">
           Admin Preview · Correct Answer
         </h4>
-        <div className="text-gray-900">
+        <div className="text-gray-900 leading-relaxed [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_p]:my-1">
           {formatCorrectAnswersDisplay(correctAnswers)}
         </div>
       </div>

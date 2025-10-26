@@ -23,6 +23,7 @@ import {
   WrenchScrewdriverIcon,
   Cog6ToothIcon,
   LanguageIcon,
+  EyeIcon,
 } from '@heroicons/react/24/outline'
 
 const QUICK_TEST_EMAIL = 'indeliblefantasy@gmail.com'
@@ -275,14 +276,14 @@ function SidebarContent({
       {/* User section */}
       <div className="flex-shrink-0 p-3 border-t border-gray-100 overflow-hidden">
         <div
-          className={`flex items-center ${!isSidebarOpen ? 'justify-center' : ''}`}
+          className={`flex ${isSidebarOpen ? 'items-center' : 'flex-col items-center space-y-2'}`}
         >
           <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center shadow-md">
             <span className="text-white text-sm font-bold">
               {user.profile?.full_name?.charAt(0) || 'U'}
             </span>
           </div>
-          {isSidebarOpen && (
+          {isSidebarOpen ? (
             <div className="ml-3 flex-1 min-w-0">
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
@@ -295,45 +296,89 @@ function SidebarContent({
                     </span>
                   )}
                 </div>
-                <button
-                  onClick={handleSignOut}
-                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1 transition-colors flex-shrink-0"
-                >
-                  <span className="sr-only">Sign out</span>
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                <div className="flex items-center gap-1">
+                  {isAdmin && (
+                    <button
+                      onClick={handleQuickImpersonation}
+                      disabled={quickImpersonationLoading}
+                      aria-label={`View as ${QUICK_TEST_EMAIL}`}
+                      title={`Open student view as ${QUICK_TEST_EMAIL}`}
+                      className={`text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg p-1 transition-colors ${
+                        quickImpersonationLoading ? 'opacity-60 cursor-wait' : ''
+                      }`}
+                    >
+                      <EyeIcon
+                        className={`w-4 h-4 ${
+                          quickImpersonationLoading ? 'animate-pulse' : ''
+                        }`}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  )}
+                  <button
+                    onClick={handleSignOut}
+                    className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1 transition-colors flex-shrink-0"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                    />
-                  </svg>
-                </button>
+                    <span className="sr-only">Sign out</span>
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              {isAdmin && (
+                <button
+                  onClick={handleQuickImpersonation}
+                  disabled={quickImpersonationLoading}
+                  aria-label={`View as ${QUICK_TEST_EMAIL}`}
+                  title={`Open student view as ${QUICK_TEST_EMAIL}`}
+                  className={`text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg p-1 transition-colors ${
+                    quickImpersonationLoading ? 'opacity-60 cursor-wait' : ''
+                  }`}
+                >
+                  <EyeIcon
+                    className={`w-4 h-4 ${
+                      quickImpersonationLoading ? 'animate-pulse' : ''
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+              )}
+              <button
+                onClick={handleSignOut}
+                className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1 transition-colors flex-shrink-0"
+              >
+                <span className="sr-only">Sign out</span>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+              </button>
             </div>
           )}
         </div>
-        {isAdmin && (
-          <button
-            onClick={handleQuickImpersonation}
-            disabled={quickImpersonationLoading}
-            className={`mt-3 w-full px-3 py-2 text-sm font-medium rounded-lg border transition ${
-              quickImpersonationLoading
-                ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                : 'bg-violet-50 text-violet-700 border-violet-100 hover:bg-violet-100 hover:border-violet-200'
-            }`}
-            title={`Open student view as ${QUICK_TEST_EMAIL}`}
-          >
-            {quickImpersonationLoading
-              ? 'Opening student view...'
-              : 'View as skylar2'}
-          </button>
-        )}
       </div>
     </div>
   )
