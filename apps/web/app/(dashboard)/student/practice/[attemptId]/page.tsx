@@ -48,6 +48,7 @@ export default function PracticeSession() {
     showExplanations: true,
     timeLimit: 0,
   })
+  const isMistakeReviewRef = useRef(false)
   const [loading, setLoading] = useState(true)
   const [sessionStartTime, setSessionStartTime] = useState<number>(Date.now())
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now())
@@ -80,7 +81,33 @@ export default function PracticeSession() {
       }
 
       const practiceData = JSON.parse(practiceDataStr)
-      setPracticeSettings(practiceData.settings)
+      const rawSettings: PracticeSettings =
+        practiceData.settings && typeof practiceData.settings === 'object'
+          ? practiceData.settings
+          : {}
+
+      const normalizedSettings: PracticeSettings = {
+        shuffleQuestions:
+          typeof rawSettings.shuffleQuestions === 'boolean'
+            ? rawSettings.shuffleQuestions
+            : true,
+        showExplanations:
+          typeof rawSettings.showExplanations === 'boolean'
+            ? rawSettings.showExplanations
+            : true,
+        timeLimit:
+          typeof rawSettings.timeLimit === 'number'
+            ? rawSettings.timeLimit
+            : 0,
+        isMistakeReview:
+          rawSettings.isMistakeReview ??
+          practiceData.isMistakeReview ??
+          false,
+      }
+
+      const isMistakeReviewMode = Boolean(normalizedSettings.isMistakeReview)
+      isMistakeReviewRef.current = isMistakeReviewMode
+      setPracticeSettings(normalizedSettings)
 
       // Fetch questions for this practice session
       const { data: questionsData, error: questionsError } = await supabase
@@ -92,7 +119,7 @@ export default function PracticeSession() {
 
       // Apply question order based on settings
       let orderedQuestions = questionsData || []
-      if (practiceData.settings.shuffleQuestions) {
+      if (normalizedSettings.shuffleQuestions) {
         // Questions are already shuffled in the practice data
         orderedQuestions = practiceData.questions
           .map((id: string) => questionsData?.find((q) => q.id === id))
@@ -199,7 +226,8 @@ export default function PracticeSession() {
       userAnswer: storedAnswer,
       isCorrect,
     })
-    setShouldShowCorrectAnswer(true)
+    const isMistakeReview = isMistakeReviewRef.current
+    setShouldShowCorrectAnswer(isCorrect || !isMistakeReview)
     setShowAnswerReveal(true)
   }, [
     attemptId,

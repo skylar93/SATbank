@@ -96,11 +96,7 @@ export function AnswerRevealCard({
               isCorrect ? 'text-green-600' : 'text-red-600'
             }`}
           >
-            {isCorrect
-              ? 'Well done!'
-              : showCorrectAnswer
-                ? "Don't worry, keep practicing!"
-                : 'Try a different answer!'}
+            {isCorrect ? 'Well done!' : "Don't worry, keep practicing!"}
           </p>
         </div>
       </div>

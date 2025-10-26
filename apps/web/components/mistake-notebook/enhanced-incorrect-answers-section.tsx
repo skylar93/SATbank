@@ -370,6 +370,7 @@ export function EnhancedIncorrectAnswersSection({
           timeLimit: 0,
           isMistakeReview: true,
         },
+        isMistakeReview: true,
       }
 
       localStorage.setItem(
@@ -418,6 +419,7 @@ export function EnhancedIncorrectAnswersSection({
           timeLimit: 0,
           isMistakeReview: true,
         },
+        isMistakeReview: true,
       }
 
       localStorage.setItem(
