@@ -524,6 +524,7 @@ export function ExamsListClient() {
                                 exam={exam}
                                 openAnswerModal={openAnswerModal}
                                 onExamDeleted={fetchExamsOptimized}
+                                onExamUpdated={fetchExamsOptimized}
                               />
                             ))}
                         </>
@@ -558,6 +559,7 @@ export function ExamsListClient() {
                                 exam={exam}
                                 openAnswerModal={openAnswerModal}
                                 onExamDeleted={fetchExamsOptimized}
+                                onExamUpdated={fetchExamsOptimized}
                               />
                             ))}
                         </>
@@ -638,6 +640,7 @@ export function ExamsListClient() {
                                           exam={exam}
                                           openAnswerModal={openAnswerModal}
                                           onExamDeleted={fetchExamsOptimized}
+                                          onExamUpdated={fetchExamsOptimized}
                                         />
                                       )
                                     )}
@@ -676,6 +679,7 @@ export function ExamsListClient() {
                                           exam={exam}
                                           openAnswerModal={openAnswerModal}
                                           onExamDeleted={fetchExamsOptimized}
+                                          onExamUpdated={fetchExamsOptimized}
                                         />
                                       )
                                     )}
@@ -717,6 +721,7 @@ export function ExamsListClient() {
                                           exam={exam}
                                           openAnswerModal={openAnswerModal}
                                           onExamDeleted={fetchExamsOptimized}
+                                          onExamUpdated={fetchExamsOptimized}
                                         />
                                       )
                                     )}

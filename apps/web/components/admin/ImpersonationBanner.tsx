@@ -1,6 +1,10 @@
 'use client'
 import { useAuth } from '@/contexts/auth-context'
-import { useImpersonation } from '@/hooks/use-impersonation'
+import {
+  useImpersonation,
+  IMPERSONATION_EVENT,
+  IMPERSONATION_DATA_KEY,
+} from '@/hooks/use-impersonation'
 import { useState, useEffect } from 'react'
 
 export function ImpersonationBanner() {
@@ -31,25 +35,34 @@ export function ImpersonationBanner() {
   useEffect(() => {
     if (!isClient) return
 
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'impersonation_data') {
-        const data = getImpersonationData()
-        setImpersonationData(data)
+    const updateImpersonationState = () => {
+      const data = getImpersonationData()
+      setImpersonationData(data)
 
-        // Update CSS class for impersonation styling
-        if (data) {
-          document.body.classList.add('impersonation-active')
-        } else {
-          document.body.classList.remove('impersonation-active')
-        }
+      if (data) {
+        document.body.classList.add('impersonation-active')
+      } else {
+        document.body.classList.remove('impersonation-active')
       }
     }
 
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === IMPERSONATION_DATA_KEY) {
+        updateImpersonationState()
+      }
+    }
+
+    const handleImpersonationEvent = (_event: Event) => {
+      updateImpersonationState()
+    }
+
     window.addEventListener('storage', handleStorageChange)
+    window.addEventListener(IMPERSONATION_EVENT, handleImpersonationEvent)
 
     return () => {
       document.body.classList.remove('impersonation-active')
       window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener(IMPERSONATION_EVENT, handleImpersonationEvent)
     }
   }, [isClient, getImpersonationData]) // Stable dependencies
 

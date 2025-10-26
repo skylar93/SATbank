@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '../contexts/auth-context'
 import { useSidebar } from '../contexts/sidebar-context'
+import { useImpersonation } from '../hooks/use-impersonation'
+import { supabase } from '../lib/supabase'
 import {
   ChartBarIcon,
   DocumentTextIcon,
@@ -22,6 +24,8 @@ import {
   Cog6ToothIcon,
   LanguageIcon,
 } from '@heroicons/react/24/outline'
+
+const QUICK_TEST_EMAIL = 'indeliblefantasy@gmail.com'
 
 interface SidebarItem {
   name: string
@@ -142,6 +146,57 @@ function SidebarContent({
   isSidebarOpen,
 }: SidebarContentProps) {
   const { setIsSidebarOpen } = useSidebar()
+  const { startImpersonation } = useImpersonation()
+  const [quickStudent, setQuickStudent] = useState<{
+    id: string
+    name: string | null
+  } | null>(null)
+  const [quickImpersonationLoading, setQuickImpersonationLoading] =
+    useState(false)
+
+  const handleQuickImpersonation = async () => {
+    if (quickImpersonationLoading) return
+
+    try {
+      setQuickImpersonationLoading(true)
+
+      let student = quickStudent
+
+      if (!student) {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('id, full_name')
+          .eq('role', 'student')
+          .eq('email', QUICK_TEST_EMAIL)
+          .maybeSingle()
+
+        if (error) {
+          throw error
+        }
+
+        if (!data) {
+          throw new Error(
+            `No student account found for ${QUICK_TEST_EMAIL}. Please verify the email.`
+          )
+        }
+
+        student = { id: data.id, name: data.full_name ?? null }
+        setQuickStudent(student)
+      }
+
+      await startImpersonation(student.id)
+    } catch (error: unknown) {
+      console.error('Quick impersonation failed:', error)
+      alert(
+        error instanceof Error
+          ? error.message
+          :
+          'Failed to start impersonation. Please try again or check the console for details.'
+      )
+    } finally {
+      setQuickImpersonationLoading(false)
+    }
+  }
 
   return (
     <div className="flex flex-col w-full h-full bg-white border-r border-gray-100 shadow-sm overflow-x-visible">
@@ -263,6 +318,22 @@ function SidebarContent({
             </div>
           )}
         </div>
+        {isAdmin && (
+          <button
+            onClick={handleQuickImpersonation}
+            disabled={quickImpersonationLoading}
+            className={`mt-3 w-full px-3 py-2 text-sm font-medium rounded-lg border transition ${
+              quickImpersonationLoading
+                ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                : 'bg-violet-50 text-violet-700 border-violet-100 hover:bg-violet-100 hover:border-violet-200'
+            }`}
+            title={`Open student view as ${QUICK_TEST_EMAIL}`}
+          >
+            {quickImpersonationLoading
+              ? 'Opening student view...'
+              : 'View as skylar2'}
+          </button>
+        )}
       </div>
     </div>
   )

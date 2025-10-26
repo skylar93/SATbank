@@ -36,17 +36,75 @@ interface ExamRowProps {
   exam: ExamWithCurves
   openAnswerModal: (examId: string, examTitle: string) => void
   onExamDeleted?: () => void
+  onExamUpdated?: () => void
 }
 
 export function ExamRow({
   exam,
   openAnswerModal,
   onExamDeleted,
+  onExamUpdated,
 }: ExamRowProps) {
   const [isExpanded, setIsExpanded] = usePersistentState(`exam-row-expanded-${exam.id}`, false)
   const [allCurves, setAllCurves] = useState<ScoringCurve[]>([])
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isSavingDetails, setIsSavingDetails] = useState(false)
+  const [titleDraft, setTitleDraft] = useState(exam.title)
+  const [descriptionDraft, setDescriptionDraft] = useState(exam.description || '')
+
+  useEffect(() => {
+    setTitleDraft(exam.title)
+    setDescriptionDraft(exam.description || '')
+  }, [exam.id, exam.title, exam.description])
+
+  const trimmedTitle = titleDraft.trim()
+  const trimmedDescription = descriptionDraft.trim()
+  const originalTitle = exam.title.trim()
+  const originalDescription = (exam.description || '').trim()
+  const hasDetailsChanged =
+    trimmedTitle !== originalTitle || trimmedDescription !== originalDescription
+
+  const handleResetDetails = () => {
+    setTitleDraft(exam.title)
+    setDescriptionDraft(exam.description || '')
+  }
+
+  const handleSaveDetails = async () => {
+    if (!trimmedTitle) {
+      alert('Exam name is required.')
+      return
+    }
+
+    setIsSavingDetails(true)
+    try {
+      const { error } = await supabase
+        .from('exams')
+        .update({
+          title: trimmedTitle,
+          description: trimmedDescription ? trimmedDescription : null,
+        })
+        .eq('id', exam.id)
+
+      if (error) {
+        console.error('Error updating exam details:', error)
+        alert('Failed to update exam details. Please try again.')
+        return
+      }
+
+      alert('Exam details updated successfully!')
+      setTitleDraft(trimmedTitle)
+      setDescriptionDraft(trimmedDescription)
+      if (onExamUpdated) {
+        await onExamUpdated()
+      }
+    } catch (error) {
+      console.error('Error updating exam details:', error)
+      alert('Failed to update exam details. Please try again.')
+    } finally {
+      setIsSavingDetails(false)
+    }
+  }
 
   // Fetch all scoring curves when component mounts
   useEffect(() => {
@@ -191,6 +249,57 @@ export function ExamRow({
         <tr className="bg-gray-50">
           <td colSpan={7} className="px-6 py-3">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="lg:col-span-2">
+                <h5 className="text-xs font-medium text-gray-700 mb-2">
+                  Exam Details
+                </h5>
+                <div className="bg-white rounded border p-3 space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Exam Name
+                    </label>
+                    <input
+                      type="text"
+                      value={titleDraft}
+                      onChange={(e) => setTitleDraft(e.target.value)}
+                      className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="Enter exam name"
+                      disabled={isSavingDetails}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      value={descriptionDraft}
+                      onChange={(e) => setDescriptionDraft(e.target.value)}
+                      className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      rows={3}
+                      placeholder="Optional description"
+                      disabled={isSavingDetails}
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-2">
+                    <button
+                      type="button"
+                      onClick={handleResetDetails}
+                      disabled={!hasDetailsChanged || isSavingDetails}
+                      className="px-3 py-1.5 text-xs rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveDetails}
+                      disabled={!hasDetailsChanged || isSavingDetails}
+                      className="px-3 py-1.5 text-xs rounded bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSavingDetails ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </div>
+                </div>
+              </div>
               <div>
                 <h5 className="text-xs font-medium text-gray-700 mb-2">
                   Scoring Configuration
