@@ -13,8 +13,54 @@ import {
 import { ModernScoreProgress, StatsCard } from '../modern-charts'
 import { Calendar } from '../calendar'
 import SmartReviewWidget from './SmartReviewWidget'
-import { ChartBarIcon, FireIcon } from '@heroicons/react/24/outline'
+import {
+  ChartBarIcon,
+  ChevronDownIcon,
+  FireIcon,
+} from '@heroicons/react/24/outline'
 import { formatTimeAgo } from '../../lib/utils'
+
+interface AssignmentTask {
+  assignmentId: string
+  examId: string
+  examTitle: string
+  status: 'not_started' | 'in_progress' | 'completed'
+  assignedAt: string | null
+  dueDate: string | null
+  lastActivityAt: string | null
+  isOverdue: boolean
+  isDueSoon: boolean
+  progressPercent: number
+  totalQuestions: number | null
+  estimatedMinutes: number | null
+}
+
+interface MistakeSummary {
+  total: number
+  unmastered: number
+  mastered: number
+  lastReviewedAt: string | null
+  countsByExam: Array<{
+    examId: string | null
+    examTitle: string
+    count: number
+  }>
+  countsByModule: Array<{
+    module: string
+    count: number
+  }>
+}
+
+interface VocabSummary {
+  dueToday: number
+  totalWords: number
+  nextReviewAt: string | null
+  reviewSets: Array<{
+    id: number | string
+    title: string
+    count: number
+  }>
+}
 
 interface DashboardData {
   overallStats: {
@@ -43,6 +89,9 @@ interface DashboardData {
     writing: number
     math: number
   }
+  assignments: AssignmentTask[]
+  mistakeSummary: MistakeSummary
+  vocabSummary: VocabSummary
 }
 
 interface DashboardClientProps {
@@ -56,6 +105,9 @@ export default function DashboardClient({
 }: DashboardClientProps) {
   const { user } = useAuth()
   const [loading, setLoading] = useState(!initialData)
+  const [expandedCard, setExpandedCard] = useState<
+    'assignments' | 'mistakes' | 'vocab' | null
+  >(null)
 
   // Apply impersonation padding immediately on mount
   useEffect(() => {
@@ -85,6 +137,21 @@ export default function DashboardClient({
       practiceTests: [0, 0, 0, 0, 0, 0, 0],
     },
     subjectScores: { reading: 0, writing: 0, math: 0 },
+    assignments: [],
+    mistakeSummary: {
+      total: 0,
+      unmastered: 0,
+      mastered: 0,
+      lastReviewedAt: null,
+      countsByExam: [],
+      countsByModule: [],
+    },
+    vocabSummary: {
+      dueToday: 0,
+      totalWords: 0,
+      nextReviewAt: null,
+      reviewSets: [],
+    },
   }
 
   const formatDate = (dateString: string) => {
@@ -144,6 +211,392 @@ export default function DashboardClient({
 
   if (!user) return null
 
+  const formatDueLabel = (dueDate: string | null, isOverdue: boolean) => {
+    if (!dueDate) return 'No due date'
+    const due = new Date(dueDate)
+    const diffMs = due.getTime() - Date.now()
+    const dayMs = 1000 * 60 * 60 * 24
+    const diffDays = Math.round(diffMs / dayMs)
+
+    if (isOverdue) {
+      return diffDays === 0
+        ? 'Due today'
+        : `${Math.abs(diffDays)}d overdue`
+    }
+
+    if (diffDays === 0) return 'Due today'
+    if (diffDays === 1) return 'Due tomorrow'
+    if (diffDays < 7) return `Due in ${diffDays}d`
+    return due.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }
+
+  const formatRelativeTime = (isoString: string) => {
+    const target = new Date(isoString).getTime()
+    const diffMs = target - Date.now()
+    if (diffMs <= 0) return 'Now'
+    const minutes = Math.floor(diffMs / (1000 * 60))
+    if (minutes < 60) return `${minutes}m`
+    const hours = Math.floor(minutes / 60)
+    if (hours < 24) {
+      const remainingMinutes = minutes % 60
+      return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`
+    }
+    const days = Math.floor(hours / 24)
+    return `${days}d`
+  }
+
+  const assignmentsSorted = [...data.assignments].sort((a, b) => {
+    if (a.status === 'completed' && b.status !== 'completed') return 1
+    if (b.status === 'completed' && a.status !== 'completed') return -1
+    if (a.isOverdue && !b.isOverdue) return -1
+    if (!a.isOverdue && b.isOverdue) return 1
+    const aDue = a.dueDate ? new Date(a.dueDate).getTime() : Number.POSITIVE_INFINITY
+    const bDue = b.dueDate ? new Date(b.dueDate).getTime() : Number.POSITIVE_INFINITY
+    if (aDue !== bDue) return aDue - bDue
+    const aAssigned = a.assignedAt ? new Date(a.assignedAt).getTime() : Number.POSITIVE_INFINITY
+    const bAssigned = b.assignedAt ? new Date(b.assignedAt).getTime() : Number.POSITIVE_INFINITY
+    return aAssigned - bAssigned
+  })
+
+  const incompleteAssignments = assignmentsSorted.filter(
+    (assignment) => assignment.status !== 'completed'
+  )
+  const overdueAssignments = incompleteAssignments.filter(
+    (assignment) => assignment.isOverdue
+  )
+  const assignmentPreview = incompleteAssignments.slice(0, 3)
+
+  const assignmentSummaryText = (() => {
+    if (incompleteAssignments.length === 0) {
+      return 'All assigned exams are completed!'
+    }
+    if (overdueAssignments.length > 0) {
+      const count = overdueAssignments.length
+      return `${count} assigned exam${count === 1 ? '' : 's'} are overdue. Jump back in now.`
+    }
+    const nextDue = assignmentPreview[0]
+    if (nextDue?.dueDate) {
+      return `Next exam due: ${formatDueLabel(nextDue.dueDate, nextDue.isOverdue)}.`
+    }
+    const remaining = incompleteAssignments.length
+    return `${remaining} assigned exam${remaining === 1 ? '' : 's'} remaining.`
+  })()
+
+  const renderAssignmentDetails = () => {
+    if (assignmentPreview.length === 0) {
+      return (
+        <div className="rounded-xl bg-white border border-violet-100 p-4 text-sm text-gray-600">
+          All assigned exams are done. When new ones arrive, you’ll see them here.
+        </div>
+      )
+    }
+
+    return (
+      <div className="space-y-3">
+        {assignmentPreview.map((assignment) => (
+          <div
+            key={assignment.assignmentId}
+            className="rounded-xl border border-violet-100 bg-white p-4 shadow-sm"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold text-gray-900">
+                  {assignment.examTitle}
+                </div>
+                <div className="mt-1 text-xs text-gray-500">
+                  {assignment.totalQuestions
+                    ? `${assignment.totalQuestions} questions`
+                    : 'Question count unavailable'}
+                  {assignment.estimatedMinutes
+                    ? ` • ~${assignment.estimatedMinutes} min`
+                    : ''}
+                </div>
+              </div>
+              <span
+                className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${
+                  assignment.isOverdue
+                    ? 'bg-red-100 text-red-700'
+                    : assignment.status === 'in_progress'
+                      ? 'bg-violet-100 text-violet-700'
+                      : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                {assignment.isOverdue
+                  ? 'Overdue'
+                  : assignment.status === 'in_progress'
+                    ? 'In progress'
+                    : 'Not started'}
+              </span>
+            </div>
+
+            <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
+              <span>{formatDueLabel(assignment.dueDate, assignment.isOverdue)}</span>
+              {assignment.lastActivityAt && (
+                <span>
+                  Last activity:{' '}
+                  {new Date(assignment.lastActivityAt).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </span>
+              )}
+            </div>
+
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-violet-100">
+              <div
+                className={`h-full ${
+                  assignment.status === 'completed' ? 'bg-emerald-500' : 'bg-violet-500'
+                }`}
+                style={{ width: `${assignment.progressPercent}%` }}
+              />
+            </div>
+
+            <div className="mt-3 flex items-center justify-between">
+              <span className="text-xs font-medium text-violet-600">
+                {assignment.status === 'completed'
+                  ? 'Completed'
+                  : `${assignment.progressPercent}% complete`}
+              </span>
+              <Link
+                href={`/student/exam/${assignment.examId}`}
+                className="text-xs font-semibold text-violet-600 hover:text-violet-700"
+              >
+                {assignment.status === 'in_progress' ? 'Continue' : 'Start'} →
+              </Link>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  const mistakeSummary = data.mistakeSummary
+  const topMistakeExam = mistakeSummary.countsByExam[0]
+  const topMistakeModule = mistakeSummary.countsByModule[0]
+
+  const mistakeSummaryText = (() => {
+    if (mistakeSummary.unmastered === 0) {
+      return 'You’ve mastered every mistake! Keep it up 🎉'
+    }
+    if (topMistakeExam) {
+      const count = topMistakeExam.count
+      return `Review ${count} question${count === 1 ? '' : 's'} from ${topMistakeExam.examTitle}.`
+    }
+    if (topMistakeModule) {
+      const count = topMistakeModule.count
+      return `Focus on ${count} question${count === 1 ? '' : 's'} in ${topMistakeModule.module} next.`
+    }
+    const count = mistakeSummary.unmastered
+    return `${count} mistake question${count === 1 ? '' : 's'} still need attention.`
+  })()
+
+  const renderMistakeDetails = () => {
+    if (mistakeSummary.total === 0) {
+      return (
+        <div className="rounded-xl bg-white border border-rose-100 p-4 text-sm text-gray-600">
+          No mistakes logged yet. Once you miss questions, they’ll appear here automatically.
+        </div>
+      )
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="rounded-xl border border-rose-100 bg-white p-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-semibold text-gray-900">Unmastered</span>
+            <span className="text-rose-600 font-semibold">
+              {mistakeSummary.unmastered} / {mistakeSummary.total}
+            </span>
+          </div>
+          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-rose-100">
+            <div
+              className="h-full bg-rose-500"
+              style={{
+                width: `${mistakeSummary.total === 0 ? 0 : Math.round((mistakeSummary.unmastered / mistakeSummary.total) * 100)}%`,
+              }}
+            />
+          </div>
+          {mistakeSummary.lastReviewedAt && (
+            <p className="mt-2 text-xs text-gray-500">
+              Last review:{' '}
+              {new Date(mistakeSummary.lastReviewedAt).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+              })}
+            </p>
+          )}
+        </div>
+
+        {mistakeSummary.countsByExam.length > 0 && (
+          <div className="rounded-xl border border-rose-100 bg-white p-4">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Mistakes by exam
+            </h4>
+            <div className="mt-2 space-y-2">
+              {mistakeSummary.countsByExam.slice(0, 3).map((group) => (
+                <div
+                  key={`${group.examId ?? 'unlinked'}-${group.examTitle}`}
+                  className="flex items-center justify-between text-sm text-gray-700"
+                >
+                  <span className="truncate">{group.examTitle}</span>
+                  <span className="font-semibold text-rose-600">{group.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <Link
+          href="/student/mistake-notebook"
+          className="inline-flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-100"
+        >
+          Open Mistake Notebook →
+        </Link>
+      </div>
+    )
+  }
+
+  const vocabSummary = data.vocabSummary
+  const vocabSummaryText = (() => {
+    if (vocabSummary.totalWords === 0) {
+      return 'No vocabulary yet. Create your first set to get started.'
+    }
+    if (vocabSummary.dueToday === 0) {
+      return 'No vocab reviews due today—nice work keeping up!'
+    }
+    const count = vocabSummary.dueToday
+    return `${count} word${count === 1 ? '' : 's'} to review today. Ready to dive in?`
+  })()
+
+  const renderVocabDetails = () => {
+    if (vocabSummary.totalWords === 0) {
+      return (
+        <div className="rounded-xl bg-white border border-amber-100 p-4 text-sm text-gray-600">
+          Add words to start Smart Review. Vocab sets keep practice separate from mistakes.
+        </div>
+      )
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="rounded-xl border border-amber-100 bg-white p-4">
+          <div className="flex items-center justify-between text-sm text-gray-700">
+            <span>Today&apos;s reviews</span>
+            <span className="font-semibold text-amber-600">
+              {vocabSummary.dueToday}
+            </span>
+          </div>
+          <p className="mt-1 text-xs text-gray-500">
+            Out of {vocabSummary.totalWords} total word{vocabSummary.totalWords === 1 ? '' : 's'}, these need review.
+          </p>
+        </div>
+
+        {vocabSummary.reviewSets.length > 0 && (
+          <div className="rounded-xl border border-amber-100 bg-white p-4">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Sets with reviews due
+            </h4>
+            <div className="mt-2 space-y-2">
+              {vocabSummary.reviewSets.slice(0, 3).map((set) => (
+                <div
+                  key={set.id}
+                  className="flex items-center justify-between text-sm text-gray-700"
+                >
+                  <span className="truncate">{set.title}</span>
+                  <span className="font-semibold text-amber-600">{set.count}</span>
+                </div>
+              ))}
+              {vocabSummary.reviewSets.length > 3 && (
+                <p className="text-xs text-gray-500">
+                  +{vocabSummary.reviewSets.length - 3} more sets
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {vocabSummary.nextReviewAt && (
+          <p className="rounded-xl border border-amber-100 bg-white px-3 py-2 text-xs text-gray-600">
+            Next review available in {formatRelativeTime(vocabSummary.nextReviewAt)}
+          </p>
+        )}
+
+        <Link
+          href="/student/vocab"
+          className="inline-flex items-center justify-center rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-600 hover:bg-amber-100"
+        >
+          Start vocab review →
+        </Link>
+      </div>
+    )
+  }
+
+  const taskCards: Array<{
+    id: 'assignments' | 'mistakes' | 'vocab'
+    title: string
+    badge: string
+    tone: 'violet' | 'rose' | 'amber'
+    summary: string
+    details: () => JSX.Element
+  }> = [
+    {
+      id: 'assignments',
+      title: 'Assigned Exams',
+      badge:
+        incompleteAssignments.length === 0
+          ? 'Done'
+          : `${incompleteAssignments.length} left`,
+      tone: 'violet',
+      summary: assignmentSummaryText,
+      details: renderAssignmentDetails,
+    },
+    {
+      id: 'mistakes',
+      title: 'Mistake Notebook',
+      badge:
+        mistakeSummary.unmastered === 0
+          ? 'Done'
+          : `${mistakeSummary.unmastered} to go`,
+      tone: 'rose',
+      summary: mistakeSummaryText,
+      details: renderMistakeDetails,
+    },
+    {
+      id: 'vocab',
+      title: 'Vocabulary',
+      badge:
+        vocabSummary.totalWords === 0
+          ? 'Get started'
+          : vocabSummary.dueToday === 0
+            ? 'Done'
+            : `${vocabSummary.dueToday} due`,
+      tone: 'amber',
+      summary: vocabSummaryText,
+      details: renderVocabDetails,
+    },
+  ]
+
+  const toneStyles = {
+    violet: {
+      border: 'border-violet-200',
+      badge: 'bg-violet-100 text-violet-700',
+      summary: 'text-violet-700',
+      hover: 'hover:border-violet-300',
+    },
+    rose: {
+      border: 'border-rose-200',
+      badge: 'bg-rose-100 text-rose-700',
+      summary: 'text-rose-700',
+      hover: 'hover:border-rose-300',
+    },
+    amber: {
+      border: 'border-amber-200',
+      badge: 'bg-amber-100 text-amber-700',
+      summary: 'text-amber-700',
+      hover: 'hover:border-amber-300',
+    },
+  } as const
+
   return (
     <div className="h-full bg-gray-50">
       {/* Top Header Section */}
@@ -176,6 +629,67 @@ export default function DashboardClient({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
           {/* Left Column - 9 cols */}
           <div className="lg:col-span-9 space-y-4 md:space-y-6">
+            {/* Priority Tasks */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              {taskCards.map((card) => {
+                const isExpanded = expandedCard === card.id
+                const styles = toneStyles[card.tone]
+
+                return (
+                  <div
+                    key={card.id}
+                    className={`rounded-2xl border bg-white shadow-sm transition ${styles.border} ${styles.hover}`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedCard((prev) =>
+                          prev === card.id ? null : card.id
+                        )
+                      }
+                      className="w-full px-4 py-4 text-left focus:outline-none"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            {card.title}
+                          </p>
+                          <p
+                            className={`mt-2 text-sm font-medium leading-relaxed ${styles.summary}`}
+                          >
+                            {card.summary}
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <span
+                            className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${styles.badge}`}
+                          >
+                            {card.badge}
+                          </span>
+                          <ChevronDownIcon
+                            className={`h-4 w-4 text-gray-400 transition-transform ${
+                              isExpanded ? 'rotate-180' : ''
+                            }`}
+                          />
+                        </div>
+                      </div>
+                      <p className="mt-3 text-xs text-gray-400">
+                        {isExpanded
+                          ? 'Click again to collapse'
+                          : 'View details'}
+                      </p>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="border-t border-gray-100 px-4 pb-4">
+                        <div className="pt-4">{card.details()}</div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+
             {/* Top Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               <StatsCard

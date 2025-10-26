@@ -5,6 +5,48 @@ import { ExamService, type TestAttempt } from '../../../../lib/exam-service'
 import { AnalyticsService } from '../../../../lib/analytics-service'
 import { WeeklyActivityService } from '../../../../lib/weekly-activity-service'
 
+interface AssignmentTask {
+  assignmentId: string
+  examId: string
+  examTitle: string
+  status: 'not_started' | 'in_progress' | 'completed'
+  assignedAt: string | null
+  dueDate: string | null
+  lastActivityAt: string | null
+  isOverdue: boolean
+  isDueSoon: boolean
+  progressPercent: number
+  totalQuestions: number | null
+  estimatedMinutes: number | null
+}
+
+interface MistakeSummary {
+  total: number
+  unmastered: number
+  mastered: number
+  lastReviewedAt: string | null
+  countsByExam: Array<{
+    examId: string | null
+    examTitle: string
+    count: number
+  }>
+  countsByModule: Array<{
+    module: string
+    count: number
+  }>
+}
+
+interface VocabSummary {
+  dueToday: number
+  totalWords: number
+  nextReviewAt: string | null
+  reviewSets: Array<{
+    id: number | string
+    title: string
+    count: number
+  }>
+}
+
 interface DashboardData {
   overallStats: {
     examsTaken: number
@@ -32,6 +74,25 @@ interface DashboardData {
     writing: number
     math: number
   }
+  assignments: AssignmentTask[]
+  mistakeSummary: MistakeSummary
+  vocabSummary: VocabSummary
+}
+
+const emptyMistakeSummary: MistakeSummary = {
+  total: 0,
+  unmastered: 0,
+  mastered: 0,
+  lastReviewedAt: null,
+  countsByExam: [],
+  countsByModule: [],
+}
+
+const emptyVocabSummary: VocabSummary = {
+  dueToday: 0,
+  totalWords: 0,
+  nextReviewAt: null,
+  reviewSets: [],
 }
 
 // Loading component for dashboard data
@@ -78,7 +139,14 @@ async function getDashboardData(
         }
       }
 
-      return { data: rpcData, canShowResults }
+      const enrichedData: DashboardData = {
+        ...rpcData,
+        assignments: [],
+        mistakeSummary: emptyMistakeSummary,
+        vocabSummary: emptyVocabSummary,
+      }
+
+      return { data: enrichedData, canShowResults }
     }
   } catch (error) {
     console.log('RPC function not available, falling back to individual calls')
@@ -127,6 +195,9 @@ async function getDashboardData(
     activityDays,
     weeklyActivity,
     subjectScores,
+    assignments: [],
+    mistakeSummary: emptyMistakeSummary,
+    vocabSummary: emptyVocabSummary,
   }
 
   return { data: dashboardData, canShowResults }
