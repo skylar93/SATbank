@@ -2,9 +2,10 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { QuestionFilter } from '@/components/problem-bank/question-filter'
 import type { MistakeWithQuestion } from '@/lib/types'
 import { isEmptyHtml } from '@/lib/content-converter'
+import { QuestionFilter } from '@/components/problem-bank/question-filter'
+import { ContentRenderer } from '@/components/content-renderer'
 
 interface FilterOptions {
   module: string
@@ -257,33 +258,25 @@ export function MistakeNotebookClient({
 
                   {/* Card Content - Question Preview */}
                   <div className="p-4">
-                    <div className="mb-4">
-                      <p className="text-sm text-gray-800 leading-relaxed line-clamp-4">
-                        {(() => {
-                          // HTML-first rendering for question preview
-                          let content = ''
-                          if (
-                            question.question_html &&
-                            !isEmptyHtml(question.question_html)
-                          ) {
-                            content = question.question_html
-                            // For preview, show plain text to avoid HTML complexity
-                            const cleanText = content
-                              .replace(/<[^>]*>/g, ' ')
-                              .replace(/\s+/g, ' ')
-                              .trim()
-                            return cleanText.length > 120
-                              ? `${cleanText.substring(0, 120)}...`
-                              : cleanText
-                          } else {
-                            content =
-                              question.question_text || 'No preview available'
-                            return content.length > 120
-                              ? `${content.substring(0, 120)}...`
-                              : content
-                          }
-                        })()}
-                      </p>
+                    <div className="mb-4 text-sm text-gray-800 leading-relaxed">
+                      {question.question_html &&
+                      !isEmptyHtml(question.question_html) ? (
+                        <ContentRenderer
+                          htmlContent={question.question_html}
+                          className="prose-sm text-gray-800 leading-relaxed line-clamp-4 [&_*]:!font-normal"
+                        />
+                      ) : (
+                        <p className="line-clamp-4">
+                          {(() => {
+                            const textPreview =
+                              question.question_text?.trim() ||
+                              'No preview available'
+                            return textPreview.length > 160
+                              ? `${textPreview.substring(0, 160)}...`
+                              : textPreview
+                          })()}
+                        </p>
+                      )}
                     </div>
 
                     {/* Topic Tags */}
