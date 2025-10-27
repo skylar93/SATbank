@@ -13,6 +13,7 @@ import { usePersistentState } from '@/lib/hooks/use-persistent-state'
 import { useCachedData } from '@/lib/hooks/use-cached-data'
 import { LoadingOverlay } from '@/components/ui/loading-overlay'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
+import { Eye, Settings } from 'lucide-react'
 
 // Interface for the data returned by get_admin_exams_list RPC
 interface RpcExamData {
@@ -128,6 +129,14 @@ const FORMAT_OPTIONS: { key: ExamFormat; label: string }[] = [
   { key: 'custom', label: 'Custom Assignments' },
   { key: 'other', label: 'Other' },
 ]
+
+const FORMAT_LABEL_MAP: Record<ExamFormat, string> = {
+  fullTest: 'Full Test',
+  sectionExam: 'Section',
+  individualModule: 'Module',
+  custom: 'Custom',
+  other: 'Other',
+}
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: 'recent', label: 'Newest first' },
@@ -593,6 +602,10 @@ export function ExamsListClient() {
     'admin-exams-sort',
     'recent'
   )
+  const [viewMode, setViewMode] = usePersistentState<'grouped' | 'compact'>(
+    'admin-exams-view-mode',
+    'grouped'
+  )
 
   const examsWithMeta = useMemo<ExamWithMeta[]>(() => {
     return filteredExams.map((exam) => ({
@@ -622,6 +635,12 @@ export function ExamsListClient() {
 
   const groupedExamGroups = useMemo(() => {
     return sortExamGroups(groupExamsByCategory(displayedExamsWithMeta), sortBy)
+  }, [displayedExamsWithMeta, sortBy])
+
+  const sortedFlatExams = useMemo(() => {
+    const entries = [...displayedExamsWithMeta]
+    sortExamEntries(entries, sortBy)
+    return entries
   }, [displayedExamsWithMeta, sortBy])
 
   const hasFormatFilter = selectedFormats.size > 0
@@ -851,13 +870,14 @@ export function ExamsListClient() {
   const renderGroupedExams = () => {
     const renderExamCollection = (entries: ExamWithMeta[]) => (
       <div className="space-y-3">
-        {entries.map(({ exam }) => (
+        {entries.map(({ exam, meta }) => (
           <ExamRow
             key={exam.id}
             exam={exam}
             openAnswerModal={openAnswerModal}
             onExamDeleted={fetchExamsOptimized}
             onExamUpdated={fetchExamsOptimized}
+            isStandaloneModule={meta.format === 'individualModule' && !exam.template_id}
           />
         ))}
       </div>
@@ -1090,6 +1110,137 @@ export function ExamsListClient() {
     )
   }
 
+  const renderCompactView = () => {
+    if (sortedFlatExams.length === 0) {
+      return null
+    }
+
+    return (
+      <div className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-purple-100">
+        <table className="min-w-full divide-y divide-purple-50 text-sm">
+          <thead className="bg-purple-50/60">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Exam
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Format
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Region
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Created
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Attempts
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Status
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Links
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-purple-50 bg-white">
+            {sortedFlatExams.map(({ exam, meta }) => {
+              const createdDisplay = new Date(exam.created_at).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })
+              const attemptsDisplay =
+                typeof exam.total_attempts_count === 'number' && exam.total_attempts_count > 0
+                  ? `${exam.total_attempts_count}`
+                  : '—'
+
+              const statusBadges: { label: string; className: string }[] = []
+              if (exam.is_active) {
+                statusBadges.push({ label: 'Active', className: 'bg-emerald-50 text-emerald-600' })
+              } else {
+                statusBadges.push({ label: 'Inactive', className: 'bg-slate-100 text-slate-600' })
+              }
+
+              if (!exam.english_curve_name || !exam.math_curve_name) {
+                statusBadges.push({ label: 'Needs curves', className: 'bg-orange-50 text-orange-600' })
+              }
+
+              if (exam.template_id) {
+                statusBadges.push({ label: 'Template linked', className: 'bg-indigo-50 text-indigo-600' })
+              } else if (meta.format === 'individualModule') {
+                statusBadges.push({ label: 'Standalone module', className: 'bg-rose-50 text-rose-600' })
+              }
+
+              if (exam.is_custom_assignment) {
+                statusBadges.push({ label: 'Custom', className: 'bg-amber-50 text-amber-600' })
+              }
+
+              return (
+                <tr key={exam.id} className="transition-colors hover:bg-purple-50/40">
+                  <td className="px-4 py-3 align-top">
+                    <div className="font-medium text-gray-900">{exam.title}</div>
+                    {exam.description ? (
+                      <p className="mt-1 text-xs text-gray-500">{exam.description}</p>
+                    ) : null}
+                  </td>
+                  <td className="px-4 py-3 align-top text-sm text-gray-700">
+                    {FORMAT_LABEL_MAP[meta.format] ?? 'Other'}
+                  </td>
+                  <td className="px-4 py-3 align-top text-sm text-gray-700">
+                    {meta.region}
+                  </td>
+                  <td className="px-4 py-3 align-top text-sm text-gray-700">
+                    {createdDisplay}
+                  </td>
+                  <td className="px-4 py-3 align-top text-sm text-gray-700">
+                    {attemptsDisplay}
+                  </td>
+                  <td className="px-4 py-3 align-top">
+                    <div className="flex flex-wrap gap-2">
+                      {statusBadges.map(({ label, className }) => (
+                        <span
+                          key={`${exam.id}-${label}`}
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${className}`}
+                        >
+                          {label}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 align-top">
+                    <div className="flex justify-end gap-2">
+                      <Link
+                        href={`/admin/exams/${exam.id}/settings`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-purple-200 text-purple-600 transition-colors hover:bg-purple-50 hover:text-purple-800"
+                        aria-label={`Open settings for ${exam.title}`}
+                        title="Settings"
+                      >
+                        <Settings className="h-4 w-4" />
+                      </Link>
+                      <Link
+                        href={`/admin/exams/${exam.id}/preview`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-purple-200 text-purple-600 transition-colors hover:bg-purple-50 hover:text-purple-800"
+                        aria-label={`Preview ${exam.title}`}
+                        title="Preview"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
 
 
 
@@ -1235,6 +1386,25 @@ export function ExamsListClient() {
                   />
                   <span>Active only</span>
                 </label>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    View
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('grouped')}
+                    className={getFilterChipClasses(viewMode === 'grouped')}
+                  >
+                    Grouped
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('compact')}
+                    className={getFilterChipClasses(viewMode === 'compact')}
+                  >
+                    At-a-glance
+                  </button>
+                </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
@@ -1269,40 +1439,32 @@ export function ExamsListClient() {
         <div className="border-b border-gray-200"></div>
       </div>
 
-      <div className="p-6">
-        {/* Grouped Exams Display */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">All Exams</h2>
+      <div className="p-6 space-y-6">
+        {displayedExamsWithMeta.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-purple-200 bg-white/60 p-12 text-center">
+            <p className="text-gray-500">{emptyStateMessage}</p>
+            {(hasSearch || hasFilters) && (
+              <p className="mt-2 text-sm text-gray-400">
+                Try adjusting your filters or search terms.
+              </p>
+            )}
+            {hasFilters && (
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md shadow hover:bg-purple-700"
+                >
+                  Clear filters
+                </button>
+              </div>
+            )}
           </div>
+        ) : (
+          <>{viewMode === 'grouped' ? renderGroupedExams() : renderCompactView()}</>
+        )}
 
-          {displayedExamsWithMeta.length === 0 ? (
-            <div className="p-12 text-center">
-              <p className="text-gray-500">{emptyStateMessage}</p>
-              {(hasSearch || hasFilters) && (
-                <p className="mt-2 text-sm text-gray-400">
-                  Try adjusting your filters or search terms.
-                </p>
-              )}
-              {hasFilters && (
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    onClick={resetFilters}
-                    className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md shadow hover:bg-purple-700"
-                  >
-                    Clear filters
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="p-6">{renderGroupedExams()}</div>
-          )}
-        </div>
-
-        {/* Quick Stats */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-purple-100 p-6">
             <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               {displayedExams.length}

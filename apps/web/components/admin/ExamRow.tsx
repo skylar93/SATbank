@@ -41,6 +41,7 @@ interface ExamRowProps {
   onExamDeleted?: () => void
   onExamUpdated?: () => void
   className?: string
+  isStandaloneModule?: boolean
 }
 
 export function ExamRow({
@@ -49,6 +50,7 @@ export function ExamRow({
   onExamDeleted,
   onExamUpdated,
   className,
+  isStandaloneModule = false,
 }: ExamRowProps) {
   const [isExpanded, setIsExpanded] = usePersistentState(`exam-row-expanded-${exam.id}`, false)
   const [allCurves, setAllCurves] = useState<ScoringCurve[]>([])
@@ -245,6 +247,11 @@ export function ExamRow({
                     {exam.template_id && (
                       <span className="inline-flex items-center rounded-full bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-600">
                         Template linked
+                      </span>
+                    )}
+                    {isStandaloneModule && !exam.template_id && (
+                      <span className="inline-flex items-center rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-medium text-rose-600">
+                        Standalone module
                       </span>
                     )}
                     {attemptsLabel && (

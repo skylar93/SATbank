@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/auth-context'
 import { supabase } from '../../lib/supabase'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, CheckCircle2, AlertTriangle } from 'lucide-react'
+import { ChevronDown, ChevronUp, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { isEmptyHtml } from '../../lib/content-converter'
 import { ContentRenderer } from '../content-renderer'
 
@@ -552,241 +552,254 @@ export function EnhancedIncorrectAnswersSection({
                   ? attempts.length - displayedAttempts.length
                   : 0
 
+              const statusAccent =
+                question.masteryStatus === 'mastered'
+                  ? 'border-t-4 border-t-emerald-300'
+                  : 'border-t-4 border-t-amber-300'
+              const attemptCount = question.incorrectAttempts?.length ?? 0
+              const attemptLabel =
+                attemptCount === 1
+                  ? '1 incorrect attempt'
+                  : `${attemptCount} incorrect attempts`
+              const firstMistakeText = question.firstMistakenAt
+                ? new Date(question.firstMistakenAt).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })
+                : '—'
+              const topicTags = question.topic_tags || []
+              const topicPreview = topicTags.slice(0, 2)
+              const extraTopicCount =
+                topicTags.length > topicPreview.length
+                  ? topicTags.length - topicPreview.length
+                  : 0
+              const examTitles =
+                (question.examTitles?.filter(
+                  (title): title is string => Boolean(title)
+                ) as string[]) || []
+              const examPreview = examTitles.slice(0, 2)
+              const extraExamCount =
+                examTitles.length > examPreview.length
+                  ? examTitles.length - examPreview.length
+                  : 0
+
               return (
                 <article
                   key={question.id}
-                  className="group flex h-full flex-col rounded-2xl border border-purple-100 bg-white/90 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-purple-200 hover:shadow-lg"
+                  className={`group flex h-full rounded-2xl border border-purple-100 bg-white/95 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-purple-200 hover:shadow-lg ${statusAccent}`}
                 >
-                  <div className="flex items-start justify-between gap-4 border-b border-purple-50 px-5 py-4">
-                    <div className="flex items-start gap-3">
+                  <div className="flex h-full w-full">
+                    <aside className="flex w-12 flex-col items-center gap-3 border-r border-purple-50 bg-purple-50/40 py-4">
                       <input
                         type="checkbox"
+                        aria-label={`Select question ${question.question_number ?? ''}`}
                         checked={isSelected}
                         onChange={() => handleQuestionSelect(question.id)}
-                        className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                       />
-                      <div className="space-y-2">
-                        <div className="text-sm font-semibold text-gray-900">
-                          Question {question.question_number ?? '—'}
+                      {renderMasteryStatus(question.masteryStatus)}
+                    </aside>
+
+                    <div className="flex flex-1 flex-col">
+                      <header className="flex items-start justify-between gap-4 border-b border-purple-50 px-5 py-4">
+                        <div className="space-y-1">
+                          <div className="text-sm font-semibold text-gray-900">
+                            {formatModuleName(question.module_type)} · Question{' '}
+                            {question.question_number ?? '—'} (
+                            {formatQuestionType(question.question_type)})
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            First mistake {firstMistakeText} • {attemptLabel}
+                          </div>
                         </div>
-                        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                          <span className="font-medium text-gray-600">
-                            {formatModuleName(question.module_type)}
-                          </span>
-                          <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-medium text-slate-700">
-                            {formatQuestionType(question.question_type)}
-                          </span>
-                          {renderMasteryStatus(question.masteryStatus)}
-                        </div>
-                      </div>
-                    </div>
 
-                    <button
-                      type="button"
-                      onClick={() => toggleQuestion(question.id)}
-                      aria-label={
-                        isExpanded ? 'Hide question details' : 'View question details'
-                      }
-                      className="rounded-md border border-purple-200 p-2 text-purple-600 transition-colors hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:ring-offset-2"
-                    >
-                      {isExpanded ? (
-                        <EyeOff className="h-4 w-4" aria-hidden="true" />
-                      ) : (
-                        <Eye className="h-4 w-4" aria-hidden="true" />
-                      )}
-                    </button>
-                  </div>
+                        <button
+                          type="button"
+                          onClick={() => toggleQuestion(question.id)}
+                          aria-label={
+                            isExpanded ? 'Hide question details' : 'View question details'
+                          }
+                          className="rounded-md border border-purple-200 p-2 text-purple-600 transition-colors hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:ring-offset-2"
+                        >
+                          {isExpanded ? (
+                            <ChevronUp className="h-4 w-4" aria-hidden="true" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                          )}
+                        </button>
+                      </header>
 
-                  <div className="flex flex-1 flex-col gap-4 px-5 py-4 text-sm text-gray-700">
-                    <div className="line-clamp-5 leading-relaxed">
-                      {question.question_html &&
-                      !isEmptyHtml(question.question_html) ? (
-                        <ContentRenderer
-                          htmlContent={question.question_html}
-                          className="prose-sm text-gray-700 [&_*]:!font-normal line-clamp-5"
-                        />
-                      ) : (
-                        <p className="line-clamp-5">
-                          {(() => {
-                            const textPreview =
-                              question.question_text?.trim() ||
-                              'No preview available'
-                            return textPreview.length > 180
-                              ? `${textPreview.substring(0, 180)}...`
-                              : textPreview
-                          })()}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2 text-xs text-gray-600">
-                      {question.examTitles && question.examTitles.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
-                          {question.examTitles.slice(0, 2).map((title, index) => (
-                            <span
-                              key={index}
-                              className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 font-medium text-blue-700"
-                            >
-                              <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
-                              {title}
-                            </span>
-                          ))}
-                          {question.examTitles.length > 2 && (
-                            <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 font-medium text-blue-600">
-                              +{question.examTitles.length - 2} more
-                            </span>
+                      <div className="flex flex-1 flex-col gap-4 px-5 py-4">
+                        <div className="rounded-lg border border-purple-100 bg-gray-50/70 p-3 text-sm leading-relaxed text-gray-700">
+                          {question.question_html &&
+                          !isEmptyHtml(question.question_html) ? (
+                            <ContentRenderer
+                              htmlContent={question.question_html}
+                              className="prose-sm text-gray-700 [&_*]:!font-normal line-clamp-4"
+                            />
+                          ) : (
+                            <p className="line-clamp-4">
+                              {(() => {
+                                const textPreview =
+                                  question.question_text?.trim() ||
+                                  'No preview available'
+                                return textPreview.length > 180
+                                  ? `${textPreview.substring(0, 180)}...`
+                                  : textPreview
+                              })()}
+                            </p>
                           )}
                         </div>
-                      )}
 
-                      {question.topic_tags && question.topic_tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
-                          {question.topic_tags.slice(0, 3).map((tag) => (
-                            <span
-                              key={tag}
-                              className="inline-flex items-center gap-1 rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 font-medium text-indigo-700"
-                            >
-                              #{tag}
-                            </span>
-                          ))}
-                          {question.topic_tags.length > 3 && (
-                            <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 font-medium text-gray-600">
-                              +{question.topic_tags.length - 3}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="mt-auto flex items-center justify-between text-xs text-gray-500">
-                      <span>
-                        First mistaken:{' '}
-                        {question.firstMistakenAt
-                          ? new Date(
-                              question.firstMistakenAt
-                            ).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                            })
-                          : 'Unknown'}
-                      </span>
-                      <span>
-                        {question.incorrectAttempts?.length ?? 0} incorrect attempt
-                        {question.incorrectAttempts &&
-                        question.incorrectAttempts.length !== 1
-                          ? 's'
-                          : ''}
-                      </span>
-                    </div>
-                  </div>
-
-                  {isExpanded && (
-                    <div className="border-t border-purple-100 px-5 pb-5 pt-4">
-                      <div className="space-y-4">
-                        <section>
-                          <h5 className="text-sm font-semibold text-gray-900">
-                            Question passage
-                          </h5>
-                          <div className="mt-2 max-h-60 overflow-y-auto rounded-lg border border-purple-100 bg-white p-3 text-sm leading-relaxed text-gray-700">
-                            {question.question_html &&
-                            !isEmptyHtml(question.question_html) ? (
-                              <ContentRenderer
-                                htmlContent={question.question_html}
-                                className="prose-sm text-gray-700 [&_*]:!font-normal"
-                              />
-                            ) : (
-                              <p className="whitespace-pre-wrap">
-                                {question.question_text?.trim() ||
-                                  'Question content not available.'}
-                              </p>
+                        {examPreview.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-blue-600">
+                            <span className="font-medium text-blue-700">Exam</span>
+                            {examPreview.map((title) => (
+                              <span
+                                key={title}
+                                className="rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-blue-700"
+                              >
+                                {title}
+                              </span>
+                            ))}
+                            {extraExamCount > 0 && (
+                              <span className="text-blue-500">
+                                +{extraExamCount} more
+                              </span>
                             )}
                           </div>
-                        </section>
+                        )}
 
-                        {displayedAttempts.length > 0 && (
-                          <section>
-                            <h5 className="text-sm font-semibold text-gray-900">
-                              Recent incorrect attempts
-                            </h5>
-                            <div className="mt-2 space-y-2">
-                              {displayedAttempts.map((attempt, index) => (
-                                <div
-                                  key={attempt.id}
-                                  className="rounded-lg border border-purple-100 bg-white px-3 py-2 text-xs text-gray-600"
-                                >
-                                  <div className="flex justify-between">
-                                    <span className="font-semibold text-gray-700">
-                                      Attempt #{index + 1}
-                                    </span>
-                                    <span>
-                                      {new Date(attempt.answered_at).toLocaleDateString(
-                                        'en-US',
-                                        {
-                                          year: 'numeric',
-                                          month: 'short',
-                                          day: 'numeric',
-                                        }
-                                      )}
-                                    </span>
-                                  </div>
-                                  <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
-                                    <span>
-                                      Your answer:{' '}
-                                      <span className="font-semibold">
-                                        {attempt.user_answer}
-                                      </span>
-                                    </span>
-                                    <Link
-                                      href={`/student/results/${attempt.attempt_id}/review`}
-                                      className="text-purple-600 hover:text-purple-800"
+                        {topicPreview.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-indigo-700">
+                            <span className="font-medium text-indigo-700">Topics</span>
+                            {topicPreview.map((tag) => (
+                              <span
+                                key={tag}
+                                className="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                            {extraTopicCount > 0 && (
+                              <span className="text-indigo-500">
+                                +{extraTopicCount} more
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {isExpanded && (
+                        <div className="border-t border-purple-100 bg-purple-50/60 px-5 py-4">
+                          <div className="space-y-4">
+                            <section>
+                              <h5 className="text-sm font-semibold text-gray-900">
+                                Question passage
+                              </h5>
+                              <div className="mt-2 max-h-64 overflow-y-auto rounded-lg border border-purple-100 bg-white p-3 text-sm leading-relaxed text-gray-700">
+                                {question.question_html &&
+                                !isEmptyHtml(question.question_html) ? (
+                                  <ContentRenderer
+                                    htmlContent={question.question_html}
+                                    className="prose-sm text-gray-700 [&_*]:!font-normal"
+                                  />
+                                ) : (
+                                  <p className="whitespace-pre-wrap">
+                                    {question.question_text?.trim() ||
+                                      'Question content not available.'}
+                                  </p>
+                                )}
+                              </div>
+                            </section>
+
+                            {displayedAttempts.length > 0 && (
+                              <section>
+                                <h5 className="text-sm font-semibold text-gray-900">
+                                  Recent incorrect attempts
+                                </h5>
+                                <div className="mt-2 space-y-2">
+                                  {displayedAttempts.map((attempt, index) => (
+                                    <div
+                                      key={attempt.id}
+                                      className="rounded-lg border border-purple-100 bg-white px-3 py-2 text-xs text-gray-600"
                                     >
-                                      View attempt →
-                                    </Link>
-                                  </div>
-                                  {attempt.exam_title && (
-                                    <div className="mt-1 inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 font-medium text-blue-600">
-                                      <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
-                                      {attempt.exam_title}
+                                      <div className="flex justify-between">
+                                        <span className="font-semibold text-gray-700">
+                                          Attempt #{index + 1}
+                                        </span>
+                                        <span>
+                                          {new Date(
+                                            attempt.answered_at
+                                          ).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                          })}
+                                        </span>
+                                      </div>
+                                      <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+                                        <span>
+                                          Your answer:{' '}
+                                          <span className="font-semibold">
+                                            {attempt.user_answer}
+                                          </span>
+                                        </span>
+                                        <Link
+                                          href={`/student/results/${attempt.attempt_id}/review`}
+                                          className="text-purple-600 hover:text-purple-800"
+                                        >
+                                          View attempt →
+                                        </Link>
+                                      </div>
+                                      {attempt.exam_title && (
+                                        <div className="mt-1 inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 font-medium text-blue-600">
+                                          <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+                                          {attempt.exam_title}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                  {remainingAttempts > 0 && (
+                                    <div className="rounded-lg border border-dashed border-purple-200 px-3 py-2 text-xs text-purple-700">
+                                      +{remainingAttempts} more attempts logged
                                     </div>
                                   )}
                                 </div>
-                              ))}
-                              {remainingAttempts > 0 && (
-                                <div className="rounded-lg border border-dashed border-purple-200 px-3 py-2 text-xs text-purple-700">
-                                  +{remainingAttempts} more attempts logged
-                                </div>
-                              )}
-                            </div>
-                          </section>
-                        )}
+                              </section>
+                            )}
 
-                        <section className="rounded-xl border border-purple-100 bg-purple-50/60 px-4 py-3 text-sm text-purple-700">
-                          <p>
-                            Ready to practice this question again? Use the actions
-                            below to take it into a focused session.
-                          </p>
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            <button
-                              type="button"
-                              onClick={() => handleQuestionSelect(question.id)}
-                              className="rounded-md border border-purple-200 px-3 py-2 text-sm font-medium text-purple-600 transition-colors hover:bg-purple-100"
-                            >
-                              {isSelected ? 'Remove from selection' : 'Select for practice'}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                router.push(`/student/problem-bank/${question.id}`)
-                              }
-                              className="rounded-md bg-purple-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700"
-                            >
-                              Open full question
-                            </button>
+                            <section className="rounded-xl border border-purple-100 bg-purple-100/60 px-4 py-3 text-sm text-purple-700">
+                              <p>
+                                Ready to practice this question again? Use the actions
+                                below to jump into a focused session.
+                              </p>
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => handleQuestionSelect(question.id)}
+                                  className="rounded-md border border-purple-200 px-3 py-2 text-sm font-medium text-purple-600 transition-colors hover:bg-purple-50"
+                                >
+                                  {isSelected
+                                    ? 'Remove from selection'
+                                    : 'Select for practice'}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    router.push(`/student/problem-bank/${question.id}`)
+                                  }
+                                  className="rounded-md bg-purple-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700"
+                                >
+                                  Open full question
+                                </button>
+                              </div>
+                            </section>
                           </div>
-                        </section>
-                      </div>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </article>
               )
             })}
