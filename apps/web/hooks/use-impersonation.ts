@@ -40,7 +40,7 @@ export function useImpersonation() {
 
       // Apply padding in a way that ensures it's present during navigation
       requestAnimationFrame(() => {
-        document.body.style.setProperty('padding-top', '44px', 'important')
+        document.body.style.setProperty('--impersonation-offset', '44px')
         document.body.classList.add('impersonation-active')
 
         // Navigate immediately after applying styles - but NOT if we're already on a student page
@@ -65,7 +65,7 @@ export function useImpersonation() {
       dispatchImpersonationEvent(null)
 
       // Remove body padding immediately
-      document.body.style.setProperty('padding-top', '0px', 'important')
+      document.body.style.removeProperty('--impersonation-offset')
       document.body.classList.remove('impersonation-active')
 
       // Force reload to properly reset auth state and prevent infinite loading

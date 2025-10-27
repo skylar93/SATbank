@@ -138,5 +138,5 @@ mark.highlight-new {
 
 /* Impersonation banner layout fixes */
 body.impersonation-active .flex.h-screen {
-  padding-top: 44px;
+  padding-top: var(--impersonation-offset, 44px);
 }

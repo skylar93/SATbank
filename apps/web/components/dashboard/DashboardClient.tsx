@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../contexts/auth-context'
 import { type TestAttempt } from '../../lib/exam-service'
@@ -108,21 +108,6 @@ export default function DashboardClient({
   const [expandedCard, setExpandedCard] = useState<
     'assignments' | 'mistakes' | 'vocab' | null
   >(null)
-
-  // Apply impersonation padding immediately on mount
-  useEffect(() => {
-    const checkImpersonation = () => {
-      if (typeof window !== 'undefined') {
-        const impersonationData = localStorage.getItem('impersonation_data')
-        if (impersonationData) {
-          document.body.style.setProperty('padding-top', '44px', 'important')
-          document.body.classList.add('impersonation-active')
-        }
-      }
-    }
-
-    checkImpersonation()
-  }, [])
 
   // Use initial data or fallback to empty state
   const data = initialData || {
@@ -538,27 +523,27 @@ export default function DashboardClient({
 
   const toneStyles = {
     violet: {
-      border: 'border-violet-200',
-      badge: 'bg-violet-100 text-violet-700',
+      border: 'border-violet-100',
+      badge: 'bg-violet-50 text-violet-700',
       summary: 'text-violet-700',
-      hover: 'hover:border-violet-300',
-      step: 'bg-violet-50 text-violet-600',
+      hover: 'hover:border-violet-200 hover:bg-white',
+      step: 'bg-violet-100 text-violet-700',
       cta: 'text-violet-600 hover:text-violet-700',
     },
     rose: {
-      border: 'border-rose-200',
-      badge: 'bg-rose-100 text-rose-700',
+      border: 'border-rose-100',
+      badge: 'bg-rose-50 text-rose-700',
       summary: 'text-rose-700',
-      hover: 'hover:border-rose-300',
-      step: 'bg-rose-50 text-rose-600',
+      hover: 'hover:border-rose-200 hover:bg-white',
+      step: 'bg-rose-100 text-rose-700',
       cta: 'text-rose-600 hover:text-rose-700',
     },
     amber: {
-      border: 'border-amber-200',
-      badge: 'bg-amber-100 text-amber-700',
+      border: 'border-amber-100',
+      badge: 'bg-amber-50 text-amber-700',
       summary: 'text-amber-700',
-      hover: 'hover:border-amber-300',
-      step: 'bg-amber-50 text-amber-600',
+      hover: 'hover:border-amber-200 hover:bg-white',
+      step: 'bg-amber-100 text-amber-700',
       cta: 'text-amber-600 hover:text-amber-700',
     },
   } as const
@@ -670,9 +655,9 @@ export default function DashboardClient({
     className = '',
   }: TaskStepProps) => (
     <div
-      className={`rounded-2xl border bg-white shadow-sm transition ${tone.border} ${tone.hover} ${className}`.trim()}
+      className={`rounded-xl border bg-gray-50 transition ${tone.border} ${tone.hover} ${className}`.trim()}
     >
-      <div className="flex items-start gap-4 px-4 py-4">
+      <div className="flex items-start gap-4 px-4 py-4 md:px-5">
         <span
           className={`flex h-9 w-9 flex-none items-center justify-center rounded-full text-sm font-semibold ${tone.step}`}
         >
@@ -685,7 +670,7 @@ export default function DashboardClient({
                 {title}
               </p>
               <p
-                className={`mt-2 text-sm font-medium leading-relaxed text-gray-900 line-clamp-2 ${tone.summary}`}
+                className={`mt-2 text-sm font-medium leading-relaxed line-clamp-2 ${tone.summary}`}
               >
                 {summary}
               </p>
@@ -718,7 +703,7 @@ export default function DashboardClient({
         </div>
       </div>
       {isExpanded && (
-        <div className="border-t border-gray-100 px-4 pb-4">
+        <div className="border-t border-gray-100 px-4 pb-4 md:px-5">
           <div className="pt-4">{children}</div>
         </div>
       )}
@@ -758,41 +743,42 @@ export default function DashboardClient({
           {/* Left Column - 9 cols */}
           <div className="lg:col-span-9 space-y-4 md:space-y-6">
             {/* Priority Tasks */}
-            <section className="space-y-3 md:space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-base font-semibold text-gray-900 md:text-lg">
-                  Today's Plan
-                </h2>
-                <span className="text-xs text-gray-400 md:text-sm">
-                  Work through these steps in order.
-                </span>
-              </div>
-              <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-1 md:gap-4 md:overflow-visible md:pb-0 lg:gap-5">
-                {taskCards.map((card, index) => {
-                  const isExpanded = expandedCard === card.id
-                  const tone = toneStyles[card.tone]
+            <section>
+              <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div className="flex items-center justify-between border-b border-gray-100 px-4 py-4 md:px-5">
+                  <h2 className="text-base font-semibold text-gray-900 md:text-lg">
+                    Today's Plan
+                  </h2>
+                  <span className="text-xs text-gray-400 md:text-sm">
+                    Work through these steps in order.
+                  </span>
+                </div>
+                <div className="space-y-3 px-4 py-4 md:space-y-4 md:px-5">
+                  {taskCards.map((card, index) => {
+                    const isExpanded = expandedCard === card.id
+                    const tone = toneStyles[card.tone]
 
-                  return (
-                    <TaskStep
-                      key={card.id}
-                      step={index + 1}
-                      title={card.title}
-                      summary={card.summary}
-                      badge={card.badge}
-                      tone={tone}
-                      isExpanded={isExpanded}
-                      onToggle={() =>
-                        setExpandedCard((prev) =>
-                          prev === card.id ? null : card.id
-                        )
-                      }
-                      cta={card.cta}
-                      className="snap-start min-w-[280px] flex-none w-[calc(100%-1rem)] md:min-w-0 md:w-full"
-                    >
-                      {card.details()}
-                    </TaskStep>
-                  )
-                })}
+                    return (
+                      <TaskStep
+                        key={card.id}
+                        step={index + 1}
+                        title={card.title}
+                        summary={card.summary}
+                        badge={card.badge}
+                        tone={tone}
+                        isExpanded={isExpanded}
+                        onToggle={() =>
+                          setExpandedCard((prev) =>
+                            prev === card.id ? null : card.id
+                          )
+                        }
+                        cta={card.cta}
+                      >
+                        {card.details()}
+                      </TaskStep>
+                    )
+                  })}
+                </div>
               </div>
             </section>
 

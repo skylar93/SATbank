@@ -5,7 +5,7 @@ import {
   IMPERSONATION_EVENT,
   IMPERSONATION_DATA_KEY,
 } from '@/hooks/use-impersonation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export function ImpersonationBanner() {
   const { user } = useAuth()
@@ -15,6 +15,7 @@ export function ImpersonationBanner() {
   // Initialize with null to avoid hydration issues
   const [impersonationData, setImpersonationData] = useState<any>(null)
   const [isClient, setIsClient] = useState(false)
+  const bannerRef = useRef<HTMLDivElement | null>(null)
 
   // First useEffect to handle client-side mounting
   useEffect(() => {
@@ -26,8 +27,10 @@ export function ImpersonationBanner() {
     // Add CSS class for impersonation styling
     if (data) {
       document.body.classList.add('impersonation-active')
+      document.body.style.setProperty('--impersonation-offset', '44px')
     } else {
       document.body.classList.remove('impersonation-active')
+      document.body.style.removeProperty('--impersonation-offset')
     }
   }, []) // Empty dependency array - only run once on mount
 
@@ -41,8 +44,10 @@ export function ImpersonationBanner() {
 
       if (data) {
         document.body.classList.add('impersonation-active')
+        document.body.style.setProperty('--impersonation-offset', '44px')
       } else {
         document.body.classList.remove('impersonation-active')
+        document.body.style.removeProperty('--impersonation-offset')
       }
     }
 
@@ -61,17 +66,49 @@ export function ImpersonationBanner() {
 
     return () => {
       document.body.classList.remove('impersonation-active')
+      document.body.style.removeProperty('--impersonation-offset')
       window.removeEventListener('storage', handleStorageChange)
       window.removeEventListener(IMPERSONATION_EVENT, handleImpersonationEvent)
     }
   }, [isClient, getImpersonationData]) // Stable dependencies
+
+  // Keep layout offset aligned with the rendered banner height
+  useEffect(() => {
+    if (!isClient) return
+
+    if (!impersonationData) {
+      document.body.style.removeProperty('--impersonation-offset')
+      return
+    }
+
+    const applyOffset = () => {
+      const height = bannerRef.current?.offsetHeight ?? 0
+      if (height > 0) {
+        document.body.style.setProperty(
+          '--impersonation-offset',
+          `${height}px`
+        )
+      }
+    }
+
+    const frameId = requestAnimationFrame(applyOffset)
+    window.addEventListener('resize', applyOffset)
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      window.removeEventListener('resize', applyOffset)
+    }
+  }, [impersonationData, isClient])
 
   if (!isImpersonating() || !impersonationData) {
     return null // Don't render anything if not in impersonation mode
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 bg-yellow-400 text-black p-2 text-center text-sm z-50 border-b-2 border-yellow-600">
+    <div
+      ref={bannerRef}
+      className="fixed top-0 left-0 right-0 bg-yellow-400 text-black p-2 text-center text-sm z-50 border-b-2 border-yellow-600"
+    >
       <div className="flex items-center justify-center">
         <span className="mr-2">⚠️</span>
         <span>
