@@ -265,6 +265,7 @@ export default function DashboardClient({
     (assignment) => assignment.isOverdue
   )
   const assignmentPreview = incompleteAssignments.slice(0, 3)
+  const assignmentDisplayList = incompleteAssignments
 
   const assignmentSummaryText = (() => {
     if (incompleteAssignments.length === 0) {
@@ -292,8 +293,12 @@ export default function DashboardClient({
     }
 
     return (
-      <div className="space-y-3">
-        {assignmentPreview.map((assignment) => (
+      <div
+        className={`space-y-3 ${
+          assignmentDisplayList.length > 4 ? 'max-h-80 overflow-y-auto pr-1' : ''
+        }`}
+      >
+        {assignmentDisplayList.map((assignment) => (
           <div
             key={assignment.assignmentId}
             className="rounded-xl border border-violet-100 bg-white p-4 shadow-sm"

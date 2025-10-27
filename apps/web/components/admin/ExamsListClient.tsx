@@ -12,6 +12,7 @@ import { CreateExamModal } from './CreateExamModal'
 import { usePersistentState } from '@/lib/hooks/use-persistent-state'
 import { useCachedData } from '@/lib/hooks/use-cached-data'
 import { LoadingOverlay } from '@/components/ui/loading-overlay'
+import { ChevronDownIcon } from '@heroicons/react/24/outline'
 
 // Interface for the data returned by get_admin_exams_list RPC
 interface RpcExamData {
@@ -157,6 +158,13 @@ const REGION_STYLE: Record<ExamRegion, { rowClass: string; buttonClass: string; 
     buttonClass: 'text-gray-800 hover:text-gray-900',
     iconClass: 'text-gray-600',
   },
+}
+
+const REGION_DOT_CLASS: Record<ExamRegion, string> = {
+  International: 'bg-orange-500',
+  US: 'bg-emerald-500',
+  Digital: 'bg-sky-500',
+  Other: 'bg-slate-400',
 }
 
 const monthMatchers = MONTH_DEFINITIONS.map((definition) => ({
@@ -321,6 +329,19 @@ const groupExamsByCategory = (exams: ExamWithMeta[]): ExamGroup[] => {
 
   return Array.from(groupsMap.values())
 }
+
+const getModuleCount = (group: ExamGroup) =>
+  REGION_ORDER.reduce(
+    (total, region) => total + group.buckets.individualModule[region].length,
+    0
+  )
+
+const getGroupTotalCount = (group: ExamGroup) =>
+  group.buckets.fullTest.length +
+  group.buckets.sectionExam.length +
+  group.buckets.custom.length +
+  group.buckets.other.length +
+  getModuleCount(group)
 
 const sortExamEntries = (entries: ExamWithMeta[], sortBy: SortOption) => {
   entries.sort((a, b) => {
@@ -828,250 +849,247 @@ export function ExamsListClient() {
       : 'px-3 py-1 rounded-full border border-gray-300 text-xs font-medium text-gray-600 hover:border-purple-400 hover:text-purple-600 transition-colors'
 
   const renderGroupedExams = () => {
-    return (
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-200 sticky top-0">
-            <tr>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-8"></th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-64">
-                Exam
-              </th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-24">
-                Created
-              </th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">
-                English Curve
-              </th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">
-                Math Curve
-              </th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-36">
-                Answer Visibility
-              </th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-20">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {groupedExamGroups.map((group) => {
-              const isGroupExpanded = expandedDateGroups.has(group.key)
-              const modulesCount = REGION_ORDER.reduce(
-                (acc, region) => acc + group.buckets.individualModule[region].length,
-                0
-              )
+    const renderExamCollection = (entries: ExamWithMeta[]) => (
+      <div className="space-y-3">
+        {entries.map(({ exam }) => (
+          <ExamRow
+            key={exam.id}
+            exam={exam}
+            openAnswerModal={openAnswerModal}
+            onExamDeleted={fetchExamsOptimized}
+            onExamUpdated={fetchExamsOptimized}
+          />
+        ))}
+      </div>
+    )
 
-              return (
-                <React.Fragment key={group.key}>
-                  <tr className="bg-gray-100 border-t-2 border-gray-300">
-                    <td colSpan={7} className="px-3 py-2">
-                      <button
-                        onClick={() => toggleDateGroup(group.key)}
-                        className="flex items-center space-x-2 font-medium text-gray-800 hover:text-gray-900"
-                      >
-                        <span className="text-gray-500">
-                          {isGroupExpanded ? '▼' : '▶'}
+    const renderCategorySection = (
+      key: string,
+      title: string,
+      entries: ExamWithMeta[],
+      accentClass: string
+    ) => {
+      if (entries.length === 0) {
+        return null
+      }
+
+      const isExpandedCategory = expandedTestTypes.has(key)
+
+      return (
+        <div key={key} className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <button
+            type="button"
+            onClick={() => toggleTestType(key)}
+            className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left md:px-5 md:py-4"
+          >
+            <div className="flex items-center gap-3">
+              <span className={`h-2.5 w-2.5 rounded-full ${accentClass}`} />
+              <span className="text-sm font-semibold text-gray-900">{title}</span>
+              <span className="text-xs text-gray-500">({entries.length})</span>
+            </div>
+            <ChevronDownIcon
+              className={`h-5 w-5 text-gray-400 transition-transform ${
+                isExpandedCategory ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+          {isExpandedCategory && (
+            <div className="border-t border-slate-100 px-4 py-4 md:px-5 md:py-5">
+              {renderExamCollection(entries)}
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    const renderModuleSection = (group: ExamGroup) => {
+      const modulesCount = getModuleCount(group)
+      if (modulesCount === 0) {
+        return null
+      }
+
+      const key = `${group.key}-individualModule`
+      const isModulesExpanded = expandedTestTypes.has(key)
+
+      return (
+        <div key={key} className="rounded-2xl border border-purple-100 bg-white shadow-sm">
+          <button
+            type="button"
+            onClick={() => toggleTestType(key)}
+            className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left md:px-5 md:py-4"
+          >
+            <div className="flex items-center gap-3">
+              <span className="h-2.5 w-2.5 rounded-full bg-purple-500" />
+              <span className="text-sm font-semibold text-gray-900">Modules</span>
+              <span className="text-xs text-gray-500">({modulesCount})</span>
+            </div>
+            <ChevronDownIcon
+              className={`h-5 w-5 text-gray-400 transition-transform ${
+                isModulesExpanded ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+
+          {isModulesExpanded && (
+            <div className="space-y-3 border-t border-purple-50 px-4 py-4 md:px-5 md:py-5">
+              {REGION_ORDER.map((region) => {
+                const regionEntries = group.buckets.individualModule[region]
+                if (regionEntries.length === 0) {
+                  return null
+                }
+
+                const regionKey = `${group.key}-${region}`
+                const isRegionExpanded = expandedRegions.has(regionKey)
+
+                return (
+                  <div
+                    key={regionKey}
+                    className={`rounded-xl border border-slate-200 ${REGION_STYLE[region].rowClass}`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleRegion(regionKey)}
+                      className={`flex w-full items-center justify-between gap-3 px-4 py-3 text-left md:px-5 ${REGION_STYLE[region].buttonClass}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`h-2.5 w-2.5 rounded-full ${REGION_DOT_CLASS[region]}`}
+                        />
+                        <span className="text-sm font-medium">{region}</span>
+                        <span className="text-xs text-current">
+                          ({regionEntries.length})
                         </span>
-                        <span>{group.label}</span>
-                      </button>
-                    </td>
-                  </tr>
+                      </div>
+                      <ChevronDownIcon
+                        className={`h-5 w-5 text-current transition-transform ${
+                          isRegionExpanded ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </button>
 
-                  {isGroupExpanded && (
-                    <>
-                      {group.buckets.fullTest.length > 0 && (
-                        <>
-                          <tr className="bg-blue-50">
-                            <td colSpan={7} className="px-6 py-1">
-                              <button
-                                onClick={() => toggleTestType(`${group.key}-fullTest`)}
-                                className="flex items-center space-x-2 text-sm font-medium text-blue-800 hover:text-blue-900"
-                              >
-                                <span className="text-blue-600 text-xs">
-                                  {expandedTestTypes.has(`${group.key}-fullTest`)
-                                    ? '▼'
-                                    : '▶'}
-                                </span>
-                                <span>Full Tests ({group.buckets.fullTest.length})</span>
-                              </button>
-                            </td>
-                          </tr>
-                          {expandedTestTypes.has(`${group.key}-fullTest`) &&
-                            group.buckets.fullTest.map(({ exam }) => (
-                              <ExamRow
-                                key={exam.id}
-                                exam={exam}
-                                openAnswerModal={openAnswerModal}
-                                onExamDeleted={fetchExamsOptimized}
-                                onExamUpdated={fetchExamsOptimized}
-                              />
-                            ))}
-                        </>
-                      )}
+                    {isRegionExpanded && (
+                      <div className="border-t border-slate-100 px-4 py-4 md:px-5">
+                        {renderExamCollection(regionEntries)}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )
+    }
 
-                      {group.buckets.sectionExam.length > 0 && (
-                        <>
-                          <tr className="bg-green-50">
-                            <td colSpan={7} className="px-6 py-1">
-                              <button
-                                onClick={() => toggleTestType(`${group.key}-sectionExam`)}
-                                className="flex items-center space-x-2 text-sm font-medium text-green-800 hover:text-green-900"
-                              >
-                                <span className="text-green-600 text-xs">
-                                  {expandedTestTypes.has(`${group.key}-sectionExam`)
-                                    ? '▼'
-                                    : '▶'}
-                                </span>
-                                <span>Sections ({group.buckets.sectionExam.length})</span>
-                              </button>
-                            </td>
-                          </tr>
-                          {expandedTestTypes.has(`${group.key}-sectionExam`) &&
-                            group.buckets.sectionExam.map(({ exam }) => (
-                              <ExamRow
-                                key={exam.id}
-                                exam={exam}
-                                openAnswerModal={openAnswerModal}
-                                onExamDeleted={fetchExamsOptimized}
-                                onExamUpdated={fetchExamsOptimized}
-                              />
-                            ))}
-                        </>
-                      )}
+    return (
+      <div className="space-y-6">
+        {groupedExamGroups.map((group) => {
+          const totalCount = getGroupTotalCount(group)
+          const modulesCount = getModuleCount(group)
+          const isGroupExpanded = expandedDateGroups.has(group.key)
 
-                      {modulesCount > 0 && (
-                        <>
-                          <tr className="bg-purple-50">
-                            <td colSpan={7} className="px-6 py-1">
-                              <button
-                                onClick={() => toggleTestType(`${group.key}-individualModule`)}
-                                className="flex items-center space-x-2 text-sm font-medium text-purple-800 hover:text-purple-900"
-                              >
-                                <span className="text-purple-600 text-xs">
-                                  {expandedTestTypes.has(`${group.key}-individualModule`)
-                                    ? '▼'
-                                    : '▶'}
-                                </span>
-                                <span>Modules ({modulesCount})</span>
-                              </button>
-                            </td>
-                          </tr>
-                          {expandedTestTypes.has(`${group.key}-individualModule`) && (
-                            <>
-                              {REGION_ORDER.map((region) => {
-                                const regionEntries = group.buckets.individualModule[region]
-                                if (regionEntries.length === 0) {
-                                  return null
-                                }
+          const summaryChips: string[] = []
+          if (group.buckets.fullTest.length > 0) {
+            summaryChips.push(
+              `${group.buckets.fullTest.length} Full Test${
+                group.buckets.fullTest.length === 1 ? '' : 's'
+              }`
+            )
+          }
+          if (group.buckets.sectionExam.length > 0) {
+            summaryChips.push(
+              `${group.buckets.sectionExam.length} Section${
+                group.buckets.sectionExam.length === 1 ? '' : 's'
+              }`
+            )
+          }
+          if (modulesCount > 0) {
+            summaryChips.push(
+              `${modulesCount} Module${modulesCount === 1 ? '' : 's'}`
+            )
+          }
+          if (group.buckets.custom.length > 0) {
+            summaryChips.push(
+              `${group.buckets.custom.length} Custom`
+            )
+          }
+          if (group.buckets.other.length > 0) {
+            summaryChips.push(
+              `${group.buckets.other.length} Other`
+            )
+          }
 
-                                const regionKey = `${group.key}-${region}`
-                                const { rowClass, buttonClass, iconClass } = REGION_STYLE[region]
+          return (
+            <div
+              key={group.key}
+              className="rounded-3xl border border-purple-100 bg-white shadow-sm"
+            >
+              <button
+                type="button"
+                onClick={() => toggleDateGroup(group.key)}
+                className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left transition hover:bg-purple-50 md:px-6 md:py-5"
+              >
+                <div>
+                  <p className="text-base font-semibold text-gray-900">
+                    {group.label}
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600">
+                      {totalCount} exam{totalCount === 1 ? '' : 's'}
+                    </span>
+                    {summaryChips.map((chip) => (
+                      <span
+                        key={`${group.key}-${chip}`}
+                        className="inline-flex items-center rounded-full bg-purple-50 px-2 py-0.5 text-[11px] font-medium text-purple-600"
+                      >
+                        {chip}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <ChevronDownIcon
+                  className={`h-6 w-6 text-gray-400 transition-transform ${
+                    isGroupExpanded ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
 
-                                return (
-                                  <React.Fragment key={region}>
-                                    <tr className={rowClass}>
-                                      <td colSpan={7} className="px-9 py-1">
-                                        <button
-                                          onClick={() => toggleRegion(regionKey)}
-                                          className={`flex items-center space-x-2 text-sm font-medium ${buttonClass}`}
-                                        >
-                                          <span className={`${iconClass} text-xs`}>
-                                            {expandedRegions.has(regionKey) ? '▼' : '▶'}
-                                          </span>
-                                          <span>
-                                            {region} ({regionEntries.length})
-                                          </span>
-                                        </button>
-                                      </td>
-                                    </tr>
-                                    {expandedRegions.has(regionKey) &&
-                                      regionEntries.map(({ exam }) => (
-                                        <ExamRow
-                                          key={exam.id}
-                                          exam={exam}
-                                          openAnswerModal={openAnswerModal}
-                                          onExamDeleted={fetchExamsOptimized}
-                                          onExamUpdated={fetchExamsOptimized}
-                                        />
-                                      ))}
-                                  </React.Fragment>
-                                )
-                              })}
-                            </>
-                          )}
-                        </>
-                      )}
-
-                      {group.buckets.custom.length > 0 && (
-                        <>
-                          <tr className="bg-rose-50">
-                            <td colSpan={7} className="px-6 py-1">
-                              <button
-                                onClick={() => toggleTestType(`${group.key}-custom`)}
-                                className="flex items-center space-x-2 text-sm font-medium text-rose-800 hover:text-rose-900"
-                              >
-                                <span className="text-rose-600 text-xs">
-                                  {expandedTestTypes.has(`${group.key}-custom`)
-                                    ? '▼'
-                                    : '▶'}
-                                </span>
-                                <span>Custom Assignments ({group.buckets.custom.length})</span>
-                              </button>
-                            </td>
-                          </tr>
-                          {expandedTestTypes.has(`${group.key}-custom`) &&
-                            group.buckets.custom.map(({ exam }) => (
-                              <ExamRow
-                                key={exam.id}
-                                exam={exam}
-                                openAnswerModal={openAnswerModal}
-                                onExamDeleted={fetchExamsOptimized}
-                                onExamUpdated={fetchExamsOptimized}
-                              />
-                            ))}
-                        </>
-                      )}
-
-                      {group.buckets.other.length > 0 && (
-                        <>
-                          <tr className="bg-slate-100">
-                            <td colSpan={7} className="px-6 py-1">
-                              <button
-                                onClick={() => toggleTestType(`${group.key}-other`)}
-                                className="flex items-center space-x-2 text-sm font-medium text-slate-800 hover:text-slate-900"
-                              >
-                                <span className="text-slate-600 text-xs">
-                                  {expandedTestTypes.has(`${group.key}-other`)
-                                    ? '▼'
-                                    : '▶'}
-                                </span>
-                                <span>Other ({group.buckets.other.length})</span>
-                              </button>
-                            </td>
-                          </tr>
-                          {expandedTestTypes.has(`${group.key}-other`) &&
-                            group.buckets.other.map(({ exam }) => (
-                              <ExamRow
-                                key={exam.id}
-                                exam={exam}
-                                openAnswerModal={openAnswerModal}
-                                onExamDeleted={fetchExamsOptimized}
-                                onExamUpdated={fetchExamsOptimized}
-                              />
-                            ))}
-                        </>
-                      )}
-                    </>
+              {isGroupExpanded && (
+                <div className="space-y-4 border-t border-purple-50 bg-purple-50/40 px-4 py-4 md:px-6 md:py-6">
+                  {renderCategorySection(
+                    `${group.key}-fullTest`,
+                    'Full Tests',
+                    group.buckets.fullTest,
+                    'bg-sky-500'
                   )}
-                </React.Fragment>
-              )
-            })}
-          </tbody>
-        </table>
+                  {renderCategorySection(
+                    `${group.key}-sectionExam`,
+                    'Sections',
+                    group.buckets.sectionExam,
+                    'bg-emerald-500'
+                  )}
+                  {renderModuleSection(group)}
+                  {renderCategorySection(
+                    `${group.key}-custom`,
+                    'Custom Assignments',
+                    group.buckets.custom,
+                    'bg-rose-500'
+                  )}
+                  {renderCategorySection(
+                    `${group.key}-other`,
+                    'Other',
+                    group.buckets.other,
+                    'bg-slate-400'
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     )
   }
+
 
 
 
