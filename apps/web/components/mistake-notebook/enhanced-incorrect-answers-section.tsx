@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/auth-context'
 import { supabase } from '../../lib/supabase'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Eye, EyeOff, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { isEmptyHtml } from '../../lib/content-converter'
 import { ContentRenderer } from '../content-renderer'
 
@@ -91,14 +92,32 @@ export function EnhancedIncorrectAnswersSection({
   const formatQuestionType = (type: string) => {
     switch (type) {
       case 'multiple_choice':
-        return 'Multiple Choice'
+        return 'MC'
       case 'grid_in':
-        return 'Grid-in'
+        return 'GI'
       case 'essay':
         return 'Essay'
       default:
-        return type
+        return type ? type.toUpperCase() : ''
     }
+  }
+
+  const renderMasteryStatus = (status?: 'unmastered' | 'mastered') => {
+    if (status === 'mastered') {
+      return (
+        <span className="inline-flex items-center justify-center rounded-full bg-emerald-50 p-1 text-emerald-600">
+          <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+          <span className="sr-only">Mastered</span>
+        </span>
+      )
+    }
+
+    return (
+      <span className="inline-flex items-center justify-center rounded-full bg-orange-50 p-1 text-orange-500">
+        <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
+        <span className="sr-only">Needs review</span>
+      </span>
+    )
   }
 
   const getGroupedQuestions = () => {
@@ -546,51 +565,35 @@ export function EnhancedIncorrectAnswersSection({
                         onChange={() => handleQuestionSelect(question.id)}
                         className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                       />
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-900">
-                          <span>
-                            Question {question.question_number ?? '—'} ·{' '}
+                      <div className="space-y-2">
+                        <div className="text-sm font-semibold text-gray-900">
+                          Question {question.question_number ?? '—'}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                          <span className="font-medium text-gray-600">
                             {formatModuleName(question.module_type)}
                           </span>
-                          <span className="rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-600">
-                            #{question.id.slice(0, 6)}
-                          </span>
-                        </div>
-                        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-                          <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium ${
-                              question.difficulty_level === 'hard'
-                                ? 'bg-rose-50 text-rose-700'
-                                : question.difficulty_level === 'medium'
-                                  ? 'bg-amber-50 text-amber-700'
-                                  : 'bg-emerald-50 text-emerald-700'
-                            }`}
-                          >
-                            {question.difficulty_level}
-                          </span>
-                          <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium bg-slate-100 text-slate-700">
+                          <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-medium text-slate-700">
                             {formatQuestionType(question.question_type)}
                           </span>
-                          <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium ${
-                              question.masteryStatus === 'mastered'
-                                ? 'bg-violet-50 text-violet-700'
-                                : 'bg-orange-50 text-orange-700'
-                            }`}
-                          >
-                            {question.masteryStatus === 'mastered'
-                              ? 'Mastered'
-                              : 'Needs review'}
-                          </span>
+                          {renderMasteryStatus(question.masteryStatus)}
                         </div>
                       </div>
                     </div>
 
                     <button
+                      type="button"
                       onClick={() => toggleQuestion(question.id)}
-                      className="rounded-md border border-purple-200 px-3 py-1 text-sm font-medium text-purple-600 transition-colors hover:bg-purple-50"
+                      aria-label={
+                        isExpanded ? 'Hide question details' : 'View question details'
+                      }
+                      className="rounded-md border border-purple-200 p-2 text-purple-600 transition-colors hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:ring-offset-2"
                     >
-                      {isExpanded ? 'Hide details' : 'View details'}
+                      {isExpanded ? (
+                        <EyeOff className="h-4 w-4" aria-hidden="true" />
+                      ) : (
+                        <Eye className="h-4 w-4" aria-hidden="true" />
+                      )}
                     </button>
                   </div>
 
