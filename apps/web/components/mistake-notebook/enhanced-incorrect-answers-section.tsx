@@ -523,274 +523,270 @@ export function EnhancedIncorrectAnswersSection({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 p-6">
-            {groupQuestions.map((question) => (
-              <div
-                key={question.id}
-                className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-red-200 hover:shadow-xl hover:border-purple-300 transition-all duration-200 hover:-translate-y-0.5"
-              >
-                <div className="flex items-start justify-between p-6 pb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
+            {groupQuestions.map((question) => {
+              const isSelected = selectedQuestions.includes(question.id)
+              const isExpanded = expandedQuestion === question.id
+              const attempts = question.incorrectAttempts || []
+              const displayedAttempts = attempts.slice(0, 3)
+              const remainingAttempts =
+                attempts.length > displayedAttempts.length
+                  ? attempts.length - displayedAttempts.length
+                  : 0
+
+              return (
+                <article
+                  key={question.id}
+                  className="group flex h-full flex-col rounded-2xl border border-purple-100 bg-white/90 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-purple-200 hover:shadow-lg"
+                >
+                  <div className="flex items-start justify-between gap-4 border-b border-purple-50 px-5 py-4">
+                    <div className="flex items-start gap-3">
                       <input
                         type="checkbox"
-                        checked={selectedQuestions.includes(question.id)}
+                        checked={isSelected}
                         onChange={() => handleQuestionSelect(question.id)}
-                        className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                        className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                       />
-                    </div>
-                    <div className="flex-shrink-0">
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium transition-all duration-300 ${
-                          question.masteryStatus === 'mastered'
-                            ? 'bg-purple-500 shadow-purple-200 shadow-lg'
-                            : 'bg-red-500 shadow-red-200 shadow-lg'
-                        }`}
-                      >
-                        {question.masteryStatus === 'mastered' ? '✓' : '✗'}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        Question {question.question_number} -{' '}
-                        {formatModuleName(question.module_type)}
-                      </div>
-                      <div className="flex items-center gap-1.5 mt-2 flex-nowrap">
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border flex-shrink-0 ${
-                            question.difficulty_level === 'hard'
-                              ? 'bg-rose-50 text-rose-700 border-rose-200'
-                              : question.difficulty_level === 'medium'
-                                ? 'bg-amber-50 text-amber-700 border-amber-200'
-                                : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          }`}
-                        >
-                          {question.difficulty_level}
-                        </span>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 flex-shrink-0">
-                          {formatQuestionType(question.question_type)}
-                        </span>
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border flex-shrink-0 ${
-                            question.masteryStatus === 'mastered'
-                              ? 'bg-violet-50 text-violet-700 border-violet-200'
-                              : 'bg-orange-50 text-orange-700 border-orange-200'
-                          }`}
-                        >
-                          {question.masteryStatus === 'mastered'
-                            ? '✓ Mastered'
-                            : '⚠ Practice'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => toggleQuestion(question.id)}
-                      className="text-purple-600 hover:text-purple-800 text-sm font-medium px-3 py-1 rounded-lg hover:bg-purple-50 transition-colors opacity-0 group-hover:opacity-100"
-                    >
-                      {expandedQuestion === question.id ? 'Hide' : 'Review'}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Question Preview */}
-                <div className="px-6 pb-4 text-sm text-gray-700 leading-relaxed">
-                  {question.question_html &&
-                  !isEmptyHtml(question.question_html) ? (
-                    <ContentRenderer
-                      htmlContent={question.question_html}
-                      className="prose-sm text-gray-700 leading-relaxed line-clamp-4 [&_*]:!font-normal"
-                    />
-                  ) : (
-                    <p className="line-clamp-4">
-                      {(() => {
-                        const textPreview =
-                          question.question_text?.trim() ||
-                          'No preview available'
-                        return textPreview.length > 160
-                          ? `${textPreview.substring(0, 160)}...`
-                          : textPreview
-                      })()}
-                    </p>
-                  )}
-                </div>
-
-                {/* Topics and Footer */}
-                <div className="px-6 pb-6">
-                  {question.examTitles && question.examTitles.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {question.examTitles.slice(0, 3).map((title, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
-                        >
-                          <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-1.5" />
-                          {title}
-                        </span>
-                      ))}
-                      {question.examTitles.length > 3 && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600 border border-blue-200">
-                          +{question.examTitles.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {question.topic_tags && question.topic_tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {question.topic_tags
-                        .slice(0, 3)
-                        .map((tag: string, index) => (
-                          <span
-                            key={index}
-                            className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-colors"
-                          >
-                            <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-1.5"></span>
-                            {tag}
-                          </span>
-                        ))}
-                      {question.topic_tags.length > 3 && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200">
-                          +{question.topic_tags.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>
-                      First mistake:{' '}
-                      {question.firstMistakenAt
-                        ? new Date(question.firstMistakenAt).toLocaleDateString(
-                            'en-US',
-                            {
-                              month: 'short',
-                              day: 'numeric',
-                            }
-                          )
-                        : 'Unknown'}
-                    </span>
-                    <span>
-                      {question.incorrectAttempts?.length || 1} incorrect
-                      attempt
-                      {(question.incorrectAttempts?.length || 1) !== 1
-                        ? 's'
-                        : ''}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Expanded Question Details */}
-                {expandedQuestion === question.id && (
-                  <div className="border-t border-purple-200 bg-purple-50/30 rounded-b-2xl">
-                    <div className="p-6 space-y-5">
                       <div>
-                        <h5 className="font-medium text-gray-900 mb-3">
-                          Question Passage
-                        </h5>
-                        <div className="max-h-72 overflow-y-auto pr-1 text-sm text-gray-700 leading-relaxed">
-                          {question.question_html &&
-                          !isEmptyHtml(question.question_html) ? (
-                            <ContentRenderer
-                              htmlContent={question.question_html}
-                              className="prose-sm text-gray-700 [&_*]:!font-normal"
-                            />
-                          ) : (
-                            <p className="whitespace-pre-wrap">
-                              {question.question_text?.trim() ||
-                                'Question content not available.'}
-                            </p>
-                          )}
+                        <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-900">
+                          <span>
+                            Question {question.question_number ?? '—'} ·{' '}
+                            {formatModuleName(question.module_type)}
+                          </span>
+                          <span className="rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-600">
+                            #{question.id.slice(0, 6)}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium ${
+                              question.difficulty_level === 'hard'
+                                ? 'bg-rose-50 text-rose-700'
+                                : question.difficulty_level === 'medium'
+                                  ? 'bg-amber-50 text-amber-700'
+                                  : 'bg-emerald-50 text-emerald-700'
+                            }`}
+                          >
+                            {question.difficulty_level}
+                          </span>
+                          <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium bg-slate-100 text-slate-700">
+                            {formatQuestionType(question.question_type)}
+                          </span>
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium ${
+                              question.masteryStatus === 'mastered'
+                                ? 'bg-violet-50 text-violet-700'
+                                : 'bg-orange-50 text-orange-700'
+                            }`}
+                          >
+                            {question.masteryStatus === 'mastered'
+                              ? 'Mastered'
+                              : 'Needs review'}
+                          </span>
                         </div>
                       </div>
+                    </div>
 
-                      {question.incorrectAttempts &&
-                        question.incorrectAttempts.length > 0 && (
-                          <div className="space-y-2">
+                    <button
+                      onClick={() => toggleQuestion(question.id)}
+                      className="rounded-md border border-purple-200 px-3 py-1 text-sm font-medium text-purple-600 transition-colors hover:bg-purple-50"
+                    >
+                      {isExpanded ? 'Hide details' : 'View details'}
+                    </button>
+                  </div>
+
+                  <div className="flex flex-1 flex-col gap-4 px-5 py-4 text-sm text-gray-700">
+                    <div className="line-clamp-5 leading-relaxed">
+                      {question.question_html &&
+                      !isEmptyHtml(question.question_html) ? (
+                        <ContentRenderer
+                          htmlContent={question.question_html}
+                          className="prose-sm text-gray-700 [&_*]:!font-normal line-clamp-5"
+                        />
+                      ) : (
+                        <p className="line-clamp-5">
+                          {(() => {
+                            const textPreview =
+                              question.question_text?.trim() ||
+                              'No preview available'
+                            return textPreview.length > 180
+                              ? `${textPreview.substring(0, 180)}...`
+                              : textPreview
+                          })()}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2 text-xs text-gray-600">
+                      {question.examTitles && question.examTitles.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {question.examTitles.slice(0, 2).map((title, index) => (
+                            <span
+                              key={index}
+                              className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 font-medium text-blue-700"
+                            >
+                              <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+                              {title}
+                            </span>
+                          ))}
+                          {question.examTitles.length > 2 && (
+                            <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 font-medium text-blue-600">
+                              +{question.examTitles.length - 2} more
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {question.topic_tags && question.topic_tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {question.topic_tags.slice(0, 3).map((tag) => (
+                            <span
+                              key={tag}
+                              className="inline-flex items-center gap-1 rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 font-medium text-indigo-700"
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                          {question.topic_tags.length > 3 && (
+                            <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 font-medium text-gray-600">
+                              +{question.topic_tags.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-auto flex items-center justify-between text-xs text-gray-500">
+                      <span>
+                        First mistaken:{' '}
+                        {question.firstMistakenAt
+                          ? new Date(
+                              question.firstMistakenAt
+                            ).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                            })
+                          : 'Unknown'}
+                      </span>
+                      <span>
+                        {question.incorrectAttempts?.length ?? 0} incorrect attempt
+                        {question.incorrectAttempts &&
+                        question.incorrectAttempts.length !== 1
+                          ? 's'
+                          : ''}
+                      </span>
+                    </div>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="border-t border-purple-100 px-5 pb-5 pt-4">
+                      <div className="space-y-4">
+                        <section>
+                          <h5 className="text-sm font-semibold text-gray-900">
+                            Question passage
+                          </h5>
+                          <div className="mt-2 max-h-60 overflow-y-auto rounded-lg border border-purple-100 bg-white p-3 text-sm leading-relaxed text-gray-700">
+                            {question.question_html &&
+                            !isEmptyHtml(question.question_html) ? (
+                              <ContentRenderer
+                                htmlContent={question.question_html}
+                                className="prose-sm text-gray-700 [&_*]:!font-normal"
+                              />
+                            ) : (
+                              <p className="whitespace-pre-wrap">
+                                {question.question_text?.trim() ||
+                                  'Question content not available.'}
+                              </p>
+                            )}
+                          </div>
+                        </section>
+
+                        {displayedAttempts.length > 0 && (
+                          <section>
                             <h5 className="text-sm font-semibold text-gray-900">
-                              Recent Incorrect Attempts
+                              Recent incorrect attempts
                             </h5>
-                            <div className="max-h-40 overflow-y-auto pr-1 space-y-2">
-                              {question.incorrectAttempts.map(
-                                (attempt, index) => (
-                                  <div
-                                    key={attempt.id}
-                                    className="bg-white border border-purple-100 rounded-lg p-3 space-y-1"
-                                  >
-                                    <div className="flex justify-between items-center text-xs text-gray-600">
-                                      <span className="font-medium text-gray-700">
-                                        Attempt #{index + 1}
-                                      </span>
-                                      <span>
-                                        {new Date(
-                                          attempt.answered_at
-                                        ).toLocaleDateString('en-US', {
+                            <div className="mt-2 space-y-2">
+                              {displayedAttempts.map((attempt, index) => (
+                                <div
+                                  key={attempt.id}
+                                  className="rounded-lg border border-purple-100 bg-white px-3 py-2 text-xs text-gray-600"
+                                >
+                                  <div className="flex justify-between">
+                                    <span className="font-semibold text-gray-700">
+                                      Attempt #{index + 1}
+                                    </span>
+                                    <span>
+                                      {new Date(attempt.answered_at).toLocaleDateString(
+                                        'en-US',
+                                        {
                                           year: 'numeric',
                                           month: 'short',
                                           day: 'numeric',
-                                          hour: '2-digit',
-                                          minute: '2-digit',
-                                        })}
-                                      </span>
-                                    </div>
-                                    {attempt.exam_title && (
-                                      <div className="text-xs text-blue-600 bg-blue-50 border border-blue-100 rounded px-2 py-1 inline-flex items-center gap-1">
-                                        <span className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
-                                        {attempt.exam_title}
-                                      </div>
-                                    )}
-                                    <div className="flex justify-between items-center text-xs text-gray-700">
-                                      <span>
-                                        Your answer:{' '}
-                                        <span className="font-semibold">
-                                          {attempt.user_answer}
-                                        </span>
-                                      </span>
-                                      <Link
-                                        href={`/student/results/${attempt.attempt_id}/review`}
-                                        className="text-purple-600 hover:text-purple-800 font-semibold"
-                                      >
-                                        Review Attempt
-                                      </Link>
-                                    </div>
+                                        }
+                                      )}
+                                    </span>
                                   </div>
-                                )
+                                  <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+                                    <span>
+                                      Your answer:{' '}
+                                      <span className="font-semibold">
+                                        {attempt.user_answer}
+                                      </span>
+                                    </span>
+                                    <Link
+                                      href={`/student/results/${attempt.attempt_id}/review`}
+                                      className="text-purple-600 hover:text-purple-800"
+                                    >
+                                      View attempt →
+                                    </Link>
+                                  </div>
+                                  {attempt.exam_title && (
+                                    <div className="mt-1 inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 font-medium text-blue-600">
+                                      <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+                                      {attempt.exam_title}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                              {remainingAttempts > 0 && (
+                                <div className="rounded-lg border border-dashed border-purple-200 px-3 py-2 text-xs text-purple-700">
+                                  +{remainingAttempts} more attempts logged
+                                </div>
                               )}
                             </div>
-                          </div>
+                          </section>
                         )}
 
-                      <div className="bg-white border border-purple-100 rounded-xl p-4 text-sm text-purple-700">
-                        Practice attempts happen in the dedicated session. Select
-                        this question and use "Practice Selected" or "Practice All"
-                        above to start a new run.
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleQuestionSelect(question.id)}
-                            className="px-3 py-2 text-sm font-medium text-purple-600 border border-purple-200 rounded-lg hover:bg-purple-50 transition-colors"
-                          >
-                            {selectedQuestions.includes(question.id)
-                              ? 'Remove from selection'
-                              : 'Select for practice'}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              router.push(`/student/problem-bank/${question.id}`)
-                            }
-                            className="px-3 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
-                          >
-                            Open full question →
-                          </button>
-                        </div>
+                        <section className="rounded-xl border border-purple-100 bg-purple-50/60 px-4 py-3 text-sm text-purple-700">
+                          <p>
+                            Ready to practice this question again? Use the actions
+                            below to take it into a focused session.
+                          </p>
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleQuestionSelect(question.id)}
+                              className="rounded-md border border-purple-200 px-3 py-2 text-sm font-medium text-purple-600 transition-colors hover:bg-purple-100"
+                            >
+                              {isSelected ? 'Remove from selection' : 'Select for practice'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                router.push(`/student/problem-bank/${question.id}`)
+                              }
+                              className="rounded-md bg-purple-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700"
+                            >
+                              Open full question
+                            </button>
+                          </div>
+                        </section>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </article>
+              )
+            })}
           </div>
         </div>
       ))}
