@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../contexts/auth-context'
 import { type TestAttempt } from '../../lib/exam-service'
@@ -536,13 +536,73 @@ export default function DashboardClient({
     )
   }
 
+  const toneStyles = {
+    violet: {
+      border: 'border-violet-200',
+      badge: 'bg-violet-100 text-violet-700',
+      summary: 'text-violet-700',
+      hover: 'hover:border-violet-300',
+      step: 'bg-violet-50 text-violet-600',
+      cta: 'text-violet-600 hover:text-violet-700',
+    },
+    rose: {
+      border: 'border-rose-200',
+      badge: 'bg-rose-100 text-rose-700',
+      summary: 'text-rose-700',
+      hover: 'hover:border-rose-300',
+      step: 'bg-rose-50 text-rose-600',
+      cta: 'text-rose-600 hover:text-rose-700',
+    },
+    amber: {
+      border: 'border-amber-200',
+      badge: 'bg-amber-100 text-amber-700',
+      summary: 'text-amber-700',
+      hover: 'hover:border-amber-300',
+      step: 'bg-amber-50 text-amber-600',
+      cta: 'text-amber-600 hover:text-amber-700',
+    },
+  } as const
+
+  type TaskTone = (typeof toneStyles)[keyof typeof toneStyles]
+
+  const nextAssignment = assignmentPreview[0]
+  const assignmentsCta =
+    incompleteAssignments.length === 0
+      ? { label: 'View exam history', href: '/student/exams' }
+      : nextAssignment && nextAssignment.examId
+        ? {
+            label:
+              nextAssignment.status === 'in_progress'
+                ? 'Continue exam'
+                : 'Start next exam',
+            href: `/student/exam/${nextAssignment.examId}`,
+          }
+        : { label: 'View assignments', href: '/student/exams' }
+
+  const mistakesCta = {
+    label:
+      mistakeSummary.unmastered === 0
+        ? 'Review notebook'
+        : 'Open Mistake Notebook',
+    href: '/student/mistake-notebook',
+  }
+
+  const vocabCta = {
+    label:
+      vocabSummary.totalWords === 0
+        ? 'Create vocab set'
+        : 'Start vocab review',
+    href: '/student/vocab',
+  }
+
   const taskCards: Array<{
     id: 'assignments' | 'mistakes' | 'vocab'
     title: string
     badge: string
-    tone: 'violet' | 'rose' | 'amber'
+    tone: keyof typeof toneStyles
     summary: string
     details: () => JSX.Element
+    cta: { label: string; href: string }
   }> = [
     {
       id: 'assignments',
@@ -554,6 +614,7 @@ export default function DashboardClient({
       tone: 'violet',
       summary: assignmentSummaryText,
       details: renderAssignmentDetails,
+      cta: assignmentsCta,
     },
     {
       id: 'mistakes',
@@ -565,6 +626,7 @@ export default function DashboardClient({
       tone: 'rose',
       summary: mistakeSummaryText,
       details: renderMistakeDetails,
+      cta: mistakesCta,
     },
     {
       id: 'vocab',
@@ -578,29 +640,90 @@ export default function DashboardClient({
       tone: 'amber',
       summary: vocabSummaryText,
       details: renderVocabDetails,
+      cta: vocabCta,
     },
   ]
 
-  const toneStyles = {
-    violet: {
-      border: 'border-violet-200',
-      badge: 'bg-violet-100 text-violet-700',
-      summary: 'text-violet-700',
-      hover: 'hover:border-violet-300',
-    },
-    rose: {
-      border: 'border-rose-200',
-      badge: 'bg-rose-100 text-rose-700',
-      summary: 'text-rose-700',
-      hover: 'hover:border-rose-300',
-    },
-    amber: {
-      border: 'border-amber-200',
-      badge: 'bg-amber-100 text-amber-700',
-      summary: 'text-amber-700',
-      hover: 'hover:border-amber-300',
-    },
-  } as const
+  interface TaskStepProps {
+    step: number
+    title: string
+    summary: string
+    badge: string
+    tone: TaskTone
+    isExpanded: boolean
+    onToggle: () => void
+    cta?: { label: string; href: string }
+    children: ReactNode
+    className?: string
+  }
+
+  const TaskStep = ({
+    step,
+    title,
+    summary,
+    badge,
+    tone,
+    isExpanded,
+    onToggle,
+    cta,
+    children,
+    className = '',
+  }: TaskStepProps) => (
+    <div
+      className={`rounded-2xl border bg-white shadow-sm transition ${tone.border} ${tone.hover} ${className}`.trim()}
+    >
+      <div className="flex items-start gap-4 px-4 py-4">
+        <span
+          className={`flex h-9 w-9 flex-none items-center justify-center rounded-full text-sm font-semibold ${tone.step}`}
+        >
+          {step}
+        </span>
+        <div className="flex-1 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                {title}
+              </p>
+              <p
+                className={`mt-2 text-sm font-medium leading-relaxed text-gray-900 line-clamp-2 ${tone.summary}`}
+              >
+                {summary}
+              </p>
+            </div>
+            <span
+              className={`inline-flex flex-none items-center rounded-full px-2.5 py-1 text-xs font-semibold ${tone.badge}`}
+            >
+              {badge}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-xs text-gray-400">
+            {cta ? (
+              <Link href={cta.href} className={`font-semibold ${tone.cta}`}>
+                {cta.label}
+              </Link>
+            ) : (
+              <span />
+            )}
+            <button
+              type="button"
+              onClick={onToggle}
+              className="inline-flex items-center gap-1 font-medium text-gray-500 transition hover:text-gray-900"
+            >
+              <span>{isExpanded ? 'Hide details' : 'See details'}</span>
+              <ChevronDownIcon
+                className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+      {isExpanded && (
+        <div className="border-t border-gray-100 px-4 pb-4">
+          <div className="pt-4">{children}</div>
+        </div>
+      )}
+    </div>
+  )
 
   return (
     <div className="h-full bg-gray-50">
@@ -635,65 +758,43 @@ export default function DashboardClient({
           {/* Left Column - 9 cols */}
           <div className="lg:col-span-9 space-y-4 md:space-y-6">
             {/* Priority Tasks */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-              {taskCards.map((card) => {
-                const isExpanded = expandedCard === card.id
-                const styles = toneStyles[card.tone]
+            <section className="space-y-3 md:space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-semibold text-gray-900 md:text-lg">
+                  Today's Plan
+                </h2>
+                <span className="text-xs text-gray-400 md:text-sm">
+                  Work through these steps in order.
+                </span>
+              </div>
+              <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-1 md:gap-4 md:overflow-visible md:pb-0 lg:gap-5">
+                {taskCards.map((card, index) => {
+                  const isExpanded = expandedCard === card.id
+                  const tone = toneStyles[card.tone]
 
-                return (
-                  <div
-                    key={card.id}
-                    className={`rounded-2xl border bg-white shadow-sm transition ${styles.border} ${styles.hover}`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() =>
+                  return (
+                    <TaskStep
+                      key={card.id}
+                      step={index + 1}
+                      title={card.title}
+                      summary={card.summary}
+                      badge={card.badge}
+                      tone={tone}
+                      isExpanded={isExpanded}
+                      onToggle={() =>
                         setExpandedCard((prev) =>
                           prev === card.id ? null : card.id
                         )
                       }
-                      className="w-full px-4 py-4 text-left focus:outline-none"
+                      cta={card.cta}
+                      className="snap-start min-w-[280px] flex-none w-[calc(100%-1rem)] md:min-w-0 md:w-full"
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-                            {card.title}
-                          </p>
-                          <p
-                            className={`mt-2 text-sm font-medium leading-relaxed ${styles.summary}`}
-                          >
-                            {card.summary}
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <span
-                            className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${styles.badge}`}
-                          >
-                            {card.badge}
-                          </span>
-                          <ChevronDownIcon
-                            className={`h-4 w-4 text-gray-400 transition-transform ${
-                              isExpanded ? 'rotate-180' : ''
-                            }`}
-                          />
-                        </div>
-                      </div>
-                      <p className="mt-3 text-xs text-gray-400">
-                        {isExpanded
-                          ? 'Click again to collapse'
-                          : 'View details'}
-                      </p>
-                    </button>
-
-                    {isExpanded && (
-                      <div className="border-t border-gray-100 px-4 pb-4">
-                        <div className="pt-4">{card.details()}</div>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
+                      {card.details()}
+                    </TaskStep>
+                  )
+                })}
+              </div>
+            </section>
 
             {/* Top Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
