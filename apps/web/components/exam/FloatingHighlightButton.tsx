@@ -6,7 +6,6 @@ import {
   getVisiblePlainText,
   getTextOffsetInContainer,
   createNormalizedContainer,
-  findBestTextMatch,
   getTextWalker,
 } from './text-utils'
 
@@ -351,121 +350,8 @@ export default function FloatingHighlightButton({
         const windowEnd = Math.min(plainText.length, approxNormalizedStart + windowRadius)
         const windowText = plainText.slice(windowStart, windowEnd)
 
-        const domSelectionSlice = domPlainText.slice(domStart, domEnd)
-        const normalizedDomSlice = domSelectionSlice.replace(/\s+/g, ' ').trim()
-        const initialSlice = plainText.slice(mappedStart, mappedEnd)
-
-        const variations = Array.from(
-          new Set(
-            [
-              rawSelection,
-              trimmedSelection,
-              rawSelection.replace(/\s+/g, ' ').trim(),
-              trimmedSelection.replace(/\s+/g, ' '),
-              domSelectionSlice,
-              domSelectionSlice.trim(),
-              normalizedDomSlice,
-              initialSlice,
-              initialSlice.trim(),
-            ].filter(Boolean)
-          )
-        )
-
-        const findNearestIndex = (
-          source: string,
-          target: string,
-          preferredStart: number
-        ): number => {
-          let idx = source.indexOf(target)
-          if (idx < 0) return -1
-          let best = idx
-          let bestDistance = Math.abs(idx - preferredStart)
-          while (true) {
-            idx = source.indexOf(target, idx + 1)
-            if (idx < 0) break
-            const distance = Math.abs(idx - preferredStart)
-            if (distance < bestDistance) {
-              bestDistance = distance
-              best = idx
-            }
-          }
-          return best
-        }
-
-        const tryWindowMatch = (): { start: number; end: number; text: string } | null => {
-          for (const variant of variations) {
-            const idx = findNearestIndex(
-              windowText,
-              variant,
-              approxNormalizedStart - windowStart
-            )
-            if (idx >= 0) {
-              const start = windowStart + idx
-              return { start, end: start + variant.length, text: variant }
-            }
-          }
-          return null
-        }
-
-        let match: { start: number; end: number; text: string } | null = null
-
-        if (initialSlice.trim()) {
-          match = {
-            start: mappedStart,
-            end: Math.max(mappedStart, mappedEnd),
-            text: initialSlice,
-          }
-        }
-
-        if (!match) {
-          match = tryWindowMatch()
-        }
-
-        if (!match) {
-          const beforeContext = plainText.slice(windowStart, approxNormalizedStart)
-          const afterContext = plainText.slice(
-            approxNormalizedStart,
-            windowEnd
-          )
-
-          match = findBestTextMatch(plainText, rawSelection, {
-            before: beforeContext,
-            after: afterContext,
-          })
-
-          if (!match) {
-            match = findBestTextMatch(plainText, trimmedSelection, {
-              before: beforeContext,
-              after: afterContext,
-            })
-          }
-        }
-
-        if (!match) {
-          for (const variant of variations) {
-            const directIndex = findNearestIndex(
-              plainText,
-              variant,
-              approxNormalizedStart
-            )
-            if (directIndex >= 0) {
-              match = {
-                start: directIndex,
-                end: directIndex + variant.length,
-                text: variant,
-              }
-              break
-            }
-          }
-        }
-
-        if (!match) {
-          clearSelection()
-          return
-        }
-
-        const safeStart = Math.max(0, Math.min(match.start, plainText.length))
-        const safeEnd = Math.max(safeStart, Math.min(match.end, plainText.length))
+        const safeStart = Math.max(0, Math.min(mappedStart, plainText.length))
+        const safeEnd = Math.max(safeStart, Math.min(mappedEnd, plainText.length))
 
         const rawSlice = plainText.slice(safeStart, safeEnd)
         if (!rawSlice.trim()) {

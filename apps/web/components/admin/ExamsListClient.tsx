@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
@@ -29,6 +29,8 @@ interface RpcExamData {
   latest_attempt_visible_after: string | null
   total_attempts_count: number
   template_id: string | null
+  is_custom_assignment: boolean
+  exam_type: 'template' | 'custom' | 'original'
   default_answers_visible: boolean
   default_answers_visible_after: string | null
 }
@@ -39,16 +41,359 @@ interface ExamWithCurves {
   title: string
   description: string
   created_at: string
+  is_active: boolean
+  total_questions: number
+  total_attempts_count: number
   english_scoring_curve_id: number | null
   math_scoring_curve_id: number | null
   english_curve_name: string | null
   math_curve_name: string | null
   template_id: string | null
+  is_custom_assignment: boolean
+  exam_type: 'template' | 'custom' | 'original'
   scoring_groups?: { [key: string]: string[] }
   answer_release_setting?: {
     type: 'hidden' | 'immediate' | 'scheduled'
     scheduled_date?: Date
   }
+}
+
+const MONTH_DEFINITIONS = [
+  { label: 'January', variants: ['january', 'jan'] },
+  { label: 'February', variants: ['february', 'feb'] },
+  { label: 'March', variants: ['march', 'mar'] },
+  { label: 'April', variants: ['april', 'apr'] },
+  { label: 'May', variants: ['may'] },
+  { label: 'June', variants: ['june', 'jun'] },
+  { label: 'July', variants: ['july', 'jul'] },
+  { label: 'August', variants: ['august', 'aug'] },
+  { label: 'September', variants: ['september', 'sept', 'sep'] },
+  { label: 'October', variants: ['october', 'oct'] },
+  { label: 'November', variants: ['november', 'nov'] },
+  { label: 'December', variants: ['december', 'dec'] },
+] as const
+
+const MONTH_LABELS = MONTH_DEFINITIONS.map((definition) => definition.label)
+
+type ExamFormat = 'fullTest' | 'sectionExam' | 'individualModule' | 'custom' | 'other'
+type ExamOrigin = 'template' | 'custom' | 'original'
+type ExamRegion = 'International' | 'US' | 'Digital' | 'Other'
+type SortOption = 'recent' | 'oldest' | 'title'
+
+interface ExamMeta {
+  format: ExamFormat
+  origin: ExamOrigin
+  region: ExamRegion
+  monthIndex: number | null
+  year: number | null
+  tags: string[]
+}
+
+interface ExamWithMeta {
+  exam: ExamWithCurves
+  meta: ExamMeta
+}
+
+interface ExamGroupBucket {
+  fullTest: ExamWithMeta[]
+  sectionExam: ExamWithMeta[]
+  individualModule: Record<ExamRegion, ExamWithMeta[]>
+  custom: ExamWithMeta[]
+  other: ExamWithMeta[]
+}
+
+type ExamGroupType = 'date' | 'custom' | 'other'
+
+interface ExamGroup {
+  key: string
+  label: string
+  type: ExamGroupType
+  year?: number
+  monthIndex?: number
+  buckets: ExamGroupBucket
+}
+
+const REGION_OPTIONS: { key: ExamRegion; label: string }[] = [
+  { key: 'International', label: 'International' },
+  { key: 'US', label: 'US' },
+  { key: 'Digital', label: 'Digital' },
+  { key: 'Other', label: 'Other' },
+]
+
+const FORMAT_OPTIONS: { key: ExamFormat; label: string }[] = [
+  { key: 'fullTest', label: 'Full Tests' },
+  { key: 'sectionExam', label: 'Sections' },
+  { key: 'individualModule', label: 'Modules' },
+  { key: 'custom', label: 'Custom Assignments' },
+  { key: 'other', label: 'Other' },
+]
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'recent', label: 'Newest first' },
+  { value: 'oldest', label: 'Oldest first' },
+  { value: 'title', label: 'Title A–Z' },
+]
+
+const REGION_ORDER: ExamRegion[] = ['International', 'US', 'Digital', 'Other']
+
+const REGION_STYLE: Record<ExamRegion, { rowClass: string; buttonClass: string; iconClass: string }> = {
+  International: {
+    rowClass: 'bg-orange-50',
+    buttonClass: 'text-orange-800 hover:text-orange-900',
+    iconClass: 'text-orange-600',
+  },
+  US: {
+    rowClass: 'bg-emerald-50',
+    buttonClass: 'text-emerald-800 hover:text-emerald-900',
+    iconClass: 'text-emerald-600',
+  },
+  Digital: {
+    rowClass: 'bg-sky-50',
+    buttonClass: 'text-sky-800 hover:text-sky-900',
+    iconClass: 'text-sky-600',
+  },
+  Other: {
+    rowClass: 'bg-gray-50',
+    buttonClass: 'text-gray-800 hover:text-gray-900',
+    iconClass: 'text-gray-600',
+  },
+}
+
+const monthMatchers = MONTH_DEFINITIONS.map((definition) => ({
+  label: definition.label,
+  regexes: definition.variants.map(
+    (variant) => new RegExp(`\\b${variant.replace('.', '\\.')}\\b`, 'i')
+  ),
+}))
+
+const yearRegex = /\b(20[0-9]{2})\b/
+
+const detectMonthIndex = (title: string): number | null => {
+  for (let index = 0; index < monthMatchers.length; index += 1) {
+    const { regexes } = monthMatchers[index]
+    if (regexes.some((regex) => regex.test(title))) {
+      return index
+    }
+  }
+  return null
+}
+
+const detectYear = (title: string): number | null => {
+  const match = title.match(yearRegex)
+  return match ? Number(match[1]) : null
+}
+
+const deriveExamMetadata = (exam: ExamWithCurves): ExamMeta => {
+  const normalizedTitle = exam.title.toLowerCase()
+
+  let format: ExamFormat = 'other'
+  if (exam.is_custom_assignment || exam.exam_type === 'custom') {
+    format = 'custom'
+  } else if (/\bmodule\b/.test(normalizedTitle)) {
+    format = 'individualModule'
+  } else if (
+    /\bsection\b/.test(normalizedTitle) ||
+    (/\b(english|reading|writing|math)\b/.test(normalizedTitle) && /\bsat\b/.test(normalizedTitle))
+  ) {
+    format = 'sectionExam'
+  } else if (normalizedTitle.startsWith('sat') || /\bsat\b/.test(normalizedTitle)) {
+    format = 'fullTest'
+  }
+
+  let origin: ExamOrigin = exam.exam_type
+  if (exam.is_custom_assignment) {
+    origin = 'custom'
+  }
+
+  let region: ExamRegion = 'Other'
+  if (/\binternational\b/.test(normalizedTitle)) {
+    region = 'International'
+  } else if (/\bschool day\b/.test(normalizedTitle)) {
+    region = 'US'
+  } else if (/\bdigital\b/.test(normalizedTitle)) {
+    region = 'Digital'
+  } else if (/\b(us|usa)\b/.test(normalizedTitle)) {
+    region = 'US'
+  }
+
+  const isCustom = origin === 'custom' || format === 'custom'
+  const monthIndex = isCustom ? null : detectMonthIndex(normalizedTitle)
+  let year = isCustom ? null : detectYear(normalizedTitle)
+
+  if (!isCustom && monthIndex !== null && year === null) {
+    year = new Date(exam.created_at).getFullYear()
+  }
+
+  const tags: string[] = []
+  if (exam.is_active) {
+    tags.push('active')
+  }
+  if (exam.total_attempts_count > 0) {
+    tags.push('hasAttempts')
+  }
+  if (exam.total_questions > 0) {
+    tags.push('hasQuestions')
+  }
+  if (exam.english_curve_name && exam.math_curve_name) {
+    tags.push('fullyConfigured')
+  }
+
+  return {
+    format,
+    origin,
+    region,
+    monthIndex,
+    year,
+    tags,
+  }
+}
+
+const createEmptyBucket = (): ExamGroupBucket => ({
+  fullTest: [],
+  sectionExam: [],
+  individualModule: {
+    International: [],
+    US: [],
+    Digital: [],
+    Other: [],
+  },
+  custom: [],
+  other: [],
+})
+
+const groupExamsByCategory = (exams: ExamWithMeta[]): ExamGroup[] => {
+  const groupsMap = new Map<string, ExamGroup>()
+
+  exams.forEach((entry) => {
+    const { exam, meta } = entry
+
+    let key: string
+    let label: string
+    let type: ExamGroupType
+    let year: number | undefined
+    let monthIndex: number | undefined
+
+    if (meta.format === 'custom' || meta.origin === 'custom') {
+      key = 'custom'
+      label = 'Custom Assignments'
+      type = 'custom'
+    } else if (meta.monthIndex !== null && meta.year !== null) {
+      key = `date-${meta.year}-${meta.monthIndex}`
+      label = `${meta.year} • ${MONTH_LABELS[meta.monthIndex]}`
+      type = 'date'
+      year = meta.year
+      monthIndex = meta.monthIndex
+    } else {
+      key = 'other'
+      label = 'Other Exams'
+      type = 'other'
+    }
+
+    if (!groupsMap.has(key)) {
+      groupsMap.set(key, {
+        key,
+        label,
+        type,
+        year,
+        monthIndex,
+        buckets: createEmptyBucket(),
+      })
+    }
+
+    const group = groupsMap.get(key)!
+    switch (meta.format) {
+      case 'fullTest':
+        group.buckets.fullTest.push(entry)
+        break
+      case 'sectionExam':
+        group.buckets.sectionExam.push(entry)
+        break
+      case 'individualModule':
+        group.buckets.individualModule[meta.region].push(entry)
+        break
+      case 'custom':
+        group.buckets.custom.push(entry)
+        break
+      default:
+        group.buckets.other.push(entry)
+    }
+  })
+
+  return Array.from(groupsMap.values())
+}
+
+const sortExamEntries = (entries: ExamWithMeta[], sortBy: SortOption) => {
+  entries.sort((a, b) => {
+    if (sortBy === 'title') {
+      return a.exam.title.localeCompare(b.exam.title, undefined, {
+        sensitivity: 'base',
+      })
+    }
+
+    const timeA = new Date(a.exam.created_at).getTime()
+    const timeB = new Date(b.exam.created_at).getTime()
+
+    if (sortBy === 'oldest') {
+      return timeA - timeB
+    }
+
+    return timeB - timeA
+  })
+}
+
+const sortExamGroups = (groups: ExamGroup[], sortBy: SortOption): ExamGroup[] => {
+  groups.forEach((group) => {
+    sortExamEntries(group.buckets.fullTest, sortBy)
+    sortExamEntries(group.buckets.sectionExam, sortBy)
+    REGION_ORDER.forEach((region) => {
+      sortExamEntries(group.buckets.individualModule[region], sortBy)
+    })
+    sortExamEntries(group.buckets.custom, sortBy)
+    sortExamEntries(group.buckets.other, sortBy)
+  })
+
+  const sorted = [...groups]
+  if (sortBy === 'title') {
+    sorted.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }))
+    return sorted
+  }
+
+  sorted.sort((a, b) => {
+    if (a.type === 'date' && b.type === 'date') {
+      if (a.year !== b.year) {
+        if (sortBy === 'oldest') {
+          return (a.year ?? 0) - (b.year ?? 0)
+        }
+        return (b.year ?? 0) - (a.year ?? 0)
+      }
+      if (a.monthIndex !== b.monthIndex) {
+        if (sortBy === 'oldest') {
+          return (a.monthIndex ?? 0) - (b.monthIndex ?? 0)
+        }
+        return (b.monthIndex ?? 0) - (a.monthIndex ?? 0)
+      }
+      return 0
+    }
+
+    if (a.type === 'date') {
+      return -1
+    }
+    if (b.type === 'date') {
+      return 1
+    }
+
+    const rank = (group: ExamGroup) => {
+      if (group.type === 'custom') return 1
+      return 2
+    }
+
+    if (sortBy === 'oldest') {
+      return rank(a) - rank(b)
+    }
+    return rank(a) - rank(b)
+  })
+
+  return sorted
 }
 
 export function ExamsListClient() {
@@ -149,11 +494,16 @@ export function ExamsListClient() {
           title: exam.title,
           description: exam.description,
           created_at: exam.created_at,
+          is_active: exam.is_active,
+          total_questions: exam.total_questions,
+          total_attempts_count: exam.total_attempts_count,
           english_scoring_curve_id: exam.english_curve_id,
           math_scoring_curve_id: exam.math_curve_id,
           english_curve_name: exam.english_curve_name,
           math_curve_name: exam.math_curve_name,
           template_id: exam.template_id,
+          is_custom_assignment: exam.is_custom_assignment,
+          exam_type: exam.exam_type,
           scoring_groups: exam.template_id
             ? templates[exam.template_id]?.scoring_groups
             : undefined,
@@ -206,6 +556,71 @@ export function ExamsListClient() {
     examTitle: '',
   })
 
+  const [selectedFormats, setSelectedFormats] = usePersistentState<Set<ExamFormat>>(
+    'admin-exams-format-filters',
+    new Set()
+  )
+  const [selectedRegions, setSelectedRegions] = usePersistentState<Set<ExamRegion>>(
+    'admin-exams-region-filters',
+    new Set()
+  )
+  const [showActiveOnly, setShowActiveOnly] = usePersistentState<boolean>(
+    'admin-exams-active-only',
+    false
+  )
+  const [sortBy, setSortBy] = usePersistentState<SortOption>(
+    'admin-exams-sort',
+    'recent'
+  )
+
+  const examsWithMeta = useMemo<ExamWithMeta[]>(() => {
+    return filteredExams.map((exam) => ({
+      exam,
+      meta: deriveExamMetadata(exam),
+    }))
+  }, [filteredExams])
+
+  const displayedExamsWithMeta = useMemo<ExamWithMeta[]>(() => {
+    return examsWithMeta.filter(({ exam, meta }) => {
+      if (showActiveOnly && !exam.is_active) {
+        return false
+      }
+      if (selectedFormats.size > 0 && !selectedFormats.has(meta.format)) {
+        return false
+      }
+      if (selectedRegions.size > 0 && !selectedRegions.has(meta.region)) {
+        return false
+      }
+      return true
+    })
+  }, [examsWithMeta, selectedFormats, selectedRegions, showActiveOnly])
+
+  const displayedExams = useMemo(() => {
+    return displayedExamsWithMeta.map(({ exam }) => exam)
+  }, [displayedExamsWithMeta])
+
+  const groupedExamGroups = useMemo(() => {
+    return sortExamGroups(groupExamsByCategory(displayedExamsWithMeta), sortBy)
+  }, [displayedExamsWithMeta, sortBy])
+
+  const hasFormatFilter = selectedFormats.size > 0
+  const hasRegionFilter = selectedRegions.size > 0
+  const hasSearch = searchTerm.trim().length > 0
+  const hasFilters = hasFormatFilter || hasRegionFilter || showActiveOnly || sortBy !== 'recent'
+
+  const fullyConfiguredCount = useMemo(() => {
+    return displayedExams.filter(
+      (exam) => exam.english_curve_name && exam.math_curve_name
+    ).length
+  }, [displayedExams])
+
+  const needsConfigurationCount = displayedExams.length - fullyConfiguredCount
+
+  const totalExamCount = exams?.length ?? 0
+  const emptyStateMessage = hasSearch || hasFilters
+    ? 'No exams match your current search or filters.'
+    : 'No exams found.'
+
   // Create a refresh function for the exam data after updates
   const fetchExamsOptimized = useCallback(async () => {
     await refreshExams()
@@ -229,34 +644,60 @@ export function ExamsListClient() {
 
   // Initialize all groups as expanded when exams are loaded (only if no previous state exists)
   useEffect(() => {
-    if (filteredExams.length > 0 && !allGroupsInitialized && expandedDateGroups.size === 0) {
-      const groupedExams = groupExamsByCategory(filteredExams)
+    if (
+      groupedExamGroups.length > 0 &&
+      !allGroupsInitialized &&
+      expandedDateGroups.size === 0
+    ) {
       const dateGroups = new Set<string>()
       const testTypeGroups = new Set<string>()
       const regionGroups = new Set<string>()
 
-      Object.keys(groupedExams).forEach((date) => {
-        dateGroups.add(date)
+      groupedExamGroups.forEach((group) => {
+        dateGroups.add(group.key)
 
-        // Add all test types for this date
-        testTypeGroups.add(`${date}-fullTest`)
-        testTypeGroups.add(`${date}-sectionExam`)
-        testTypeGroups.add(`${date}-individualModule`)
+        if (group.buckets.fullTest.length > 0) {
+          testTypeGroups.add(`${group.key}-fullTest`)
+        }
+        if (group.buckets.sectionExam.length > 0) {
+          testTypeGroups.add(`${group.key}-sectionExam`)
+        }
+        const hasModules = REGION_ORDER.some(
+          (region) => group.buckets.individualModule[region].length > 0
+        )
+        if (hasModules) {
+          testTypeGroups.add(`${group.key}-individualModule`)
+        }
+        if (group.buckets.custom.length > 0) {
+          testTypeGroups.add(`${group.key}-custom`)
+        }
+        if (group.buckets.other.length > 0) {
+          testTypeGroups.add(`${group.key}-other`)
+        }
 
-        // Add all regions for this date
-        regionGroups.add(`${date}-International`)
-        regionGroups.add(`${date}-US`)
-        regionGroups.add(`${date}-Other`)
+        REGION_ORDER.forEach((region) => {
+          if (group.buckets.individualModule[region].length > 0) {
+            regionGroups.add(`${group.key}-${region}`)
+          }
+        })
       })
 
       setExpandedDateGroups(dateGroups)
       setExpandedTestTypes(testTypeGroups)
       setExpandedRegions(regionGroups)
     }
-    if (filteredExams.length > 0) {
+
+    if (groupedExamGroups.length > 0) {
       setAllGroupsInitialized(true)
     }
-  }, [filteredExams, allGroupsInitialized, expandedDateGroups.size])
+  }, [
+    groupedExamGroups,
+    allGroupsInitialized,
+    expandedDateGroups.size,
+    setExpandedDateGroups,
+    setExpandedTestTypes,
+    setExpandedRegions,
+  ])
 
   const handleAnswerVisibilityUpdate = async (
     visibilityOption: 'hidden' | 'immediate' | 'scheduled' | 'per_question',
@@ -320,77 +761,6 @@ export function ExamsListClient() {
     })
   }
 
-  // Categorization helper functions
-  const parseExamTitle = (title: string) => {
-    // Extract date from title
-    const dateMatch = title.match(/(\w+)\s+(\d{4})/)
-    const date = dateMatch ? `${dateMatch[2]} ${dateMatch[1]}` : 'Unknown Date'
-
-    // Determine exam type
-    let examType: 'fullTest' | 'sectionExam' | 'individualModule' =
-      'individualModule'
-    let region: 'International' | 'US' | 'Other' = 'Other'
-
-    if (title.startsWith('SAT')) {
-      if (title.includes('International') || title.includes('US')) {
-        examType = 'fullTest'
-        region = title.includes('International') ? 'International' : 'US'
-      } else if (title.includes('English') || title.includes('Math')) {
-        examType = 'sectionExam'
-      }
-    } else {
-      // Individual modules
-      if (title.includes('International')) {
-        region = 'International'
-      } else if (title.includes('US')) {
-        region = 'US'
-      }
-    }
-
-    return { date, examType, region }
-  }
-
-  const groupExamsByCategory = (exams: ExamWithCurves[]) => {
-    const grouped: Record<
-      string,
-      {
-        fullTest: ExamWithCurves[]
-        sectionExam: ExamWithCurves[]
-        individualModule: {
-          International: ExamWithCurves[]
-          US: ExamWithCurves[]
-          Other: ExamWithCurves[]
-        }
-      }
-    > = {}
-
-    exams.forEach((exam) => {
-      const { date, examType, region } = parseExamTitle(exam.title)
-
-      if (!grouped[date]) {
-        grouped[date] = {
-          fullTest: [],
-          sectionExam: [],
-          individualModule: {
-            International: [],
-            US: [],
-            Other: [],
-          },
-        }
-      }
-
-      if (examType === 'fullTest') {
-        grouped[date].fullTest.push(exam)
-      } else if (examType === 'sectionExam') {
-        grouped[date].sectionExam.push(exam)
-      } else {
-        grouped[date].individualModule[region].push(exam)
-      }
-    })
-
-    return grouped
-  }
-
   const toggleDateGroup = (date: string) => {
     const newExpanded = new Set(expandedDateGroups)
     if (newExpanded.has(date)) {
@@ -421,30 +791,43 @@ export function ExamsListClient() {
     setExpandedRegions(newExpanded)
   }
 
-  const renderGroupedExams = () => {
-    const groupedExams = groupExamsByCategory(filteredExams)
-    const sortedDates = Object.keys(groupedExams).sort((a, b) => {
-      // Sort by year first, then by month
-      const [yearA, monthA] = a.split(' ')
-      const [yearB, monthB] = b.split(' ')
-      if (yearA !== yearB) return parseInt(yearB) - parseInt(yearA)
-      const months = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-      ]
-      return months.indexOf(monthB) - months.indexOf(monthA)
+  const toggleFormatFilter = (format: ExamFormat) => {
+    setSelectedFormats((prev) => {
+      const next = new Set(prev)
+      if (next.has(format)) {
+        next.delete(format)
+      } else {
+        next.add(format)
+      }
+      return next
     })
+  }
 
+  const toggleRegionFilter = (region: ExamRegion) => {
+    setSelectedRegions((prev) => {
+      const next = new Set(prev)
+      if (next.has(region)) {
+        next.delete(region)
+      } else {
+        next.add(region)
+      }
+      return next
+    })
+  }
+
+  const resetFilters = () => {
+    setSelectedFormats(() => new Set<ExamFormat>())
+    setSelectedRegions(() => new Set<ExamRegion>())
+    setShowActiveOnly(false)
+    setSortBy('recent')
+  }
+
+  const getFilterChipClasses = (isActive: boolean) =>
+    isActive
+      ? 'px-3 py-1 rounded-full bg-purple-600 text-white text-xs font-medium shadow-sm border border-purple-600'
+      : 'px-3 py-1 rounded-full border border-gray-300 text-xs font-medium text-gray-600 hover:border-purple-400 hover:text-purple-600 transition-colors'
+
+  const renderGroupedExams = () => {
     return (
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -472,53 +855,50 @@ export function ExamsListClient() {
             </tr>
           </thead>
           <tbody>
-            {sortedDates.map((date) => {
-              const dateGroup = groupedExams[date]
-              const isDateExpanded = expandedDateGroups.has(date)
+            {groupedExamGroups.map((group) => {
+              const isGroupExpanded = expandedDateGroups.has(group.key)
+              const modulesCount = REGION_ORDER.reduce(
+                (acc, region) => acc + group.buckets.individualModule[region].length,
+                0
+              )
 
               return (
-                <React.Fragment key={date}>
-                  {/* Date Group Header */}
+                <React.Fragment key={group.key}>
                   <tr className="bg-gray-100 border-t-2 border-gray-300">
                     <td colSpan={7} className="px-3 py-2">
                       <button
-                        onClick={() => toggleDateGroup(date)}
+                        onClick={() => toggleDateGroup(group.key)}
                         className="flex items-center space-x-2 font-medium text-gray-800 hover:text-gray-900"
                       >
                         <span className="text-gray-500">
-                          {isDateExpanded ? '▼' : '▶'}
+                          {isGroupExpanded ? '▼' : '▶'}
                         </span>
-                        <span>{date}</span>
+                        <span>{group.label}</span>
                       </button>
                     </td>
                   </tr>
 
-                  {isDateExpanded && (
+                  {isGroupExpanded && (
                     <>
-                      {/* Full Test Section */}
-                      {dateGroup.fullTest.length > 0 && (
+                      {group.buckets.fullTest.length > 0 && (
                         <>
                           <tr className="bg-blue-50">
                             <td colSpan={7} className="px-6 py-1">
                               <button
-                                onClick={() =>
-                                  toggleTestType(`${date}-fullTest`)
-                                }
+                                onClick={() => toggleTestType(`${group.key}-fullTest`)}
                                 className="flex items-center space-x-2 text-sm font-medium text-blue-800 hover:text-blue-900"
                               >
                                 <span className="text-blue-600 text-xs">
-                                  {expandedTestTypes.has(`${date}-fullTest`)
+                                  {expandedTestTypes.has(`${group.key}-fullTest`)
                                     ? '▼'
                                     : '▶'}
                                 </span>
-                                <span>
-                                  Full Test ({dateGroup.fullTest.length})
-                                </span>
+                                <span>Full Tests ({group.buckets.fullTest.length})</span>
                               </button>
                             </td>
                           </tr>
-                          {expandedTestTypes.has(`${date}-fullTest`) &&
-                            dateGroup.fullTest.map((exam) => (
+                          {expandedTestTypes.has(`${group.key}-fullTest`) &&
+                            group.buckets.fullTest.map(({ exam }) => (
                               <ExamRow
                                 key={exam.id}
                                 exam={exam}
@@ -530,30 +910,25 @@ export function ExamsListClient() {
                         </>
                       )}
 
-                      {/* Section Exam */}
-                      {dateGroup.sectionExam.length > 0 && (
+                      {group.buckets.sectionExam.length > 0 && (
                         <>
                           <tr className="bg-green-50">
                             <td colSpan={7} className="px-6 py-1">
                               <button
-                                onClick={() =>
-                                  toggleTestType(`${date}-sectionExam`)
-                                }
+                                onClick={() => toggleTestType(`${group.key}-sectionExam`)}
                                 className="flex items-center space-x-2 text-sm font-medium text-green-800 hover:text-green-900"
                               >
                                 <span className="text-green-600 text-xs">
-                                  {expandedTestTypes.has(`${date}-sectionExam`)
+                                  {expandedTestTypes.has(`${group.key}-sectionExam`)
                                     ? '▼'
                                     : '▶'}
                                 </span>
-                                <span>
-                                  Section Exam ({dateGroup.sectionExam.length})
-                                </span>
+                                <span>Sections ({group.buckets.sectionExam.length})</span>
                               </button>
                             </td>
                           </tr>
-                          {expandedTestTypes.has(`${date}-sectionExam`) &&
-                            dateGroup.sectionExam.map((exam) => (
+                          {expandedTestTypes.has(`${group.key}-sectionExam`) &&
+                            group.buckets.sectionExam.map(({ exam }) => (
                               <ExamRow
                                 key={exam.id}
                                 exam={exam}
@@ -565,157 +940,53 @@ export function ExamsListClient() {
                         </>
                       )}
 
-                      {/* Individual Modules */}
-                      {(dateGroup.individualModule.International.length > 0 ||
-                        dateGroup.individualModule.US.length > 0 ||
-                        dateGroup.individualModule.Other.length > 0) && (
+                      {modulesCount > 0 && (
                         <>
                           <tr className="bg-purple-50">
                             <td colSpan={7} className="px-6 py-1">
                               <button
-                                onClick={() =>
-                                  toggleTestType(`${date}-individualModule`)
-                                }
+                                onClick={() => toggleTestType(`${group.key}-individualModule`)}
                                 className="flex items-center space-x-2 text-sm font-medium text-purple-800 hover:text-purple-900"
                               >
                                 <span className="text-purple-600 text-xs">
-                                  {expandedTestTypes.has(
-                                    `${date}-individualModule`
-                                  )
+                                  {expandedTestTypes.has(`${group.key}-individualModule`)
                                     ? '▼'
                                     : '▶'}
                                 </span>
-                                <span>
-                                  Individual Modules (
-                                  {dateGroup.individualModule.International
-                                    .length +
-                                    dateGroup.individualModule.US.length +
-                                    dateGroup.individualModule.Other.length}
-                                  )
-                                </span>
+                                <span>Modules ({modulesCount})</span>
                               </button>
                             </td>
                           </tr>
-                          {expandedTestTypes.has(
-                            `${date}-individualModule`
-                          ) && (
+                          {expandedTestTypes.has(`${group.key}-individualModule`) && (
                             <>
-                              {/* International Modules */}
-                              {dateGroup.individualModule.International.length >
-                                0 && (
-                                <>
-                                  <tr className="bg-orange-50">
-                                    <td colSpan={7} className="px-9 py-1">
-                                      <button
-                                        onClick={() =>
-                                          toggleRegion(`${date}-International`)
-                                        }
-                                        className="flex items-center space-x-2 text-sm font-medium text-orange-800 hover:text-orange-900"
-                                      >
-                                        <span className="text-orange-600 text-xs">
-                                          {expandedRegions.has(
-                                            `${date}-International`
-                                          )
-                                            ? '▼'
-                                            : '▶'}
-                                        </span>
-                                        <span>
-                                          International (
-                                          {
-                                            dateGroup.individualModule
-                                              .International.length
-                                          }
-                                          )
-                                        </span>
-                                      </button>
-                                    </td>
-                                  </tr>
-                                  {expandedRegions.has(
-                                    `${date}-International`
-                                  ) &&
-                                    dateGroup.individualModule.International.map(
-                                      (exam) => (
-                                        <ExamRow
-                                          key={exam.id}
-                                          exam={exam}
-                                          openAnswerModal={openAnswerModal}
-                                          onExamDeleted={fetchExamsOptimized}
-                                          onExamUpdated={fetchExamsOptimized}
-                                        />
-                                      )
-                                    )}
-                                </>
-                              )}
+                              {REGION_ORDER.map((region) => {
+                                const regionEntries = group.buckets.individualModule[region]
+                                if (regionEntries.length === 0) {
+                                  return null
+                                }
 
-                              {/* US Modules */}
-                              {dateGroup.individualModule.US.length > 0 && (
-                                <>
-                                  <tr className="bg-red-50">
-                                    <td colSpan={7} className="px-9 py-1">
-                                      <button
-                                        onClick={() =>
-                                          toggleRegion(`${date}-US`)
-                                        }
-                                        className="flex items-center space-x-2 text-sm font-medium text-red-800 hover:text-red-900"
-                                      >
-                                        <span className="text-red-600 text-xs">
-                                          {expandedRegions.has(`${date}-US`)
-                                            ? '▼'
-                                            : '▶'}
-                                        </span>
-                                        <span>
-                                          US (
-                                          {dateGroup.individualModule.US.length}
-                                          )
-                                        </span>
-                                      </button>
-                                    </td>
-                                  </tr>
-                                  {expandedRegions.has(`${date}-US`) &&
-                                    dateGroup.individualModule.US.map(
-                                      (exam) => (
-                                        <ExamRow
-                                          key={exam.id}
-                                          exam={exam}
-                                          openAnswerModal={openAnswerModal}
-                                          onExamDeleted={fetchExamsOptimized}
-                                          onExamUpdated={fetchExamsOptimized}
-                                        />
-                                      )
-                                    )}
-                                </>
-                              )}
+                                const regionKey = `${group.key}-${region}`
+                                const { rowClass, buttonClass, iconClass } = REGION_STYLE[region]
 
-                              {/* Other Modules */}
-                              {dateGroup.individualModule.Other.length > 0 && (
-                                <>
-                                  <tr className="bg-gray-50">
-                                    <td colSpan={7} className="px-9 py-1">
-                                      <button
-                                        onClick={() =>
-                                          toggleRegion(`${date}-Other`)
-                                        }
-                                        className="flex items-center space-x-2 text-sm font-medium text-gray-800 hover:text-gray-900"
-                                      >
-                                        <span className="text-gray-600 text-xs">
-                                          {expandedRegions.has(`${date}-Other`)
-                                            ? '▼'
-                                            : '▶'}
-                                        </span>
-                                        <span>
-                                          Other (
-                                          {
-                                            dateGroup.individualModule.Other
-                                              .length
-                                          }
-                                          )
-                                        </span>
-                                      </button>
-                                    </td>
-                                  </tr>
-                                  {expandedRegions.has(`${date}-Other`) &&
-                                    dateGroup.individualModule.Other.map(
-                                      (exam) => (
+                                return (
+                                  <React.Fragment key={region}>
+                                    <tr className={rowClass}>
+                                      <td colSpan={7} className="px-9 py-1">
+                                        <button
+                                          onClick={() => toggleRegion(regionKey)}
+                                          className={`flex items-center space-x-2 text-sm font-medium ${buttonClass}`}
+                                        >
+                                          <span className={`${iconClass} text-xs`}>
+                                            {expandedRegions.has(regionKey) ? '▼' : '▶'}
+                                          </span>
+                                          <span>
+                                            {region} ({regionEntries.length})
+                                          </span>
+                                        </button>
+                                      </td>
+                                    </tr>
+                                    {expandedRegions.has(regionKey) &&
+                                      regionEntries.map(({ exam }) => (
                                         <ExamRow
                                           key={exam.id}
                                           exam={exam}
@@ -723,12 +994,72 @@ export function ExamsListClient() {
                                           onExamDeleted={fetchExamsOptimized}
                                           onExamUpdated={fetchExamsOptimized}
                                         />
-                                      )
-                                    )}
-                                </>
-                              )}
+                                      ))}
+                                  </React.Fragment>
+                                )
+                              })}
                             </>
                           )}
+                        </>
+                      )}
+
+                      {group.buckets.custom.length > 0 && (
+                        <>
+                          <tr className="bg-rose-50">
+                            <td colSpan={7} className="px-6 py-1">
+                              <button
+                                onClick={() => toggleTestType(`${group.key}-custom`)}
+                                className="flex items-center space-x-2 text-sm font-medium text-rose-800 hover:text-rose-900"
+                              >
+                                <span className="text-rose-600 text-xs">
+                                  {expandedTestTypes.has(`${group.key}-custom`)
+                                    ? '▼'
+                                    : '▶'}
+                                </span>
+                                <span>Custom Assignments ({group.buckets.custom.length})</span>
+                              </button>
+                            </td>
+                          </tr>
+                          {expandedTestTypes.has(`${group.key}-custom`) &&
+                            group.buckets.custom.map(({ exam }) => (
+                              <ExamRow
+                                key={exam.id}
+                                exam={exam}
+                                openAnswerModal={openAnswerModal}
+                                onExamDeleted={fetchExamsOptimized}
+                                onExamUpdated={fetchExamsOptimized}
+                              />
+                            ))}
+                        </>
+                      )}
+
+                      {group.buckets.other.length > 0 && (
+                        <>
+                          <tr className="bg-slate-100">
+                            <td colSpan={7} className="px-6 py-1">
+                              <button
+                                onClick={() => toggleTestType(`${group.key}-other`)}
+                                className="flex items-center space-x-2 text-sm font-medium text-slate-800 hover:text-slate-900"
+                              >
+                                <span className="text-slate-600 text-xs">
+                                  {expandedTestTypes.has(`${group.key}-other`)
+                                    ? '▼'
+                                    : '▶'}
+                                </span>
+                                <span>Other ({group.buckets.other.length})</span>
+                              </button>
+                            </td>
+                          </tr>
+                          {expandedTestTypes.has(`${group.key}-other`) &&
+                            group.buckets.other.map(({ exam }) => (
+                              <ExamRow
+                                key={exam.id}
+                                exam={exam}
+                                openAnswerModal={openAnswerModal}
+                                onExamDeleted={fetchExamsOptimized}
+                                onExamUpdated={fetchExamsOptimized}
+                              />
+                            ))}
                         </>
                       )}
                     </>
@@ -741,6 +1072,8 @@ export function ExamsListClient() {
       </div>
     )
   }
+
+
 
   const handleExamCreated = (newExamId: string) => {
     setIsCreateModalOpen(false)
@@ -808,18 +1141,113 @@ export function ExamsListClient() {
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="mb-6">
-          <input
-            type="text"
-            placeholder="Search exams..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          />
+        {/* Search & Filters */}
+        <div className="mb-6 flex flex-col gap-4">
+          <div>
+            <input
+              type="text"
+              placeholder="Search exams..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Format
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedFormats(() => new Set<ExamFormat>())}
+                className={getFilterChipClasses(!hasFormatFilter)}
+              >
+                All
+              </button>
+              {FORMAT_OPTIONS.map((option) => {
+                const isActive = selectedFormats.has(option.key)
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={() => toggleFormatFilter(option.key)}
+                    className={getFilterChipClasses(isActive)}
+                  >
+                    {option.label}
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Region
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedRegions(() => new Set<ExamRegion>())}
+                className={getFilterChipClasses(!hasRegionFilter)}
+              >
+                All
+              </button>
+              {REGION_OPTIONS.map((option) => {
+                const isActive = selectedRegions.has(option.key)
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={() => toggleRegionFilter(option.key)}
+                    className={getFilterChipClasses(isActive)}
+                  >
+                    {option.label}
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-wrap items-center gap-4">
+                <label className="inline-flex items-center gap-2 text-sm text-gray-600">
+                  <input
+                    type="checkbox"
+                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    checked={showActiveOnly}
+                    onChange={(e) => setShowActiveOnly(e.target.checked)}
+                  />
+                  <span>Active only</span>
+                </label>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <label htmlFor="admin-exams-sort" className="text-sm text-gray-600">
+                  Sort
+                </label>
+                <select
+                  id="admin-exams-sort"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortOption)}
+                  className="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  disabled={!hasFilters}
+                  className="text-sm font-medium text-purple-600 hover:text-purple-700 disabled:text-gray-400 disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                >
+                  Reset filters
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Separator line */}
         <div className="border-b border-gray-200"></div>
       </div>
 
@@ -830,13 +1258,25 @@ export function ExamsListClient() {
             <h2 className="text-lg font-semibold text-gray-900">All Exams</h2>
           </div>
 
-          {filteredExams.length === 0 ? (
+          {displayedExamsWithMeta.length === 0 ? (
             <div className="p-12 text-center">
-              <p className="text-gray-500">
-                {searchTerm
-                  ? 'No exams match your search criteria.'
-                  : 'No exams found.'}
-              </p>
+              <p className="text-gray-500">{emptyStateMessage}</p>
+              {(hasSearch || hasFilters) && (
+                <p className="mt-2 text-sm text-gray-400">
+                  Try adjusting your filters or search terms.
+                </p>
+              )}
+              {hasFilters && (
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={resetFilters}
+                    className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md shadow hover:bg-purple-700"
+                  >
+                    Clear filters
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="p-6">{renderGroupedExams()}</div>
@@ -847,29 +1287,26 @@ export function ExamsListClient() {
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-purple-100 p-6">
             <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              {filteredExams.length}
+              {displayedExams.length}
             </div>
             <div className="text-sm text-gray-600">
-              {searchTerm ? 'Filtered Exams' : 'Total Exams'}
+              {hasSearch || hasFilters ? 'Visible Exams' : 'Total Exams'}
+              {hasSearch || hasFilters ? (
+                <span className="block text-xs text-gray-400">
+                  Showing {displayedExams.length} of {totalExamCount}
+                </span>
+              ) : null}
             </div>
           </div>
           <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-emerald-100 p-6">
             <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              {
-                filteredExams.filter(
-                  (e) => e.english_curve_name && e.math_curve_name
-                ).length
-              }
+              {fullyConfiguredCount}
             </div>
             <div className="text-sm text-gray-600">Fully Configured</div>
           </div>
           <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-orange-100 p-6">
             <div className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-              {
-                filteredExams.filter(
-                  (e) => !e.english_curve_name || !e.math_curve_name
-                ).length
-              }
+              {needsConfigurationCount}
             </div>
             <div className="text-sm text-gray-600">Need Configuration</div>
           </div>
