@@ -48,8 +48,8 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
   const minValue = Math.min(...allDataPoints)
   const range = maxValue - minValue || 1
 
-  const svgWidth = 400
-  const svgHeight = 250
+  const svgWidth = 800
+  const svgHeight = 320
   const padding = 40
   const chartWidth = svgWidth - padding * 2
   const chartHeight = svgHeight - padding * 2
@@ -86,8 +86,13 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
   }
 
   return (
-    <div className="h-80 flex items-center justify-center">
-      <svg width={svgWidth} height={svgHeight} className="overflow-visible">
+    <div className="flex flex-col xl:flex-row gap-6 w-full">
+      <div className="flex-1 min-w-0">
+        <svg
+          className="w-full h-80 overflow-visible"
+          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+          preserveAspectRatio="xMidYMid meet"
+        >
         <defs>
           {datasets.map((dataset, index) => (
             <linearGradient
@@ -192,10 +197,11 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
             </text>
           )
         })}
-      </svg>
+        </svg>
+      </div>
 
       {/* Legend */}
-      <div className="ml-6 space-y-2">
+      <div className="flex flex-row flex-wrap items-center gap-4 xl:flex-col xl:min-w-[180px]">
         {datasets.map((dataset, index) => (
           <div key={index} className="flex items-center space-x-2">
             <div

@@ -24,7 +24,8 @@
     "validate:all-exams": "pnpm test:scoring:full",
     "scoring:health-check": "pnpm test:scoring:quick",
     "scoring:regression": "pnpm test:scoring:integration",
-    "scoring:stress-test": "cd apps/web && pnpm test -- tests/scoring --verbose --reporter=verbose"
+    "scoring:stress-test": "cd apps/web && pnpm test -- tests/scoring --verbose --reporter=verbose",
+    "seed:guest": "node scripts/seed-demo-guest.js"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.21.0",

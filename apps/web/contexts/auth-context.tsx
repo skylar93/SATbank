@@ -203,11 +203,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const clearImpersonationState = () => {
+    if (typeof window === 'undefined') return
+
+    try {
+      localStorage.removeItem(IMPERSONATION_DATA_KEY)
+      window.dispatchEvent(
+        new CustomEvent(IMPERSONATION_EVENT, { detail: null })
+      )
+      document.body.style.removeProperty('--impersonation-offset')
+      document.body.classList.remove('impersonation-active')
+    } catch (err) {
+      console.warn('Failed to clear impersonation state during logout:', err)
+    }
+  }
+
   const signOut = async () => {
     setLoading(true)
     setError(null)
 
     try {
+      clearImpersonationState()
       await AuthService.signOut()
       setUser(null)
       // Redirect to login page after successful logout

@@ -122,9 +122,6 @@ export default function FloatingHighlightButton({
   isHtml = false,
 }: FloatingHighlightButtonProps) {
   const pointerStartDomRef = useRef<number | null>(null)
-  const isAdjustingSelectionRef = useRef(false)
-  const pointerHasMovedRef = useRef(false)
-  const scheduledAdjustmentRef = useRef<number | null>(null)
   const highlightModeRef = useRef(isHighlightMode)
 
   useEffect(() => {
@@ -137,8 +134,8 @@ export default function FloatingHighlightButton({
     const doc = container.ownerDocument || document
 
     pointerStartDomRef.current = null
-    pointerHasMovedRef.current = false
-    if (!isHighlightMode) {
+
+    if (!highlightModeRef.current) {
       return
     }
 
@@ -148,60 +145,8 @@ export default function FloatingHighlightButton({
     }
 
     const handlePointerDown = (event: PointerEvent) => {
-      if (!highlightModeRef.current) {
-        pointerStartDomRef.current = null
-        pointerHasMovedRef.current = false
-        return
-      }
-
-      if (!container.contains(event.target as Node)) {
-        pointerStartDomRef.current = null
-        pointerHasMovedRef.current = false
-        return
-      }
-
-      const caretRange = getCaretRangeFromPoint(
-        doc,
-        event.clientX,
-        event.clientY
-      )
-
-      if (!caretRange) {
-        pointerStartDomRef.current = null
-        pointerHasMovedRef.current = false
-        return
-      }
-
-      const offsetDom = getTextOffsetInContainer(
-        container,
-        caretRange.startContainer,
-        caretRange.startOffset
-      )
-
-      pointerStartDomRef.current = offsetDom
-      pointerHasMovedRef.current = false
-
-      if (scheduledAdjustmentRef.current !== null) {
-        cancelAnimationFrame(scheduledAdjustmentRef.current)
-        scheduledAdjustmentRef.current = null
-      }
-
-      const selection = doc.getSelection?.()
-      if (selection) {
-        try {
-          selection.removeAllRanges()
-          selection.addRange(caretRange)
-        } catch {}
-      }
-    }
-
-    const handlePointerMove = (event: PointerEvent) => {
       if (!highlightModeRef.current) return
-
-      const pointerAnchor = pointerStartDomRef.current
-      if (pointerAnchor === null) return
-
-      if (event.buttons === 0) return
+      if (!container.contains(event.target as Node)) return
 
       const caretRange = getCaretRangeFromPoint(
         doc,
@@ -210,46 +155,21 @@ export default function FloatingHighlightButton({
       )
 
       if (!caretRange) return
-      if (!container.contains(caretRange.startContainer)) return
 
-      const focusDomOffset = getTextOffsetInContainer(
+      const offsetDom = getTextOffsetInContainer(
         container,
         caretRange.startContainer,
         caretRange.startOffset
       )
 
-      if (!Number.isFinite(focusDomOffset)) return
-
-      const hasMoved = focusDomOffset !== pointerAnchor
-      if (!hasMoved && !pointerHasMovedRef.current) {
-        return
-      }
-
-      pointerHasMovedRef.current = pointerHasMovedRef.current || hasMoved
+      pointerStartDomRef.current = offsetDom
 
       const selection = doc.getSelection?.()
-      if (!selection) return
-
-      const anchorPos = resolveDomPosition(container, pointerAnchor)
-      const focusPos = resolveDomPosition(container, focusDomOffset)
-
-      if (!anchorPos || !focusPos) return
-
-      isAdjustingSelectionRef.current = true
-      try {
-        const range = doc.createRange()
-        if (focusDomOffset >= pointerAnchor) {
-          range.setStart(anchorPos.node, anchorPos.offset)
-          range.setEnd(focusPos.node, focusPos.offset)
-        } else {
-          range.setStart(focusPos.node, focusPos.offset)
-          range.setEnd(anchorPos.node, anchorPos.offset)
-        }
-
-        selection.removeAllRanges()
-        selection.addRange(range)
-      } finally {
-        isAdjustingSelectionRef.current = false
+      if (selection) {
+        try {
+          selection.removeAllRanges()
+          selection.addRange(caretRange)
+        } catch {}
       }
     }
 
@@ -262,7 +182,6 @@ export default function FloatingHighlightButton({
       }
 
       const range = selection.getRangeAt(0)
-
       const startContainer = range.startContainer
       const endContainer = range.endContainer
 
@@ -271,20 +190,13 @@ export default function FloatingHighlightButton({
         !container.contains(endContainer)
       ) {
         clearSelection()
+        pointerStartDomRef.current = null
         return
       }
 
       let normalizedContainer: HTMLElement | null = null
 
       try {
-        const rawSelection = range.toString()
-        const trimmedSelection = rawSelection.trim()
-
-        if (!trimmedSelection) {
-          clearSelection()
-          return
-        }
-
         const domPlainText = getVisiblePlainText(container)
 
         const startOffsetDom = getTextOffsetInContainer(
@@ -301,22 +213,17 @@ export default function FloatingHighlightButton({
           ? getTextOffsetInContainer(
               container,
               selection.focusNode,
-              selection.focusOffset
+              selection.focusOffset ?? range.endOffset
             )
           : endOffsetDom
 
-        let domStart = Math.max(0, Math.min(startOffsetDom, endOffsetDom))
-        let domEnd = Math.max(domStart, Math.max(startOffsetDom, endOffsetDom))
+        const anchorDom = pointerStartDomRef.current ?? startOffsetDom
+        const focusDom = Number.isFinite(focusOffsetDom)
+          ? focusOffsetDom
+          : endOffsetDom
 
-        if (
-          pointerStartDomRef.current !== null &&
-          Number.isFinite(pointerStartDomRef.current)
-        ) {
-          const pointerDom = Math.max(0, pointerStartDomRef.current)
-          const focusDom = Math.max(0, focusOffsetDom)
-          domStart = Math.min(pointerDom, focusDom)
-          domEnd = Math.max(pointerDom, focusDom)
-        }
+        let domStart = Math.max(0, Math.min(anchorDom, focusDom))
+        let domEnd = Math.max(domStart, Math.max(anchorDom, focusDom))
 
         let plainText = domPlainText
 
@@ -328,27 +235,16 @@ export default function FloatingHighlightButton({
 
         if (!plainText.trim()) {
           clearSelection()
+          pointerStartDomRef.current = null
           return
         }
 
         const domToNormalized = buildWhitespaceAwareMap(domPlainText, plainText)
-        const mappedStart = domToNormalized[Math.min(domStart, domToNormalized.length - 1)] ?? 0
-        const mappedEnd = domToNormalized[Math.min(domEnd, domToNormalized.length - 1)] ?? mappedStart
-
-        const ratio = domPlainText.length > 0
-          ? domStart / domPlainText.length
-          : 0
-        const clampedRatio = Math.min(Math.max(ratio, 0), 1)
-        const approxNormalizedStart = Math.floor(clampedRatio * plainText.length)
-
-        const windowRadius = Math.max(
-          80,
-          Math.min(400, Math.max(trimmedSelection.length * 4, 120))
-        )
-
-        const windowStart = Math.max(0, approxNormalizedStart - windowRadius)
-        const windowEnd = Math.min(plainText.length, approxNormalizedStart + windowRadius)
-        const windowText = plainText.slice(windowStart, windowEnd)
+        const mappedStart =
+          domToNormalized[Math.min(domStart, domToNormalized.length - 1)] ?? 0
+        const mappedEnd =
+          domToNormalized[Math.min(domEnd, domToNormalized.length - 1)] ??
+          mappedStart
 
         const safeStart = Math.max(0, Math.min(mappedStart, plainText.length))
         const safeEnd = Math.max(safeStart, Math.min(mappedEnd, plainText.length))
@@ -356,23 +252,26 @@ export default function FloatingHighlightButton({
         const rawSlice = plainText.slice(safeStart, safeEnd)
         if (!rawSlice.trim()) {
           clearSelection()
+          pointerStartDomRef.current = null
           return
         }
 
-        const trimmedLeading = rawSlice.length - rawSlice.trimStart().length
-        const trimmedTrailing = rawSlice.length - rawSlice.trimEnd().length
+        const leadingTrim = rawSlice.length - rawSlice.trimStart().length
+        const trailingTrim = rawSlice.length - rawSlice.trimEnd().length
 
-        const finalStart = safeStart + trimmedLeading
-        const finalEnd = safeEnd - trimmedTrailing
+        const finalStart = safeStart + leadingTrim
+        const finalEnd = safeEnd - trailingTrim
 
         if (finalEnd <= finalStart) {
           clearSelection()
+          pointerStartDomRef.current = null
           return
         }
 
         const highlightText = plainText.slice(finalStart, finalEnd)
         if (!highlightText.trim()) {
           clearSelection()
+          pointerStartDomRef.current = null
           return
         }
 
@@ -385,102 +284,24 @@ export default function FloatingHighlightButton({
         normalizedContainer?.remove()
         clearSelection()
         pointerStartDomRef.current = null
-        pointerHasMovedRef.current = false
-        if (scheduledAdjustmentRef.current !== null) {
-          cancelAnimationFrame(scheduledAdjustmentRef.current)
-          scheduledAdjustmentRef.current = null
-        }
       }
     }
 
     container.addEventListener('pointerdown', handlePointerDown)
-    container.addEventListener('pointermove', handlePointerMove)
     doc.addEventListener('mouseup', handleMouseUp)
-
-    const handleSelectionChange = () => {
-      if (!highlightModeRef.current) return
-      if (isAdjustingSelectionRef.current) return
-      if (pointerStartDomRef.current === null) return
-      if (!pointerHasMovedRef.current) return
-
-      if (scheduledAdjustmentRef.current !== null) {
-        cancelAnimationFrame(scheduledAdjustmentRef.current)
-      }
-
-      scheduledAdjustmentRef.current = requestAnimationFrame(() => {
-        scheduledAdjustmentRef.current = null
-
-        const selection = doc.getSelection?.()
-        if (!selection || selection.rangeCount === 0) return
-
-        const range = selection.getRangeAt(0)
-        const focusNode = selection.focusNode ?? range.endContainer
-        const focusOffset = selection.focusNode
-          ? selection.focusOffset ?? range.endOffset
-          : range.endOffset
-
-        if (!container.contains(focusNode)) return
-
-        const focusDomOffset = getTextOffsetInContainer(
-          container,
-          focusNode,
-          focusOffset
-        )
-
-        const anchorDom = Math.max(0, pointerStartDomRef.current!)
-        const focusDom = Math.max(0, focusDomOffset)
-
-        if (anchorDom === focusDom) return
-
-        const startOffset = Math.min(anchorDom, focusDom)
-        const endOffset = Math.max(anchorDom, focusDom)
-
-        const startPos = resolveDomPosition(container, startOffset)
-        const endPos = resolveDomPosition(container, endOffset)
-
-        if (!startPos || !endPos) return
-
-        isAdjustingSelectionRef.current = true
-        try {
-          const newRange = doc.createRange()
-          newRange.setStart(startPos.node, startPos.offset)
-          newRange.setEnd(endPos.node, endPos.offset)
-          selection.removeAllRanges()
-          selection.addRange(newRange)
-        } finally {
-          isAdjustingSelectionRef.current = false
-        }
-      })
-    }
-
-    doc.addEventListener('selectionchange', handleSelectionChange)
 
     return () => {
       container.removeEventListener('pointerdown', handlePointerDown)
-      container.removeEventListener('pointermove', handlePointerMove)
       doc.removeEventListener('mouseup', handleMouseUp)
-      doc.removeEventListener('selectionchange', handleSelectionChange)
       pointerStartDomRef.current = null
-      pointerHasMovedRef.current = false
-      if (scheduledAdjustmentRef.current !== null) {
-        cancelAnimationFrame(scheduledAdjustmentRef.current)
-        scheduledAdjustmentRef.current = null
-      }
-      isAdjustingSelectionRef.current = false
     }
   }, [containerRef, isHighlightMode, onHighlight, isHtml])
 
   useEffect(() => {
-    if (!isHighlightMode) {
+    if (!highlightModeRef.current) {
       const selection = document.getSelection?.()
       selection?.removeAllRanges()
       pointerStartDomRef.current = null
-      isAdjustingSelectionRef.current = false
-      pointerHasMovedRef.current = false
-      if (scheduledAdjustmentRef.current !== null) {
-        cancelAnimationFrame(scheduledAdjustmentRef.current)
-        scheduledAdjustmentRef.current = null
-      }
     }
   }, [isHighlightMode])
 

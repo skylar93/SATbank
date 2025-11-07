@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../contexts/auth-context'
 
@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [guestLoading, setGuestLoading] = useState(false)
   const {
     user,
     signIn,
@@ -17,6 +18,17 @@ export default function LoginPage() {
     error: authError,
   } = useAuth()
   const router = useRouter()
+
+  const guestCredentials = useMemo(
+    () => ({
+      email: process.env.NEXT_PUBLIC_GUEST_EMAIL,
+      password: process.env.NEXT_PUBLIC_GUEST_PASSWORD,
+    }),
+    []
+  )
+  const isGuestLoginConfigured = Boolean(
+    guestCredentials.email && guestCredentials.password
+  )
 
   // Note: Middleware now handles all redirects - no client-side redirect needed
 
@@ -47,7 +59,31 @@ export default function LoginPage() {
     // On success, we don't set loading to false because the component will unmount.
   }
 
-  // Middleware will handle redirect after successful login
+  const handleGuestLogin = async () => {
+    if (!isGuestLoginConfigured || user) return
+
+    setGuestLoading(true)
+    setError('')
+
+    try {
+      const loggedInUser = await signIn(
+        guestCredentials.email!,
+        guestCredentials.password!
+      )
+
+      const redirectUrl =
+        loggedInUser.profile?.role === 'admin'
+          ? '/admin/dashboard'
+          : '/student/dashboard'
+
+      router.push(redirectUrl)
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : 'Guest preview failed to start'
+      )
+      setGuestLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -142,6 +178,27 @@ export default function LoginPage() {
             </button>
           </div>
         </form>
+
+        {isGuestLoginConfigured && (
+          <div className="space-y-3 pt-4 border-t border-gray-200">
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-700">
+                Just want a quick preview?
+              </p>
+              <p className="text-xs text-gray-500">
+                Load curated demo data without creating an account.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleGuestLogin}
+              disabled={guestLoading || loading || authLoading || !!user}
+              className="w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {guestLoading ? 'Loading demo...' : 'Preview as guest'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

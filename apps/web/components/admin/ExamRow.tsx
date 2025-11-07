@@ -42,6 +42,10 @@ interface ExamRowProps {
   onExamUpdated?: () => void
   className?: string
   isStandaloneModule?: boolean
+  requiredCurves?: {
+    english: boolean
+    math: boolean
+  }
 }
 
 export function ExamRow({
@@ -51,6 +55,7 @@ export function ExamRow({
   onExamUpdated,
   className,
   isStandaloneModule = false,
+  requiredCurves,
 }: ExamRowProps) {
   const [isExpanded, setIsExpanded] = usePersistentState(`exam-row-expanded-${exam.id}`, false)
   const [allCurves, setAllCurves] = useState<ScoringCurve[]>([])
@@ -59,6 +64,9 @@ export function ExamRow({
   const [isSavingDetails, setIsSavingDetails] = useState(false)
   const [titleDraft, setTitleDraft] = useState(exam.title)
   const [descriptionDraft, setDescriptionDraft] = useState(exam.description || '')
+
+  const needsEnglishCurve = requiredCurves?.english ?? true
+  const needsMathCurve = requiredCurves?.math ?? true
 
   useEffect(() => {
     setTitleDraft(exam.title)
@@ -279,14 +287,20 @@ export function ExamRow({
                   English Curve
                 </p>
                 <div className="mt-2">
-                  <CurveAssignmentControl
-                    examId={exam.id}
-                    curveType="english"
-                    currentCurveName={exam.english_curve_name}
-                    currentCurveId={exam.english_scoring_curve_id}
-                    allCurves={allCurves}
-                    scoringGroups={exam.scoring_groups}
-                  />
+                  {needsEnglishCurve ? (
+                    <CurveAssignmentControl
+                      examId={exam.id}
+                      curveType="english"
+                      currentCurveName={exam.english_curve_name}
+                      currentCurveId={exam.english_scoring_curve_id}
+                      allCurves={allCurves}
+                      scoringGroups={exam.scoring_groups}
+                    />
+                  ) : (
+                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500">
+                      Not required
+                    </span>
+                  )}
                 </div>
               </div>
               <div>
@@ -294,14 +308,20 @@ export function ExamRow({
                   Math Curve
                 </p>
                 <div className="mt-2">
-                  <CurveAssignmentControl
-                    examId={exam.id}
-                    curveType="math"
-                    currentCurveName={exam.math_curve_name}
-                    currentCurveId={exam.math_scoring_curve_id}
-                    allCurves={allCurves}
-                    scoringGroups={exam.scoring_groups}
-                  />
+                  {needsMathCurve ? (
+                    <CurveAssignmentControl
+                      examId={exam.id}
+                      curveType="math"
+                      currentCurveName={exam.math_curve_name}
+                      currentCurveId={exam.math_scoring_curve_id}
+                      allCurves={allCurves}
+                      scoringGroups={exam.scoring_groups}
+                    />
+                  ) : (
+                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500">
+                      Not required
+                    </span>
+                  )}
                 </div>
               </div>
               <div>
@@ -389,25 +409,37 @@ export function ExamRow({
                 <div className="space-y-2 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-xs text-gray-600">English Curve</span>
-                    <CurveAssignmentControl
-                      examId={exam.id}
-                      curveType="english"
-                      currentCurveName={exam.english_curve_name}
-                      currentCurveId={exam.english_scoring_curve_id}
-                      allCurves={allCurves}
-                      scoringGroups={exam.scoring_groups}
-                    />
+                    {needsEnglishCurve ? (
+                      <CurveAssignmentControl
+                        examId={exam.id}
+                        curveType="english"
+                        currentCurveName={exam.english_curve_name}
+                        currentCurveId={exam.english_scoring_curve_id}
+                        allCurves={allCurves}
+                        scoringGroups={exam.scoring_groups}
+                      />
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500">
+                        Not required
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-xs text-gray-600">Math Curve</span>
-                    <CurveAssignmentControl
-                      examId={exam.id}
-                      curveType="math"
-                      currentCurveName={exam.math_curve_name}
-                      currentCurveId={exam.math_scoring_curve_id}
-                      allCurves={allCurves}
-                      scoringGroups={exam.scoring_groups}
-                    />
+                    {needsMathCurve ? (
+                      <CurveAssignmentControl
+                        examId={exam.id}
+                        curveType="math"
+                        currentCurveName={exam.math_curve_name}
+                        currentCurveId={exam.math_scoring_curve_id}
+                        allCurves={allCurves}
+                        scoringGroups={exam.scoring_groups}
+                      />
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500">
+                        Not required
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

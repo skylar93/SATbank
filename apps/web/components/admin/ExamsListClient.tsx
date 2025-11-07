@@ -89,6 +89,10 @@ interface ExamMeta {
   monthIndex: number | null
   year: number | null
   tags: string[]
+  requiredCurves: {
+    english: boolean
+    math: boolean
+  }
 }
 
 interface ExamWithMeta {
@@ -185,6 +189,79 @@ const monthMatchers = MONTH_DEFINITIONS.map((definition) => ({
 
 const yearRegex = /\b(20[0-9]{2})\b/
 
+const normalizeToken = (value: string) => value.toLowerCase().replace(/[^a-z]/g, '')
+
+const ENGLISH_CURVE_TOKENS = [
+  'english',
+  'reading',
+  'writing',
+  'readingwriting',
+  'readingandwriting',
+  'rw',
+]
+
+const MATH_CURVE_TOKENS = ['math', 'mathematics']
+
+const determineCurveRequirements = (
+  exam: ExamWithCurves,
+  format: ExamFormat,
+  normalizedTitle: string
+) => {
+  const normalizedTitleToken = normalizeToken(normalizedTitle)
+
+  if (exam.scoring_groups && Object.keys(exam.scoring_groups).length > 0) {
+    const groupTokens = Object.keys(exam.scoring_groups).map((key) => normalizeToken(key))
+    const englishRequired = groupTokens.some((token) =>
+      ENGLISH_CURVE_TOKENS.some((keyword) => token.includes(keyword))
+    )
+    const mathRequired = groupTokens.some((token) =>
+      MATH_CURVE_TOKENS.some((keyword) => token.includes(keyword))
+    )
+    return {
+      english: englishRequired,
+      math: mathRequired,
+    }
+  }
+
+  const hasEnglishKeyword = ENGLISH_CURVE_TOKENS.some((keyword) =>
+    normalizedTitleToken.includes(keyword)
+  )
+  const hasMathKeyword = MATH_CURVE_TOKENS.some((keyword) =>
+    normalizedTitleToken.includes(keyword)
+  )
+
+  if (hasEnglishKeyword && !hasMathKeyword) {
+    return { english: true, math: false }
+  }
+
+  if (hasMathKeyword && !hasEnglishKeyword) {
+    return { english: false, math: true }
+  }
+
+  if (format === 'fullTest') {
+    return { english: true, math: true }
+  }
+
+  if (format === 'sectionExam') {
+    return {
+      english: hasEnglishKeyword || !hasMathKeyword,
+      math: hasMathKeyword || !hasEnglishKeyword,
+    }
+  }
+
+  if (format === 'individualModule') {
+    return {
+      english: hasEnglishKeyword,
+      math: hasMathKeyword || !hasEnglishKeyword,
+    }
+  }
+
+  return {
+    english: hasEnglishKeyword || !hasMathKeyword,
+    math: hasMathKeyword || !hasEnglishKeyword,
+  }
+}
+
 const detectMonthIndex = (title: string): number | null => {
   for (let index = 0; index < monthMatchers.length; index += 1) {
     const { regexes } = monthMatchers[index]
@@ -241,6 +318,8 @@ const deriveExamMetadata = (exam: ExamWithCurves): ExamMeta => {
     year = new Date(exam.created_at).getFullYear()
   }
 
+  const requiredCurves = determineCurveRequirements(exam, format, normalizedTitle)
+
   const tags: string[] = []
   if (exam.is_active) {
     tags.push('active')
@@ -251,7 +330,10 @@ const deriveExamMetadata = (exam: ExamWithCurves): ExamMeta => {
   if (exam.total_questions > 0) {
     tags.push('hasQuestions')
   }
-  if (exam.english_curve_name && exam.math_curve_name) {
+  if (
+    (!requiredCurves.english || Boolean(exam.english_curve_name)) &&
+    (!requiredCurves.math || Boolean(exam.math_curve_name))
+  ) {
     tags.push('fullyConfigured')
   }
 
@@ -262,6 +344,7 @@ const deriveExamMetadata = (exam: ExamWithCurves): ExamMeta => {
     monthIndex,
     year,
     tags,
+    requiredCurves,
   }
 }
 
@@ -649,12 +732,15 @@ export function ExamsListClient() {
   const hasFilters = hasFormatFilter || hasRegionFilter || showActiveOnly || sortBy !== 'recent'
 
   const fullyConfiguredCount = useMemo(() => {
-    return displayedExams.filter(
-      (exam) => exam.english_curve_name && exam.math_curve_name
-    ).length
-  }, [displayedExams])
+    return displayedExamsWithMeta.filter(({ exam, meta }) => {
+      const { english, math } = meta.requiredCurves
+      const englishComplete = !english || Boolean(exam.english_curve_name)
+      const mathComplete = !math || Boolean(exam.math_curve_name)
+      return englishComplete && mathComplete
+    }).length
+  }, [displayedExamsWithMeta])
 
-  const needsConfigurationCount = displayedExams.length - fullyConfiguredCount
+  const needsConfigurationCount = displayedExamsWithMeta.length - fullyConfiguredCount
 
   const totalExamCount = exams?.length ?? 0
   const emptyStateMessage = hasSearch || hasFilters
@@ -878,6 +964,7 @@ export function ExamsListClient() {
             onExamDeleted={fetchExamsOptimized}
             onExamUpdated={fetchExamsOptimized}
             isStandaloneModule={meta.format === 'individualModule' && !exam.template_id}
+            requiredCurves={meta.requiredCurves}
           />
         ))}
       </div>
@@ -1162,8 +1249,16 @@ export function ExamsListClient() {
                 statusBadges.push({ label: 'Inactive', className: 'bg-slate-100 text-slate-600' })
               }
 
-              if (!exam.english_curve_name || !exam.math_curve_name) {
+              const { english: requiresEnglishCurve, math: requiresMathCurve } = meta.requiredCurves
+              const missingEnglishCurve = requiresEnglishCurve && !exam.english_curve_name
+              const missingMathCurve = requiresMathCurve && !exam.math_curve_name
+
+              if (missingEnglishCurve && missingMathCurve) {
                 statusBadges.push({ label: 'Needs curves', className: 'bg-orange-50 text-orange-600' })
+              } else if (missingEnglishCurve) {
+                statusBadges.push({ label: 'Needs English curve', className: 'bg-orange-50 text-orange-600' })
+              } else if (missingMathCurve) {
+                statusBadges.push({ label: 'Needs Math curve', className: 'bg-orange-50 text-orange-600' })
               }
 
               if (exam.template_id) {

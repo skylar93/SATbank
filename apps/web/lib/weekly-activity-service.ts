@@ -56,16 +56,19 @@ export class WeeklyActivityService {
         }
       })
 
+      const formatHours = (value: number) =>
+        parseFloat(value.toFixed(value >= 3 ? 1 : 2))
+
       return {
         days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         studyTime: [
-          Math.round(weeklyStats.Mon.studyTime),
-          Math.round(weeklyStats.Tue.studyTime),
-          Math.round(weeklyStats.Wed.studyTime),
-          Math.round(weeklyStats.Thu.studyTime),
-          Math.round(weeklyStats.Fri.studyTime),
-          Math.round(weeklyStats.Sat.studyTime),
-          Math.round(weeklyStats.Sun.studyTime),
+          formatHours(weeklyStats.Mon.studyTime),
+          formatHours(weeklyStats.Tue.studyTime),
+          formatHours(weeklyStats.Wed.studyTime),
+          formatHours(weeklyStats.Thu.studyTime),
+          formatHours(weeklyStats.Fri.studyTime),
+          formatHours(weeklyStats.Sat.studyTime),
+          formatHours(weeklyStats.Sun.studyTime),
         ],
         practiceTests: [
           weeklyStats.Mon.practiceTests,

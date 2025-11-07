@@ -202,10 +202,11 @@ export default function ReviewPageClient({
   // Calculate current question number within the module
   const currentModuleIndex = getCurrentModuleIndex()
   const currentModuleQuestions = getModuleQuestions(currentModule)
-  const questionIndexInModule = currentModuleQuestions.findIndex(
-    (q) => q.id === currentQuestion.id
-  )
-  const currentQuestionInModule = questionIndexInModule + 1
+  const questionIndexInModule = currentQuestion
+    ? currentModuleQuestions.findIndex((q) => q.id === currentQuestion.id)
+    : -1
+  const currentQuestionInModule =
+    questionIndexInModule >= 0 ? questionIndexInModule + 1 : 0
   const totalQuestionsInModule = currentModuleQuestions.length
 
   // Add keyboard navigation
@@ -260,6 +261,27 @@ export default function ReviewPageClient({
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [currentQuestionIndex, totalQuestions, nextQuestion, previousQuestion])
+
+  if (totalQuestions === 0 || !currentQuestion) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-6 py-12 text-center">
+        <div className="max-w-xl">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100 text-purple-600">
+            <span className="text-2xl">🤔</span>
+          </div>
+          <h2 className="text-2xl font-semibold text-gray-900">
+            No question data available
+          </h2>
+          <p className="mt-3 text-gray-600">
+            We couldn&apos;t find any questions for this exam review. The exam
+            might not be fully synced yet or is using an unsupported module
+            format. Please refresh the page or contact support if the issue
+            persists.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

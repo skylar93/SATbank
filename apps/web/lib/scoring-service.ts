@@ -141,32 +141,52 @@ export class ScoringService {
     if (!examData) {
       throw new Error(`Exam ${attemptData.exam_id} not found`)
     }
+    // Step 3: Fetch the "Blueprint" (Exam Template) or use fallback
+    const fallbackScoringGroups = {
+      english: ['english1', 'english2'],
+      math: ['math1', 'math2'],
+    }
+
+    let scoringGroups: { [key: string]: string[] } = fallbackScoringGroups
+    let templateInfo: { id: string | null; name?: string } = {
+      id: examData.template_id ?? null,
+    }
+
     if (!examData.template_id) {
-      throw new Error(
-        `Exam ${attemptData.exam_id} does not have a template assigned`
+      console.warn(
+        `Exam ${attemptData.exam_id} has no template assigned, using fallback scoring`
       )
+    } else {
+      const { data: templateData, error: templateError } = await client
+        .from('exam_templates')
+        .select('id, name, scoring_groups')
+        .eq('id', examData.template_id)
+        .maybeSingle()
+
+      if (templateError) {
+        throw new Error(
+          `Failed to get exam template: ${templateError.message}`
+        )
+      }
+
+      if (!templateData) {
+        console.warn(
+          `Exam template ${examData.template_id} not found, using fallback scoring`
+        )
+      } else {
+        templateInfo = {
+          id: templateData.id,
+          name: templateData.name,
+        }
+        scoringGroups = (templateData.scoring_groups || fallbackScoringGroups) as {
+          [key: string]: string[]
+        }
+      }
     }
 
-    // Step 3: Fetch the "Blueprint" (Exam Template)
-    const { data: templateData, error: templateError } = await client
-      .from('exam_templates')
-      .select('id, name, scoring_groups')
-      .eq('id', examData.template_id)
-      .maybeSingle()
-
-    if (templateError) {
-      throw new Error(`Failed to get exam template: ${templateError.message}`)
-    }
-    if (!templateData) {
-      throw new Error(`Exam template ${examData.template_id} not found`)
-    }
-
-    const scoringGroups = templateData.scoring_groups as {
-      [key: string]: string[]
-    }
     console.log('📋 Template info:', {
-      id: templateData.id,
-      name: templateData.name,
+      id: templateInfo.id,
+      name: templateInfo.name ?? 'fallback_full_sat',
       scoringGroups,
     })
 

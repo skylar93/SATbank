@@ -114,7 +114,7 @@ export function Calendar({ events = [], onDateClick }: CalendarProps) {
               key={dayIdx}
               onClick={() => handleDateClick(day)}
               className={`
-                relative w-10 h-10 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center
+                relative w-full aspect-square min-w-[2.5rem] text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center
                 ${
                   !isCurrentMonth
                     ? 'text-gray-300 hover:text-gray-400'
