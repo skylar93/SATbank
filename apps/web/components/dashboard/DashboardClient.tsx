@@ -523,28 +523,31 @@ export default function DashboardClient({
 
   const toneStyles = {
     violet: {
-      border: 'border-violet-100',
-      badge: 'bg-violet-50 text-violet-700',
-      summary: 'text-violet-700',
-      hover: 'hover:border-violet-200 hover:bg-white',
-      step: 'bg-violet-100 text-violet-700',
-      cta: 'text-violet-600 hover:text-violet-700',
+      border: 'border-violet-100/80',
+      badge: 'bg-white/70 text-violet-700 border border-violet-100/60 shadow-sm',
+      summary: 'text-violet-800',
+      hover: 'hover:shadow-lg hover:-translate-y-0.5',
+      step: 'bg-gradient-to-br from-violet-600 to-purple-500 text-white shadow-md',
+      cta: 'text-violet-700 hover:text-violet-900',
+      gradient: 'from-violet-50 via-white to-purple-50',
     },
     rose: {
-      border: 'border-rose-100',
-      badge: 'bg-rose-50 text-rose-700',
-      summary: 'text-rose-700',
-      hover: 'hover:border-rose-200 hover:bg-white',
-      step: 'bg-rose-100 text-rose-700',
-      cta: 'text-rose-600 hover:text-rose-700',
+      border: 'border-rose-100/80',
+      badge: 'bg-white/70 text-rose-700 border border-rose-100/60 shadow-sm',
+      summary: 'text-rose-800',
+      hover: 'hover:shadow-lg hover:-translate-y-0.5',
+      step: 'bg-gradient-to-br from-rose-600 to-pink-500 text-white shadow-md',
+      cta: 'text-rose-700 hover:text-rose-900',
+      gradient: 'from-rose-50 via-white to-pink-50',
     },
     amber: {
-      border: 'border-amber-100',
-      badge: 'bg-amber-50 text-amber-700',
-      summary: 'text-amber-700',
-      hover: 'hover:border-amber-200 hover:bg-white',
-      step: 'bg-amber-100 text-amber-700',
-      cta: 'text-amber-600 hover:text-amber-700',
+      border: 'border-amber-100/80',
+      badge: 'bg-white/70 text-amber-700 border border-amber-100/60 shadow-sm',
+      summary: 'text-amber-800',
+      hover: 'hover:shadow-lg hover:-translate-y-0.5',
+      step: 'bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-md',
+      cta: 'text-amber-700 hover:text-amber-900',
+      gradient: 'from-amber-50 via-white to-yellow-50',
     },
   } as const
 
@@ -655,56 +658,62 @@ export default function DashboardClient({
     className = '',
   }: TaskStepProps) => (
     <div
-      className={`rounded-xl border bg-gray-50 transition ${tone.border} ${tone.hover} ${className}`.trim()}
+      className={`relative overflow-hidden rounded-2xl border bg-white/80 backdrop-blur transition ${tone.border} ${tone.hover} ${className}`.trim()}
     >
-      <div className="flex items-start gap-4 px-4 py-4 md:px-5">
-        <span
-          className={`flex h-9 w-9 flex-none items-center justify-center rounded-full text-sm font-semibold ${tone.step}`}
-        >
-          {step}
-        </span>
-        <div className="flex-1 space-y-3">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <div className={`absolute inset-0 opacity-70 bg-gradient-to-r ${tone.gradient}`}></div>
+      <div className="relative flex flex-col gap-4 px-4 py-5 md:px-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span
+              className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${tone.step}`}
+            >
+              Step {step}
+            </span>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
                 {title}
               </p>
               <p
-                className={`mt-2 text-sm font-medium leading-relaxed line-clamp-2 ${tone.summary}`}
+                className={`mt-1 text-base font-semibold leading-relaxed text-gray-900`}
               >
                 {summary}
               </p>
             </div>
-            <span
-              className={`inline-flex flex-none items-center rounded-full px-2.5 py-1 text-xs font-semibold ${tone.badge}`}
-            >
-              {badge}
-            </span>
           </div>
-          <div className="flex items-center justify-between text-xs text-gray-400">
-            {cta ? (
-              <Link href={cta.href} className={`font-semibold ${tone.cta}`}>
-                {cta.label}
-              </Link>
-            ) : (
-              <span />
-            )}
-            <button
-              type="button"
-              onClick={onToggle}
-              className="inline-flex items-center gap-1 font-medium text-gray-500 transition hover:text-gray-900"
+          <span
+            className={`inline-flex flex-none items-center rounded-full px-3 py-1 text-xs font-semibold ${tone.badge}`}
+          >
+            {badge}
+          </span>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-gray-500">
+          {cta ? (
+            <Link
+              href={cta.href}
+              className={`inline-flex items-center gap-1 font-semibold ${tone.cta}`}
             >
-              <span>{isExpanded ? 'Hide details' : 'See details'}</span>
-              <ChevronDownIcon
-                className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-              />
-            </button>
-          </div>
+              {cta.label}
+              <ChevronDownIcon className="h-3.5 w-3.5 -rotate-90" />
+            </Link>
+          ) : (
+            <span />
+          )}
+          <button
+            type="button"
+            onClick={onToggle}
+            className="inline-flex items-center gap-1 font-medium text-gray-600 hover:text-gray-900"
+          >
+            <span>{isExpanded ? 'Hide details' : 'See details'}</span>
+            <ChevronDownIcon
+              className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+            />
+          </button>
         </div>
       </div>
       {isExpanded && (
-        <div className="border-t border-gray-100 px-4 pb-4 md:px-5">
-          <div className="pt-4">{children}</div>
+        <div className="relative border-t border-white/70 px-4 pb-5 md:px-6">
+          <div className="pt-4 text-sm text-gray-600">{children}</div>
         </div>
       )}
     </div>

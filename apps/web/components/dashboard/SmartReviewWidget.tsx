@@ -93,122 +93,146 @@ export default function SmartReviewWidget() {
     }
   }
 
+  const LoadingCard = () => (
+    <div className="rounded-2xl border border-violet-100 bg-white/70 p-6 shadow-sm">
+      <div className="animate-pulse space-y-4">
+        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+        <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+        <div className="h-10 bg-gray-200 rounded"></div>
+      </div>
+    </div>
+  )
+
   if (loading) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-            <div className="h-10 bg-gray-200 rounded"></div>
-          </div>
-        </CardContent>
-      </Card>
-    )
+    return <LoadingCard />
   }
 
   if (!reviewData || reviewData.totalWords === 0) {
     return (
-      <Card className="border-dashed">
-        <CardContent className="p-6 text-center">
-          <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No vocabulary yet
-          </h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Start building your vocabulary to use Smart Review
-          </p>
-          <Link href="/student/vocab">
-            <Button variant="outline">Create Vocabulary Set</Button>
-          </Link>
-        </CardContent>
-      </Card>
+      <div className="rounded-2xl border border-dashed border-violet-200 bg-gradient-to-br from-white to-violet-50 p-6 text-center shadow-sm">
+        <BookOpen className="h-12 w-12 text-violet-300 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          Build your first deck
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Start a vocabulary set to unlock Smart Review insights.
+        </p>
+        <Link href="/student/vocab">
+          <Button variant="outline" className="border-violet-200 text-violet-700">
+            Create Vocabulary Set
+          </Button>
+        </Link>
+      </div>
     )
   }
 
-  return (
-    <Card
-      className={
-        reviewData.reviewCount > 0
-          ? 'border-blue-200 bg-blue-50'
-          : 'border-green-200 bg-green-50'
-      }
-    >
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Brain className="h-5 w-5 text-blue-600" />
-          Smart Review (SRS)
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
-        {reviewData.reviewCount > 0 ? (
-          <div>
-            <div className="mb-4">
-              <div className="text-3xl font-bold text-blue-600 mb-1">
-                {reviewData.reviewCount}
-              </div>
-              <p className="text-sm text-gray-600 mb-3">
-                word{reviewData.reviewCount !== 1 ? 's' : ''} ready for review
-              </p>
+  const StatChip = ({ label, value }: { label: string; value: string }) => (
+    <div className="rounded-xl border border-white/70 bg-white/60 px-4 py-3 text-left">
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+        {label}
+      </p>
+      <p className="text-lg font-semibold text-gray-900">{value}</p>
+    </div>
+  )
 
-              {/* Show vocab sets with reviews due */}
-              {reviewData.reviewSets.length > 0 && (
-                <div className="space-y-1 mb-3">
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    From your sets:
-                  </p>
-                  {reviewData.reviewSets.slice(0, 2).map((set) => (
-                    <div
-                      key={set.id}
-                      className="flex justify-between items-center text-xs"
-                    >
-                      <span className="text-gray-600 truncate">
-                        {set.title}
-                      </span>
-                      <span className="text-blue-600 font-medium">
-                        {set.count}
-                      </span>
-                    </div>
-                  ))}
-                  {reviewData.reviewSets.length > 2 && (
-                    <p className="text-xs text-gray-400">
-                      +{reviewData.reviewSets.length - 2} more sets
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-            <Link href="/student/vocab/quiz?pool=smart_review&type=term_to_def&format=multiple_choice">
-              <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                Start Smart Review
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <div>
-            <div className="mb-4">
-              <div className="text-2xl font-bold text-green-600 mb-1">
-                All caught up! 🎉
-              </div>
-              <p className="text-sm text-gray-600 mb-2">
-                You've reviewed all {reviewData.totalWords} words
+  const shellClass =
+    reviewData.reviewCount > 0
+      ? 'from-violet-50 via-white to-blue-50'
+      : 'from-emerald-50 via-white to-green-50'
+
+  return (
+    <div className={`rounded-2xl border border-violet-100/70 bg-gradient-to-br ${shellClass} p-6 shadow-sm`}> 
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Smart Review (SRS)
+          </p>
+          <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <Brain className="h-5 w-5 text-violet-500" />
+            Personalized practice
+          </h3>
+        </div>
+        <Link href="/student/vocab" className="text-xs font-medium text-violet-600 hover:text-violet-800">
+          Manage vocabulary →
+        </Link>
+      </div>
+
+      {reviewData.reviewCount > 0 ? (
+        <div className="mt-6 space-y-5">
+          <div className="flex flex-wrap items-end gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Ready today
               </p>
-              {reviewData.nextReviewTime && (
-                <div className="flex items-center gap-1 text-xs text-gray-500">
-                  <Clock className="h-3 w-3" />
-                  Next review in{' '}
-                  {formatTimeUntilNext(reviewData.nextReviewTime)}
-                </div>
-              )}
+              <p className="text-4xl font-bold text-violet-700">
+                {reviewData.reviewCount}
+              </p>
             </div>
-            <Link href="/student/vocab">
-              <Button variant="outline" className="w-full">
-                Manage Vocabulary
-              </Button>
-            </Link>
+            <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
+              {reviewData.reviewSets.length} set
+              {reviewData.reviewSets.length === 1 ? '' : 's'} due
+            </span>
           </div>
-        )}
-      </CardContent>
-    </Card>
+
+          {reviewData.reviewSets.length > 0 && (
+            <div className="grid gap-2">
+              {reviewData.reviewSets.slice(0, 3).map((set) => (
+                <div
+                  key={set.id}
+                  className="flex items-center justify-between rounded-xl border border-white/70 bg-white/60 px-4 py-2 text-sm text-gray-700"
+                >
+                  <span className="truncate">{set.title}</span>
+                  <span className="font-semibold text-violet-600">{set.count}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <Link href="/student/vocab/quiz?pool=smart_review&type=term_to_def&format=multiple_choice">
+            <Button className="w-full bg-violet-600 hover:bg-violet-700">
+              Start Smart Review
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="mt-6 space-y-4">
+          <div className="rounded-2xl border border-emerald-100 bg-white/70 px-4 py-3">
+            <div className="text-lg font-semibold text-emerald-700">
+              All caught up! 🎉
+            </div>
+            <p className="text-sm text-emerald-700/80">
+              You've reviewed all {reviewData.totalWords} words.
+            </p>
+            {reviewData.nextReviewTime && (
+              <div className="mt-2 flex items-center gap-1 text-xs text-gray-500">
+                <Clock className="h-3.5 w-3.5" />
+                Next review in {formatTimeUntilNext(reviewData.nextReviewTime)}
+              </div>
+            )}
+          </div>
+          <Link href="/student/vocab">
+            <Button variant="outline" className="w-full border-emerald-200 text-emerald-700">
+              Browse word library
+            </Button>
+          </Link>
+        </div>
+      )}
+
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <StatChip label="Total words" value={`${reviewData.totalWords}`} />
+        <StatChip
+          label="Due today"
+          value={`${reviewData.reviewCount || 0}`}
+        />
+        <StatChip
+          label="Next review"
+          value={
+            reviewData.nextReviewTime
+              ? formatTimeUntilNext(reviewData.nextReviewTime)
+              : 'Scheduled'
+          }
+        />
+      </div>
+    </div>
   )
 }
