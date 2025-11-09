@@ -127,11 +127,13 @@ export default function SmartReviewWidget() {
   }
 
   const StatChip = ({ label, value }: { label: string; value: string }) => (
-    <div className="rounded-xl border border-white/70 bg-white/60 px-4 py-3 text-left">
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+    <div className="rounded-2xl border border-white/70 bg-white/70 px-4 py-3 text-left shadow-sm">
+      <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-gray-500">
         {label}
       </p>
-      <p className="text-lg font-semibold text-gray-900">{value}</p>
+      <p className="text-lg font-semibold text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">
+        {value}
+      </p>
     </div>
   )
 
@@ -141,21 +143,21 @@ export default function SmartReviewWidget() {
       : 'from-emerald-50 via-white to-green-50'
 
   return (
-    <div className={`rounded-2xl border border-violet-100/70 bg-gradient-to-br ${shellClass} p-6 shadow-sm`}> 
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-            Smart Review (SRS)
-          </p>
-          <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-            <Brain className="h-5 w-5 text-violet-500" />
-            Personalized practice
-          </h3>
+      <div className={`rounded-2xl border border-violet-100/70 bg-gradient-to-br ${shellClass} p-5 shadow-sm`}>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Smart Review (SRS)
+            </p>
+            <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <Brain className="h-5 w-5 text-violet-500" />
+              Personalized practice
+            </h3>
+          </div>
+          <Link href="/student/vocab" className="inline-flex items-center justify-center rounded-full border border-violet-100 bg-white/80 px-3 py-1 text-[0.7rem] font-semibold text-violet-700 hover:bg-white">
+            Manage vocabulary
+          </Link>
         </div>
-        <Link href="/student/vocab" className="text-xs font-medium text-violet-600 hover:text-violet-800">
-          Manage vocabulary →
-        </Link>
-      </div>
 
       {reviewData.reviewCount > 0 ? (
         <div className="mt-6 space-y-5">
@@ -218,21 +220,18 @@ export default function SmartReviewWidget() {
         </div>
       )}
 
-      <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <StatChip label="Total words" value={`${reviewData.totalWords}`} />
-        <StatChip
-          label="Due today"
-          value={`${reviewData.reviewCount || 0}`}
-        />
-        <StatChip
-          label="Next review"
-          value={
-            reviewData.nextReviewTime
-              ? formatTimeUntilNext(reviewData.nextReviewTime)
-              : 'Scheduled'
-          }
-        />
-      </div>
+        <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-3">
+          <StatChip label="Total words" value={`${reviewData.totalWords}`} />
+          <StatChip label="Due today" value={`${reviewData.reviewCount || 0}`} />
+          <StatChip
+            label="Next review"
+            value={
+              reviewData.nextReviewTime
+                ? formatTimeUntilNext(reviewData.nextReviewTime)
+                : 'Soon'
+            }
+          />
+        </div>
     </div>
   )
 }

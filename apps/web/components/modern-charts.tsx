@@ -106,8 +106,8 @@ export function ModernScoreProgress({ data }: ScoreProgressProps) {
   })
 
   return (
-    <div className="flex flex-col gap-6 lg:flex-row">
-      <div className="w-full lg:w-64 rounded-2xl border border-violet-100 bg-white/80 p-5 shadow-sm">
+    <div className="flex flex-col gap-6 xl:flex-row">
+      <div className="w-full xl:max-w-sm rounded-2xl border border-violet-100 bg-white/80 p-5 shadow-sm">
         <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
           Current Score
         </p>

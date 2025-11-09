@@ -8,7 +8,6 @@ import {
   ProgressChart,
   SubjectPerformanceChart,
   WeeklyActivityChart,
-  CircularProgress,
 } from '../charts'
 import { ModernScoreProgress, StatsCard } from '../modern-charts'
 import { Calendar } from '../calendar'
@@ -950,14 +949,6 @@ export default function DashboardClient({
               )}
             </div>
 
-            {/* Subject Performance */}
-            <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 md:mb-6">
-                Subject Performance
-              </h3>
-              <SubjectPerformanceChart data={data.subjectScores} />
-            </div>
-
             {/* Weekly Activity */}
             <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 space-y-2 sm:space-y-0">
@@ -990,71 +981,22 @@ export default function DashboardClient({
               }))}
             />
 
-            {/* Performance Summary */}
+            {/* Subject Performance */}
             <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
               <div className="flex items-center justify-between mb-4 md:mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Performance Summary
-                </h3>
-                <button className="text-sm text-gray-500 hover:text-gray-700">
-                  Update
-                </button>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Skill Balance
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Reading/Writing vs Math snapshot
+                  </p>
+                </div>
+                <span className="text-xs font-semibold text-violet-600 bg-violet-50 px-2 py-1 rounded-full">
+                  Live
+                </span>
               </div>
-
-              <div className="flex justify-center mb-4 md:mb-6">
-                <CircularProgress
-                  percentage={
-                    canShowResults && data.overallStats.bestScore
-                      ? Math.round((data.overallStats.bestScore / 1600) * 100)
-                      : 0
-                  }
-                  size={120}
-                />
-              </div>
-
-              <div className="space-y-3">
-                {!canShowResults ? (
-                  <div className="text-center py-4">
-                    <p className="text-gray-500 text-sm">Results Hidden</p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Your instructor will release results when ready
-                    </p>
-                  </div>
-                ) : data.overallStats.bestScore ? (
-                  <>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-3 h-3 rounded-full bg-violet-500"></div>
-                      <span className="text-sm text-gray-700">Best Score</span>
-                      <span className="ml-auto text-sm font-semibold">
-                        {data.overallStats.bestScore}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                      <span className="text-sm text-gray-700">Exams Taken</span>
-                      <span className="ml-auto text-sm font-semibold">
-                        {data.overallStats.examsTaken}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                      <span className="text-sm text-gray-700">
-                        Average Score
-                      </span>
-                      <span className="ml-auto text-sm font-semibold">
-                        {data.overallStats.averageScore || 'N/A'}
-                      </span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-4">
-                    <p className="text-gray-500 text-sm">No exam data yet</p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Take your first exam to see performance here
-                    </p>
-                  </div>
-                )}
-              </div>
+              <SubjectPerformanceChart data={data.subjectScores} />
             </div>
 
             {/* Latest Activities */}
