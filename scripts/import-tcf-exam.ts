@@ -199,42 +199,46 @@ async function main() {
     path.resolve(process.cwd(), 'scripts/tcf-data'),          // 워크트리/레포 루트
     path.resolve(process.cwd(), '../../../scripts/tcf-data'),  // 워크트리에서 메인 레포
   ]
-  const dataDir = dataDirCandidates.find(fs.existsSync) ?? dataDirCandidates[0]
 
   // 특정 파일 지정 or 전체 폴더
   const specificFile = process.argv[2]
 
   if (specificFile) {
-    const filePath = path.resolve(dataDir, specificFile)
-    if (!fs.existsSync(filePath)) {
-      console.error(`❌ 파일 없음: ${filePath}`)
+    // 파일은 후보 경로 중 실제로 존재하는 곳에서 찾음
+    const filePath = dataDirCandidates
+      .map((d) => path.resolve(d, specificFile))
+      .find(fs.existsSync)
+    if (!filePath) {
+      console.error(`❌ 파일 없음: ${specificFile}`)
+      console.error(`  탐색 위치:`)
+      dataDirCandidates.forEach((d) => console.error(`    ${path.resolve(d, specificFile)}`))
       process.exit(1)
     }
     await importTCFExam(filePath)
   } else {
-    if (!fs.existsSync(dataDir)) {
-      console.error(`❌ 디렉터리 없음: ${dataDir}`)
-      console.log('  → scripts/tcf-data/ 폴더를 만들고 JSON 파일을 넣어주세요.')
-      process.exit(1)
+    // 존재하는 모든 후보 폴더에서 JSON 파일 수집 (파일명 기준 중복 제거)
+    const fileMap = new Map<string, string>() // filename → full path
+    for (const dir of dataDirCandidates) {
+      if (!fs.existsSync(dir)) continue
+      for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.json'))) {
+        if (!fileMap.has(f)) fileMap.set(f, path.join(dir, f))
+      }
     }
 
-    const files = fs
-      .readdirSync(dataDir)
-      .filter((f) => f.endsWith('.json'))
-      .sort()
-
-    if (files.length === 0) {
-      console.log('⚠️ scripts/tcf-data/ 에 JSON 파일이 없습니다.')
+    if (fileMap.size === 0) {
+      console.error('⚠️ scripts/tcf-data/ 에 JSON 파일이 없습니다.')
+      console.error(`  탐색 위치: ${dataDirCandidates.join(', ')}`)
       process.exit(0)
     }
 
-    console.log(`📋 총 ${files.length}개 파일 처리 시작`)
+    const entries = [...fileMap.entries()].sort(([a], [b]) => a.localeCompare(b))
+    console.log(`📋 총 ${entries.length}개 파일 처리 시작`)
     let imported = 0
     let skipped = 0
     let errors = 0
 
-    for (const file of files) {
-      const result = await importTCFExam(path.join(dataDir, file))
+    for (const [, filePath] of entries) {
+      const result = await importTCFExam(filePath)
       if (result === 'imported') imported++
       else if (result === 'skipped') skipped++
       else errors++
