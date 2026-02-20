@@ -226,6 +226,8 @@ const selectionChangeRaf = useRef<number | null>(null)
             <span className="text-sm text-gray-500">
               {(currentModule.module as string) === 'practice'
                 ? 'Practice Mode'
+                : (currentModule.module as string) === 'tcf_reading'
+                ? 'TCF 독해'
                 : currentModule.module.replace(/(\d)/, ' $1').toUpperCase()}
             </span>
           </div>

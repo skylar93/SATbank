@@ -4,7 +4,7 @@ export interface BaseEntity {
   updated_at: string
 }
 
-export type ModuleType = 'english1' | 'english2' | 'math1' | 'math2'
+export type ModuleType = 'english1' | 'english2' | 'math1' | 'math2' | 'tcf_reading'
 
 export interface TimeLimit {
   module: ModuleType

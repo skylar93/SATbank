@@ -109,7 +109,7 @@ interface ExamState {
   saveCurrentAnswerImmediately: () => Promise<void>
 }
 
-const MODULE_ORDER: ModuleType[] = ['english1', 'english2', 'math1', 'math2']
+const MODULE_ORDER: ModuleType[] = ['english1', 'english2', 'math1', 'math2', 'tcf_reading']
 
 // Native debounce implementation
 function debounce<T extends (...args: any[]) => any>(

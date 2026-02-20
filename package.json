@@ -25,7 +25,8 @@
     "scoring:health-check": "pnpm test:scoring:quick",
     "scoring:regression": "pnpm test:scoring:integration",
     "scoring:stress-test": "cd apps/web && pnpm test -- tests/scoring --verbose --reporter=verbose",
-    "seed:guest": "node scripts/seed-demo-guest.js"
+    "seed:guest": "node scripts/seed-demo-guest.js",
+    "import-tcf": "tsx scripts/import-tcf-exam.ts"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.21.0",
@@ -34,6 +35,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "prettier": "^3.2.5",
+    "tsx": "^4.6.0",
     "typescript": "^5.3.3"
   },
   "engines": {
