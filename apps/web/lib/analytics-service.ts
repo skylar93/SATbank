@@ -17,12 +17,14 @@ export interface DetailedScore {
     english2: number
     math1: number
     math2: number
+    tcf_reading?: number
   }
   percentages: {
     english1: number
     english2: number
     math1: number
     math2: number
+    tcf_reading?: number
     overall: number
   }
   percentiles: {
@@ -30,6 +32,7 @@ export interface DetailedScore {
     english2: number
     math1: number
     math2: number
+    tcf_reading?: number
     overall: number
   }
 }
@@ -155,6 +158,7 @@ export class AnalyticsService {
       english2: { correct: 0, total: 0 },
       math1: { correct: 0, total: 0 },
       math2: { correct: 0, total: 0 },
+      tcf_reading: { correct: 0, total: 0 },
     }
 
     // Count correct answers by module for percentages
@@ -238,6 +242,7 @@ export class AnalyticsService {
       english2: { correct: 0, total: 0 },
       math1: { correct: 0, total: 0 },
       math2: { correct: 0, total: 0 },
+      tcf_reading: { correct: 0, total: 0 },
     }
 
     // Count correct answers by module

@@ -4,7 +4,7 @@ import {
   normalizeCorrectAnswers,
 } from './answer-checker'
 
-export type ModuleType = 'english1' | 'english2' | 'math1' | 'math2'
+export type ModuleType = 'english1' | 'english2' | 'math1' | 'math2' | 'tcf_reading'
 
 export interface Exam {
   id: string
@@ -14,10 +14,11 @@ export interface Exam {
   is_active: boolean
   total_questions: number
   time_limits: {
-    english1: number
-    english2: number
-    math1: number
-    math2: number
+    english1?: number
+    english2?: number
+    math1?: number
+    math2?: number
+    tcf_reading?: number
   }
   created_by: string | null
   created_at: string
@@ -733,6 +734,7 @@ export class ExamService {
       english2: 2,
       math1: 3,
       math2: 4,
+      tcf_reading: 5,
     }
 
     questions.sort((a, b) => {
@@ -778,6 +780,7 @@ export class ExamService {
       english2: 0,
       math1: 0,
       math2: 0,
+      tcf_reading: 0,
     }
 
     answers?.forEach((answer: any) => {

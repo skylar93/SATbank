@@ -151,11 +151,12 @@ export default function DetailedResultsPage() {
   }
 
   const getModuleDisplayName = (moduleType: ModuleType) => {
-    const names = {
+    const names: Record<ModuleType, string> = {
       english1: 'Reading and Writing',
       english2: 'Writing and Language',
       math1: 'Math (No Calculator)',
       math2: 'Math (Calculator)',
+      tcf_reading: 'TCF 독해',
     }
     return names[moduleType]
   }
@@ -467,8 +468,8 @@ export default function DetailedResultsPage() {
                 {Object.entries(detailedScore.rawScores).map(
                   ([module, score]) => {
                     const moduleType = module as ModuleType
-                    const percentage = detailedScore.percentages[moduleType]
-                    const percentile = detailedScore.percentiles[moduleType]
+                    const percentage = detailedScore.percentages[moduleType] ?? 0
+                    const percentile = detailedScore.percentiles[moduleType] ?? 0
 
                     return (
                       <div key={module} className="bg-gray-50 p-4 rounded-lg">
