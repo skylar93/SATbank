@@ -125,7 +125,25 @@ export async function POST(request: NextRequest) {
       console.log('✅ API: Token-authenticated Supabase client created')
     }
 
-    const body = await request.json()
+    // Parse request body with error handling
+    let body
+    try {
+      const requestText = await request.text()
+      if (!requestText.trim()) {
+        throw new Error('Empty request body')
+      }
+      body = JSON.parse(requestText)
+    } catch (parseError: any) {
+      console.error('🚨 API: Failed to parse request body:', {
+        error: parseError.message,
+        requestMethod: request.method,
+        contentType: request.headers.get('content-type'),
+      })
+      return NextResponse.json(
+        { error: 'Invalid JSON in request body' },
+        { status: 400 }
+      )
+    }
 
     // Check for impersonation data in request headers
     const impersonationHeader = request.headers.get('x-impersonation-data')

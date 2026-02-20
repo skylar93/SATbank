@@ -1,12 +1,15 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { ExamTimer } from './exam-timer'
 import { QuestionDisplay } from './question-display'
 import { ExamNavigation } from './exam-navigation'
 import { ReferenceSheetModal } from './ReferenceSheetModal'
 import { TimeExpiredOverlay } from './TimeExpiredOverlay'
+import { HighlightToolbar } from './HighlightToolbar'
 import { ModuleType } from '../../lib/exam-service'
+import { autoAddToVocab } from '@/lib/dictionary-actions'
+import { toast } from 'sonner'
 
 interface ExamInterfaceProps {
   exam: {
@@ -92,9 +95,116 @@ export function ExamInterface({
   removeHighlight,
   getAnsweredQuestions,
 }: ExamInterfaceProps) {
+// Highlight mode state
+const [isHighlightMode, setIsHighlightMode] = useState(false)
+const [selectedVocabText, setSelectedVocabText] = useState('')
+const [isAddingVocab, setIsAddingVocab] = useState(false)
+const selectionChangeRaf = useRef<number | null>(null)
+
+  // Reset highlight mode when question changes
+  useEffect(() => {
+    setIsHighlightMode(false)
+  }, [currentQuestion.id])
+
   const isLastQuestion =
     currentModule.currentQuestionIndex === currentModule.questions.length - 1
   const isLastModule = currentModuleIndex === modules.length - 1
+
+  // Toggle highlight mode function
+  const toggleHighlightMode = () => {
+    setIsHighlightMode(!isHighlightMode)
+    // Clear selection when toggling mode
+    if (window.getSelection) {
+      window.getSelection()?.removeAllRanges()
+    }
+  }
+
+  // Clear all highlights for current question
+  const clearAllHighlights = () => {
+    const highlights = highlightsByQuestion[currentQuestion.id] || []
+    highlights.forEach((highlight: any) => {
+      removeHighlight(currentQuestion.id, highlight)
+    })
+  }
+
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      if (selectionChangeRaf.current) {
+        cancelAnimationFrame(selectionChangeRaf.current)
+      }
+      selectionChangeRaf.current = requestAnimationFrame(() => {
+        selectionChangeRaf.current = null
+
+        const selection = document.getSelection()
+        if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+          setSelectedVocabText('')
+          return
+        }
+
+        const container = questionContentRef.current
+        const anchorNode = selection.anchorNode
+        const focusNode = selection.focusNode
+
+        const withinContainer =
+          !!container &&
+          ((anchorNode && container.contains(anchorNode)) ||
+            (focusNode && container.contains(focusNode)))
+
+        if (!withinContainer) {
+          setSelectedVocabText('')
+          return
+        }
+
+        const normalized = selection.toString().replace(/\s+/g, ' ').trim()
+
+        if (normalized.length < 2 || normalized.length > 80) {
+          setSelectedVocabText('')
+          return
+        }
+
+        setSelectedVocabText(normalized)
+      })
+    }
+
+    document.addEventListener('selectionchange', handleSelectionChange)
+    return () => {
+      if (selectionChangeRaf.current) {
+        cancelAnimationFrame(selectionChangeRaf.current)
+        selectionChangeRaf.current = null
+      }
+      document.removeEventListener('selectionchange', handleSelectionChange)
+    }
+  }, [questionContentRef])
+
+  const handleAddSelectionToVocab = async () => {
+    if (!selectedVocabText || isAddingVocab) return
+
+    setIsAddingVocab(true)
+    try {
+      const result = await autoAddToVocab(selectedVocabText, exam.title, exam.id)
+      if (result.success) {
+        toast.success(result.message)
+        setSelectedVocabText('')
+        window.getSelection()?.removeAllRanges()
+      } else {
+        toast.error(result.message)
+      }
+    } catch (error) {
+      console.error('Failed to add to vocabulary:', error)
+      toast.error('단어를 추가하지 못했습니다. 다시 시도해 주세요.')
+    } finally {
+      setIsAddingVocab(false)
+    }
+  }
+
+  const vocabButtonDisabled =
+    status !== 'in_progress' || (timeExpiredRef.current ?? false)
+
+  const vocabPreview = selectedVocabText
+    ? selectedVocabText.length > 40
+      ? `${selectedVocabText.slice(0, 37)}…`
+      : selectedVocabText
+    : undefined
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -116,11 +226,24 @@ export function ExamInterface({
             <span className="text-sm text-gray-500">
               {(currentModule.module as string) === 'practice'
                 ? 'Practice Mode'
+                : (currentModule.module as string) === 'tcf_reading'
+                ? 'TCF 독해'
                 : currentModule.module.replace(/(\d)/, ' $1').toUpperCase()}
             </span>
           </div>
 
           <div className="flex items-center space-x-4">
+            <HighlightToolbar
+              isHighlightMode={isHighlightMode}
+              onToggleMode={toggleHighlightMode}
+              onClearAll={clearAllHighlights}
+              highlightCount={(highlightsByQuestion[currentQuestion.id] || []).length}
+              disabled={vocabButtonDisabled}
+              canAddToVocab={Boolean(selectedVocabText)}
+              onAddToVocab={handleAddSelectionToVocab}
+              isAddingToVocab={isAddingVocab}
+              selectedSnippet={vocabPreview}
+            />
             <ExamTimer
               initialTimeSeconds={currentModule.timeRemaining}
               onTimeExpired={onTimeExpired}
@@ -166,6 +289,7 @@ export function ExamInterface({
           }
           examTitle={exam.title}
           examId={exam.id}
+          isHighlightMode={isHighlightMode}
         />
       </div>
 

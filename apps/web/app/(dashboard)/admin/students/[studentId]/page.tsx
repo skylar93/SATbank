@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../../../../contexts/auth-context'
@@ -26,14 +26,14 @@ interface TestAttemptSummary {
   created_at: string
   completed_at: string
   total_score: number
-  module_scores: any
-  time_spent: any
+  module_scores: Record<string, number> | null
+  time_spent: number | null
   status: string
   answers_visible: boolean
   answers_visible_after: string | null
   final_scores?: {
     overall: number
-    [key: string]: any
+    [key: string]: number
   }
   exam?: {
     id: string
@@ -57,13 +57,7 @@ export default function StudentDetailPage() {
 
   const studentId = params.studentId as string
 
-  useEffect(() => {
-    if (user && studentId) {
-      loadStudentData()
-    }
-  }, [user, studentId])
-
-  const loadStudentData = async () => {
+  const loadStudentData = useCallback(async () => {
     try {
       // Load student profile
       const { data: studentData, error: studentError } = await supabase
@@ -95,20 +89,26 @@ export default function StudentDetailPage() {
 
       if (attemptsError) throw attemptsError
       setAttempts(attemptsData || [])
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
-  }
+  }, [studentId])
+
+  useEffect(() => {
+    if (user && studentId) {
+      loadStudentData()
+    }
+  }, [user, studentId, loadStudentData])
 
   const loadAttemptDetails = async (attemptId: string) => {
     setDetailsLoading(true)
     try {
       const results = await AnalyticsService.getComprehensiveResults(attemptId)
       setSelectedAttempt(results)
-    } catch (err: any) {
-      setError(`Failed to load attempt details: ${err.message}`)
+    } catch (err: unknown) {
+      setError(`Failed to load attempt details: ${err instanceof Error ? err.message : 'Unknown error'}`)
     } finally {
       setDetailsLoading(false)
     }
@@ -136,8 +136,8 @@ export default function StudentDetailPage() {
         csvContent,
         `student-${student.full_name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.csv`
       )
-    } catch (err: any) {
-      setError(`Export failed: ${err.message}`)
+    } catch (err: unknown) {
+      setError(`Export failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
     }
   }
 
@@ -345,7 +345,7 @@ export default function StudentDetailPage() {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as 'overview' | 'attempts' | 'progress')}
                 className={`py-3 px-6 rounded-xl font-medium text-sm transition-all duration-200 ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'

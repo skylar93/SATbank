@@ -1,6 +1,12 @@
 'use client'
 
-import { useEffect, useState, Suspense, useTransition } from 'react'
+import {
+  useEffect,
+  useState,
+  Suspense,
+  useTransition,
+  useCallback,
+} from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '../../../../../../contexts/auth-context'
 import { useAdminPreviewState } from '../../../../../../hooks/use-admin-preview-state'
@@ -126,11 +132,11 @@ function AdminExamPreviewContent() {
   }
 
   // Save current answer locally before navigation
-  const saveCurrentAnswer = () => {
+  const saveCurrentAnswer = useCallback(() => {
     if (currentAnswer.trim()) {
       setLocalAnswer(currentAnswer)
     }
-  }
+  }, [currentAnswer, setLocalAnswer])
 
   // Handle question updates during admin preview
   const handleQuestionUpdate = (updatedQuestion: Question) => {
@@ -139,33 +145,33 @@ function AdminExamPreviewContent() {
   }
 
   // Handle previous question
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     saveCurrentAnswer()
     setIsUserSelecting(false)
     previousQuestion()
-  }
+  }, [saveCurrentAnswer, previousQuestion])
 
   // Handle go to specific question
-  const handleGoToQuestion = (questionIndex: number) => {
+  const handleGoToQuestion = useCallback((questionIndex: number) => {
     saveCurrentAnswer()
     setIsUserSelecting(false)
     goToQuestion(questionIndex)
-  }
+  }, [saveCurrentAnswer, goToQuestion])
 
   // Handle admin navigation to specific module and question
-  const handleGoToModule = (moduleIndex: number, questionIndex: number) => {
+  const handleGoToModule = useCallback((moduleIndex: number, questionIndex: number) => {
     saveCurrentAnswer()
     setIsUserSelecting(false)
 
     goToModuleAndQuestion(moduleIndex, questionIndex)
-  }
+  }, [saveCurrentAnswer, goToModuleAndQuestion])
 
   // Handle next question
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     saveCurrentAnswer()
     setIsUserSelecting(false)
     nextQuestion()
-  }
+  }, [saveCurrentAnswer, nextQuestion])
 
   // Handle adding new question
   const handleAddNewQuestion = () => {

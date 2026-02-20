@@ -1,7 +1,7 @@
 // Database Types - Generated from Supabase Schema
 
-export type ModuleType = 'english1' | 'english2' | 'math1' | 'math2'
-export type QuestionType = 'multiple_choice' | 'grid_in' | 'essay'
+export type ModuleType = 'english1' | 'english2' | 'math1' | 'math2' | 'tcf_reading'
+export type QuestionType = 'multiple_choice' | 'multiple_select' | 'grid_in' | 'essay'
 export type DifficultyLevel = 'easy' | 'medium' | 'hard'
 export type UserRole = 'student' | 'admin'
 export type ExamStatus = 'not_started' | 'in_progress' | 'completed' | 'expired'
@@ -96,10 +96,11 @@ export interface Exam {
   is_active: boolean
   total_questions: number
   time_limits: {
-    english1: number
-    english2: number
-    math1: number
-    math2: number
+    english1?: number
+    english2?: number
+    math1?: number
+    math2?: number
+    tcf_reading?: number
   }
   created_by: string | null
   created_at: string
@@ -116,8 +117,8 @@ export interface Question {
   question_text: string
   question_image_url: string | null
   options: Record<string, string> | null // {"A": "text", "B": "text", etc.}
-  correct_answer: string // For multiple_choice questions
-  correct_answers: string[] | null // For grid_in questions - array of acceptable answers
+  correct_answer: string // For single-answer questions
+  correct_answers: string[] | null // For grid_in/multiple_select questions - array of acceptable answers
   explanation: string | null
   points: number
   topic_tags: string[] | null

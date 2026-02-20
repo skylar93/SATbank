@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { QuestionDisplay } from '../../../../../../components/exam/question-display'
 import { ExamNavigation } from '../../../../../../components/exam/exam-navigation'
@@ -33,6 +33,20 @@ export default function ReviewPageClient({
   attemptId,
   isAdminView = false,
 }: ReviewPageClientProps) {
+  const [questions, setQuestions] = useState(reviewData.questions)
+
+  useEffect(() => {
+    setQuestions(reviewData.questions)
+  }, [reviewData.questions])
+
+  const reviewDataWithUpdates = useMemo(
+    () => ({
+      ...reviewData,
+      questions,
+    }),
+    [reviewData.attempt, reviewData.exam, reviewData.userAnswers, questions]
+  )
+
   const {
     currentQuestionIndex,
     currentQuestion,
@@ -47,11 +61,19 @@ export default function ReviewPageClient({
     getAllModules,
     getCurrentModuleIndex,
     allQuestionsOrdered,
-  } = useExamReviewState(reviewData)
+  } = useExamReviewState(reviewDataWithUpdates)
 
   // Admin regrade functionality
   const [regrading, setRegrading] = useState(false)
   const [regradeError, setRegradeError] = useState<string | null>(null)
+
+  const handleQuestionUpdate = useCallback((updatedQuestion: Question) => {
+    setQuestions((prev) =>
+      prev.map((question) =>
+        question.id === updatedQuestion.id ? updatedQuestion : question
+      )
+    )
+  }, [])
 
   // Handle regrade question
   const handleRegrade = async () => {
@@ -180,22 +202,44 @@ export default function ReviewPageClient({
   // Calculate current question number within the module
   const currentModuleIndex = getCurrentModuleIndex()
   const currentModuleQuestions = getModuleQuestions(currentModule)
-  const questionIndexInModule = currentModuleQuestions.findIndex(
-    (q) => q.id === currentQuestion.id
-  )
-  const currentQuestionInModule = questionIndexInModule + 1
+  const questionIndexInModule = currentQuestion
+    ? currentModuleQuestions.findIndex((q) => q.id === currentQuestion.id)
+    : -1
+  const currentQuestionInModule =
+    questionIndexInModule >= 0 ? questionIndexInModule + 1 : 0
   const totalQuestionsInModule = currentModuleQuestions.length
 
   // Add keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Only handle arrow keys and ignore if user is typing in an input field
-      if (
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement ||
-        event.target instanceof HTMLSelectElement
-      ) {
+      if (event.defaultPrevented) {
         return
+      }
+
+      const targetNode = event.target as Node | null
+
+      if (targetNode) {
+        let currentNode: Node | null = targetNode
+
+        while (currentNode) {
+          if (
+            currentNode instanceof HTMLInputElement ||
+            currentNode instanceof HTMLTextAreaElement ||
+            currentNode instanceof HTMLSelectElement
+          ) {
+            return
+          }
+
+          if (
+            currentNode instanceof HTMLElement &&
+            (currentNode.isContentEditable ||
+              currentNode.getAttribute('data-disable-exam-navigation') === 'true')
+          ) {
+            return
+          }
+
+          currentNode = currentNode.parentNode
+        }
       }
 
       switch (event.key) {
@@ -217,6 +261,27 @@ export default function ReviewPageClient({
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [currentQuestionIndex, totalQuestions, nextQuestion, previousQuestion])
+
+  if (totalQuestions === 0 || !currentQuestion) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-6 py-12 text-center">
+        <div className="max-w-xl">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100 text-purple-600">
+            <span className="text-2xl">🤔</span>
+          </div>
+          <h2 className="text-2xl font-semibold text-gray-900">
+            No question data available
+          </h2>
+          <p className="mt-3 text-gray-600">
+            We couldn&apos;t find any questions for this exam review. The exam
+            might not be fully synced yet or is using an unsupported module
+            format. Please refresh the page or contact support if the issue
+            persists.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -319,7 +384,8 @@ export default function ReviewPageClient({
                 onAnswerChange={() => {}} // No-op in review mode
                 showExplanation={showCorrectAnswers}
                 disabled={true} // All inputs disabled in review mode
-                isAdminPreview={false}
+                isAdminPreview={isAdminView}
+                onQuestionUpdate={isAdminView ? handleQuestionUpdate : undefined}
                 isCorrect={isCorrect}
                 isSecondTryCorrect={isSecondTryCorrect}
                 moduleDisplayName={getModuleDisplayName(currentModule)}

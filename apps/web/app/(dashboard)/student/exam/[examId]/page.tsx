@@ -10,6 +10,7 @@ import { QuestionDisplay } from '../../../../../components/exam/question-display
 import { ExamNavigation } from '../../../../../components/exam/exam-navigation'
 import { ReferenceSheetModal } from '../../../../../components/exam/ReferenceSheetModal'
 import { TimeExpiredOverlay } from '../../../../../components/exam/TimeExpiredOverlay'
+import { HighlightToolbar } from '../../../../../components/exam/HighlightToolbar'
 import {
   Dialog,
   DialogContent,
@@ -88,16 +89,38 @@ function ExamPageContent() {
     isCorrect: boolean
   } | null>(null)
   const [shouldShowCorrectAnswer, setShouldShowCorrectAnswer] = useState(false)
+  const [isHighlightMode, setIsHighlightMode] = useState(false)
   const questionContentRef = useRef<HTMLDivElement>(null)
 
   // Reset initialization flag when examId changes
   useEffect(() => {
-    console.log('🔄 ExamId changed, resetting initialization flag:', {
-      examId,
-      hasInitialized,
-    })
     setHasInitialized(false)
   }, [examId])
+
+  // Reset highlight mode when question changes
+  useEffect(() => {
+    setIsHighlightMode(false)
+  }, [getCurrentQuestion()?.id])
+
+  // Toggle highlight mode function
+  const toggleHighlightMode = () => {
+    setIsHighlightMode(!isHighlightMode)
+    // Clear selection when toggling mode
+    if (window.getSelection) {
+      window.getSelection()?.removeAllRanges()
+    }
+  }
+
+  // Clear all highlights for current question
+  const clearAllHighlights = () => {
+    const currentQuestion = getCurrentQuestion()
+    if (currentQuestion) {
+      const highlights = highlightsByQuestion[currentQuestion.id] || []
+      highlights.forEach((highlight: any) => {
+        removeHighlight(currentQuestion.id, highlight)
+      })
+    }
+  }
   const forcingExitRef = useRef(false)
   const timeExpiredRef = useRef(false)
   const isAdvancingModuleRef = useRef(false)
@@ -127,21 +150,9 @@ function ExamPageContent() {
     // Check for review mode
     const reviewForAttemptId = searchParams.get('review_for')
 
-    console.log('ExamPage useEffect: Checking initialization conditions', {
-      authLoading,
-      user: !!user,
-      examId,
-      hasInitialized,
-      loading,
-      userProfile: user?.profile,
-      reviewForAttemptId,
-      shouldInitialize:
-        !authLoading && user && examId && !hasInitialized && !loading,
-    })
 
     // Don't do anything if auth is still loading
     if (authLoading) {
-      console.log('⏳ Auth still loading, waiting...')
       return
     }
 
@@ -938,7 +949,7 @@ function ExamPageContent() {
               onClick={handleExitAttempt}
               className="text-gray-500 hover:text-gray-700 text-sm"
             >
-              ← Exit Exam
+              ←
             </button>
             <ReferenceSheetModal />
             <h1 className="text-xl font-semibold text-gray-900">
@@ -961,6 +972,13 @@ function ExamPageContent() {
           </div>
 
           <div className="flex items-center space-x-4">
+            <HighlightToolbar
+              isHighlightMode={isHighlightMode}
+              onToggleMode={toggleHighlightMode}
+              onClearAll={clearAllHighlights}
+              highlightCount={getCurrentQuestion() ? (highlightsByQuestion[getCurrentQuestion()!.id] || []).length : 0}
+              disabled={status !== 'in_progress' || timeExpiredRef.current}
+            />
             <ExamTimer
               initialTimeSeconds={currentModule.timeRemaining}
               onTimeExpired={handleTimeExpired}
@@ -1000,6 +1018,9 @@ function ExamPageContent() {
           showCorrectAnswer={shouldShowCorrectAnswer}
           module={currentModule.module}
           isPaused={status !== 'in_progress' || timeExpiredRef.current}
+          examTitle={exam.title}
+          examId={exam.id}
+          isHighlightMode={isHighlightMode}
         />
       </div>
 

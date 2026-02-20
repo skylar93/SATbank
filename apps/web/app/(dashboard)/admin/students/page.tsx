@@ -88,7 +88,7 @@ export default function AdminStudentsPage() {
           const totalAttempts = attempts?.length || 0
 
           // Helper function to get the display score (prefer final_scores.overall, fallback to total_score)
-          const getDisplayScore = (attempt: any): number => {
+          const getDisplayScore = (attempt: { final_scores?: { overall?: number }; total_score?: number }): number => {
             return attempt.final_scores?.overall || attempt.total_score || 0
           }
 
@@ -124,8 +124,8 @@ export default function AdminStudentsPage() {
       )
 
       setStudents(studentsWithAttempts)
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
@@ -264,8 +264,8 @@ export default function AdminStudentsPage() {
             : student
         )
       )
-    } catch (err: any) {
-      setError(`Failed to update answer visibility: ${err.message}`)
+    } catch (err: unknown) {
+      setError(`Failed to update answer visibility: ${err instanceof Error ? err.message : 'Unknown error'}`)
       // Reload data to reset the UI
       loadStudentData()
     } finally {
@@ -409,7 +409,7 @@ export default function AdminStudentsPage() {
                       onChange={(e) =>
                         setFilters({
                           ...filters,
-                          sortBy: e.target.value as any,
+                          sortBy: e.target.value as 'name' | 'score' | 'attempts' | 'date',
                         })
                       }
                       className="flex-1 px-3 py-2 border border-purple-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"

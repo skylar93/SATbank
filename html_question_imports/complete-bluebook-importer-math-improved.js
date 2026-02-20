@@ -60,6 +60,25 @@ function extractLatexFromHtml(htmlContent) {
     return placeholder;
   });
 
+  // Enhanced MathQuill extraction that preserves individual numerator/denominator values
+  function extractMathQuillContent(htmlSpan) {
+    // Prefer MathQuill's own LaTeX representation when available
+    const latexMatch = htmlSpan.match(/latex-data="([^"]*)"/);
+    if (latexMatch) {
+      return latexMatch[1];
+    }
+
+    // Legacy fallback: try to reconstruct simple numeric fractions
+    const numMatch = htmlSpan.match(/<span class="mq-numerator"[^>]*>.*?<span[^>]*>([\w+-]+)<\/span>.*?<\/span>/);
+    const denMatch = htmlSpan.match(/<span class="mq-denominator"[^>]*>.*?<span[^>]*>([\w+-]+)<\/span>.*?<\/span>/);
+
+    if (numMatch && denMatch) {
+      return `\\frac{${numMatch[1]}}{${denMatch[1]}}`;
+    }
+
+    return null;
+  }
+
   // Improved: Use balanced bracket matching to completely remove mathquill structures
   function findCompleteSpan(text, startIndex) {
     let depth = 0;
@@ -110,15 +129,26 @@ function extractLatexFromHtml(htmlContent) {
     let spanEnd = findCompleteSpan(processed, spanStart);
     if (spanEnd === -1) continue;
 
-    // Clean LaTeX content
-    let latex = data.latex
-      .replace(/\\cdot/g, '\\cdot')
-      .replace(/\\times/g, '\\times')
-      .replace(/\\div/g, '\\div')
-      .replace(/\\pm/g, '\\pm')
-      .replace(/\\sqrt{([^}]*)}/g, '\\sqrt{$1}')
-      .replace(/\\frac{([^}]*)}{([^}]*)}/g, '\\frac{$1}{$2}')
-      .trim();
+    // Extract the complete MathQuill HTML span for enhanced processing
+    const fullSpan = processed.substring(spanStart, spanEnd);
+
+    // Try enhanced extraction first (for fractions with different values)
+    let latex = extractMathQuillContent(fullSpan);
+
+    if (!latex) {
+      // Fallback to original method
+      latex = data.latex
+        .replace(/\\cdot/g, '\\cdot')
+        .replace(/\\times/g, '\\times')
+        .replace(/\\div/g, '\\div')
+        .replace(/\\pm/g, '\\pm')
+        .replace(/\\sqrt{([^}]*)}/g, '\\sqrt{$1}')
+        .replace(/\\frac{([^}]*)}{([^}]*)}/g, '\\frac{$1}{$2}')
+        .trim();
+    }
+
+    // Clean \left \right brackets for simpler LaTeX
+    latex = cleanLeftRightBrackets(latex);
 
     // Replace with placeholder for now
     let beforeSpan = processed.substring(0, spanStart);
@@ -141,6 +171,41 @@ function extractLatexFromHtml(htmlContent) {
   });
 
   return processed;
+}
+
+// Clean \left \right brackets for simpler LaTeX
+function cleanLeftRightBrackets(latex) {
+  if (!latex || typeof latex !== 'string') return latex;
+
+  return latex
+    // Remove \left and \right with their corresponding brackets
+    .replace(/\\left\s*\(/g, '(')
+    .replace(/\\right\s*\)/g, ')')
+    .replace(/\\left\s*\[/g, '[')
+    .replace(/\\right\s*\]/g, ']')
+    .replace(/\\left\s*\{/g, '{')
+    .replace(/\\right\s*\}/g, '}')
+    .replace(/\\left\s*\|/g, '|')
+    .replace(/\\right\s*\|/g, '|')
+    // Handle any remaining \left \right pairs
+    .replace(/\\left\s*/g, '')
+    .replace(/\\right\s*/g, '');
+}
+
+function simplifyOptionHtml(content) {
+  if (!content || typeof content !== 'string') return content;
+
+  return content
+    .replace(/<\/?div[^>]*>/gi, ' ')
+    .replace(/<\/?span[^>]*>/gi, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normalizeCaretNotation(text) {
+  if (!text || typeof text !== 'string') return text;
+  return text.replace(/\^\(([^)]+)\)/g, '^{$1}');
 }
 
 // Normalize math expressions for better matching
@@ -334,6 +399,10 @@ function generateAcceptableAnswers(correctAnswer) {
     });
   }
 
+  if (cleanAnswer.includes(',')) {
+    answers.delete(cleanAnswer);
+  }
+
   // Remove empty strings and return array
   return Array.from(answers).filter(ans => ans && ans.length > 0);
 }
@@ -344,17 +413,58 @@ function convertChoicesToOptions(choices) {
 
   const options = {};
   choices.forEach(choice => {
-    if (typeof choice === 'object' && choice.letter && choice.text) {
-      // Process LaTeX content if present
-      const processedText = extractLatexFromHtml(choice.text);
-      options[choice.letter] = processedText.trim();
+    if (typeof choice === 'object' && choice.letter) {
+      const rawHtmlSource = choice.html || '';
+      const rawTextSource = choice.text || '';
+
+      const processedFromHtml = simplifyOptionHtml(cleanLeftRightBrackets(extractLatexFromHtml(rawHtmlSource)) || '');
+      const processedFromText = simplifyOptionHtml(cleanLeftRightBrackets(extractLatexFromHtml(rawTextSource)) || '') || simplifyOptionHtml(rawTextSource);
+
+      const htmlHasComplexMath = /\\frac|\\sqrt|\\pi|\\theta|\\beta|\\alpha|\\pm|\\cdot|\\times|\\div|\\log|\\sin|\\cos|\\tan|\\int|\\sum|\\prod/.test(processedFromHtml);
+
+      let processedText = processedFromHtml;
+      if (!processedText || processedText.length === 0) {
+        processedText = processedFromText;
+      } else if (processedFromText && processedFromText.trim().length > 0) {
+        if (!htmlHasComplexMath && processedFromText !== processedFromHtml) {
+          processedText = processedFromText;
+        } else if (processedFromText.length > processedFromHtml.length + 2) {
+          processedText = processedFromText;
+        }
+      }
+
+      if (processedFromHtml && processedFromHtml.includes('\\frac') && processedFromText && !processedFromText.includes('\\frac')) {
+        const fractionMatch = processedFromHtml.match(/\^\{\\frac\{[^}]+\}\{[^}]+\}\}/);
+        if (fractionMatch) {
+          const replaced = processedFromText.replace(/\^\{?t[^}]*\}?|\^\(t[^)]*\)/, fractionMatch[0]);
+          processedText = replaced !== processedFromText
+            ? replaced
+            : `${processedFromText.split('^')[0]}${fractionMatch[0]}`;
+        }
+      }
+
+      processedText = normalizeCaretNotation(processedText);
+      let sanitizedText = (processedText || '').replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+
+      if (sanitizedText.length === 0 && Array.isArray(choice.images) && choice.images.length > 0) {
+        processedText = choice.images.map(src => `<img src="${src}" alt="Option ${choice.letter}" />`).join('<br>');
+        sanitizedText = processedText;
+      }
+
+      options[choice.letter] = sanitizedText.length > 0 ? sanitizedText : processedText.trim();
     } else if (typeof choice === 'string') {
       const match = choice.match(/^([A-D])\)\s*(.*)$/);
       if (match) {
         const [, letter, text] = match;
         // Process LaTeX content if present
-        const processedText = extractLatexFromHtml(text);
-        options[letter] = processedText.trim();
+        let processedText = extractLatexFromHtml(text);
+        if (processedText === text) {
+          processedText = text;
+        }
+        processedText = simplifyOptionHtml(cleanLeftRightBrackets(processedText));
+        processedText = normalizeCaretNotation(processedText);
+        const sanitizedText = processedText.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+        options[letter] = sanitizedText.length > 0 ? sanitizedText : processedText.trim();
       }
     }
   });
@@ -367,9 +477,28 @@ function extractCorrectAnswerLetter(correctAnswer, choices) {
 
   // Clean the correct answer first
   const cleanCorrectAnswer = cleanAnswerString(correctAnswer);
+
+  // If the cleaned answer is already a multiple-choice letter, trust it immediately.
+  if (/^[A-D]$/i.test(cleanCorrectAnswer)) {
+    return cleanCorrectAnswer.toUpperCase();
+  }
+
   const normalizedCorrect = normalizeMathExpression(cleanCorrectAnswer);
 
   console.log(`   🔍 Finding match for: "${correctAnswer}" (cleaned: "${cleanCorrectAnswer}")`);
+
+  // First, check for duplicate choice content (a sign of extraction problems)
+  const choiceTexts = choices.map(c => typeof c === 'object' ? c.text : c);
+  const uniqueTexts = new Set(choiceTexts);
+
+  if (uniqueTexts.size === 1 && choices.length > 1) {
+    console.warn(`   🚨 CRITICAL: All choices have identical content: "${choiceTexts[0]}"`);
+    console.warn(`   🔧 This indicates an HTML extraction problem in the original data.`);
+    console.warn(`   📝 Question may need manual review and correction.`);
+
+    // For now, still return A but flag this as needing review
+    return 'A';
+  }
 
   for (const choice of choices) {
     let letter, text;
@@ -435,6 +564,13 @@ function extractCorrectAnswerLetter(correctAnswer, choices) {
 
   console.warn(`   ⚠️ Could not match correct answer: "${correctAnswer}" (cleaned: "${cleanCorrectAnswer}")`);
   console.warn(`   Available choices:`, choices.map(c => typeof c === 'object' ? `${c.letter}: ${c.text}` : c));
+
+  // Fallback: if the original string contains a recognizable letter, use it.
+  const fallbackMatch = correctAnswer.match(/([A-D])/i);
+  if (fallbackMatch) {
+    return fallbackMatch[1].toUpperCase();
+  }
+
   return 'A';
 }
 
@@ -502,11 +638,21 @@ function processQuestion(question, testId, examId) {
 
     // Process question content
     if (question.questionHTML) {
-      processedQuestion.question_html = extractMainContentFromHtml(question.questionHTML);
-      processedQuestion.question_text = question.questionText || '';
+      let questionHtml = extractMainContentFromHtml(question.questionHTML);
+      // Clean \left \right brackets from question HTML
+      questionHtml = cleanLeftRightBrackets(questionHtml);
+      processedQuestion.question_html = questionHtml;
+
+      let questionText = question.questionText || '';
+      // Clean \left \right brackets from question text
+      questionText = cleanLeftRightBrackets(questionText);
+      processedQuestion.question_text = questionText;
     } else {
+      let questionText = question.questionText || '';
+      // Clean \left \right brackets from question text
+      questionText = cleanLeftRightBrackets(questionText);
       processedQuestion.question_html = null;
-      processedQuestion.question_text = question.questionText || '';
+      processedQuestion.question_text = questionText;
       processedQuestion.content_format = 'markdown';
     }
 
@@ -579,20 +725,39 @@ function extractMainImageUrl(imageUrls) {
 // Create or get exam
 async function createOrGetExam(testId, testName, totalQuestions) {
   const moduleType = mapModuleType(testId);
+  const normalizedId = testId.replace(/_/g, ' ').toLowerCase();
+  const normalizedName = testName.replace(/_/g, ' ').toLowerCase();
 
-  // Clean up the test name to remove module info and Form parts
-  let cleanedName = testName
-    .replace(/Module\s*[12]\s*/gi, '') // Remove "Module 1" or "Module 2" completely with trailing space
-    .replace(/module\s*[12]\s*/gi, '') // Remove "module 1" or "module 2" completely with trailing space
-    .replace(/Form\s*[A-Z]\s*/gi, '')  // Remove "Form A", "Form B", etc. with trailing space
-    .replace(/form\s*[a-z]\s*/gi, '')  // Remove "form a", "form b", etc. with trailing space
-    .replace(/\bUs\b/gi, 'US')         // Change "Us" to "US" (case insensitive)
-    .replace(/\s+/g, ' ')              // Normalize whitespace
-    .trim();
+  function capitalizeWords(str) {
+    return str.replace(/\b\w/g, char => char.toUpperCase());
+  }
 
-  let formattedDate = cleanedName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  let moduleTypeName = moduleType === 'math1' ? 'Math1' : 'Math2';
-  const examTitle = `${formattedDate} ${moduleTypeName}`;
+  const monthRegex = /(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{4}/i;
+  const regionRegex = /\b(international|us)\b/i;
+  const formRegex = /form\s*([a-z])/i;
+
+  const sourceString = normalizedId || normalizedName;
+  const monthMatch = sourceString.match(monthRegex);
+  const regionMatch = sourceString.match(regionRegex);
+  const formMatch = sourceString.match(formRegex);
+
+  const titleParts = [];
+  if (monthMatch) {
+    titleParts.push(capitalizeWords(monthMatch[0]));
+  }
+  if (regionMatch) {
+    const region = regionMatch[1].toLowerCase() === 'us' ? 'US' : capitalizeWords(regionMatch[1]);
+    titleParts.push(region);
+  }
+  if (formMatch) {
+    titleParts.push(formMatch[1].toUpperCase());
+  }
+
+  const moduleLabel = moduleType === 'math1' ? 'Math1' : 'Math2';
+  titleParts.push(moduleLabel);
+
+  const fallbackTitle = capitalizeWords(normalizedName || normalizedId).trim() || `Math Module ${moduleLabel}`;
+  const examTitle = titleParts.filter(Boolean).length > 0 ? titleParts.join(' ') : `${fallbackTitle} ${moduleLabel}`;
 
   // Check if exam exists
   let { data: existingExam, error: examError } = await supabase
@@ -609,11 +774,10 @@ async function createOrGetExam(testId, testName, totalQuestions) {
         title: examTitle,
         description: 'Math module auto import',
         time_limits: {
-          [moduleType]: 35, // Both Math1 and Math2: 35min
-          english1: 0,
-          english2: 0,
           math1: moduleType === 'math1' ? 35 : 0,
-          math2: moduleType === 'math2' ? 35 : 0
+          math2: moduleType === 'math2' ? 35 : 0,
+          english1: 0,
+          english2: 0
         },
         module_composition: {
           [moduleType]: true
@@ -621,7 +785,10 @@ async function createOrGetExam(testId, testName, totalQuestions) {
         total_questions: totalQuestions,
         is_active: true,
         is_mock_exam: false,
-        is_custom_assignment: true,
+        is_custom_assignment: false,
+        is_module_source: true,
+        math_scoring_curve_id: 2,
+        english_scoring_curve_id: 1,
         answer_check_mode: 'exam_end'
       }])
       .select()
@@ -706,7 +873,7 @@ async function processTestData(testFilter = null, questionLimit = null, dryRun =
     console.log('🚀 Starting Math Bluebook SAT Import Process...\n');
 
     // Load data
-    const defaultJsonFile = 'bluebook-sat-problems-march2025module2.json';
+    const defaultJsonFile = 'bluebook-sat-problems-2025-09-29 (2).json';
     const fileName = jsonFile || defaultJsonFile;
     const dataPath = path.join(__dirname, fileName);
 

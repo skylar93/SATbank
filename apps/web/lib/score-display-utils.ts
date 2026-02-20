@@ -44,13 +44,19 @@ export function getDisplayScores(
     }
   }
 
-  const showEnglish = templateId === 'english_only' || templateId === 'full_sat'
-  const showMath = templateId === 'math_only' || templateId === 'full_sat'
+  let showEnglish = templateId === 'english_only' || templateId === 'full_sat'
+  let showMath = templateId === 'math_only' || templateId === 'full_sat'
+
+  // If template type is unknown, infer from available scores
+  if (!showEnglish && !showMath) {
+    showEnglish = typeof finalScores.english === 'number'
+    showMath = typeof finalScores.math === 'number'
+  }
 
   // Calculate max total based on sections included
   let maxTotal = 1600 // default for full SAT
-  if (templateId === 'english_only') maxTotal = 800
-  if (templateId === 'math_only') maxTotal = 800
+  if (showEnglish && !showMath) maxTotal = 800
+  if (showMath && !showEnglish) maxTotal = 800
 
   return {
     overall: finalScores.overall || 0,

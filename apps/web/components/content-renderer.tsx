@@ -6,9 +6,13 @@ import 'katex/dist/katex.min.css'
 
 interface ContentRendererProps {
   htmlContent: string
+  className?: string
 }
 
-export function ContentRenderer({ htmlContent }: ContentRendererProps) {
+export function ContentRenderer({
+  htmlContent,
+  className,
+}: ContentRendererProps) {
   const processedHtml = useMemo(() => {
     if (!htmlContent) return ''
 
@@ -43,9 +47,14 @@ export function ContentRenderer({ htmlContent }: ContentRendererProps) {
     return tempDiv.innerHTML
   }, [htmlContent])
 
+  const combinedClassName = useMemo(() => {
+    const baseClass = 'prose max-w-none'
+    return className ? `${baseClass} ${className}` : baseClass
+  }, [className])
+
   return (
     <div
-      className="prose max-w-none"
+      className={combinedClassName}
       dangerouslySetInnerHTML={{ __html: processedHtml }}
     />
   )

@@ -322,7 +322,9 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
     const curve = curves[groupName]
 
     if (!curve) {
-      console.warn(`No curve available for group '${groupName}', skipping`)
+      // No curve: use raw score directly (e.g. TCF which uses raw points as final score)
+      console.warn(`No curve available for group '${groupName}', using raw score ${rawScore} as final score`)
+      finalScores[groupName] = rawScore
       continue
     }
 
@@ -351,11 +353,12 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
   finalScores.overall = overallScore
 
   // Step 8: Add module-specific scores for backward compatibility
-  const moduleScores = {
+  const moduleScores: Record<string, number> = {
     english1: 0,
     english2: 0,
     math1: 0,
-    math2: 0
+    math2: 0,
+    tcf_reading: 0,
   }
 
   answers.forEach((answer: any) => {
@@ -372,6 +375,8 @@ async function calculateFinalScores(supabase: any, attemptId: string): Promise<F
       moduleScores.math1 += points
     } else if (moduleType === 'math2') {
       moduleScores.math2 += points
+    } else if (moduleType === 'tcf_reading') {
+      moduleScores.tcf_reading += points
     }
   })
 
@@ -475,7 +480,10 @@ serve(async (req) => {
             console.log(`📚 Found ${mistakes.length} mistakes to add to mistake bank`)
             const { error: mistakeError } = await supabase
               .from('mistake_bank')
-              .upsert(mistakes, { onConflict: 'user_id, question_id' })
+              .upsert(mistakes, {
+                onConflict: 'user_id, question_id',
+                ignoreDuplicates: true,
+              })
 
             if (mistakeError) {
               console.error('❌ Failed to populate mistake bank:', mistakeError.message)

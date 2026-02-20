@@ -6,6 +6,7 @@ import { useAuth } from '../../../../../contexts/auth-context'
 import { ExamInterface } from '../../../../../components/exam/ExamInterface'
 import { supabase } from '../../../../../lib/supabase'
 import { Question } from '../../../../../lib/exam-service'
+import { validateGridInAnswer } from '../../../../../lib/grid-in-validator'
 
 interface PracticeSettings {
   shuffleQuestions: boolean
@@ -33,11 +34,21 @@ export default function PracticeSession() {
   const [userAnswers, setUserAnswers] = useState<Map<string, UserAnswer>>(
     new Map()
   )
+  const [currentInputAnswer, setCurrentInputAnswer] = useState('')
+  const [showAnswerReveal, setShowAnswerReveal] = useState(false)
+  const [answerRevealData, setAnswerRevealData] = useState<{
+    question: Question
+    userAnswer: string
+    isCorrect: boolean
+  } | null>(null)
+  const [shouldShowCorrectAnswer, setShouldShowCorrectAnswer] =
+    useState(false)
   const [practiceSettings, setPracticeSettings] = useState<PracticeSettings>({
     shuffleQuestions: true,
     showExplanations: true,
     timeLimit: 0,
   })
+  const isMistakeReviewRef = useRef(false)
   const [loading, setLoading] = useState(true)
   const [sessionStartTime, setSessionStartTime] = useState<number>(Date.now())
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now())
@@ -70,7 +81,33 @@ export default function PracticeSession() {
       }
 
       const practiceData = JSON.parse(practiceDataStr)
-      setPracticeSettings(practiceData.settings)
+      const rawSettings: PracticeSettings =
+        practiceData.settings && typeof practiceData.settings === 'object'
+          ? practiceData.settings
+          : {}
+
+      const normalizedSettings: PracticeSettings = {
+        shuffleQuestions:
+          typeof rawSettings.shuffleQuestions === 'boolean'
+            ? rawSettings.shuffleQuestions
+            : true,
+        showExplanations:
+          typeof rawSettings.showExplanations === 'boolean'
+            ? rawSettings.showExplanations
+            : true,
+        timeLimit:
+          typeof rawSettings.timeLimit === 'number'
+            ? rawSettings.timeLimit
+            : 0,
+        isMistakeReview:
+          rawSettings.isMistakeReview ??
+          practiceData.isMistakeReview ??
+          false,
+      }
+
+      const isMistakeReviewMode = Boolean(normalizedSettings.isMistakeReview)
+      isMistakeReviewRef.current = isMistakeReviewMode
+      setPracticeSettings(normalizedSettings)
 
       // Fetch questions for this practice session
       const { data: questionsData, error: questionsError } = await supabase
@@ -82,7 +119,7 @@ export default function PracticeSession() {
 
       // Apply question order based on settings
       let orderedQuestions = questionsData || []
-      if (practiceData.settings.shuffleQuestions) {
+      if (normalizedSettings.shuffleQuestions) {
         // Questions are already shuffled in the practice data
         orderedQuestions = practiceData.questions
           .map((id: string) => questionsData?.find((q) => q.id === id))
@@ -113,55 +150,92 @@ export default function PracticeSession() {
     }
   }
 
-  const handleAnswer = useCallback(
-    async (answer: string) => {
-      const currentQuestion = questions[currentQuestionIndex]
-      if (!currentQuestion) return
+  const resetRevealState = useCallback(() => {
+    setShowAnswerReveal(false)
+    setAnswerRevealData(null)
+    setShouldShowCorrectAnswer(false)
+  }, [])
 
-      const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000)
-      const isCorrect = answer === currentQuestion.correct_answer
-
-      // Store answer locally (similar to exam mode)
-      const userAnswer: UserAnswer = {
-        question_id: currentQuestion.id,
-        user_answer: answer,
-        is_correct: isCorrect,
-        time_spent_seconds: timeSpent,
+  const handleAnswerChange = useCallback(
+    (answer: string) => {
+      setCurrentInputAnswer(answer)
+      if (showAnswerReveal) {
+        resetRevealState()
       }
-
-      setUserAnswers(
-        (prev) => new Map(prev.set(currentQuestion.id, userAnswer))
-      )
-
-      // Save to database immediately (practice mode saves answers as they go)
-      try {
-        const { error } = await supabase.from('user_answers').upsert({
-          attempt_id: attemptId,
-          question_id: currentQuestion.id,
-          user_answer: answer,
-          is_correct: isCorrect,
-          time_spent_seconds: timeSpent,
-        })
-
-        if (error) throw error
-      } catch (error) {
-        console.error('Error saving answer:', error)
-      }
-
-      // Auto-advance to next question (like exam mode)
-      goToNextQuestion()
     },
-    [currentQuestionIndex, questions, attemptId, questionStartTime]
+    [resetRevealState, showAnswerReveal]
   )
 
-  const goToNextQuestion = useCallback(() => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1)
-      setQuestionStartTime(Date.now())
+  const handleCheckAnswer = useCallback(async () => {
+    const currentQuestion = questions[currentQuestionIndex]
+    if (!currentQuestion) return
+
+    const trimmedAnswer = currentInputAnswer.trim()
+    if (!trimmedAnswer) return
+
+    const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000)
+
+    let isCorrect = false
+    let storedAnswer = trimmedAnswer
+
+    if (currentQuestion.question_type === 'multiple_choice') {
+      const normalizedAttempt = trimmedAnswer.toUpperCase()
+      const normalizedCorrect =
+        (currentQuestion.correct_answer || '').trim().toUpperCase()
+      storedAnswer = normalizedAttempt
+      isCorrect = normalizedAttempt === normalizedCorrect
+    } else if (currentQuestion.question_type === 'grid_in') {
+      const validation = validateGridInAnswer(currentQuestion, trimmedAnswer)
+      isCorrect = validation.isCorrect
     } else {
-      completePracticeSession()
+      isCorrect = trimmedAnswer === (currentQuestion.correct_answer || '')
     }
-  }, [currentQuestionIndex, questions.length])
+
+    const userAnswer: UserAnswer = {
+      question_id: currentQuestion.id,
+      user_answer: storedAnswer,
+      is_correct: isCorrect,
+      time_spent_seconds: timeSpent,
+    }
+
+    setUserAnswers((prev) => {
+      const updated = new Map(prev)
+      updated.set(currentQuestion.id, userAnswer)
+      return updated
+    })
+
+    setCurrentInputAnswer(storedAnswer)
+
+    try {
+      const { error } = await supabase.from('user_answers').upsert({
+        attempt_id: attemptId,
+        question_id: currentQuestion.id,
+        user_answer: storedAnswer,
+        is_correct: isCorrect,
+        time_spent_seconds: timeSpent,
+        answered_at: new Date().toISOString(),
+      })
+
+      if (error) throw error
+    } catch (error) {
+      console.error('Error saving answer:', error)
+    }
+
+    setAnswerRevealData({
+      question: currentQuestion,
+      userAnswer: storedAnswer,
+      isCorrect,
+    })
+    const isMistakeReview = isMistakeReviewRef.current
+    setShouldShowCorrectAnswer(isCorrect || !isMistakeReview)
+    setShowAnswerReveal(true)
+  }, [
+    attemptId,
+    currentInputAnswer,
+    currentQuestionIndex,
+    questionStartTime,
+    questions,
+  ])
 
   const completePracticeSession = async () => {
     try {
@@ -179,6 +253,8 @@ export default function PracticeSession() {
           ? Math.round((correctAnswers / questions.length) * 100)
           : 0
       console.log('🔍 Practice completion - calculated score:', totalScore)
+
+      setIsComplete(true)
 
       // Update attempt status and automatically release answers for practice sessions
       const { error: updateError } = await supabase
@@ -234,6 +310,36 @@ export default function PracticeSession() {
     }
   }
 
+  const goToNextQuestion = useCallback(() => {
+    resetRevealState()
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1)
+      setQuestionStartTime(Date.now())
+    } else {
+      completePracticeSession()
+    }
+  }, [completePracticeSession, currentQuestionIndex, questions.length, resetRevealState])
+
+  const handleAnswerRevealContinue = useCallback(() => {
+    goToNextQuestion()
+  }, [goToNextQuestion])
+
+  const handleTryAgain = useCallback(() => {
+    const currentQuestion = questions[currentQuestionIndex]
+    if (!currentQuestion) return
+
+    resetRevealState()
+    setQuestionStartTime(Date.now())
+    setUserAnswers((prev) => {
+      if (!prev.has(currentQuestion.id)) {
+        return prev
+      }
+      const updated = new Map(prev)
+      updated.delete(currentQuestion.id)
+      return updated
+    })
+  }, [currentQuestionIndex, questions, resetRevealState])
+
   const handleTimeExpired = useCallback(() => {
     timeExpiredRef.current = true
     setTimeExpired(true)
@@ -241,6 +347,7 @@ export default function PracticeSession() {
   }, [])
 
   const goToPreviousQuestion = () => {
+    resetRevealState()
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prev) => prev - 1)
       setQuestionStartTime(Date.now())
@@ -249,10 +356,33 @@ export default function PracticeSession() {
 
   const jumpToQuestion = (index: number) => {
     if (index >= 0 && index < questions.length) {
+      resetRevealState()
       setCurrentQuestionIndex(index)
       setQuestionStartTime(Date.now())
     }
   }
+
+  useEffect(() => {
+    const question = questions[currentQuestionIndex]
+    if (!question) {
+      setCurrentInputAnswer('')
+      resetRevealState()
+      return
+    }
+
+    const savedAnswer = userAnswers.get(question.id)?.user_answer || ''
+    setCurrentInputAnswer((prev) => (prev === savedAnswer ? prev : savedAnswer))
+
+    if (answerRevealData?.question.id !== question.id) {
+      resetRevealState()
+    }
+  }, [
+    answerRevealData?.question.id,
+    currentQuestionIndex,
+    questions,
+    resetRevealState,
+    userAnswers,
+  ])
 
   // Transform questions into module format for ExamInterface
   const currentModule = {
@@ -271,8 +401,7 @@ export default function PracticeSession() {
 
   const modules = [currentModule]
   const currentQuestion = questions[currentQuestionIndex]
-  const currentAnswer =
-    userAnswers.get(currentQuestion?.id || '')?.user_answer || ''
+  const currentAnswer = currentInputAnswer
 
   // Helper functions for ExamInterface
   const getAnsweredQuestions = () => {
@@ -425,11 +554,11 @@ export default function PracticeSession() {
       timeExpiredRef={timeExpiredRef}
       questionContentRef={questionContentRef}
       highlightsByQuestion={highlightsByQuestion}
-      answerCheckMode={'exam_end'}
-      showAnswerReveal={false}
-      answerRevealData={null}
-      shouldShowCorrectAnswer={false}
-      onAnswerChange={handleAnswer}
+      answerCheckMode={'per_question'}
+      showAnswerReveal={showAnswerReveal}
+      answerRevealData={answerRevealData}
+      shouldShowCorrectAnswer={shouldShowCorrectAnswer}
+      onAnswerChange={handleAnswerChange}
       onNext={goToNextQuestion}
       onPrevious={goToPreviousQuestion}
       onGoToQuestion={jumpToQuestion}
@@ -438,10 +567,10 @@ export default function PracticeSession() {
       onTimeExpired={handleTimeExpired}
       onTimeUpdate={() => {}}
       onExitAttempt={handleExitAttempt}
-      onCheckAnswer={() => {}} // No-op for practice mode
-      onAnswerRevealContinue={() => {}} // No-op for practice mode
-      onTryAgain={() => {}} // No-op for practice mode
-      getCurrentAnswer={() => userAnswers.get(currentQuestion?.id || '')}
+      onCheckAnswer={handleCheckAnswer}
+      onAnswerRevealContinue={handleAnswerRevealContinue}
+      onTryAgain={handleTryAgain}
+      getCurrentAnswer={() => currentInputAnswer}
       isMarkedForReview={() => false}
       toggleMarkForReview={() => {}}
       getMarkedQuestions={getMarkedQuestions}

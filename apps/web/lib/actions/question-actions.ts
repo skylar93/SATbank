@@ -12,7 +12,7 @@ interface UpdateQuestionData {
   id: string
   question_text?: string
   question_html?: string
-  question_type: 'multiple_choice' | 'grid_in' | 'essay'
+  question_type: 'multiple_choice' | 'multiple_select' | 'grid_in' | 'essay'
   options?: Record<string, string> | null
   correct_answer?: string
   correct_answers?: string[] | null
@@ -35,7 +35,10 @@ export async function updateQuestionWithDualFormat(data: UpdateQuestionData) {
     }
 
     // Handle correct answers based on question type
-    if (data.question_type === 'grid_in') {
+    const usesMultipleAnswers =
+      data.question_type === 'grid_in' || data.question_type === 'multiple_select'
+
+    if (usesMultipleAnswers) {
       const cleanAnswers = (data.correct_answers || [])
         .map((a: any) => String(a || '').trim())
         .filter((a: string) => a.length > 0)

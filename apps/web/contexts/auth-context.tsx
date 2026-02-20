@@ -3,6 +3,10 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { AuthService, type AuthUser } from '../lib/auth'
 import { authStateManager } from '../lib/auth-state-manager'
+import {
+  IMPERSONATION_EVENT,
+  IMPERSONATION_DATA_KEY,
+} from '../hooks/use-impersonation'
 
 interface AuthContextType {
   user: AuthUser | null
@@ -22,7 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const getImpersonationUser = (): AuthUser | null => {
     if (typeof window === 'undefined') return null
 
-    const dataJSON = localStorage.getItem('impersonation_data')
+    const dataJSON = localStorage.getItem(IMPERSONATION_DATA_KEY)
     if (!dataJSON) return null
 
     try {
@@ -72,18 +76,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Run initialization immediately
     initializeAuth()
 
-    // Listen for impersonation changes via storage events
-    const handleStorageChange = (e: StorageEvent) => {
-      if (!isMounted || e.key !== 'impersonation_data') return
-
+    const syncImpersonationFromStorage = () => {
+      if (!isMounted) return
       const impersonationUser = getImpersonationUser()
       if (impersonationUser) {
         setUser(impersonationUser)
+        setError(null)
+        setLoading(false)
       } else {
         console.log(
           '🔄 AuthProvider: Impersonation ended, waiting for navigation...'
         )
       }
+    }
+
+    // Listen for impersonation changes via storage events
+    const handleStorageChange = (e: StorageEvent) => {
+      if (!isMounted || e.key !== IMPERSONATION_DATA_KEY) return
+
+      syncImpersonationFromStorage()
+    }
+
+    const handleImpersonationEvent = (_event: Event) => {
+      syncImpersonationFromStorage()
     }
 
     // Subscribe to auth state changes from AuthStateManager
@@ -134,6 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (typeof window !== 'undefined') {
       window.addEventListener('storage', handleStorageChange)
+      window.addEventListener(IMPERSONATION_EVENT, handleImpersonationEvent)
     }
 
     return () => {
@@ -141,6 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isMounted = false
       if (typeof window !== 'undefined') {
         window.removeEventListener('storage', handleStorageChange)
+        window.removeEventListener(IMPERSONATION_EVENT, handleImpersonationEvent)
       }
       unsubscribeFromStateManager()
       subscription.unsubscribe()
@@ -186,11 +203,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const clearImpersonationState = () => {
+    if (typeof window === 'undefined') return
+
+    try {
+      localStorage.removeItem(IMPERSONATION_DATA_KEY)
+      window.dispatchEvent(
+        new CustomEvent(IMPERSONATION_EVENT, { detail: null })
+      )
+      document.body.style.removeProperty('--impersonation-offset')
+      document.body.classList.remove('impersonation-active')
+    } catch (err) {
+      console.warn('Failed to clear impersonation state during logout:', err)
+    }
+  }
+
   const signOut = async () => {
     setLoading(true)
     setError(null)
 
     try {
+      clearImpersonationState()
       await AuthService.signOut()
       setUser(null)
       // Redirect to login page after successful logout

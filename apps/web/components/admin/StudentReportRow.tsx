@@ -175,21 +175,16 @@ export default function StudentReportRow({ student }: StudentReportRowProps) {
                                 </div>
                               </td>
                             )}
-                            {!displayScores.sections.showEnglish &&
-                              !displayScores.sections.showMath && (
-                                <>
-                                  <td className="px-4 py-3">
-                                    <div className="text-sm text-gray-400">
-                                      N/A
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    <div className="text-sm text-gray-400">
-                                      N/A
-                                    </div>
-                                  </td>
-                                </>
-                              )}
+                            {!displayScores.sections.showEnglish && (
+                              <td className="px-4 py-3 text-sm text-gray-400">
+                                N/A
+                              </td>
+                            )}
+                            {!displayScores.sections.showMath && (
+                              <td className="px-4 py-3 text-sm text-gray-400">
+                                N/A
+                              </td>
+                            )}
                             <td className="px-4 py-3">
                               <div className="text-sm text-gray-700">
                                 {formatDuration(attempt.duration_seconds)}

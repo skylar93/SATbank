@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useMemo } from 'react'
 import {
   renderHtmlContent,
   renderTextWithFormattingAndMath,
@@ -200,6 +200,21 @@ function applyHighlightsToHTML(htmlContent: string, highlights: Highlight[]): st
   body.appendChild(tempDiv)
 
   try {
+    // 🎯 CRITICAL FIX: 기존 하이라이트 제거 후 새로 적용
+    // Remove any existing highlights to start fresh
+    const existingHighlights = tempDiv.querySelectorAll('mark[data-highlight-text]')
+    existingHighlights.forEach(mark => {
+      const parent = mark.parentNode
+      if (parent) {
+        // Replace mark with its text content
+        const textNode = document.createTextNode(mark.textContent || '')
+        parent.replaceChild(textNode, mark)
+      }
+    })
+
+    // Normalize text nodes after removing highlights
+    tempDiv.normalize()
+
     // Sanitize to remove non-visible content before processing
     sanitizeHtmlContainer(tempDiv)
 
@@ -318,13 +333,12 @@ function applyHighlightRobust(container: Element, highlight: Highlight, plainTex
     mark.style.padding = '2px 4px'
     mark.style.borderRadius = '4px'
     mark.style.fontWeight = 'bold' // 굵은 글씨
-    mark.style.border = '2px solid #f59e0b' // 디버깅용 테두리
-    mark.style.zIndex = '999'
-    mark.style.display = 'inline-block' // 연결되게 하기 위함
-    mark.style.whiteSpace = 'nowrap' // 줄바꿈 방지
-    mark.style.boxDecorationBreak = 'clone' // 끊어져도 연결되게
+    mark.style.display = 'inline'
+    mark.style.whiteSpace = 'pre-wrap'
+    mark.style.boxDecorationBreak = 'clone'
 
-    mark.className = 'bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors'
+    mark.className =
+      'bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors'
     mark.title = 'Click to remove highlight'
     mark.setAttribute('data-highlight-start', String(start))
     mark.setAttribute('data-highlight-end', String(end))
@@ -391,8 +405,10 @@ function applyHighlightViaTextReplacementSingle(container: HTMLElement, highligh
     // Only replace the first match to avoid duplicates
     if (matchCount === 1) {
       return `<mark class="bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors"
-               style="background-color: #fef08a; padding: 2px 4px; border-radius: 4px; font-weight: bold; border: 2px solid #f59e0b; z-index: 999; display: inline-block; white-space: nowrap; box-decoration-break: clone;"
+               style="background-color: #fef08a; padding: 2px 4px; border-radius: 4px; font-weight: bold; display: inline; white-space: pre-wrap; box-decoration-break: clone;"
                title="Click to remove highlight"
+               data-highlight-start="${highlight.start}"
+               data-highlight-end="${highlight.end}"
                data-highlight-text="${textToReplace}"
                data-highlight-index="${highlightIndex}">${p1}</mark>`
     }
@@ -414,67 +430,60 @@ function escapeForRegex(text: string): string {
 // Helper function to render HTML with click handler using improved positioning
 function renderHtmlWithClickHandler(
   processedHtml: string,
-  highlights: Highlight[],
-  onRemoveHighlight?: (highlight: Highlight) => void
+  highlights: Highlight[] = [],
+  onRemoveHighlight?: (highlight: Highlight) => void,
+  key?: string
 ) {
-  // Create a wrapper component that handles highlight removal
-  const HtmlWithHighlights = () => {
-    const handleClick = (event: React.MouseEvent) => {
-      const target = event.target as HTMLElement
-      if (target.tagName === 'MARK' && onRemoveHighlight) {
-        // Try to find highlight by data attributes
-        const start = Number(target.getAttribute('data-highlight-start'))
-        const end = Number(target.getAttribute('data-highlight-end'))
-        const text = target.getAttribute('data-highlight-text')
+  const handleClick = (event: React.MouseEvent) => {
+    const target = event.target as HTMLElement
+    if (target.tagName === 'MARK' && onRemoveHighlight) {
+      const start = Number(target.getAttribute('data-highlight-start'))
+      const end = Number(target.getAttribute('data-highlight-end'))
+      const text = target.getAttribute('data-highlight-text')
 
-        if (Number.isFinite(start) && Number.isFinite(end)) {
-          // Find exact match by position and text
-          const exact = highlights.find(h =>
-            h.start === start && h.end === end && h.text === text
-          )
-          if (exact) {
-            onRemoveHighlight(exact)
-            return
-          }
-
-          // Fallback: find by position only
-          const byPosition = highlights.find(h => h.start === start && h.end === end)
-          if (byPosition) {
-            onRemoveHighlight(byPosition)
-            return
-          }
+      if (Number.isFinite(start) && Number.isFinite(end)) {
+        const exact = highlights.find(
+          (h) => h.start === start && h.end === end && h.text === text
+        )
+        if (exact) {
+          onRemoveHighlight(exact)
+          return
         }
 
-        // Final fallback: find by text content
-        const textContent = target.textContent || ''
-        const byText = highlights.find(h => h.text === textContent)
-        if (byText) {
-          onRemoveHighlight(byText)
+        const byPosition = highlights.find(
+          (h) => h.start === start && h.end === end
+        )
+        if (byPosition) {
+          onRemoveHighlight(byPosition)
+          return
         }
       }
-    }
 
-    // Render the processed HTML with highlights
-    if (processedHtml.includes('data-math')) {
-      // Use ContentRenderer for math content
-      return (
-        <div onClick={handleClick}>
-          <ContentRenderer htmlContent={processedHtml} />
-        </div>
-      )
+      const textContent = target.textContent || ''
+      const byText = highlights.find((h) => h.text === textContent)
+      if (byText) {
+        onRemoveHighlight(byText)
+      }
     }
+  }
 
+  if (processedHtml.includes('data-math')) {
     return (
-      <div
-        className="max-w-none [&_*]:!font-[inherit] text-gray-900 leading-relaxed"
-        dangerouslySetInnerHTML={{ __html: processedHtml }}
-        style={{ fontFamily: 'inherit' }}
-        onClick={handleClick}
-      />
+      <div key={key} onClick={handleClick}>
+        <ContentRenderer htmlContent={processedHtml} />
+      </div>
     )
   }
 
-  return <HtmlWithHighlights />
+  return (
+    <div
+      key={key}
+      className="max-w-none [&_*]:!font-[inherit] text-gray-900 leading-relaxed"
+      dangerouslySetInnerHTML={{ __html: processedHtml }}
+      style={{ fontFamily: 'inherit' }}
+      onClick={handleClick}
+    />
+  )
 }
 
 export function HighlightedTextRenderer({
@@ -483,37 +492,40 @@ export function HighlightedTextRenderer({
   onRemoveHighlight,
   isHtml = false,
 }: Props) {
-  // If no highlights, render as HTML or markdown based on flag
+  const highlightsKey = useMemo(() => {
+    if (!highlights || highlights.length === 0) return 'no-highlights'
+    return highlights
+      .map((h) => `${h.start}-${h.end}-${h.text.length}`)
+      .join('|')
+  }, [highlights])
+
+  // No highlights – defer to original renderers
   if (!highlights || highlights.length === 0) {
-    return isHtml ? (
-      renderHtmlContent(text)
-    ) : (
-      <>{renderTextWithFormattingAndMath(text)}</>
-    )
+    return isHtml ? renderHtmlContent(text) : <>{renderTextWithFormattingAndMath(text)}</>
   }
 
-  // Use improved position mapping for HTML content highlighting
   if (isHtml) {
-    try {
-      // Apply highlights using the robust approach
-      const highlightedHtml = applyHighlightsToHTML(text, highlights)
+    let highlightedHtml = text
 
-      // Render with click handler for highlight removal
-      return renderHtmlWithClickHandler(highlightedHtml, highlights, onRemoveHighlight)
+    try {
+      highlightedHtml = applyHighlightsToHTML(text, highlights)
     } catch (error) {
       console.error('Failed to apply HTML highlights, falling back to original content:', error)
-      return renderHtmlContent(text)
     }
+
+    return renderHtmlWithClickHandler(
+      highlightedHtml,
+      highlights,
+      onRemoveHighlight,
+      `${highlightsKey}-${highlightedHtml.length}`
+    )
   }
 
   const parts = []
   let lastIndex = 0
-
-  // Sort highlights by start position to ensure proper rendering order
   const sortedHighlights = [...highlights].sort((a, b) => a.start - b.start)
 
   sortedHighlights.forEach((h, i) => {
-    // Text before the highlight
     if (h.start > lastIndex) {
       const beforeText = text.substring(lastIndex, h.start)
       parts.push(
@@ -523,23 +535,30 @@ export function HighlightedTextRenderer({
       )
     }
 
-    // The highlighted text
-    const highlightedText = text.substring(h.start, h.end)
-    parts.push(
-      <mark
-        key={`mark-${i}`}
-        className="bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors"
-        title="Click to remove highlight"
-        onClick={() => onRemoveHighlight?.(h)}
-      >
-        {renderTextWithFormattingAndMath(highlightedText)}
-      </mark>
-    )
+  const highlightedText = text.substring(h.start, h.end)
+  parts.push(
+    <mark
+      key={`mark-${i}`}
+      className="bg-yellow-200 rounded px-1 cursor-pointer hover:bg-yellow-300 transition-colors"
+      title="Click to remove highlight"
+      onClick={() => onRemoveHighlight?.(h)}
+      style={{
+        backgroundColor: '#fef08a',
+        padding: '2px 4px',
+        borderRadius: '4px',
+        fontWeight: 'bold',
+        display: 'inline',
+        whiteSpace: 'pre-wrap',
+        boxDecorationBreak: 'clone',
+      }}
+    >
+      {renderTextWithFormattingAndMath(highlightedText)}
+    </mark>
+  )
 
     lastIndex = h.end
   })
 
-  // Text after the last highlight
   if (lastIndex < text.length) {
     const afterText = text.substring(lastIndex)
     parts.push(
@@ -550,11 +569,33 @@ export function HighlightedTextRenderer({
   return <>{parts}</>
 }
 
-// Memoized version to prevent timer re-renders from affecting selection
+// 🎯 CRITICAL FIX: Disable memo temporarily to force re-renders
+// This ensures highlights update immediately without exit/continue
+export const HighlightedTextRendererMemo = HighlightedTextRenderer
+
+// Original memoized version (currently disabled)
+/*
 export const HighlightedTextRendererMemo = React.memo(
   HighlightedTextRenderer,
-  (prev, next) =>
-    prev.text === next.text &&
-    prev.isHtml === next.isHtml &&
-    JSON.stringify(prev.highlights) === JSON.stringify(next.highlights)
+  (prev, next) => {
+    const textMatch = prev.text === next.text
+    const htmlMatch = prev.isHtml === next.isHtml
+
+    // More robust highlights comparison
+    const prevHighlightsStr = JSON.stringify(prev.highlights?.map(h => ({ start: h.start, end: h.end, text: h.text })) || [])
+    const nextHighlightsStr = JSON.stringify(next.highlights?.map(h => ({ start: h.start, end: h.end, text: h.text })) || [])
+    const highlightsMatch = prevHighlightsStr === nextHighlightsStr
+
+    console.log('🎯 HighlightedTextRendererMemo comparison:', {
+      textMatch,
+      htmlMatch,
+      highlightsMatch,
+      prevCount: prev.highlights?.length || 0,
+      nextCount: next.highlights?.length || 0,
+      shouldUpdate: !(textMatch && htmlMatch && highlightsMatch)
+    })
+
+    return textMatch && htmlMatch && highlightsMatch
+  }
 )
+*/

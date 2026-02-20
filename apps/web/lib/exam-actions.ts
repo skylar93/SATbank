@@ -1,6 +1,10 @@
 'use server'
 
 import { createClient } from './supabase/server'
+import {
+  checkAnswer as evaluateAnswer,
+  normalizeCorrectAnswers,
+} from './answer-checker'
 import { revalidatePath } from 'next/cache'
 // Temporary local database type definition
 interface Database {
@@ -475,7 +479,7 @@ export async function calculatePotentialScore(
 
 // Helper function to check if answer is correct
 function checkAnswer(question: any, userAnswer: string): boolean {
-  if (!userAnswer || !question.correct_answer) return false
+  if (!userAnswer) return false
 
   if (question.question_type === 'grid_in') {
     // Import the grid-in validator
@@ -484,10 +488,20 @@ function checkAnswer(question: any, userAnswer: string): boolean {
     return result.isCorrect
   }
 
-  // For multiple choice, direct comparison
-  return (
-    String(question.correct_answer).trim().toLowerCase() ===
-    String(userAnswer).trim().toLowerCase()
+  const rawCorrectAnswers =
+    question.correct_answers?.length
+      ? question.correct_answers
+      : question.correct_answer
+
+  const normalizedCorrectAnswers = normalizeCorrectAnswers(rawCorrectAnswers)
+
+  if (!normalizedCorrectAnswers.length) return false
+
+  return evaluateAnswer(
+    userAnswer,
+    normalizedCorrectAnswers.length === 1
+      ? normalizedCorrectAnswers[0]
+      : normalizedCorrectAnswers
   )
 }
 

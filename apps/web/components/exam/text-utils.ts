@@ -233,18 +233,9 @@ export interface Highlight {
 export function getTextOffsetInContainer(container: Element, targetNode: Node, offset: number): number {
   if (!container || !targetNode) return 0
 
-  console.log('📍 Calculating offset for node:', {
-    targetNodeType: targetNode.nodeType,
-    targetNodeValue: targetNode.nodeType === Node.TEXT_NODE ? targetNode.nodeValue?.substring(0, 50) : targetNode.nodeName,
-    offset,
-    containerTagName: container.tagName
-  })
-
   // If the container doesn't actually contain the target node,
   // try to find equivalent text content by matching text values
   if (!container.contains(targetNode)) {
-    console.log('🔍 Target node not in container, trying text content matching...')
-
     if (targetNode.nodeType === Node.TEXT_NODE) {
       const targetText = targetNode.nodeValue || ''
       const walker = getTextWalker(container)
@@ -259,7 +250,6 @@ export function getTextOffsetInContainer(container: Element, targetNode: Node, o
           if (nodeText.includes(targetText) || targetText.includes(nodeText)) {
             const matchIndex = nodeText.indexOf(targetText.substring(offset))
             if (matchIndex >= 0) {
-              console.log('✅ Found matching text content at offset:', currentOffset + matchIndex + offset)
               return currentOffset + matchIndex + offset
             }
           }
@@ -268,8 +258,6 @@ export function getTextOffsetInContainer(container: Element, targetNode: Node, o
         }
       }
     }
-
-    console.log('⚠️  Cross-container node, approximating position:', offset)
     return offset // Return the original offset as approximation
   }
 
@@ -280,7 +268,6 @@ export function getTextOffsetInContainer(container: Element, targetNode: Node, o
   // Walk through all visible text nodes until we find our target
   while ((node = walker.nextNode())) {
     if (node === targetNode) {
-      console.log('✅ Found exact target node at offset:', currentOffset + offset)
       return currentOffset + offset
     }
 
@@ -288,8 +275,6 @@ export function getTextOffsetInContainer(container: Element, targetNode: Node, o
       currentOffset += node.textContent?.length || 0
     }
   }
-
-  console.warn('❌ Could not find target node, returning approximation:', offset)
   return offset // Return original offset as fallback
 }
 

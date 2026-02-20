@@ -86,6 +86,48 @@ export const renderHtmlContent = (htmlContent: string) => {
   )
 }
 
+// Heuristic: split a question HTML into passage (highlightable) and prompt (non-highlightable)
+function splitHtmlAtBoundary(html: string): { passageHtml: string; promptHtml: string } | null {
+  try {
+    const patterns = [
+      'As used in the text',
+      'Which choice',
+      'Which statement',
+      'Which of the following',
+      'What is the value of',
+      'Based on the passage',
+    ]
+    const lower = html.toLowerCase()
+    for (const p of patterns) {
+      const idx = lower.indexOf(p.toLowerCase())
+      if (idx > 0) {
+        return {
+          passageHtml: html.slice(0, idx),
+          promptHtml: html.slice(idx),
+        }
+      }
+    }
+  } catch {}
+  return null
+}
+
+function separatePrefaceFromPassage(html: string): {
+  prefaceHtml: string
+  passageHtml: string
+} | null {
+  try {
+    const lower = html.toLowerCase()
+    const blockquoteIdx = lower.indexOf('<blockquote')
+    if (blockquoteIdx > 0) {
+      return {
+        prefaceHtml: html.slice(0, blockquoteIdx),
+        passageHtml: html.slice(blockquoteIdx),
+      }
+    }
+  } catch {}
+  return null
+}
+
 // Legacy text rendering function for markdown (kept for backward compatibility)
 export const renderTextWithFormattingAndMath = (text: string) => {
   if (!text || typeof text !== 'string') return text
@@ -428,6 +470,7 @@ interface QuestionDisplayProps {
   isPaused?: boolean
   examTitle?: string
   examId?: string
+  isHighlightMode?: boolean
 }
 
 export function QuestionDisplay({
@@ -460,6 +503,7 @@ export function QuestionDisplay({
   isPaused = false,
   examTitle,
   examId,
+  isHighlightMode = false,
 }: QuestionDisplayProps) {
   // Early return if question is not provided
   if (!question) {
@@ -800,7 +844,13 @@ export function QuestionDisplay({
           return (
             <div className="space-y-2">
               {parsed.text && (
-                <div>{renderTextWithFormattingAndMath(parsed.text)}</div>
+                <div>
+                  {/* Check if text contains HTML tags - if so, render as HTML */}
+                  {parsed.text.includes('<') && parsed.text.includes('>') ?
+                    renderHtmlContent(parsed.text) :
+                    renderTextWithFormattingAndMath(parsed.text)
+                  }
+                </div>
               )}
               {parsed.imageUrl && (
                 <img
@@ -846,7 +896,10 @@ export function QuestionDisplay({
         }
 
         // If parsed is a string or primitive, use it directly
-        return renderTextWithFormattingAndMath(String(parsed))
+        const textContent = String(parsed)
+        return textContent.includes('<') && textContent.includes('>') ?
+          renderHtmlContent(textContent) :
+          renderTextWithFormattingAndMath(textContent)
       } catch (e) {
         // Not JSON, continue with regular text rendering
       }
@@ -875,8 +928,70 @@ export function QuestionDisplay({
       )
     }
 
+    // Check if the value contains HTML tags - if so, render as HTML instead of markdown
+    if (value.includes('<') && value.includes('>')) {
+      return renderHtmlContent(value)
+    }
+
     // Regular text rendering - use markdown renderer for proper formatting
     return renderTextWithFormattingAndMath(value)
+  }
+
+  const renderOptionContent = (value: any, optionKey?: string) => {
+    if (typeof value === 'object' && value !== null) {
+      const objValue = value as any
+
+      if (objValue.headers && objValue.rows) {
+        return renderTable(objValue, true)
+      }
+
+      if (
+        objValue.table_data &&
+        objValue.table_data.headers &&
+        objValue.table_data.rows
+      ) {
+        return renderTable(objValue.table_data, true)
+      }
+
+      if (objValue.text || objValue.imageUrl) {
+        return (
+          <div className="space-y-2">
+            {objValue.text && (
+              <div>{renderTextWithFormattingAndMath(objValue.text)}</div>
+            )}
+            {objValue.imageUrl && (
+              <img
+                src={objValue.imageUrl}
+                alt="Answer choice image"
+                className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
+                onError={(e) => {
+                  console.error(
+                    'Answer option object image failed to load:',
+                    objValue.imageUrl
+                  )
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            )}
+          </div>
+        )
+      }
+
+      return (
+        <div className="text-sm text-red-600 bg-red-50 p-2 rounded border">
+          <div className="font-medium">
+            {optionKey
+              ? `Debug: Object detected in option ${optionKey}`
+              : 'Debug: Object detected in option'}
+          </div>
+          <pre className="text-xs mt-1 whitespace-pre-wrap">
+            {JSON.stringify(value, null, 2)}
+          </pre>
+        </div>
+      )
+    }
+
+    return renderAnswerChoiceContent(String(value))
   }
 
   const renderAnswerOptions = () => {
@@ -1171,70 +1286,7 @@ export function QuestionDisplay({
                     )}
                   </div>
                   <div className="text-gray-900 leading-relaxed">
-                    {(() => {
-                      // Handle cases where value is already an object (not a string)
-                      if (typeof value === 'object' && value !== null) {
-                        const objValue = value as any // Type assertion to fix TypeScript error
-
-                        // Check if it has table structure
-                        if (objValue.headers && objValue.rows) {
-                          return renderTable(objValue, true)
-                        }
-
-                        // Check if it has nested table_data
-                        if (
-                          objValue.table_data &&
-                          objValue.table_data.headers &&
-                          objValue.table_data.rows
-                        ) {
-                          return renderTable(objValue.table_data, true)
-                        }
-
-                        // Check for text/image content
-                        if (objValue.text || objValue.imageUrl) {
-                          return (
-                            <div className="space-y-2">
-                              {objValue.text && (
-                                <div>
-                                  {renderTextWithFormattingAndMath(
-                                    objValue.text
-                                  )}
-                                </div>
-                              )}
-                              {objValue.imageUrl && (
-                                <img
-                                  src={objValue.imageUrl}
-                                  alt="Answer choice image"
-                                  className="max-w-full h-auto max-h-32 border border-gray-200 rounded"
-                                  onError={(e) => {
-                                    console.error(
-                                      'Answer option object image failed to load:',
-                                      objValue.imageUrl
-                                    )
-                                    e.currentTarget.style.display = 'none'
-                                  }}
-                                />
-                              )}
-                            </div>
-                          )
-                        }
-
-                        // Fallback for unrecognized object structure
-                        return (
-                          <div className="text-sm text-red-600 bg-red-50 p-2 rounded border">
-                            <div className="font-medium">
-                              Debug: Object detected in option {key}
-                            </div>
-                            <pre className="text-xs mt-1 whitespace-pre-wrap">
-                              {JSON.stringify(value, null, 2)}
-                            </pre>
-                          </div>
-                        )
-                      }
-
-                      // Handle string values normally
-                      return renderAnswerChoiceContent(String(value))
-                    })()}
+                    {renderOptionContent(value, key)}
                   </div>
                 </div>
               </label>
@@ -1325,6 +1377,86 @@ export function QuestionDisplay({
     return null
   }
 
+  const renderAdminCorrectAnswerPreview = () => {
+    if (!isAdminPreview || disabled || isEditing) {
+      return null
+    }
+
+    const correctAnswers = parseCorrectAnswers(localQuestion)
+      .map((answer) => answer?.toString().trim())
+      .filter((answer): answer is string => !!answer && answer.length > 0)
+
+    if (correctAnswers.length === 0) {
+      return null
+    }
+
+    const isChoiceQuestion =
+      localQuestion.question_type === 'multiple_choice' ||
+      localQuestion.question_type === 'multiple_select'
+
+    if (isChoiceQuestion) {
+      return (
+        <div className="mt-6 p-4 bg-purple-50 border border-purple-200 rounded-lg shadow-sm">
+          <h4 className="font-semibold text-purple-800 mb-2">
+            Admin Preview · Correct Answer
+            {correctAnswers.length > 1 ? 's' : ''}
+          </h4>
+          <div className="space-y-3">
+            {correctAnswers.map((answer, index) => {
+              const trimmedAnswer = answer.trim()
+              const uppercaseKey = trimmedAnswer.toUpperCase()
+              const options = localQuestion.options || {}
+              const optionValue =
+                options[trimmedAnswer] ??
+                options[uppercaseKey] ??
+                options[trimmedAnswer.toLowerCase()]
+
+              return (
+                <div
+                  key={`${trimmedAnswer}-${index}`}
+                  className="flex items-start gap-3 bg-white border border-purple-100 rounded-md p-3"
+                >
+                  <span className="font-semibold text-purple-700">
+                    {uppercaseKey}
+                  </span>
+                  <div className="flex-1 text-gray-900 leading-relaxed [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_p]:my-1">
+                    {optionValue
+                      ? renderOptionContent(optionValue, uppercaseKey)
+                      : renderTextWithFormattingAndMath(answer)}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )
+    }
+
+    if (localQuestion.question_type === 'grid_in') {
+      return (
+        <div className="mt-6 p-4 bg-purple-50 border border-purple-200 rounded-lg shadow-sm">
+          <h4 className="font-semibold text-purple-800 mb-2">
+            Admin Preview · Acceptable Answers
+          </h4>
+          <div className="text-gray-900 leading-relaxed [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_p]:my-1">
+            {formatCorrectAnswersDisplay(correctAnswers)}
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="mt-6 p-4 bg-purple-50 border border-purple-200 rounded-lg shadow-sm">
+        <h4 className="font-semibold text-purple-800 mb-2">
+          Admin Preview · Correct Answer
+        </h4>
+        <div className="text-gray-900 leading-relaxed [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_p]:my-1">
+          {formatCorrectAnswersDisplay(correctAnswers)}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="h-full flex flex-col lg:flex-row bg-white">
       {/* Question Content Area */}
@@ -1368,8 +1500,8 @@ export function QuestionDisplay({
                   `}
                 >
                   {isMarkedForReview
-                    ? '🏷️ Marked for Review'
-                    : '🏷️ Mark for Review'}
+                    ? '🏷️ Marked'
+                    : '🏷️ Mark'}
                 </button>
               )}
               {isAdminPreview && (
@@ -1763,57 +1895,96 @@ export function QuestionDisplay({
               </div>
             </div>
           ) : (
-            <div
-              ref={questionContentRef}
-              className="text-gray-900 leading-relaxed relative overflow-visible min-h-[60px]"
-            >
-              <HighlightedTextRendererMemo
-                text={(() => {
-                  // Simple priority-based rendering: HTML first, then fallback to markdown
-                  if (
-                    localQuestion.question_html &&
-                    !isEmptyHtml(localQuestion.question_html)
-                  ) {
-                    // HTML content exists and is not empty - render as HTML
-                    return localQuestion.question_html
-                  } else {
-                    // No HTML or empty HTML - render markdown text
-                    return localQuestion.question_text
-                  }
-                })()}
-                highlights={highlights}
-                onRemoveHighlight={onRemoveHighlight}
-                isHtml={
-                  !!(
-                    localQuestion.question_html &&
-                    !isEmptyHtml(localQuestion.question_html)
+            <div className="text-gray-900 leading-relaxed relative overflow-visible min-h-[60px]">
+              {(() => {
+                const isHtml = !!(
+                  localQuestion.question_html &&
+                  !isEmptyHtml(localQuestion.question_html)
+                )
+                if (!isHtml) {
+                  // Markdown path (unchanged)
+                  return (
+                    <div ref={questionContentRef}>
+                      <HighlightedTextRendererMemo
+                        text={localQuestion.question_text}
+                        highlights={highlights}
+                        onRemoveHighlight={onRemoveHighlight}
+                        isHtml={false}
+                      />
+                      {!isAdminPreview && questionContentRef && onAddHighlight && (
+                        <FloatingHighlightButton
+                          containerRef={questionContentRef}
+                          onHighlight={onAddHighlight}
+                          isHighlightMode={isHighlightMode}
+                          isHtml={false}
+                        />
+                      )}
+                    </div>
                   )
                 }
-              />
-              {!isAdminPreview && questionContentRef && onAddHighlight && (
-                <FloatingHighlightButton
-                  containerRef={questionContentRef}
-                  onHighlight={onAddHighlight}
-                  examTitle={examTitle}
-                  examId={examId}
-                  isHtml={
-                    !!(
-                      localQuestion.question_html &&
-                      !isEmptyHtml(localQuestion.question_html)
+
+                // HTML path: split passage and prompt; highlight only passage
+                const html = localQuestion.question_html as string
+                const split = splitHtmlAtBoundary(html)
+                const renderPassageBlock = (
+                  passageHtml: string,
+                  promptHtml?: string,
+                  prefaceHtml?: string
+                ) => (
+                  <>
+                    {prefaceHtml && (
+                      <div className="select-none">
+                        {renderHtmlContent(prefaceHtml)}
+                      </div>
+                    )}
+                    <div ref={questionContentRef}>
+                      <HighlightedTextRendererMemo
+                        text={passageHtml}
+                        highlights={highlights}
+                        onRemoveHighlight={onRemoveHighlight}
+                        isHtml={true}
+                      />
+                      {!isAdminPreview && questionContentRef && onAddHighlight && (
+                        <FloatingHighlightButton
+                          containerRef={questionContentRef}
+                          onHighlight={onAddHighlight}
+                          isHighlightMode={isHighlightMode}
+                          isHtml={true}
+                        />
+                      )}
+                    </div>
+                    {promptHtml && (
+                      <div className="mt-2 select-none" data-role="prompt">
+                        {renderHtmlContent(promptHtml)}
+                      </div>
+                    )}
+                  </>
+                )
+
+                if (!split) {
+                  const separated = separatePrefaceFromPassage(html)
+                  if (separated) {
+                    return renderPassageBlock(
+                      separated.passageHtml,
+                      undefined,
+                      separated.prefaceHtml
                     )
                   }
-                  originalText={(() => {
-                    if (
-                      localQuestion.question_html &&
-                      !isEmptyHtml(localQuestion.question_html)
-                    ) {
-                      return localQuestion.question_html
-                    } else {
-                      return localQuestion.question_text
-                    }
-                  })()}
-                />
-              )}
+
+                  return renderPassageBlock(html)
+                }
+
+                const separated = separatePrefaceFromPassage(split.passageHtml)
+                if (separated) {
+                  return renderPassageBlock(
+                    separated.passageHtml,
+                    split.promptHtml,
+                    separated.prefaceHtml
+                  )
+                }
+
+                return renderPassageBlock(split.passageHtml, split.promptHtml)
+              })()}
             </div>
           )}
 
@@ -1848,16 +2019,10 @@ export function QuestionDisplay({
               ? 'Select your answer:'
               : 'Enter your answer:'}
           </h3>
-          {localQuestion.question_type === 'multiple_choice' &&
-            !isAdminPreview &&
-            !showExplanation && (
-              <p className="text-sm text-gray-600 mb-4">
-                💡 Right-click or double-click on answer choices to eliminate
-                them
-              </p>
-            )}
 
           {renderAnswerOptions()}
+
+          {renderAdminCorrectAnswerPreview()}
 
           {/* Check Answer Button for per-question mode */}
           {showPerQuestionAnswers &&

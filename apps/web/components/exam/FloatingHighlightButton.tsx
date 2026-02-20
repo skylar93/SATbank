@@ -1,867 +1,309 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { Highlighter, Languages } from 'lucide-react'
-import { autoAddToVocab } from '@/lib/dictionary-actions'
-import { useAuth } from '@/contexts/auth-context'
-import { toast } from 'sonner'
+import { useEffect, useRef } from 'react'
 import {
   Highlight,
   getVisiblePlainText,
-  getTextWalker,
-  findFlexibleWhitespaceMatch,
-  sanitizeHtmlContainer,
-  findBestTextMatch,
-  createNormalizedContainer,
   getTextOffsetInContainer,
+  createNormalizedContainer,
+  getTextWalker,
 } from './text-utils'
 
-function computeOffsetsWithoutTrim(
+const getCaretRangeFromPoint = (
+  doc: Document,
+  x: number,
+  y: number
+): Range | null => {
+  const anyDoc = doc as any
+  if (typeof anyDoc.caretRangeFromPoint === 'function') {
+    return anyDoc.caretRangeFromPoint(x, y)
+  }
+
+  if (typeof anyDoc.caretPositionFromPoint === 'function') {
+    const pos = anyDoc.caretPositionFromPoint(x, y)
+    if (!pos) return null
+    const range = doc.createRange()
+    range.setStart(pos.offsetNode, pos.offset)
+    range.collapse(true)
+    return range
+  }
+
+  return null
+}
+
+const buildWhitespaceAwareMap = (
+  domText: string,
+  normalizedText: string
+): number[] => {
+  const map: number[] = new Array(domText.length + 1).fill(normalizedText.length)
+  let domIdx = 0
+  let normIdx = 0
+
+  while (domIdx <= domText.length) {
+    map[domIdx] = Math.min(normIdx, normalizedText.length)
+    if (domIdx === domText.length) break
+
+    const domChar = domText[domIdx]
+    const normChar = normalizedText[normIdx]
+
+    const domIsWhitespace = /\s/.test(domChar)
+    const normIsWhitespace = normChar !== undefined ? /\s/.test(normChar) : false
+
+    if (domChar === normChar) {
+      domIdx += 1
+      normIdx = Math.min(normIdx + 1, normalizedText.length)
+      continue
+    }
+
+    if (domIsWhitespace && normIsWhitespace) {
+      while (domIdx < domText.length && /\s/.test(domText[domIdx])) {
+        map[domIdx] = Math.min(normIdx, normalizedText.length)
+        domIdx += 1
+      }
+      while (normIdx < normalizedText.length && /\s/.test(normalizedText[normIdx])) {
+        normIdx += 1
+      }
+      continue
+    }
+
+    if (domIsWhitespace && !normIsWhitespace) {
+      domIdx += 1
+      continue
+    }
+
+    if (!domIsWhitespace && normIsWhitespace) {
+      normIdx += 1
+      continue
+    }
+
+    domIdx += 1
+    if (normIdx < normalizedText.length) normIdx += 1
+  }
+
+  return map
+}
+
+const resolveDomPosition = (
   container: Element,
-  range: Range,
-  textRaw: string,
-  isHtml: boolean = false,
-  originalTextContent: string = ''
-) {
-  // For HTML content, use DOM-based position calculation
-  if (isHtml && originalTextContent) {
-    let normalizedContainer: HTMLElement | null = null
-    try {
-      console.log('🔍 DOM-based position calculation starting...')
+  offset: number
+): { node: Text; offset: number } | null => {
+  const walker = getTextWalker(container)
+  let remaining = offset
 
-      // Create the same normalized container as HighlightedTextRenderer
-      const result = createNormalizedContainer(originalTextContent)
-      normalizedContainer = result.container
-      const plainText = result.plainText
-
-      console.log('🎯 Direct text search approach')
-      console.log('Search text:', JSON.stringify(textRaw.slice(0, 50)))
-      console.log('Plain text preview:', JSON.stringify(plainText.slice(0, 100)))
-
-      // 1. Try direct exact match
-      let directIndex = plainText.indexOf(textRaw)
-      console.log('Direct match result:', directIndex)
-
-      if (directIndex >= 0) {
-        console.log('✅ Found direct match:', { start: directIndex, end: directIndex + textRaw.length })
-        return { start: directIndex, end: directIndex + textRaw.length, textForHighlight: textRaw }
-      }
-
-      // 2. Try newline variations first (common issue)
-      if (textRaw.includes('\n')) {
-        console.log('🔄 Trying comprehensive newline variations...')
-        const variations = [
-          textRaw.replace(/\n\n/g, '.'),        // \n\n -> .
-          textRaw.replace(/\n\n/g, '. '),       // \n\n -> . (with space)
-          textRaw.replace(/\n\n/g, '.Tom '),    // \n\n -> .Tom (specific case)
-          textRaw.replace(/\n/g, ' '),          // all \n -> space
-          textRaw.replace(/\n+/g, ' '),         // multiple \n -> space
-          textRaw.replace(/\n\n/g, ''),         // remove \n\n entirely
-          textRaw.replace(/\n/g, ''),           // remove all \n
-          textRaw.replace(/\s*\n\s*/g, ' '),    // \n with surrounding spaces -> space
-        ]
-
-        for (const variation of variations) {
-          const index = plainText.indexOf(variation)
-          console.log(`  Trying "${variation.slice(0,30)}...": ${index}`)
-          if (index >= 0) {
-            console.log('✅ Found with newline variation at:', index)
-            return { start: index, end: index + variation.length, textForHighlight: textRaw }
-          }
-        }
-
-        // Try partial matching from the beginning of the text
-        console.log('🔍 Trying partial matching from text start...')
-        const words = textRaw.split(/\s+/)
-        if (words.length > 3) {
-          // Try matching the first few words
-          const firstPart = words.slice(0, Math.min(5, words.length)).join(' ')
-          const partialIndex = plainText.indexOf(firstPart)
-          console.log(`  Trying first part "${firstPart}": ${partialIndex}`)
-
-          if (partialIndex >= 0) {
-            console.log('✅ Found partial match, using as base position:', partialIndex)
-            return { start: partialIndex, end: partialIndex + textRaw.length, textForHighlight: textRaw }
-          }
-        }
-      }
-
-      // 3. Try with normalized whitespace
-      const normalizedSearch = textRaw.replace(/\s+/g, ' ').trim()
-      const normalizedIndex = plainText.replace(/\s+/g, ' ').indexOf(normalizedSearch)
-      console.log('Normalized search result:', normalizedIndex)
-
-      if (normalizedIndex >= 0) {
-        // Find approximate position in original text
-        const searchWords = normalizedSearch.split(' ')
-        const firstWord = searchWords[0]
-        const firstWordIndex = plainText.indexOf(firstWord)
-
-        if (firstWordIndex >= 0) {
-          console.log('✅ Found via normalized search at:', firstWordIndex)
-          return { start: firstWordIndex, end: firstWordIndex + textRaw.length, textForHighlight: textRaw }
-        }
-      }
-
-      console.log('⚠️ Direct text search failed, trying more flexible matching...')
-
-      // Simple fallback: just try to find the text as-is
-      const fallbackIndex = plainText.indexOf(textRaw.trim())
-      if (fallbackIndex >= 0) {
-        console.log('✅ Found with fallback search at:', fallbackIndex)
-        return {
-          start: fallbackIndex,
-          end: fallbackIndex + textRaw.length,
-          textForHighlight: textRaw
-        }
-      }
-
-      console.error('❌ Complete failure - could not locate text anywhere')
-      return { start: 0, end: textRaw.length, textForHighlight: textRaw }
-
-    } catch (error) {
-      console.warn('HTML-based offset calculation failed:', error)
-      return { start: 0, end: textRaw.length, textForHighlight: textRaw }
-    } finally {
-      if (normalizedContainer) {
-        normalizedContainer.remove()
-      }
+  let lastText: Text | null = null
+  while (walker.nextNode()) {
+    const node = walker.currentNode as Text
+    const length = node.data.length
+    lastText = node
+    if (remaining <= length) {
+      return { node, offset: Math.max(0, Math.min(remaining, length)) }
     }
+    remaining -= length
   }
 
-  // Original logic for non-HTML content
-  const normalizedContainer = createNormalizedContainerForSelection(container)
-
-  try {
-    // Get normalized plain text using the same method as HighlightedTextRenderer
-    const visibleText = getVisiblePlainText(normalizedContainer)
-    const originalText = getVisiblePlainText(container)
-
-    // NEW: Try to compute accurate offsets by walking through DOM nodes
-    let start = -1
-    let end = -1
-    let textForHighlight = textRaw.trim() // Use local variable instead of mutating parameter
-
-    // Debug logging for offset computation
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Offset computation debug:', {
-        originalTextLength: originalText.length,
-        normalizedTextLength: visibleText.length,
-        rawTextLength: textRaw.length,
-        trimmedTextLength: textForHighlight.length,
-        originalTextPreview: originalText.substring(0, 100),
-        normalizedTextPreview: visibleText.substring(0, 100),
-        rawTextPreview: textRaw.substring(0, 100)
-      })
-    }
-
-    try {
-      // Map original range nodes to normalized container
-      const mappedOffsets = mapRangeToNormalizedContainer(
-        range,
-        container,
-        normalizedContainer
-      )
-      if (mappedOffsets) {
-        start = mappedOffsets.start
-        end = mappedOffsets.end
-      }
-    } catch (error) {
-      console.warn('Range mapping failed, falling back to text search:', error)
-    }
-
-    // Improved fallback: Try multiple text matching approaches
-    if (start < 0 || end < 0) {
-      const trimmedText = textRaw.trim()
-
-      // First try: direct match in normalized text
-      const directIndex = visibleText.indexOf(trimmedText)
-      if (directIndex >= 0) {
-        start = directIndex
-        end = directIndex + trimmedText.length
-        textForHighlight = trimmedText
-      } else {
-        // Second try: enhanced text matching
-        const enhancedMatch = findBestTextMatch(visibleText, trimmedText)
-        if (enhancedMatch) {
-          start = enhancedMatch.start
-          end = enhancedMatch.end
-          textForHighlight = enhancedMatch.text
-        } else {
-          // Third try: match in original text and calculate proportional offset
-          const originalDirectIndex = originalText.indexOf(trimmedText)
-          if (originalDirectIndex >= 0 && originalText.length > 0) {
-            const ratio = visibleText.length / originalText.length
-            start = Math.floor(originalDirectIndex * ratio)
-            end = Math.floor((originalDirectIndex + trimmedText.length) * ratio)
-            // Verify the calculated range makes sense
-            const calculatedText = visibleText.slice(start, end)
-            if (calculatedText.trim() !== trimmedText) {
-              // Adjust if text doesn't match
-              const adjustedMatch = findBestTextMatch(visibleText, trimmedText)
-              if (adjustedMatch) {
-                start = adjustedMatch.start
-                end = adjustedMatch.end
-                textForHighlight = adjustedMatch.text
-              }
-            }
-          }
-        }
-      }
-    }
-
-    // Ensure we have valid positions
-    if (start < 0) start = 0
-    if (end < 0) end = start + textForHighlight.length
-
-    const boundedStart = Math.max(0, Math.min(start, visibleText.length))
-    const boundedEnd = Math.max(boundedStart, Math.min(end, visibleText.length))
-
-    // Use the final text from normalized content or fallback to original
-    const finalText =
-      visibleText.slice(boundedStart, boundedEnd) || textForHighlight
-
-    return { start: boundedStart, end: boundedEnd, textForHighlight: finalText }
-  } finally {
-    normalizedContainer.remove()
-  }
-}
-
-// NEW: Map range from original container to normalized container
-function mapRangeToNormalizedContainer(
-  originalRange: Range,
-  originalContainer: Element,
-  normalizedContainer: Element
-): { start: number; end: number } | null {
-  try {
-    // Get all text nodes in both containers
-    const originalWalker = getTextWalker(originalContainer)
-    const normalizedWalker = getTextWalker(normalizedContainer)
-
-    // Build mapping between original and normalized text positions
-    let originalOffset = 0
-    let normalizedOffset = 0
-    let startMapped = -1
-    let endMapped = -1
-
-    const originalNodes: {
-      node: Text
-      startOffset: number
-      endOffset: number
-    }[] = []
-    const normalizedNodes: {
-      node: Text
-      startOffset: number
-      endOffset: number
-    }[] = []
-
-    // Collect all text nodes with their offsets in original container
-    while (originalWalker.nextNode()) {
-      const textNode = originalWalker.currentNode as Text
-      const nodeLength = textNode.data.length
-      originalNodes.push({
-        node: textNode,
-        startOffset: originalOffset,
-        endOffset: originalOffset + nodeLength,
-      })
-      originalOffset += nodeLength
-    }
-
-    // Collect all text nodes with their offsets in normalized container
-    while (normalizedWalker.nextNode()) {
-      const textNode = normalizedWalker.currentNode as Text
-      const nodeLength = textNode.data.length
-      normalizedNodes.push({
-        node: textNode,
-        startOffset: normalizedOffset,
-        endOffset: normalizedOffset + nodeLength,
-      })
-      normalizedOffset += nodeLength
-    }
-
-    // Find where the original range starts and ends
-    let rangeStartGlobalOffset = -1
-    let rangeEndGlobalOffset = -1
-
-    // Calculate global offset for range start
-    for (const nodeInfo of originalNodes) {
-      if (nodeInfo.node === originalRange.startContainer) {
-        rangeStartGlobalOffset =
-          nodeInfo.startOffset + originalRange.startOffset
-        break
-      }
-    }
-
-    // Calculate global offset for range end
-    for (const nodeInfo of originalNodes) {
-      if (nodeInfo.node === originalRange.endContainer) {
-        rangeEndGlobalOffset = nodeInfo.startOffset + originalRange.endOffset
-        break
-      }
-    }
-
-    if (rangeStartGlobalOffset >= 0 && rangeEndGlobalOffset >= 0) {
-      // Map these global offsets to normalized container
-      // For now, use simple proportional mapping
-      const originalTotalLength = originalOffset
-      const normalizedTotalLength = normalizedOffset
-
-      if (originalTotalLength > 0 && normalizedTotalLength > 0) {
-        const ratio = normalizedTotalLength / originalTotalLength
-        startMapped = Math.floor(rangeStartGlobalOffset * ratio)
-        endMapped = Math.floor(rangeEndGlobalOffset * ratio)
-
-        // Ensure valid bounds
-        startMapped = Math.max(0, Math.min(startMapped, normalizedTotalLength))
-        endMapped = Math.max(
-          startMapped,
-          Math.min(endMapped, normalizedTotalLength)
-        )
-
-        return { start: startMapped, end: endMapped }
-      }
-    }
-
-    return null
-  } catch (error) {
-    console.warn('Range mapping failed:', error)
-    return null
-  }
-}
-
-// Helper function to create a normalized container for selection offset calculation
-function createNormalizedContainerForSelection(
-  originalContainer: Element
-): HTMLDivElement {
-  const tempDiv = document.createElement('div')
-  tempDiv.innerHTML = originalContainer.innerHTML
-
-  // Apply same normalization as HighlightedTextRenderer
-  tempDiv.style.position = 'absolute'
-  tempDiv.style.left = '-9999px'
-  tempDiv.style.top = '-9999px'
-  tempDiv.style.pointerEvents = 'none'
-  tempDiv.style.opacity = '0'
-  tempDiv.style.zIndex = '-1'
-  tempDiv.className = originalContainer.className // Preserve styles that might affect text rendering
-
-  document.body.appendChild(tempDiv)
-
-  try {
-    // Apply same sanitization as HighlightedTextRenderer
-    sanitizeHtmlContainer(tempDiv)
-  } catch (error) {
-    console.warn('Failed to sanitize HTML container:', error)
+  if (lastText) {
+    return { node: lastText, offset: lastText.data.length }
   }
 
-  return tempDiv
-}
-
-interface DOMHighlight {
-  startXPath: string
-  startOffset: number
-  endXPath: string
-  endOffset: number
-  text: string
-  html?: string
+  return null
 }
 
 interface FloatingHighlightButtonProps {
   containerRef: React.RefObject<HTMLElement>
   onHighlight: (highlight: Highlight) => void
-  examTitle?: string
-  examId?: string
+  isHighlightMode: boolean
   isHtml?: boolean
-  originalText?: string
 }
 
 export default function FloatingHighlightButton({
   containerRef,
   onHighlight,
-  examTitle,
-  examId,
+  isHighlightMode,
   isHtml = false,
-  originalText = '',
 }: FloatingHighlightButtonProps) {
-  const { user } = useAuth()
-  const [isVisible, setIsVisible] = useState(false)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
-  const [selectedText, setSelectedText] = useState('')
-  const [selectionRange, setSelectionRange] = useState<{
-    start: number
-    end: number
-  } | null>(null)
-  const buttonRef = useRef<HTMLDivElement>(null)
-  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const isHoveringRef = useRef(false)
-  const [isAddingVocab, setIsAddingVocab] = useState(false)
-  const storedRangeRef = useRef<Range | null>(null) // Store the actual Range object
-  const isStickyRef = useRef(false) // Sticky selection mode
-  const isRestoringRef = useRef(false) // Prevent selection change loops
-
-  const scheduleHide = (ms: number) => {
-    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
-    hideTimeoutRef.current = setTimeout(() => {
-      if (!isHoveringRef.current && !isStickyRef.current) {
-        setIsVisible(false)
-      }
-    }, ms)
-  }
+  const pointerStartDomRef = useRef<number | null>(null)
+  const highlightModeRef = useRef(isHighlightMode)
 
   useEffect(() => {
-    const handleSelectionChange = () => {
-      if (isRestoringRef.current) return
+    highlightModeRef.current = isHighlightMode
+  }, [isHighlightMode])
 
-      const selection = window.getSelection()
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+    const doc = container.ownerDocument || document
 
-      // Clear any pending hide timeout when selection changes
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current)
-        hideTimeoutRef.current = null
+    pointerStartDomRef.current = null
+
+    if (!highlightModeRef.current) {
+      return
+    }
+
+    const clearSelection = () => {
+      const selection = doc.getSelection?.()
+      selection?.removeAllRanges()
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!highlightModeRef.current) return
+      if (!container.contains(event.target as Node)) return
+
+      const caretRange = getCaretRangeFromPoint(
+        doc,
+        event.clientX,
+        event.clientY
+      )
+
+      if (!caretRange) return
+
+      const offsetDom = getTextOffsetInContainer(
+        container,
+        caretRange.startContainer,
+        caretRange.startOffset
+      )
+
+      pointerStartDomRef.current = offsetDom
+
+      const selection = doc.getSelection?.()
+      if (selection) {
+        try {
+          selection.removeAllRanges()
+          selection.addRange(caretRange)
+        } catch {}
       }
+    }
 
-      if (!selection || !containerRef.current || selection.rangeCount === 0) {
-        // Only hide if we don't have sticky selection
-        if (isStickyRef.current) return
-        // Non-sticky mode: delay hide to allow user interaction
-        if (!selectedText) {
-          scheduleHide(1500)
-        }
-        return
-      }
+    const handleMouseUp = () => {
+      if (!highlightModeRef.current) return
 
-      // Skip processing if selection is collapsed (cursor position)
-      if (selection.isCollapsed) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Skipping collapsed selection')
-        }
+      const selection = doc.getSelection?.()
+      if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
         return
       }
 
       const range = selection.getRangeAt(0)
-      const textRaw = selection.toString()
+      const startContainer = range.startContainer
+      const endContainer = range.endContainer
 
-      // Debug the actual selection
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Raw selection debug:', {
-          rangeText: range.toString(),
-          selectionText: textRaw,
-          rangeStartContainer: range.startContainer,
-          rangeEndContainer: range.endContainer,
-          rangeStartOffset: range.startOffset,
-          rangeEndOffset: range.endOffset,
-          rangeCollapsed: range.collapsed
-        })
-      }
-
-      // Check for empty or whitespace-only selection
-      if (!textRaw || textRaw.trim().length === 0) {
-        // Only hide if we don't have sticky selection
-        if (!isStickyRef.current && !selectedText) {
-          scheduleHide(1500)
-        }
+      if (
+        !container.contains(startContainer) ||
+        !container.contains(endContainer)
+      ) {
+        clearSelection()
+        pointerStartDomRef.current = null
         return
       }
 
-      // More robust container check - ensure both start and end are within container
-      // Also allow selection within highlighted text (mark elements)
-      const startWithinContainer = containerRef.current.contains(range.startContainer)
-      const endWithinContainer = containerRef.current.contains(range.endContainer)
-
-      if (!startWithinContainer || !endWithinContainer) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Selection outside container:', {
-            startWithinContainer,
-            endWithinContainer,
-            startContainer: range.startContainer,
-            endContainer: range.endContainer
-          })
-        }
-        // Only hide if we don't have sticky selection
-        if (!isStickyRef.current && !selectedText) {
-          scheduleHide(1500)
-        }
-        return
-      }
-
-      // Valid selection found → activate sticky mode
-      isStickyRef.current = true
-      storedRangeRef.current = range.cloneRange()
-
-      // Calculate text offsets using improved approach
-      const containerElement = containerRef.current
-
-      // Validate that the range is within our container
-      if (!containerElement.contains(range.commonAncestorContainer)) {
-        console.warn('Selection range is outside target container')
-        return
-      }
+      let normalizedContainer: HTMLElement | null = null
 
       try {
-        const { start, end, textForHighlight } = computeOffsetsWithoutTrim(
-          containerElement,
-          range,
-          textRaw,
-          isHtml,
-          originalText
-        )
+        const domPlainText = getVisiblePlainText(container)
 
-        // Additional validation
-        if (start < 0 || end <= start || textForHighlight.trim().length === 0) {
-          console.warn('Invalid selection offsets calculated:', {
-            start,
-            end,
-            textForHighlight,
-          })
+        const startOffsetDom = getTextOffsetInContainer(
+          container,
+          startContainer,
+          range.startOffset
+        )
+        const endOffsetDom = getTextOffsetInContainer(
+          container,
+          endContainer,
+          range.endOffset
+        )
+        const focusOffsetDom = selection.focusNode
+          ? getTextOffsetInContainer(
+              container,
+              selection.focusNode,
+              selection.focusOffset ?? range.endOffset
+            )
+          : endOffsetDom
+
+        const anchorDom = pointerStartDomRef.current ?? startOffsetDom
+        const focusDom = Number.isFinite(focusOffsetDom)
+          ? focusOffsetDom
+          : endOffsetDom
+
+        let domStart = Math.max(0, Math.min(anchorDom, focusDom))
+        let domEnd = Math.max(domStart, Math.max(anchorDom, focusDom))
+
+        let plainText = domPlainText
+
+        if (isHtml) {
+          const normalized = createNormalizedContainer(container.innerHTML)
+          normalizedContainer = normalized.container
+          plainText = normalized.plainText
+        }
+
+        if (!plainText.trim()) {
+          clearSelection()
+          pointerStartDomRef.current = null
           return
         }
 
-        // Debug logging (can be enabled for troubleshooting)
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Selection processed in FloatingHighlightButton:', {
-            selectedText: textForHighlight,
-            selectedLength: textForHighlight.length,
-            calculatedStart: start,
-            calculatedEnd: end,
-            isHtml,
-            originalTextLength: originalText.length,
-            containerHTML: containerElement.innerHTML.substring(0, 200),
-            visibleTextPreview: getVisiblePlainText(containerElement).substring(0, 200),
-            originalTextPreview: originalText.substring(0, 200)
-          })
+        const domToNormalized = buildWhitespaceAwareMap(domPlainText, plainText)
+        const mappedStart =
+          domToNormalized[Math.min(domStart, domToNormalized.length - 1)] ?? 0
+        const mappedEnd =
+          domToNormalized[Math.min(domEnd, domToNormalized.length - 1)] ??
+          mappedStart
+
+        const safeStart = Math.max(0, Math.min(mappedStart, plainText.length))
+        const safeEnd = Math.max(safeStart, Math.min(mappedEnd, plainText.length))
+
+        const rawSlice = plainText.slice(safeStart, safeEnd)
+        if (!rawSlice.trim()) {
+          clearSelection()
+          pointerStartDomRef.current = null
+          return
         }
 
-        // Get selection position for floating button
-        const rect = range.getBoundingClientRect()
-        const containerRect = containerElement.getBoundingClientRect()
+        const leadingTrim = rawSlice.length - rawSlice.trimStart().length
+        const trailingTrim = rawSlice.length - rawSlice.trimEnd().length
 
-        // Improved positioning algorithm for better handling of single-line questions
-        const buttonWidth = 90 // Width for both buttons together
-        const buttonHeight = 40
-        const offset = 8
-        const minDistance = 5 // Minimum distance from container edges
+        const finalStart = safeStart + leadingTrim
+        const finalEnd = safeEnd - trailingTrim
 
-        // Get the cursor position (end of selection)
-        const tempRange = document.createRange()
-        tempRange.setStart(range.endContainer, range.endOffset)
-        tempRange.setEnd(range.endContainer, range.endOffset)
-        const cursorRect = tempRange.getBoundingClientRect()
-
-        // Get viewport and container dimensions
-        const containerWidth = containerElement.offsetWidth
-        const containerHeight = containerElement.offsetHeight
-        const viewportHeight = window.innerHeight
-
-        // Calculate available space in all directions
-        const spaceRight = containerWidth - (rect.right - containerRect.left)
-        const spaceLeft = rect.left - containerRect.left
-        const spaceBelow = containerHeight - (rect.bottom - containerRect.top)
-        const spaceAbove = rect.top - containerRect.top
-
-        let buttonX = 0
-        let buttonY = 0
-
-        // Horizontal positioning: prefer right, fallback to left if not enough space
-        if (spaceRight >= buttonWidth + offset + minDistance) {
-          // Position to the right of the cursor
-          buttonX = cursorRect.right - containerRect.left + offset
-        } else if (spaceLeft >= buttonWidth + offset + minDistance) {
-          // Position to the left of selection
-          buttonX = rect.left - containerRect.left - buttonWidth - offset
-        } else {
-          // Center horizontally if neither side has enough space
-          buttonX = Math.max(minDistance, (containerWidth - buttonWidth) / 2)
+        if (finalEnd <= finalStart) {
+          clearSelection()
+          pointerStartDomRef.current = null
+          return
         }
 
-        // Vertical positioning: for single-line questions, be more aggressive about positioning
-        if (spaceBelow >= buttonHeight + offset + minDistance) {
-          // Position below selection
-          buttonY = rect.bottom - containerRect.top + offset
-        } else if (spaceAbove >= buttonHeight + offset + minDistance) {
-          // Position above selection
-          buttonY = rect.top - containerRect.top - buttonHeight - offset
-        } else {
-          // For very tight spaces (like single-line questions), position at a safe distance
-          // Try to position below first, but with minimal offset
-          const minimalOffset = 3
-          if (
-            rect.bottom - containerRect.top + buttonHeight + minimalOffset <=
-            containerHeight
-          ) {
-            buttonY = rect.bottom - containerRect.top + minimalOffset
-          } else if (
-            rect.top - containerRect.top - buttonHeight - minimalOffset >=
-            0
-          ) {
-            buttonY =
-              rect.top - containerRect.top - buttonHeight - minimalOffset
-          } else {
-            // For extremely tight single-line cases, position the buttons to overlay slightly
-            // This ensures they're always visible even if space is very limited
-            const selectionMiddleY =
-              rect.top + rect.height / 2 - containerRect.top
-            if (
-              selectionMiddleY - buttonHeight / 2 >= 0 &&
-              selectionMiddleY + buttonHeight / 2 <= containerHeight
-            ) {
-              // Center vertically on the selection
-              buttonY = selectionMiddleY - buttonHeight / 2
-            } else {
-              // Final fallback: position at the edge with the most space
-              buttonY =
-                spaceBelow > spaceAbove
-                  ? Math.max(0, containerHeight - buttonHeight)
-                  : 0
-            }
-          }
+        const highlightText = plainText.slice(finalStart, finalEnd)
+        if (!highlightText.trim()) {
+          clearSelection()
+          pointerStartDomRef.current = null
+          return
         }
 
-        // Final boundary enforcement with more generous margins for single-line cases
-        buttonX = Math.max(
-          minDistance,
-          Math.min(buttonX, containerWidth - buttonWidth - minDistance)
-        )
-        buttonY = Math.max(
-          minDistance,
-          Math.min(buttonY, containerHeight - buttonHeight - minDistance)
-        )
-
-        setPosition({
-          x: buttonX,
-          y: buttonY,
+        onHighlight({
+          start: finalStart,
+          end: finalEnd,
+          text: highlightText,
         })
-
-        setSelectedText(textForHighlight)
-        setSelectionRange({ start, end })
-        setIsVisible(true)
-      } catch (error) {
-        console.error('Error processing text selection:', error)
-        // Reset state on error
-        isStickyRef.current = false
-        storedRangeRef.current = null
+      } finally {
+        normalizedContainer?.remove()
+        clearSelection()
+        pointerStartDomRef.current = null
       }
     }
 
-    const handleClickOutside = (e: MouseEvent) => {
-      // Don't hide immediately if clicking on the button
-      if (buttonRef.current && buttonRef.current.contains(e.target as Node)) {
-        return
-      }
-
-      // Give user more time to move to the button
-      scheduleHide(2000)
-    }
-
-    const handleMouseMove = (e: MouseEvent) => {
-      // Keep button visible if user is moving towards it
-      if (buttonRef.current && isVisible) {
-        const buttonRect = buttonRef.current.getBoundingClientRect()
-        const distance = Math.sqrt(
-          Math.pow(e.clientX - (buttonRect.left + buttonRect.width / 2), 2) +
-            Math.pow(e.clientY - (buttonRect.top + buttonRect.height / 2), 2)
-        )
-
-        // If user is close to button (within 50px), keep it visible and restore selection
-        if (distance < 50) {
-          if (hideTimeoutRef.current) {
-            clearTimeout(hideTimeoutRef.current)
-            hideTimeoutRef.current = null
-          }
-          // Restore selection when user approaches the button
-          restoreSelection()
-        }
-      }
-    }
-
-    document.addEventListener('selectionchange', handleSelectionChange)
-    document.addEventListener('mousedown', handleClickOutside)
-    document.addEventListener('mousemove', handleMouseMove)
+    container.addEventListener('pointerdown', handlePointerDown)
+    doc.addEventListener('mouseup', handleMouseUp)
 
     return () => {
-      document.removeEventListener('selectionchange', handleSelectionChange)
-      document.removeEventListener('mousedown', handleClickOutside)
-      document.removeEventListener('mousemove', handleMouseMove)
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current)
-      }
+      container.removeEventListener('pointerdown', handlePointerDown)
+      doc.removeEventListener('mouseup', handleMouseUp)
+      pointerStartDomRef.current = null
     }
-  }, [containerRef])
+  }, [containerRef, isHighlightMode, onHighlight, isHtml])
 
-  const clearSelectionAndUI = () => {
-    // Clear all state and reset for new selections
-    storedRangeRef.current = null
-    isStickyRef.current = false
-    setSelectedText('')
-    setSelectionRange(null)
-    setIsVisible(false)
-
-    // Clear any pending hide timeouts
-    if (hideTimeoutRef.current) {
-      clearTimeout(hideTimeoutRef.current)
-      hideTimeoutRef.current = null
+  useEffect(() => {
+    if (!highlightModeRef.current) {
+      const selection = document.getSelection?.()
+      selection?.removeAllRanges()
+      pointerStartDomRef.current = null
     }
+  }, [isHighlightMode])
 
-    // Clear the selection immediately to allow fresh selections
-    if (window.getSelection()) {
-      window.getSelection()?.removeAllRanges()
-    }
-
-    // Force re-enable selection handling after DOM updates
-    setTimeout(() => {
-      isRestoringRef.current = false
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Selection cleared and ready for new selections')
-      }
-    }, 50)
-  }
-
-  const handleHighlight = () => {
-    if (selectionRange && selectedText) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Applying highlight:', {
-          start: selectionRange.start,
-          end: selectionRange.end,
-          text: selectedText
-        })
-      }
-
-      onHighlight({
-        start: selectionRange.start,
-        end: selectionRange.end,
-        text: selectedText,
-      })
-
-      // Clear UI immediately and prepare for new selections
-      clearSelectionAndUI()
-    }
-  }
-
-  const handleAddToVocab = async () => {
-    if (!user) {
-      toast.error('Please sign in to add vocabulary')
-      return
-    }
-
-    if (!selectedText) return
-
-    // Basic validation for selected text
-    const cleanText = selectedText.trim()
-    if (cleanText.length < 2 || cleanText.length > 50) {
-      toast.error('Please select a word between 2-50 characters')
-      return
-    }
-
-    // Check if it's a reasonable word (no excessive punctuation or numbers)
-    if (/^[^a-zA-Z]*$/.test(cleanText) || cleanText.split(' ').length > 3) {
-      toast.error('Please select a valid word or short phrase')
-      return
-    }
-
-    setIsAddingVocab(true)
-
-    try {
-      const result = await autoAddToVocab(cleanText, examTitle, examId)
-
-      if (result.success) {
-        toast.success(result.message)
-
-        clearSelectionAndUI()
-      } else {
-        toast.error(result.message)
-      }
-    } catch (error) {
-      console.error('Error adding vocabulary:', error)
-      toast.error('Failed to add vocabulary. Please try again.')
-    } finally {
-      setIsAddingVocab(false)
-    }
-  }
-
-  const restoreSelection = () => {
-    if (!storedRangeRef.current) return
-    try {
-      isRestoringRef.current = true
-      const selection = window.getSelection()
-      if (selection) {
-        selection.removeAllRanges()
-        selection.addRange(storedRangeRef.current)
-      }
-    } catch (error) {
-      console.warn('Failed to restore selection:', error)
-    } finally {
-      // Delay clearing the flag to prevent selectionchange loop
-      setTimeout(() => {
-        isRestoringRef.current = false
-      }, 0)
-    }
-  }
-
-  const handleMouseEnter = () => {
-    isHoveringRef.current = true
-    // Clear any pending hide timeout when hovering
-    if (hideTimeoutRef.current) {
-      clearTimeout(hideTimeoutRef.current)
-      hideTimeoutRef.current = null
-    }
-
-    // Restore selection when hovering over button
-    restoreSelection()
-  }
-
-  const handleMouseLeave = () => {
-    isHoveringRef.current = false
-    // Start hide timeout when leaving button
-    scheduleHide(2000)
-  }
-
-  const onButtonMouseDown: React.MouseEventHandler = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    restoreSelection()
-  }
-
-  if (!isVisible || !containerRef.current) return null
-
-  return (
-    <>
-      <div
-        ref={buttonRef}
-        onMouseDown={onButtonMouseDown}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        className="absolute z-50 flex space-x-2 transition-all duration-200 ease-in-out"
-        style={{
-          left: position.x,
-          top: position.y,
-          maxWidth: '90px', // Prevent buttons from growing too wide
-          minHeight: '40px', // Ensure minimum height for visibility
-        }}
-      >
-        {/* Highlight Button */}
-        <button
-          onClick={handleHighlight}
-          className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 p-2 rounded-full shadow-xl border-2 border-white transition-all duration-200 ease-in-out transform hover:scale-110 flex-shrink-0"
-          title="Highlight selected text"
-          style={{ minWidth: '36px', minHeight: '36px' }}
-        >
-          <Highlighter size={16} />
-        </button>
-
-        {/* Add to Vocab Button */}
-        <button
-          onClick={handleAddToVocab}
-          disabled={isAddingVocab}
-          className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-2 rounded-full shadow-xl border-2 border-white transition-all duration-200 ease-in-out transform hover:scale-110 flex-shrink-0"
-          title={`Add "${selectedText}" to vocabulary`}
-          style={{ minWidth: '36px', minHeight: '36px' }}
-        >
-          {isAddingVocab ? (
-            <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-          ) : (
-            <Languages size={16} />
-          )}
-        </button>
-      </div>
-    </>
-  )
+  return null
 }

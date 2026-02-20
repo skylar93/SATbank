@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE06",
+  "description": "Reading comprehension practice",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Maman,\nJe fais mes devoirs de mathématiques chez Louise.\nje rentre à 21 heures.\nBises et à ce soir.\nPatrick\nQue fait Patrick chez Louise ?",
+      "image_url": null,
+      "options": {
+        "A": "Il dort",
+        "B": "Il joue",
+        "C": "Il mange",
+        "D": "Il travaille"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 2,
+      "question_text": "19h55\nSérie documentaire\nBonjour la Bretagne !\n\n20h35\nMagazine\nLa grande librairie.\nPrésentation François Busnel\n\n21h35\nDocumentaire\nArman, portrait d'un peintre\net d'un sculpteur\n\nà 23h55\nSérie documentaire\nJ'irai dormir chez vous << Maroc >>\nÀ quelle heure peut-on voir une émission sur l'art ?",
+      "image_url": null,
+      "options": {
+        "A": "à 19h55",
+        "B": "à 20h35",
+        "C": "à 21h35",
+        "D": "à 23h55"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Je suis bien arrivé chez moi.\nJe t'appelle demain pour aller voir le film.\nJe t'embrasse,\nCyprien\nOù est Cyprien ?",
+      "image_url": null,
+      "options": {
+        "A": "À la gare",
+        "B": "À la maison",
+        "C": "Au cinéma",
+        "D": "Au Travail"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 4,
+      "question_text": "La mairie vous informe\nPendant les travaux, il est interdit de stationner devant l'entrée du supermarché.\nMerci d'utiliser le parking derrière la poste.\nOù Pouvez-vous laisser votre voiture pendant les travaux ?",
+      "image_url": null,
+      "options": {
+        "A": "Devant la mairie",
+        "B": "Près de l'entrée du supermarché",
+        "C": "Derrière le bâtiment de la poste",
+        "D": "En face du parc"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 5,
+      "question_text": "À bord du Tip Top, le plus grand bateau du bassin d'Arcachon, laissez-vous guider pour 2h30 de promenade au gré des vents et des courants marins. Départ de la jetée Thiers tous les jours en juillet et août, selon les horaires de marée.\nRenseignez-vous la veille. Prix : 25€ par personne. Croisière limitée à 28 passagers maximum.\nQue propose ce document ?",
+      "image_url": null,
+      "options": {
+        "A": "La visite d'un bateau",
+        "B": "Une promenade en mer",
+        "C": "Une promenade en ville",
+        "D": "La visite du port Arcachon"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Le centre de Branféré a ouvert ses portes au printemps dernier dans un parc de Bretagne. Des classes du primaire y sont invitées. Les élèves y apprennent, pendant quelques jours, à connaître et à respecter la nature.\nQu'apprenons-nous sur le centre de Branféré ?",
+      "image_url": null,
+      "options": {
+        "A": "Il accueille les élèves et leurs parents",
+        "B": "Il est ouvert seulement au printemps",
+        "C": "Il est réservé aux écoles de Bretagne",
+        "D": "Il informe les enfants sur la nature"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Cher monsieur Damier,\nNous avons le plaisir de vous annoncer que vous êtes l'heureux gagnant de notre grand jeu de l'été. Vous pouvez dès maintenant venir chercher votre prix dans votre magasin préféré où nos soldes d'automne ont déjà commencé !\nBien cordialement\nQue va recevoir monsieur Damier ?",
+      "image_url": null,
+      "options": {
+        "A": "Un cadeau",
+        "B": "Une publicité",
+        "C": "Une visite",
+        "D": "Une lettre"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 8,
+      "question_text": "GRAND JEU JARDIMARCHÉ\nVous pensez avoir le plus beau jardin ?\nEnvoyez une photo à :\ngrandjeu@jardimarche.com\nTrois gagnants recevront un chèque de 500 euros valable dans tous nos magasins.\nQue propose Jardimarché ?",
+      "image_url": null,
+      "options": {
+        "A": "D'acheter des plats à bon prix",
+        "B": "De faire des courses en ligne",
+        "C": "De participer à un concours",
+        "D": "De recevoir des outils gratuits"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Bonjour Ahmed,\nCe message pour te rappeler la réunion du lundi. Nous commanderons des paniers repas pour le midi car la séance peut durer longtemps, les dossiers à traiter sont nombreux. Peux-tu en informer les personnes des services concernés ?\nMerci d'avance.\nÀ lundi,\nPierre\nQue demande Pierre à Ahmed ?",
+      "image_url": null,
+      "options": {
+        "A": "D'apporter le déjeuner",
+        "B": "D'avancer le rendez-vous",
+        "C": "De consulter les documents",
+        "D": "De prévenir ses collègues"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Chers parents,\nJe profite d'une étape en ville pour vous envoyer un courriel. La randonnée se passe bien, nous marchons beaucoup avec les moniteurs. C'est fatigant mais la région est magnifique. Bisous, à bientôt.\nKarim\nPourquoi Karim écrit-il à ses parents ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour annoncer son retour",
+        "B": "Pour parler de son travail",
+        "C": "Pour prendre des nouvelles",
+        "D": "Pour raconter ses vacances"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Vous avez entre 16 et 25 ans et vous souhaitez travailler rapidement ?\nVenez rencontrer des chefs d'entreprise et connaître les formations existantes au Salon de l'entreprise, du 3 au 9 avril prochain.\nQu'est-ce qu'on peut faire dans ce salon ?",
+      "image_url": null,
+      "options": {
+        "A": "Participer à un stage de plusieurs jours",
+        "B": "S'informer sur le monde professionnel",
+        "C": "S'inscrire à un cours réservé aux jeunes",
+        "D": "Trouver de l'aide pour écrire un CV"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Un récent sondage a révélé que le tourisme intracontinental des Européens commence à s'essouffler. Désormais, on connaît bien nos voisins, on veut donc voir autre chose. Les touristes n'ont pas l'impression de changer d'air s'ils ne quittent pas l'Union. On assiste à un développement du tourisme de longue distance, par exemple vers l'Afrique du Sud.\nQue révèlent les dernières études sur les touristes européens ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils voyagent plutôt dans l'Union Européenne",
+        "B": "Ils visitent de préférence leurs pays d'origine",
+        "C": "Ils découvrent les pays de leurs voisins",
+        "D": "Ils s'aventurent dans les pays lointains"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Ne dites plus dépendance, dites autonomie\nLes mots changent, le problème demeure. Ce problème est celui d'une population qui vit de plus en plus longtemps, grâce aux progrès de la médecine mais dont les dernières années nécessitent très souvent une assistance à domicile ou un hébergement en maison de retraite médicalisée.\nSelon ce texte, quelle est la difficulté rencontrée par les personnes âgées ?",
+      "image_url": null,
+      "options": {
+        "A": "Elles ont besoin d'accompagnement",
+        "B": "Elles ont peur de quitter leur logement",
+        "C": "Elles souffrent de grande solitude",
+        "D": "Elles suivent des traitements couteux"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Les vacanciers français ont trouvé cet été le bonheur chez eux, avec une nette préférence pour les côtes ensoleillées, tandis que les étrangers européens ou non, qui n'avaient pas choisi la France l'an dernier, sont revenus. Globalement, la fréquentation touristique a légèrement progressé, selon des données statistiques recueillies. La montagne a connu une belle saison aussi avec des taux de réservation dans les résidences de tourisme en hausse de 9% en Savoie et Haute-Savoie, dans les Alpes.\nDans quelle destination les Français ont-ils choisi de passer leurs vacances d'été ?",
+      "image_url": null,
+      "options": {
+        "A": "À l'étranger",
+        "B": "Dans les Alpes",
+        "C": "En Europe",
+        "D": "En France"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Comment apprendre une langue étrangère ?\nExiste-t-il un âge critique au-delà duquel il est impossible d'atteindre le niveau d'un locuteur natif ? Ce sujet fait l'objet de nombreux débats. Plus on est jeune, plus on a d'appétit pour découvrir le monde. L'apprentissage d'une langue, quelle qu'elle soit, est donc plus simple. Mais il existe également une composante sociale : on interagit avec un enfant d'une manière bien particulière, ce qui est difficile à reproduire avec un adolescent ou un adulte.\nD'après cet extrait, qu'est-ce qui favorise l'apprentissage d'une langue étrangère chez les enfants ?",
+      "image_url": null,
+      "options": {
+        "A": "Leur curiosité",
+        "B": "Leur imagination",
+        "C": "Leur mémoire",
+        "D": "Leur obéissance"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Une collégienne de 13 ans a remporté un prix grâce à son idée d'entreprise. Soucieuse de l'environnement, la jeune fille a imaginé un service qui encourage la récupération de bouteilles en plastique. Son concept est simple : le consommateur échange des bouteilles en plastique vides contre un objet recyclé. Par exemple, avec une bouteille en plastique, il peut commander un stylo, avec 47 bouteilles il peut avoir un t-shirt et pour 65 bouteilles il a la possibilité d'acheter une couverture.\nQue propose la jeune fille pour les bouteilles en plastique vides ?",
+      "image_url": null,
+      "options": {
+        "A": "De les produire de façon écologique",
+        "B": "De les revendre à un prix réduit",
+        "C": "De les transformer en vêtement",
+        "D": "De les utiliser comme monnaie"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Job d'été, la première expérience\nQuand une entreprise fait appel pour la première fois à un jeune, elle n'a pas d'attente vis-à-vis de ses compétences professionnelles, c'est donc sur son comportement que vont se porter ses critères d'évaluation. Même saisonnier, il faut montrer qu'on a vraiment envie de décrocher un Job. Les jeunes sans expérience ont tout intérêt à parler de leur passion et à démontrer leur motivation. Pour un employeur, c'est ce qui reste souvent le critère le plus important.\nSelon l'article, que faut-il faire pour trouver un job d'été ?",
+      "image_url": null,
+      "options": {
+        "A": "Exposer l'ensemble de ses qualités professionnelles",
+        "B": "Faire la preuve de son désir de travailler",
+        "C": "Parier avec enthousiasme de ses projets",
+        "D": "Parler des emplois qu'on a déjà occupés"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 18,
+      "question_text": "MATCH SÈTE - TOURS\nMercredi 12 novembre\n\n* Achat des billets aux points de vente habituels : 15 €.\n* Réduction pour les étudiants et les détenteurs de carte « Famille nombreuse » .\n* Vente aux guichets du stade, le soir même : 20 €.\nÀ quelle condition l'acheteur obtient-il un meilleur prix ?",
+      "image_url": null,
+      "options": {
+        "A": "En achetant les billets en avance",
+        "B": "En choisissant des places pour quatre matchs",
+        "C": "En prenant des billets pour un groupe",
+        "D": "En présentant une carte de club de sport"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 19,
+      "question_text": "LA NEO-RURALITÉ EST DEVENUE UN PHÉNOMÈNE DE SOCIÉTÉ\nCette dénomination date des années 70 : c'est « le retour à la terre ». Alors que la désertification des campagnes se poursuit, un mouvement de population inverse s'opère. Il concerne des personnes jeunes, sans enfant, portant les valeurs contestataires de mai 68. Issues de toutes les classes sociales, elles ne recherchent pas spécialement le confort. Elles veulent avant tout vivre une expérience, ce qui les différencie de la population locale et ne facilite leur intégration.\nQue veulent les néo-ruraux ?",
+      "image_url": null,
+      "options": {
+        "A": "Accéder à la propriété privée",
+        "B": "Avoir un mode de vie économique",
+        "C": "Participer à la vie associative",
+        "D": "Tenter une nouvelle aventure"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Elle a 27 ans et a trouvé sa vocation : restauratrice de meubles. Stéphanie reçoit, à ce titre, le prix du jeune artisan d'art : « La dotation va me permettre d'ouvrir mon atelier. J'ai déjà trouvé le lieu, dans un village entre Narbonne et Carcassonne. » Son compagnon y a créé une menuiserie. Stéphanie a déjà touché à tout au fil de sa formation, dont un BTS en alternance, obtenu dans son Auvergne natale. Nous lui souhaitons beaucoup de réussite !\nQuel projet cette personne prévoit-elle de réaliser ?",
+      "image_url": null,
+      "options": {
+        "A": "Démarrer une activité professionnelle",
+        "B": "Présenter son travail à un concours",
+        "C": "S'associer à un groupement d'artisans",
+        "D": "Suivre une formation complémentaire"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 21,
+      "question_text": "LE RIRE POUR SOULAGER LES ENFANTS À L'HÔPITAL\nLes « docteurs rêves » apportent joie et mieux-être aux enfants hospitalisés. Pour permettre aux petits malades d'oublier un instant leurs souffrances et de retrouver le sourire, de gentils « docteurs » viennent à leur rencontre. Vêtus d'une blouse blanche et d'un stéthoscope autour du cou, comme de véritables médecins, ils visitent les jeunes patients. Appelés les « docteurs rêves » , ce sont des artistes professionnels spécialement formés qui interviennent dans les hôpitaux pédiatriques, en synergie avec les équipes médicales. Grâce à eux, les enfants peuvent s'évader un moment du monde hospitalier.\nQuelle est la fonction des « docteurs rêves » ?",
+      "image_url": null,
+      "options": {
+        "A": "Mettre en place une autre thérapie",
+        "B": "Remplacer les anciens médecins",
+        "C": "Faire rêver les petits patients",
+        "D": "Guérir les enfants par le rêve"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 22,
+      "question_text": "AVANT DE POUVOIR ENTRER, IL FAUT JURER PAR ÉCRIT QUE L'ON S'ENGAGE À PARTICIPER À LA LUTTE CONTRE LE RÉCHAUFFEMENT DE LA PLANÈTE.\nBar Surya est devenue la première boîte de nuit écologique. Située à Londres, elle ne propose que des boissons biologiques et offre une entrée gratuite aux clients pouvant prouver qu'ils sont venus à pied, à vélo, en bus ou en métro. De plus, un système d'énergie recyclable utilise les mouvements des pieds des danseurs pour fournir une partie de l'électricité nécessaire. L'objectif affiché est de sensibiliser les jeunes au développement durable. Une bonne idée marketing qui devrait inspirer d'autres initiatives du même type...\nQu'est-ce qui fait l'originalité de cette discothèque ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle s'adresse exclusivement à une clientèle soucieuse des questions d'environnement",
+        "B": "Elle travaille à la réduction des accidents de la route dus à l'alcool",
+        "C": "Le coût du billet d'entrée varie en fonction de l'énergie produite par les danseurs.",
+        "D": "Les jeunes doivent consommer sur place les produits du commerce équitable"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 23,
+      "question_text": "La ville chinoise de Chongqing vient d'inaugurer des voies réservées aux « accros » du portable sur les trottoirs. Les piétons sont en effet nombreux à ne prêter aucune attention à leur entourage, au risque de provoquer des accidents. Un parcours, délimité par des lignes blanches peintes au sol, invite ceux qui ne quittent pas des yeux leur écran à l'emprunter. L'idée de ce marquage n'est pas d'encourager l'usage des portables, mais d'inciter chacun à réfléchir à la place qu'il leur accorde dans son quotidien et à faire attention aux autres.\nQuel est l'objectif de cette initiative concernant les portables ?",
+      "image_url": null,
+      "options": {
+        "A": "Faciliter leur utilisation dans l'ensemble de la commune",
+        "B": "Faire prendre conscience des excès liés à leur usage",
+        "C": "Instaurer de nouvelles règles de priorité de circulation",
+        "D": "Multiplier les espaces publicitaires le long des avenues"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Fixer des limites strictes à la pêche, c'est l'action que va mener l'Australie afin de protéger la vie aquatique. « Il est temps que la planète franchisse une nouvelle étape dans la protection des océans » a déclaré le ministre australien de l'environnement. La création d'un réseau de parcs naturels aura un impact sur le secteur de la pêche commerciale qui devrait recevoir 79,2 millions d'euros en contrepartie. La fondation australienne pour la protection de l'environnement a qualifié cette annonce d'historique » mais elle a souligné que plusieurs zones restaient menacées par l'exploitation humaine des ressources naturelles.\nQue projette le gouvernement australien ?",
+      "image_url": null,
+      "options": {
+        "A": "D'aménager des réserves restreignant la pêche",
+        "B": "D'encourager une politique mondiale de la pêche",
+        "C": "D'organiser des contrôles pour surveiller la pêche",
+        "D": "De créer des taxes sur les produits de la pêche"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 25,
+      "question_text": "L'education nationale française vient d'inscrire aux programmes scolaires une initiation à la programmation informatique, appelée « code » . Le but n'est pas de faire de tous les enfants des informaticiens mais il est clair que se limiter à être uniquement un utilisateur passif constituera, par la suite, un handicap professionnel. Le chantier est immense car il faut introduire cette nouvelle matière sans compter sur suffisamment de professeurs formés pour cela. En effet, la vitesse à laquelle les technologies numériques ont changé a été bien supérieure à celle de l'évolution de la formation des équipes pédagogiques.\nQu'apprend-on au sujet de l'enseignement du code à l'école ?",
+      "image_url": null,
+      "options": {
+        "A": "Les enfants ont des difficultés de concentration dans ce domaine",
+        "B": "Les équipements informatiques des écoles sont devenus obsolètes",
+        "C": "Les établissements doivent se doter d'une connexion illimitée",
+        "D": "Les professeurs avec les compétences nécessaires sont rares"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 26,
+      "question_text": "FUTUR MANAGER, SOYEZ GENTIL !\nDepuis les scandales liés aux traders, les grandes écoles ont été placées sur le banc des accusés : leur enseignement se limitait à un savoir technique, directement exploitable par les entreprises. Une myopie sociale et une absence d'esprit critique menaçaient les futurs managers du monde économique. Aujourd'hui, l'éthique est devenue à la mode dans toutes les grandes écoles de management. On n'y parle plus que de « social business » et de « développement durable » . Aux côtés des activités associatives traditionnelles, les actions humanitaires se sont multipliées, et de plus en plus d'étudiants s'y investissent chaque année. Désormais, un étudiant doit avoir donné du soutien scolaire en banlieue ou mis en place un projet de microcrédit en Afrique.\nD'après ce texte, Quelle est la nouvelle orientation des grandes écoles ?",
+      "image_url": null,
+      "options": {
+        "A": "Créer des partenaires avec le milieu associatif",
+        "B": "Former des jeunes défavorisés au management",
+        "C": "Intégrer des valeurs sociales et environnementales",
+        "D": "Préparer des techniciens aux dangers de la finance"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 27,
+      "question_text": "D'abord surpris par la naïveté du film, puis sceptique face aux clichés habituels et gentillets de ce genre de longs-métrages potaches, on se laisse progressivement porter par la réalisation décalée du cinéaste et par l'interprétation savoureuse de la distribution. S'il manque parfois de rythme et s'il a un peu vieilli, ce film n'en demeure pas moins réussi dans sa capacité à capter l'esprit bohème et bon enfant des échanges Erasmus ! Après, ce n'est bien sûr pas le chef-d'œuvre de l'année, mais il est tellement rare aujourd'hui de voir un film français proposer quelque chose d'assez original et drôle sans se départir d'une certaine simplicité et d'une réelle justesse qu'on ne peut que saluer le travail du réalisateur et de sa sympathique équipe.\nQuelle critique négative ce spectateur émet-il à propos de ce film ?",
+      "image_url": null,
+      "options": {
+        "A": "La réalisation de l'œuvre manque de maîtrise",
+        "B": "Le film tombe dans les stéréotypes du genre",
+        "C": "Le jeu des comédiens lui semble plutôt médiocre",
+        "D": "Le scénario du film est maladroitement construit"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 28,
+      "question_text": "L'institution scolaire devra sans cesse être défendue, ne serait-ce que parce que la « société civile » n'aura de cesse de vouloir assujettir l'école à ses demandes particulières. Il faut sans cesse rappeler, par exemple, que les règles de l'école ne sont pas celles de la maison. Car l'enfant n'y est plus seulement un enfant : il y devient un élève. À l'école, on ne se préoccupe plus uniquement de son confort et de son besoin d'affection ; on s'adresse d'abord à l'intelligence de l'élève. Le rapport maître-élève n'est d'ailleurs pas un rapport affectif : on ne demande pas à un professeur d'être sympathique, mais d'être exigeant et juste.\nQuelle est l'opinion de l'auteur ?",
+      "image_url": null,
+      "options": {
+        "A": "L'ambiance de l'école doit être calquée sur le modèle familial",
+        "B": "L'autorité du professeur doit-être récompensée par sa gentillesse",
+        "C": "L'épanouissement de l'enfant doit primer sur sa réussite",
+        "D": "L'impartialité doit être l'une des qualités principales d'un maître"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 29,
+      "question_text": "\"Pendant des millénaires, les chercheurs du monde entier ont jalousement gardé leurs données. Essentiellement parce qu'ils pensaient que le contrôle de l'information donnait le pouvoir\" déclare le conservateur en paléontologie au musée d'Histoire naturelle de Londres. Les mentalités ont changé depuis quelques années à partir du moment où les savants ont pris conscience des bénéfices du travail collaboratif et du partage de l'information. Cependant, vouloir échanger entre chercheurs et parvenir à le faire correctement sont deux choses très différentes, c'est ce que constatent les invités d'une conférence internationale sur la biodiversité qui se tient dans la capitale britannique.\nQue souhaitent actuellement les chercheurs ?",
+      "image_url": null,
+      "options": {
+        "A": "Mettre en commun les données",
+        "B": "Multiplier les colloques internationaux",
+        "C": "Protéger les résultats de leurs études",
+        "D": "Vulgariser l'information scientifique"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Trouver un logement dans une ville étudiante est un parcours du combattant pour un grand nombre d'inscrits dans l'enseignement supérieur. La barrière est parfois infranchissable. Non seulement les loyers sont élevés mais la sélection des candidats par les propriétaires est très dure, souvent basée sur le niveau de revenus des garants. Pour lever ce frein, la caution locative étudiante (CLE) vient d'être généralisée à l'ensemble du territoire national après avoir été expérimentée dans quatre régions pendant un an. Avec ce dispositif, c'est l'État qui se porte garant du versement des loyers des étudiants en cas de non-paiement.\nQuel est le principal obstacle à l'accès au logement des étudiants selon cette analyse ?",
+      "image_url": null,
+      "options": {
+        "A": "La méfiance des propriétaires",
+        "B": "La rareté dans offres de logements",
+        "C": "L'absence de l'engagement de l'État",
+        "D": "Le montant de la caution exigée"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 31,
+      "question_text": "L'opération « Voile à l'école » permet chaque année à des centaines d'enfants d'apprendre à faire du bateau pendant l'école. Au départ, la voile fait peur. Pour rassurer les élèves débutants, les leçons sont très progressives. Les enseignants reçoivent des cahiers avec des explications et des informations techniques. Ils peuvent ainsi développer en classe un programme de prévention pour identifier et éviter les dangers.\nQuel est le but de l'opération « voile à l'école » ?",
+      "image_url": null,
+      "options": {
+        "A": "Expérimenter une nouvelle pédagogie par le sport",
+        "B": "Former les maitres à la pratique du sport sur l'eau",
+        "C": "Permettre aux jeunes de découvrir un sport difficile",
+        "D": "Réduire les risques en éducation physique et sportive"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Christian Hincker, dessinateur reconnu, né en 1967 à Strasbourg, est devenu « Blutch » très tôt — et pas seulement parce que, dans la cour de récréation, il ressemblait trait pour trait au caporal du même nom, l'un des héros de la célèbre bande dessinée Les Tuniques Bleues. C'est aussi grâce au dessin que « le petit Christian » se protégeait : « Je me coupais du monde, ça m'arrangeait bien car je fuyais le sport ; j'avais la terreur de devenir un souffre-douleur. Le dessin m'a donné une stature au sein de la classe et m'a aidé à survivre... ». Doué, il puise dans ses lectures d'enfant de quoi développer son don : « J'étais tellement emballé par les BD que je lisais que j'essayais de prolonger le plaisir en reproduisant les ambiances de Tartine, Picsou ou Lucky Luke. »\nComment s'explique l'engouement de Christian Hincker pour le dessin ?",
+      "image_url": null,
+      "options": {
+        "A": "Il dessinait sans relâche",
+        "B": "Il se réfugiait dans le dessin pour échapper à ses camarades",
+        "C": "Il vendait ses dessins pour se faire de l'argent de poche",
+        "D": "Il voulait ressembler à un personnage de bande dessinée"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 33,
+      "question_text": "C'est un joli coup de peinture ... avant fermeture !\nLe vieil hôpital psychiatrique du Mans, construit en 1828 et classé aux Monuments historiques depuis 2004, a vu l'arrivée de curieuses troupes. Destiné à la destruction et à la rénovation, le bâtiment a été investi par des artistes. L'occasion était idéale pour le collectif associatif « Espace provisoire » d'envahir les salles et de leur offrir une seconde vie. Plus de 1000 m² ont ainsi été occupés par une soixantaine d'artistes : musiciens, peintres, sculpteurs, photographes... tous prêts à accueillir des visiteurs et des curieux. L'objectif, non avoué, est de démontrer que la culture a sa place partout.\nQue cherche à faire le collectif « Espace provisoire » ?",
+      "image_url": null,
+      "options": {
+        "A": "Convertir les lieux en maison de culture",
+        "B": "Diffuser l'art dans des endroits inattendus",
+        "C": "Ouvrir un centre de formation artistique",
+        "D": "Rénover les anciens locaux en les décorant"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 34,
+      "question_text": "« LE FAIT DU ROI »\nC'est l'histoire d'un homme qui prend l'identité d'un autre, mort, en se glissant dans sa peau, dans sa vie, dans sa maison... Rien ne sert de raconter l'intrigue de ce roman, tant elle est simple et sans surprise. Cependant, l'écriture de l'auteur reste toujours aussi piquante et agréable à lire. Quant au héros principal, il est dépeint avec une certaine profondeur.\nSur quel point porte la critique négative faite à ce livre ?",
+      "image_url": null,
+      "options": {
+        "A": "La description du personnage",
+        "B": "La longueur du texte",
+        "C": "La qualité de l'écriture",
+        "D": "Le déroulement des évènements"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 35,
+      "question_text": "L'ambition de cet auteur :\nChanger l'art d'écrire, rien de moins. Mais cela est dit sans emphase, d'un ton dubitatif, presque fataliste : « Changer l'art d'écrire, chaque écrivain le fait à sa manière. Je voudrais le faire de façon absolue, radicale, en abolissant totalement les histoires, l'intrigue, bien qu'il y ait toujours, en fait, des sortes de micro-narrations dans mes livres. J'ai l'idée qu'il est encore trop tôt pour savoir ce que j'ai apporté ou non. Cela dit, lorsque vous écrivez, vous êtes tellement occupé à essayer de résoudre les problèmes techniques qui se posent à chaque instant que vous n'avez pas le temps d'avoir beaucoup d'idées générales. »\nComment cet auteur envisage-t-il de réaliser son ambition ?",
+      "image_url": null,
+      "options": {
+        "A": "En abandonnant les codes traditionnels du roman",
+        "B": "En cherchant des sources d'inspiration inédite",
+        "C": "En proposant de nouveaux concepts universels",
+        "D": "En se jouant des difficultés liées à l'écriture"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Dans leur nouvelle collection, les éditions Nil invitent des auteurs à se livrer à un exercice épistolaire intime en écrivant une lettre pour dire l'indicible. Le modèle est celle que Kafka rédigea à l'intention de son père et qu'il préféra ranger dans un tiroir, tant l'accusation portée était peu amène. Avec L'autre fille, missive adressée à sa sœur aînée, morte avant sa naissance, Annie Ernaux inaugure brillamment le concept, fidèle à son écriture tranchante et analytique. Rejetant le terme d'autofiction, l'écrivaine se dit fascinée par la réalité, partant à la recherche d'une vérité sur une mort que ses parents lui ont toujours cachée. En demandant à des auteurs de se libérer d'un vieux tourment, la collection souhaite réhabiliter un genre littéraire oublié.\nÀ quel résultat la participation à cette collection conduit-elle Annie Ernaux ?",
+      "image_url": null,
+      "options": {
+        "A": "À s'acquitter d'un engagement moral",
+        "B": "À s'affranchir d'une histoire ancienne",
+        "C": "À se défaire d'un sentiment de culpabilité",
+        "D": "À se justifier d'une action peu glorieuse"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Une scolarisation précoce favorise une meilleure adaptation à l'univers scolaire et peut donc constituer un gage de réussite scolaire ultérieure. « La scolarisation avant 3 ans, écrit Agnès Florin (professeure de psychologie), trouve des justifications dans les résultats de plusieurs recherches, au moins pour les enfants issus de milieux défavorisés et sur certains aspects de leur développement cognitif et langagier. »\nPar ailleurs, l'entrée précoce à l'école permet d'éviter l'apparition de troubles ou de perturbations, jouant ainsi un rôle préventif. En effet, de nombreux exemples montrent que l'entrée à l'école a permis de détecter certains problèmes psychologiques ou physiologiques chez de jeunes enfants.\nSelon l'auteur, que permet la scolarité précoce des enfants ?",
+      "image_url": null,
+      "options": {
+        "A": "Développer leurs capacités de socialisation",
+        "B": "Diagnostiquer d'éventuels déséquilibres",
+        "C": "Faciliter l'apprentissage d'une seconde langue",
+        "D": "Lutter contre les inégalités sociales"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Des voyages aux loisirs, en passant par les voitures, il n'est plus question de rater la bonne affaire. C'est pourquoi les fins de séries, les promotions et les soldes n'ont jamais été aussi populaires. On achète surtout des vêtements, jusqu'à 14 articles pour un montant moyen de 186 euros, même si l'on doit dépenser moins le reste de l'année. Le gouvernement l'a bien compris : il vient d'octroyer deux semaines supplémentaires de soldes, à la convenance des commerçants, en dehors des mois de juillet et janvier, afin de redonner un peu de tonus aux ventes.\nQuel est le thème de cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "La baisse des achats en boutique",
+        "B": "Le développement du commerce en ligne",
+        "C": "Les stratégies des consommateurs",
+        "D": "Un nouveau concept de magasin"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Le trois-mâts d'exploration La Boudeuse va reprendre le large pour une nouvelle mission à caractère scientifique.\nLe voilier mettra le cap en septembre prochain sur l'Amérique du Sud et ses grands fleuves. Il se consacrera « aux études scientifiques et humaines concernant la biosphère, le réchauffement climatique et le développement durable » , selon la « lettre de mission » adressée à son commandant, signée par le ministre d'État aux Transports et à l'Écologie. Cette « lettre de mission » de la République assigne à l'équipage un audacieux programme de protection de l'environnement.\nSelon l'article, que va faire l'équipage du voilier La Boudeuse ?",
+      "image_url": null,
+      "options": {
+        "A": "Former des scientifiques à la prévention des risques écologiques",
+        "B": "Innover dans les moyens de lutter contre les pollutions fluviales",
+        "C": "Observer l'écosystème dans une région de grands fleuves",
+        "D": "Représenter le gouvernement français lors d'une rencontre"
+      },
+      "correct_answer": "C"
+    }
+  ]
+}

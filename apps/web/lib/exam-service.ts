@@ -1,4 +1,8 @@
 import { supabase } from './supabase'
+import {
+  checkAnswer as evaluateAnswer,
+  normalizeCorrectAnswers,
+} from './answer-checker'
 
 export type ModuleType = 'english1' | 'english2' | 'math1' | 'math2'
 
@@ -25,7 +29,7 @@ export interface Question {
   exam_id: string
   module_type: ModuleType
   question_number: number
-  question_type: 'multiple_choice' | 'grid_in' | 'essay'
+  question_type: 'multiple_choice' | 'multiple_select' | 'grid_in' | 'essay'
   difficulty_level: 'easy' | 'medium' | 'hard'
   question_text: string
   question_html?: string | null // HTML version of question content
@@ -597,7 +601,7 @@ export class ExamService {
 
   // Check if answer is correct
   static checkAnswer(question: Question, userAnswer: string): boolean {
-    if (!userAnswer || !question.correct_answer) return false
+    if (!userAnswer) return false
 
     if (question.question_type === 'grid_in') {
       // Import the grid-in validator
@@ -606,10 +610,20 @@ export class ExamService {
       return result.isCorrect
     }
 
-    // For multiple choice, direct comparison
-    return (
-      String(question.correct_answer).trim().toLowerCase() ===
-      String(userAnswer).trim().toLowerCase()
+    const rawCorrectAnswers =
+      question.correct_answers?.length
+        ? question.correct_answers
+        : question.correct_answer
+
+    const normalizedCorrectAnswers = normalizeCorrectAnswers(rawCorrectAnswers)
+
+    if (!normalizedCorrectAnswers.length) return false
+
+    return evaluateAnswer(
+      userAnswer,
+      normalizedCorrectAnswers.length === 1
+        ? normalizedCorrectAnswers[0]
+        : normalizedCorrectAnswers
     )
   }
 

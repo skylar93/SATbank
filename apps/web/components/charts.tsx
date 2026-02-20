@@ -301,6 +301,10 @@ interface WeeklyActivityProps {
 
 export function WeeklyActivityChart({ data }: WeeklyActivityProps) {
   const maxValue = Math.max(...data.studyTime, ...data.practiceTests)
+  const formatValue = (value: number) =>
+    Number.isInteger(value) ? value : value.toFixed(1)
+  const totalStudy = data.studyTime.reduce((a, b) => a + b, 0)
+  const totalPractice = data.practiceTests.reduce((a, b) => a + b, 0)
 
   return (
     <div className="space-y-6">
@@ -335,7 +339,7 @@ export function WeeklyActivityChart({ data }: WeeklyActivityProps) {
                 />
               </div>
               <div className="w-12 text-sm font-medium text-gray-900 text-right">
-                {data.studyTime[index]}h
+                {formatValue(data.studyTime[index])}h
               </div>
             </div>
 
@@ -350,7 +354,7 @@ export function WeeklyActivityChart({ data }: WeeklyActivityProps) {
                 />
               </div>
               <div className="w-12 text-sm font-medium text-gray-900 text-right">
-                {data.practiceTests[index]}
+                {formatValue(data.practiceTests[index])}
               </div>
             </div>
           </div>
@@ -362,13 +366,13 @@ export function WeeklyActivityChart({ data }: WeeklyActivityProps) {
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-900">
-              {data.studyTime.reduce((a, b) => a + b, 0)}h
+              {formatValue(totalStudy)}h
             </div>
             <div className="text-sm text-gray-600">Total Study Time</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-900">
-              {data.practiceTests.reduce((a, b) => a + b, 0)}
+              {formatValue(totalPractice)}
             </div>
             <div className="text-sm text-gray-600">Total Tests</div>
           </div>

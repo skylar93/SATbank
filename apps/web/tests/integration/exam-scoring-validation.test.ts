@@ -48,36 +48,41 @@ describe('Comprehensive Exam Scoring Validation', () => {
   })
 
   describe('Full Exam Flow Validation', () => {
-    it.each(testCases)(
-      'should validate $examTitle scoring system',
-      async ({ examId, examTitle }) => {
-        const result = await validateExamScoring(examId, examTitle)
-
-        console.log(`\n📊 VALIDATION REPORT: ${examTitle}`)
-        console.log(`📝 Total Questions: ${result.totalQuestions}`)
-        console.log(
-          `🔢 Multiple Answer Questions: ${result.questionsWithMultipleAnswers}`
-        )
-        console.log(
-          `✅ Scoring Validation: ${result.scoringValidation.passed ? 'PASSED' : 'FAILED'}`
-        )
-        console.log(
-          `✅ Answer Validation: ${result.answerValidation.passed ? 'PASSED' : 'FAILED'}`
-        )
-
-        if (!result.scoringValidation.passed) {
-          console.log(`❌ Scoring Issues:`, result.scoringValidation.issues)
+    it(
+      'should validate scoring across sampled exams',
+      async () => {
+        if (!testCases.length) {
+          throw new Error('No exams available for validation. Ensure seed data is present.')
         }
 
-        if (!result.answerValidation.passed) {
-          console.log(`❌ Answer Issues:`, result.answerValidation.issues)
-        }
+        for (const { examId, examTitle } of testCases) {
+          const result = await validateExamScoring(examId, examTitle)
 
-        // Test should pass if no critical issues found
-        expect(result.scoringValidation.passed).toBe(true)
-        expect(result.answerValidation.passed).toBe(true)
+          console.log(`\n📊 VALIDATION REPORT: ${examTitle}`)
+          console.log(`📝 Total Questions: ${result.totalQuestions}`)
+          console.log(
+            `🔢 Multiple Answer Questions: ${result.questionsWithMultipleAnswers}`
+          )
+          console.log(
+            `✅ Scoring Validation: ${result.scoringValidation.passed ? 'PASSED' : 'FAILED'}`
+          )
+          console.log(
+            `✅ Answer Validation: ${result.answerValidation.passed ? 'PASSED' : 'FAILED'}`
+          )
+
+          if (!result.scoringValidation.passed) {
+            console.log(`❌ Scoring Issues:`, result.scoringValidation.issues)
+          }
+
+          if (!result.answerValidation.passed) {
+            console.log(`❌ Answer Issues:`, result.answerValidation.issues)
+          }
+
+          expect(result.scoringValidation.passed).toBe(true)
+          expect(result.answerValidation.passed).toBe(true)
+        }
       },
-      30000
+      300000
     )
   })
 

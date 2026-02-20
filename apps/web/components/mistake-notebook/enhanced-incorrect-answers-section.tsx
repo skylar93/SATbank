@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { useAuth } from '../../contexts/auth-context'
 import { supabase } from '../../lib/supabase'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { renderHtmlContent } from '../exam/question-display'
+import { ChevronDown, ChevronUp, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { isEmptyHtml } from '../../lib/content-converter'
 import { ContentRenderer } from '../content-renderer'
 
@@ -20,6 +20,7 @@ interface Question {
   options: any
   options_html?: any
   correct_answer: string
+  correct_answers?: any
   explanation: string
   explanation_html?: string | null
   topic_tags: string[]
@@ -32,7 +33,9 @@ interface Question {
     user_answer: string
     answered_at: string
     attempt_id: string
+    exam_title?: string
   }>
+  examTitles?: string[]
 }
 
 interface EnhancedIncorrectAnswersSectionProps {
@@ -55,36 +58,21 @@ export function EnhancedIncorrectAnswersSection({
   const [masteryFilter, setMasteryFilter] = useState<
     'all' | 'unmastered' | 'mastered'
   >('all')
+  const [examFilter, setExamFilter] = useState<string>('all')
   const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null)
   const [selectedQuestions, setSelectedQuestions] = useState<string[]>([])
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'easy':
-        return 'bg-green-100 text-green-800'
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'hard':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const getModuleColor = (module: string) => {
-    switch (module) {
-      case 'english1':
-        return 'bg-blue-100 text-blue-800'
-      case 'english2':
-        return 'bg-indigo-100 text-indigo-800'
-      case 'math1':
-        return 'bg-purple-100 text-purple-800'
-      case 'math2':
-        return 'bg-pink-100 text-pink-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
+  const examOptions = useMemo(() => {
+    const exams = new Set<string>()
+    questions.forEach((q) => {
+      q.examTitles?.forEach((title) => {
+        if (title) {
+          exams.add(title)
+        }
+      })
+    })
+    return Array.from(exams).sort((a, b) => a.localeCompare(b))
+  }, [questions])
 
   const formatModuleName = (module: string) => {
     switch (module) {
@@ -104,21 +92,44 @@ export function EnhancedIncorrectAnswersSection({
   const formatQuestionType = (type: string) => {
     switch (type) {
       case 'multiple_choice':
-        return 'Multiple Choice'
+        return 'MC'
       case 'grid_in':
-        return 'Grid-in'
+        return 'GI'
       case 'essay':
         return 'Essay'
       default:
-        return type
+        return type ? type.toUpperCase() : ''
     }
+  }
+
+  const renderMasteryStatus = (status?: 'unmastered' | 'mastered') => {
+    if (status === 'mastered') {
+      return (
+        <span className="inline-flex items-center justify-center rounded-full bg-emerald-50 p-1 text-emerald-600">
+          <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+          <span className="sr-only">Mastered</span>
+        </span>
+      )
+    }
+
+    return (
+      <span className="inline-flex items-center justify-center rounded-full bg-orange-50 p-1 text-orange-500">
+        <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
+        <span className="sr-only">Needs review</span>
+      </span>
+    )
   }
 
   const getGroupedQuestions = () => {
     // First, apply mastery status filter
     const filteredQuestions = questions.filter((q) => {
-      if (masteryFilter === 'all') return true
-      return q.masteryStatus === masteryFilter
+      const matchesMastery =
+        masteryFilter === 'all' ? true : q.masteryStatus === masteryFilter
+      const matchesExam =
+        examFilter === 'all'
+          ? true
+          : q.examTitles?.includes(examFilter) ?? false
+      return matchesMastery && matchesExam
     })
 
     const grouped: { [key: string]: Question[] } = {}
@@ -191,8 +202,13 @@ export function EnhancedIncorrectAnswersSection({
 
   const handleSelectAll = () => {
     const filteredQuestions = questions.filter((q) => {
-      if (masteryFilter === 'all') return true
-      return q.masteryStatus === masteryFilter
+      const matchesMastery =
+        masteryFilter === 'all' ? true : q.masteryStatus === masteryFilter
+      const matchesExam =
+        examFilter === 'all'
+          ? true
+          : q.examTitles?.includes(examFilter) ?? false
+      return matchesMastery && matchesExam
     })
 
     const filteredQuestionIds = filteredQuestions.map((q) => q.id)
@@ -241,10 +257,11 @@ export function EnhancedIncorrectAnswersSection({
         questions: selectedQuestions,
         settings: {
           shuffleQuestions: false,
-          showExplanations: false, // Disabled to match exam behavior
+          showExplanations: true,
           timeLimit: 0,
           isMistakeReview: true,
         },
+        isMistakeReview: true,
       }
 
       localStorage.setItem(
@@ -289,10 +306,11 @@ export function EnhancedIncorrectAnswersSection({
         questions: questions.map((q) => q.id),
         settings: {
           shuffleQuestions: true,
-          showExplanations: false, // Disabled to match exam behavior
+          showExplanations: true,
           timeLimit: 0,
           isMistakeReview: true,
         },
+        isMistakeReview: true,
       }
 
       localStorage.setItem(
@@ -348,8 +366,13 @@ export function EnhancedIncorrectAnswersSection({
 
   const groupedQuestions = getGroupedQuestions()
   const filteredQuestions = questions.filter((q) => {
-    if (masteryFilter === 'all') return true
-    return q.masteryStatus === masteryFilter
+    const matchesMastery =
+      masteryFilter === 'all' ? true : q.masteryStatus === masteryFilter
+    const matchesExam =
+      examFilter === 'all'
+        ? true
+        : q.examTitles?.includes(examFilter) ?? false
+    return matchesMastery && matchesExam
   })
 
   return (
@@ -394,6 +417,7 @@ export function EnhancedIncorrectAnswersSection({
               Review and practice questions you've answered incorrectly
               {masteryFilter !== 'all' &&
                 ` • Showing ${masteryFilter} questions only`}
+              {examFilter !== 'all' && ` • Exam: ${examFilter}`}
             </p>
           </div>
           <div className="flex items-center space-x-3">
@@ -455,8 +479,29 @@ export function EnhancedIncorrectAnswersSection({
             </div>
           </div>
 
+          {/* Exam Filter */}
+          {examOptions.length > 0 && (
+            <div className="mb-4">
+              <span className="text-sm font-medium text-gray-700 mr-4">
+                Exam:
+              </span>
+              <select
+                value={examFilter}
+                onChange={(event) => setExamFilter(event.target.value)}
+                className="py-2 px-4 rounded-xl border border-purple-200 bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+              >
+                <option value="all">All Exams</option>
+                {examOptions.map((exam) => (
+                  <option key={exam} value={exam}>
+                    {exam}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Group By Controls */}
-          <div>
+        <div>
             <span className="text-sm font-medium text-gray-700 mr-4">
               Group by:
             </span>
@@ -497,400 +542,267 @@ export function EnhancedIncorrectAnswersSection({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 p-6">
-            {groupQuestions.map((question) => (
-              <div
-                key={question.id}
-                className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-red-200 hover:shadow-xl hover:border-purple-300 transition-all duration-200 hover:-translate-y-0.5"
-              >
-                <div className="flex items-start justify-between p-6 pb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
+            {groupQuestions.map((question) => {
+              const isSelected = selectedQuestions.includes(question.id)
+              const isExpanded = expandedQuestion === question.id
+              const attempts = question.incorrectAttempts || []
+              const displayedAttempts = attempts.slice(0, 3)
+              const remainingAttempts =
+                attempts.length > displayedAttempts.length
+                  ? attempts.length - displayedAttempts.length
+                  : 0
+
+              const statusAccent =
+                question.masteryStatus === 'mastered'
+                  ? 'border-t-4 border-t-emerald-300'
+                  : 'border-t-4 border-t-amber-300'
+              const attemptCount = question.incorrectAttempts?.length ?? 0
+              const attemptLabel =
+                attemptCount === 1
+                  ? '1 incorrect attempt'
+                  : `${attemptCount} incorrect attempts`
+              const firstMistakeText = question.firstMistakenAt
+                ? new Date(question.firstMistakenAt).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })
+                : '—'
+              const topicTags = question.topic_tags || []
+              const topicPreview = topicTags.slice(0, 2)
+              const extraTopicCount =
+                topicTags.length > topicPreview.length
+                  ? topicTags.length - topicPreview.length
+                  : 0
+              const examTitles =
+                (question.examTitles?.filter(
+                  (title): title is string => Boolean(title)
+                ) as string[]) || []
+              const examPreview = examTitles.slice(0, 2)
+              const extraExamCount =
+                examTitles.length > examPreview.length
+                  ? examTitles.length - examPreview.length
+                  : 0
+
+              return (
+                <article
+                  key={question.id}
+                  className={`group flex h-full rounded-2xl border border-purple-100 bg-white/95 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-purple-200 hover:shadow-lg ${statusAccent}`}
+                >
+                  <div className="flex h-full w-full">
+                    <aside className="flex w-12 flex-col items-center gap-3 border-r border-purple-50 bg-purple-50/40 py-4">
                       <input
                         type="checkbox"
-                        checked={selectedQuestions.includes(question.id)}
+                        aria-label={`Select question ${question.question_number ?? ''}`}
+                        checked={isSelected}
                         onChange={() => handleQuestionSelect(question.id)}
-                        className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                        className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                       />
-                    </div>
-                    <div className="flex-shrink-0">
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium transition-all duration-300 ${
-                          question.masteryStatus === 'mastered'
-                            ? 'bg-purple-500 shadow-purple-200 shadow-lg'
-                            : 'bg-red-500 shadow-red-200 shadow-lg'
-                        }`}
-                      >
-                        {question.masteryStatus === 'mastered' ? '✓' : '✗'}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        Question {question.question_number} -{' '}
-                        {formatModuleName(question.module_type)}
-                      </div>
-                      <div className="flex items-center gap-1.5 mt-2 flex-nowrap">
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border flex-shrink-0 ${
-                            question.difficulty_level === 'hard'
-                              ? 'bg-rose-50 text-rose-700 border-rose-200'
-                              : question.difficulty_level === 'medium'
-                                ? 'bg-amber-50 text-amber-700 border-amber-200'
-                                : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          }`}
-                        >
-                          {question.difficulty_level}
-                        </span>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 flex-shrink-0">
-                          {formatQuestionType(question.question_type)}
-                        </span>
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border flex-shrink-0 ${
-                            question.masteryStatus === 'mastered'
-                              ? 'bg-violet-50 text-violet-700 border-violet-200'
-                              : 'bg-orange-50 text-orange-700 border-orange-200'
-                          }`}
-                        >
-                          {question.masteryStatus === 'mastered'
-                            ? '✓ Mastered'
-                            : '⚠ Practice'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                      {renderMasteryStatus(question.masteryStatus)}
+                    </aside>
 
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => toggleQuestion(question.id)}
-                      className="text-purple-600 hover:text-purple-800 text-sm font-medium px-3 py-1 rounded-lg hover:bg-purple-50 transition-colors opacity-0 group-hover:opacity-100"
-                    >
-                      {expandedQuestion === question.id ? 'Hide' : 'Review'}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Question Preview */}
-                <div className="px-6 pb-4">
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    {(() => {
-                      // HTML-first rendering for question preview
-                      let content = ''
-                      if (
-                        question.question_html &&
-                        !isEmptyHtml(question.question_html)
-                      ) {
-                        content = question.question_html
-                        // For preview, show plain text to avoid HTML complexity
-                        const cleanText = content
-                          .replace(/<[^>]*>/g, ' ')
-                          .replace(/\s+/g, ' ')
-                          .trim()
-                        return cleanText.length > 120
-                          ? `${cleanText.substring(0, 120)}...`
-                          : cleanText
-                      } else {
-                        content =
-                          question.question_text || 'No preview available'
-                        return content.length > 120
-                          ? `${content.substring(0, 120)}...`
-                          : content
-                      }
-                    })()}
-                  </p>
-                </div>
-
-                {/* Topics and Footer */}
-                <div className="px-6 pb-6">
-                  {question.topic_tags && question.topic_tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {question.topic_tags
-                        .slice(0, 3)
-                        .map((tag: string, index) => (
-                          <span
-                            key={index}
-                            className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-colors"
-                          >
-                            <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-1.5"></span>
-                            {tag}
-                          </span>
-                        ))}
-                      {question.topic_tags.length > 3 && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200">
-                          +{question.topic_tags.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>
-                      First mistake:{' '}
-                      {question.firstMistakenAt
-                        ? new Date(question.firstMistakenAt).toLocaleDateString(
-                            'en-US',
-                            {
-                              month: 'short',
-                              day: 'numeric',
-                            }
-                          )
-                        : 'Unknown'}
-                    </span>
-                    <span>
-                      {question.incorrectAttempts?.length || 1} incorrect
-                      attempt
-                      {(question.incorrectAttempts?.length || 1) !== 1
-                        ? 's'
-                        : ''}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Expanded Question Details */}
-                {expandedQuestion === question.id && (
-                  <div className="border-t border-purple-200 bg-purple-50/30 rounded-b-2xl mx-0">
-                    <div className="p-6">
-                      <div className="space-y-4">
-                        {/* Full Question */}
-                        <div>
-                          <h5 className="font-medium text-gray-900 mb-2">
-                            Question:
-                          </h5>
-                          <div className="text-gray-700">
-                            {(() => {
-                              // HTML-first rendering for full question
-                              if (
-                                question.question_html &&
-                                !isEmptyHtml(question.question_html)
-                              ) {
-                                // Check if content contains LaTeX math expressions
-                                if (
-                                  question.question_html.includes('data-math')
-                                ) {
-                                  return (
-                                    <ContentRenderer
-                                      htmlContent={question.question_html}
-                                    />
-                                  )
-                                } else {
-                                  return renderHtmlContent(
-                                    question.question_html
-                                  )
-                                }
-                              } else {
-                                return (
-                                  <div className="whitespace-pre-wrap">
-                                    {question.question_text}
-                                  </div>
-                                )
-                              }
-                            })()}
+                    <div className="flex flex-1 flex-col">
+                      <header className="flex items-start justify-between gap-4 border-b border-purple-50 px-5 py-4">
+                        <div className="space-y-1">
+                          <div className="text-sm font-semibold text-gray-900">
+                            {formatModuleName(question.module_type)} · Question{' '}
+                            {question.question_number ?? '—'} (
+                            {formatQuestionType(question.question_type)})
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            First mistake {firstMistakeText} • {attemptLabel}
                           </div>
                         </div>
 
-                        {/* Options and Correct Answer */}
-                        {question.question_type === 'multiple_choice' &&
-                          question.options && (
-                            <div>
-                              <h5 className="font-medium text-gray-900 mb-2">
-                                Options:
+                        <button
+                          type="button"
+                          onClick={() => toggleQuestion(question.id)}
+                          aria-label={
+                            isExpanded ? 'Hide question details' : 'View question details'
+                          }
+                          className="rounded-md border border-purple-200 p-2 text-purple-600 transition-colors hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:ring-offset-2"
+                        >
+                          {isExpanded ? (
+                            <ChevronUp className="h-4 w-4" aria-hidden="true" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                          )}
+                        </button>
+                      </header>
+
+                      <div className="flex flex-1 flex-col gap-4 px-5 py-4">
+                        <div className="rounded-lg border border-purple-100 bg-gray-50/70 p-3 text-sm leading-relaxed text-gray-700">
+                          {question.question_html &&
+                          !isEmptyHtml(question.question_html) ? (
+                            <ContentRenderer
+                              htmlContent={question.question_html}
+                              className="prose-sm text-gray-700 [&_*]:!font-normal line-clamp-4"
+                            />
+                          ) : (
+                            <p className="line-clamp-4">
+                              {(() => {
+                                const textPreview =
+                                  question.question_text?.trim() ||
+                                  'No preview available'
+                                return textPreview.length > 180
+                                  ? `${textPreview.substring(0, 180)}...`
+                                  : textPreview
+                              })()}
+                            </p>
+                          )}
+                        </div>
+
+                        {examPreview.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-blue-600">
+                            <span className="font-medium text-blue-700">Exam</span>
+                            {examPreview.map((title) => (
+                              <span
+                                key={title}
+                                className="rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-blue-700"
+                              >
+                                {title}
+                              </span>
+                            ))}
+                            {extraExamCount > 0 && (
+                              <span className="text-blue-500">
+                                +{extraExamCount} more
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        {topicPreview.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-indigo-700">
+                            <span className="font-medium text-indigo-700">Topics</span>
+                            {topicPreview.map((tag) => (
+                              <span
+                                key={tag}
+                                className="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                            {extraTopicCount > 0 && (
+                              <span className="text-indigo-500">
+                                +{extraTopicCount} more
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {isExpanded && (
+                        <div className="border-t border-purple-100 bg-purple-50/60 px-5 py-4">
+                          <div className="space-y-4">
+                            <section>
+                              <h5 className="text-sm font-semibold text-gray-900">
+                                Question passage
                               </h5>
-                              <div className="space-y-1">
-                                {Object.entries(question.options).map(
-                                  ([key, value]) => (
-                                    <div
-                                      key={key}
-                                      className={`p-2 rounded-lg ${
-                                        key === question.correct_answer
-                                          ? 'bg-purple-100 border border-purple-300'
-                                          : question.incorrectAttempts?.some(
-                                                (att) => att.user_answer === key
-                                              )
-                                            ? 'bg-red-100 border border-red-300'
-                                            : 'bg-gray-50'
-                                      }`}
-                                    >
-                                      <span className="font-medium">
-                                        {key}.
-                                      </span>{' '}
-                                      <span className="text-gray-900">
-                                        {(() => {
-                                          // Check if options_html exists and has this key
-                                          if (
-                                            question.options_html &&
-                                            question.options_html[key] &&
-                                            !isEmptyHtml(
-                                              question.options_html[key]
-                                            )
-                                          ) {
-                                            // If HTML content contains math expressions, render properly
-                                            if (
-                                              question.options_html[
-                                                key
-                                              ].includes('data-math')
-                                            ) {
-                                              return (
-                                                <ContentRenderer
-                                                  htmlContent={
-                                                    question.options_html[key]
-                                                  }
-                                                />
-                                              )
-                                            } else {
-                                              return (
-                                                <span
-                                                  dangerouslySetInnerHTML={{
-                                                    __html:
-                                                      question.options_html[
-                                                        key
-                                                      ],
-                                                  }}
-                                                />
-                                              )
-                                            }
-                                          } else {
-                                            // Fallback to regular text option
-                                            return value as string
-                                          }
-                                        })()}
-                                      </span>
-                                      {key === question.correct_answer && (
-                                        <span className="ml-2 text-purple-600 font-medium">
-                                          (Correct)
-                                        </span>
-                                      )}
-                                      {question.incorrectAttempts?.some(
-                                        (att) => att.user_answer === key
-                                      ) && (
-                                        <span className="ml-2 text-red-600 font-medium">
-                                          (Your Answer)
-                                        </span>
-                                      )}
-                                    </div>
-                                  )
+                              <div className="mt-2 max-h-64 overflow-y-auto rounded-lg border border-purple-100 bg-white p-3 text-sm leading-relaxed text-gray-700">
+                                {question.question_html &&
+                                !isEmptyHtml(question.question_html) ? (
+                                  <ContentRenderer
+                                    htmlContent={question.question_html}
+                                    className="prose-sm text-gray-700 [&_*]:!font-normal"
+                                  />
+                                ) : (
+                                  <p className="whitespace-pre-wrap">
+                                    {question.question_text?.trim() ||
+                                      'Question content not available.'}
+                                  </p>
                                 )}
                               </div>
-                            </div>
-                          )}
+                            </section>
 
-                        {/* Grid-in answer */}
-                        {question.question_type === 'grid_in' && (
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <h5 className="font-medium text-gray-900 mb-2">
-                                Correct Answer:
-                              </h5>
-                              <div className="p-2 rounded-lg bg-purple-100 border border-purple-300">
-                                <span className="font-medium text-purple-800">
-                                  {question.correct_answer}
-                                </span>
-                              </div>
-                            </div>
-                            <div>
-                              <h5 className="font-medium text-gray-900 mb-2">
-                                Your Answer:
-                              </h5>
-                              <div className="p-2 rounded-lg bg-red-100 border border-red-300">
-                                <span className="font-medium text-red-800">
-                                  {question.incorrectAttempts?.[0]
-                                    ?.user_answer || 'N/A'}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Explanation */}
-                        {(question.explanation ||
-                          (question.explanation_html &&
-                            !isEmptyHtml(question.explanation_html))) && (
-                          <div>
-                            <h5 className="font-medium text-gray-900 mb-2">
-                              Explanation:
-                            </h5>
-                            <div className="p-3 bg-purple-50 rounded-lg">
-                              <div className="text-gray-800">
-                                {(() => {
-                                  // HTML-first rendering for explanation
-                                  if (
-                                    question.explanation_html &&
-                                    !isEmptyHtml(question.explanation_html)
-                                  ) {
-                                    // Check if content contains LaTeX math expressions
-                                    if (
-                                      question.explanation_html.includes(
-                                        'data-math'
-                                      )
-                                    ) {
-                                      return (
-                                        <ContentRenderer
-                                          htmlContent={
-                                            question.explanation_html
-                                          }
-                                        />
-                                      )
-                                    } else {
-                                      return renderHtmlContent(
-                                        question.explanation_html
-                                      )
-                                    }
-                                  } else if (question.explanation) {
-                                    return (
-                                      <div className="whitespace-pre-wrap">
-                                        {question.explanation}
-                                      </div>
-                                    )
-                                  }
-                                  return null
-                                })()}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* All Incorrect Attempts */}
-                        {question.incorrectAttempts &&
-                          question.incorrectAttempts.length > 1 && (
-                            <div>
-                              <h5 className="font-medium text-gray-900 mb-2">
-                                All Incorrect Attempts:
-                              </h5>
-                              <div className="space-y-2">
-                                {question.incorrectAttempts.map(
-                                  (attempt, index) => (
+                            {displayedAttempts.length > 0 && (
+                              <section>
+                                <h5 className="text-sm font-semibold text-gray-900">
+                                  Recent incorrect attempts
+                                </h5>
+                                <div className="mt-2 space-y-2">
+                                  {displayedAttempts.map((attempt, index) => (
                                     <div
                                       key={attempt.id}
-                                      className="bg-red-50 border border-red-200 rounded p-2"
+                                      className="rounded-lg border border-purple-100 bg-white px-3 py-2 text-xs text-gray-600"
                                     >
-                                      <div className="flex justify-between items-center">
-                                        <span className="text-sm">
-                                          <span className="font-medium">
-                                            Answer:
-                                          </span>{' '}
-                                          {attempt.user_answer}
+                                      <div className="flex justify-between">
+                                        <span className="font-semibold text-gray-700">
+                                          Attempt #{index + 1}
                                         </span>
-                                        <span className="text-xs text-gray-500">
+                                        <span>
                                           {new Date(
                                             attempt.answered_at
                                           ).toLocaleDateString('en-US', {
                                             year: 'numeric',
                                             month: 'short',
                                             day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
                                           })}
                                         </span>
                                       </div>
+                                      <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+                                        <span>
+                                          Your answer:{' '}
+                                          <span className="font-semibold">
+                                            {attempt.user_answer}
+                                          </span>
+                                        </span>
+                                        <Link
+                                          href={`/student/results/${attempt.attempt_id}/review`}
+                                          className="text-purple-600 hover:text-purple-800"
+                                        >
+                                          View attempt →
+                                        </Link>
+                                      </div>
+                                      {attempt.exam_title && (
+                                        <div className="mt-1 inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 font-medium text-blue-600">
+                                          <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+                                          {attempt.exam_title}
+                                        </div>
+                                      )}
                                     </div>
-                                  )
-                                )}
+                                  ))}
+                                  {remainingAttempts > 0 && (
+                                    <div className="rounded-lg border border-dashed border-purple-200 px-3 py-2 text-xs text-purple-700">
+                                      +{remainingAttempts} more attempts logged
+                                    </div>
+                                  )}
+                                </div>
+                              </section>
+                            )}
+
+                            <section className="rounded-xl border border-purple-100 bg-purple-100/60 px-4 py-3 text-sm text-purple-700">
+                              <p>
+                                Ready to practice this question again? Use the actions
+                                below to jump into a focused session.
+                              </p>
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => handleQuestionSelect(question.id)}
+                                  className="rounded-md border border-purple-200 px-3 py-2 text-sm font-medium text-purple-600 transition-colors hover:bg-purple-50"
+                                >
+                                  {isSelected
+                                    ? 'Remove from selection'
+                                    : 'Select for practice'}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    router.push(`/student/problem-bank/${question.id}`)
+                                  }
+                                  className="rounded-md bg-purple-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700"
+                                >
+                                  Open full question
+                                </button>
                               </div>
-                            </div>
-                          )}
-                      </div>
+                            </section>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                )}
-              </div>
-            ))}
+                </article>
+              )
+            })}
           </div>
         </div>
       ))}

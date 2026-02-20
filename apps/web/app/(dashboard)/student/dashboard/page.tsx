@@ -3,10 +3,59 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../../../contexts/auth-context'
 import DashboardClient from '../../../../components/dashboard/DashboardClient'
-import { ExamService, type TestAttempt } from '../../../../lib/exam-service'
+import {
+  ExamService,
+  type TestAttempt,
+} from '../../../../lib/exam-service'
 import { AnalyticsService } from '../../../../lib/analytics-service'
 import { WeeklyActivityService } from '../../../../lib/weekly-activity-service'
 import { supabase } from '../../../../lib/supabase'
+import {
+  getTodayReviewCount,
+  getVocabSetsWithReviewsDue,
+} from '../../../../lib/vocab-service'
+
+interface AssignmentTask {
+  assignmentId: string
+  examId: string
+  examTitle: string
+  status: 'not_started' | 'in_progress' | 'completed'
+  assignedAt: string | null
+  dueDate: string | null
+  lastActivityAt: string | null
+  isOverdue: boolean
+  isDueSoon: boolean
+  progressPercent: number
+  totalQuestions: number | null
+  estimatedMinutes: number | null
+}
+
+interface MistakeSummary {
+  total: number
+  unmastered: number
+  mastered: number
+  lastReviewedAt: string | null
+  countsByExam: Array<{
+    examId: string | null
+    examTitle: string
+    count: number
+  }>
+  countsByModule: Array<{
+    module: string
+    count: number
+  }>
+}
+
+interface VocabSummary {
+  dueToday: number
+  totalWords: number
+  nextReviewAt: string | null
+  reviewSets: Array<{
+    id: number | string
+    title: string
+    count: number
+  }>
+}
 
 interface DashboardData {
   overallStats: {
@@ -35,7 +84,15 @@ interface DashboardData {
     writing: number
     math: number
   }
+  assignments: AssignmentTask[]
+  mistakeSummary: MistakeSummary
+  vocabSummary: VocabSummary
 }
+
+type DashboardMetrics = Omit<
+  DashboardData,
+  'assignments' | 'mistakeSummary' | 'vocabSummary'
+>
 
 // Loading component for dashboard data
 function DashboardLoading() {
@@ -53,8 +110,10 @@ function DashboardLoading() {
 async function getDashboardData(
   userId: string
 ): Promise<{ data: DashboardData; canShowResults: boolean }> {
+  let canShowResults = true
+  let baseMetrics: DashboardMetrics | null = null
+
   try {
-    // Try using the new RPC function first
     const { data: rpcData, error: rpcError } = await supabase.rpc(
       'get_student_dashboard_data',
       {
@@ -63,11 +122,11 @@ async function getDashboardData(
     )
 
     if (!rpcError && rpcData) {
-      // Check if user can see results for completed exams
-      let canShowResults = true
-      if (rpcData.recentAttempts.length > 0) {
+      baseMetrics = rpcData as DashboardMetrics
+
+      if (Array.isArray(rpcData.recentAttempts) && rpcData.recentAttempts.length > 0) {
         const mostRecentExam = rpcData.recentAttempts[0]
-        if (mostRecentExam.exam_id) {
+        if (mostRecentExam?.exam_id) {
           try {
             canShowResults = await ExamService.canShowResults(
               userId,
@@ -78,56 +137,66 @@ async function getDashboardData(
           }
         }
       }
-
-      return { data: rpcData, canShowResults }
     }
   } catch (error) {
     console.log('RPC function not available, falling back to individual calls')
   }
 
-  // Fallback: Use individual API calls (original approach)
-  const [
-    overallStats,
-    scoreHistoryData,
-    recentAttempts,
-    previousMonthStats,
-    activityDays,
-    weeklyActivity,
-    subjectScores,
-  ] = await Promise.all([
-    AnalyticsService.getDashboardOverallStats(userId),
-    AnalyticsService.getDashboardScoreHistory(userId),
-    fetchRecentAttempts(userId),
-    fetchPreviousMonthStats(userId),
-    fetchUserActivityDays(userId),
-    WeeklyActivityService.fetchWeeklyActivityData(userId),
-    fetchUserSubjectScores(userId),
-  ])
+  if (!baseMetrics) {
+    const [
+      overallStats,
+      scoreHistoryData,
+      recentAttempts,
+      previousMonthStats,
+      activityDays,
+      weeklyActivity,
+      subjectScores,
+    ] = await Promise.all([
+      AnalyticsService.getDashboardOverallStats(userId),
+      AnalyticsService.getDashboardScoreHistory(userId),
+      fetchRecentAttempts(userId),
+      fetchPreviousMonthStats(userId),
+      fetchUserActivityDays(userId),
+      WeeklyActivityService.fetchWeeklyActivityData(userId),
+      fetchUserSubjectScores(userId),
+    ])
 
-  // Check if user can see results for completed exams
-  let canShowResults = true
-  if (recentAttempts.length > 0) {
-    const mostRecentExam = recentAttempts[0]
-    if (mostRecentExam.exam_id) {
-      try {
-        canShowResults = await ExamService.canShowResults(
-          userId,
-          mostRecentExam.exam_id
-        )
-      } catch (error) {
-        canShowResults = true
+    if (recentAttempts.length > 0) {
+      const mostRecentExam = recentAttempts[0]
+      if (mostRecentExam.exam_id) {
+        try {
+          canShowResults = await ExamService.canShowResults(
+            userId,
+            mostRecentExam.exam_id
+          )
+        } catch (error) {
+          canShowResults = true
+        }
       }
+    }
+
+    baseMetrics = {
+      overallStats,
+      scoreHistory: scoreHistoryData,
+      recentAttempts,
+      previousMonthStats,
+      activityDays,
+      weeklyActivity,
+      subjectScores,
     }
   }
 
+  const [assignments, mistakeSummary, vocabSummary] = await Promise.all([
+    fetchAssignmentTasks(userId),
+    fetchMistakeSummary(userId),
+    fetchVocabSummary(userId),
+  ])
+
   const dashboardData: DashboardData = {
-    overallStats,
-    scoreHistory: scoreHistoryData,
-    recentAttempts,
-    previousMonthStats,
-    activityDays,
-    weeklyActivity,
-    subjectScores,
+    ...baseMetrics,
+    assignments,
+    mistakeSummary,
+    vocabSummary,
   }
 
   return { data: dashboardData, canShowResults }
@@ -190,7 +259,7 @@ async function fetchPreviousMonthStats(userId: string) {
 
   const scores = attempts
     .map((attempt) => {
-      return (attempt as any).final_scores?.overall || attempt.total_score || 0
+      return (attempt as { final_scores?: { overall?: number }; total_score?: number }).final_scores?.overall || attempt.total_score || 0
     })
     .filter((score) => score > 0)
 
@@ -297,7 +366,7 @@ async function fetchUserSubjectScores(
     math2: { correct: 0, total: 0 },
   }
 
-  answers.forEach((answer: any) => {
+  answers.forEach((answer: { questions?: { module_type?: string }; is_correct?: boolean }) => {
     const question = answer.questions
     if (question && question.module_type) {
       moduleStats[question.module_type as keyof typeof moduleStats].total++
@@ -333,6 +402,379 @@ async function fetchUserSubjectScores(
   }
 }
 
+async function fetchAssignmentTasks(userId: string): Promise<AssignmentTask[]> {
+  const now = Date.now()
+  const { data: assignmentRows, error } = await supabase
+    .from('exam_assignments')
+    .select(
+      `
+      id,
+      exam_id,
+      assigned_at,
+      due_date,
+      is_active,
+      exams (
+        id,
+        title,
+        total_questions,
+        time_limits
+      )
+    `
+    )
+    .eq('student_id', userId)
+    .eq('is_active', true)
+    .order('assigned_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching assignments for dashboard:', error)
+    return []
+  }
+
+  const assignments = (assignmentRows || []).filter(
+    (assignment: any) => assignment.exams
+  )
+
+  const examIds = Array.from(
+    new Set(
+      assignments
+        .map((assignment: any) => assignment.exam_id)
+        .filter((id: string | null): id is string => Boolean(id))
+    )
+  )
+
+  const latestAttemptsByExam = new Map<
+    string,
+    {
+      id: string
+      status: string
+      current_question_number: number | null
+      created_at: string | null
+      started_at: string | null
+      updated_at: string | null
+      completed_at: string | null
+    }
+  >()
+
+  if (examIds.length > 0) {
+    const { data: attempts, error: attemptsError } = await supabase
+      .from('test_attempts')
+      .select(
+        `
+        id,
+        exam_id,
+        status,
+        current_question_number,
+        created_at,
+        started_at,
+        updated_at,
+        completed_at
+      `
+      )
+      .eq('user_id', userId)
+      .in('exam_id', examIds)
+      .order('created_at', { ascending: false })
+
+    if (attemptsError) {
+      console.error('Error fetching attempts for assignments:', attemptsError)
+    } else {
+      for (const attempt of attempts || []) {
+        if (!attempt.exam_id) continue
+        if (!latestAttemptsByExam.has(attempt.exam_id)) {
+          latestAttemptsByExam.set(attempt.exam_id, attempt)
+        }
+      }
+    }
+  }
+
+  return assignments.map((assignment: any) => {
+    const exam = assignment.exams as {
+      id: string
+      title: string
+      total_questions: number | null
+      time_limits: Record<string, number> | null
+    }
+
+    const attempt = latestAttemptsByExam.get(assignment.exam_id)
+
+    let status: 'not_started' | 'in_progress' | 'completed' = 'not_started'
+    if (attempt) {
+      if (attempt.status === 'completed') {
+        status = 'completed'
+      } else if (attempt.status === 'in_progress') {
+        status = 'in_progress'
+      }
+    }
+
+    const totalQuestions = exam?.total_questions ?? null
+    const currentQuestionNumber = attempt?.current_question_number || 1
+    let progressPercent = 0
+    if (status === 'completed') {
+      progressPercent = 100
+    } else if (
+      status === 'in_progress' &&
+      totalQuestions &&
+      totalQuestions > 0
+    ) {
+      progressPercent = Math.max(
+        5,
+        Math.min(
+          95,
+          Math.round(((currentQuestionNumber - 1) / totalQuestions) * 100)
+        )
+      )
+    }
+
+    const lastActivityAt =
+      attempt?.updated_at ||
+      attempt?.completed_at ||
+      attempt?.started_at ||
+      assignment.assigned_at ||
+      null
+
+    const dueDate = assignment.due_date as string | null
+    const dueTime = dueDate ? new Date(dueDate).getTime() : null
+    const isOverdue =
+      typeof dueTime === 'number' &&
+      status !== 'completed' &&
+      dueTime < now
+    const isDueSoon =
+      typeof dueTime === 'number' &&
+      status !== 'completed' &&
+      !isOverdue &&
+      dueTime - now <= 1000 * 60 * 60 * 48
+
+    const timeLimits = exam?.time_limits || null
+    const estimatedMinutes = timeLimits
+      ? Object.values(timeLimits).reduce(
+          (total, value) => total + (value || 0),
+          0
+        )
+      : null
+
+    return {
+      assignmentId: assignment.id as string,
+      examId: exam.id,
+      examTitle: exam.title,
+      status,
+      assignedAt: assignment.assigned_at as string | null,
+      dueDate,
+      lastActivityAt,
+      isOverdue,
+      isDueSoon,
+      progressPercent,
+      totalQuestions,
+      estimatedMinutes,
+    }
+  })
+}
+
+async function fetchMistakeSummary(userId: string): Promise<MistakeSummary> {
+  const { data: mistakeRows, error } = await supabase
+    .from('mistake_bank')
+    .select(
+      `
+      id,
+      status,
+      question_id,
+      first_mistaken_at,
+      last_reviewed_at
+    `
+    )
+    .eq('user_id', userId)
+
+  if (error) {
+    console.error('Error fetching mistake summary:', error)
+    return {
+      total: 0,
+      unmastered: 0,
+      mastered: 0,
+      lastReviewedAt: null,
+      countsByExam: [],
+      countsByModule: [],
+    }
+  }
+
+  const mistakes = mistakeRows || []
+
+  if (mistakes.length === 0) {
+    return {
+      total: 0,
+      unmastered: 0,
+      mastered: 0,
+      lastReviewedAt: null,
+      countsByExam: [],
+      countsByModule: [],
+    }
+  }
+
+  const questionIds = Array.from(
+    new Set(
+      mistakes
+        .map((mistake: any) => mistake.question_id)
+        .filter((id: string | null): id is string => Boolean(id))
+    )
+  )
+
+  const questionMap = new Map<
+    string,
+    { id: string; exam_id: string | null; module_type: string | null }
+  >()
+
+  if (questionIds.length > 0) {
+    const { data: questionRows, error: questionsError } = await supabase
+      .from('questions')
+      .select('id, exam_id, module_type')
+      .in('id', questionIds)
+
+    if (questionsError) {
+      console.error(
+        'Error fetching questions for mistake summary:',
+        questionsError
+      )
+    } else {
+      for (const question of questionRows || []) {
+        questionMap.set(question.id, question)
+      }
+    }
+  }
+
+  const examIds = Array.from(
+    new Set(
+      Array.from(questionMap.values())
+        .map((question) => question.exam_id)
+        .filter((id): id is string => Boolean(id))
+    )
+  )
+
+  const examMap = new Map<string, { id: string; title: string }>()
+
+  if (examIds.length > 0) {
+    const { data: examRows, error: examsError } = await supabase
+      .from('exams')
+      .select('id, title')
+      .in('id', examIds)
+
+    if (examsError) {
+      console.error('Error fetching exams for mistake summary:', examsError)
+    } else {
+      for (const exam of examRows || []) {
+        examMap.set(exam.id, exam)
+      }
+    }
+  }
+
+  let lastReviewedAt: string | null = null
+  const moduleCounts = new Map<string, number>()
+  const examCounts = new Map<
+    string,
+    { examId: string | null; examTitle: string; count: number }
+  >()
+  let unmastered = 0
+
+  mistakes.forEach((mistake: any) => {
+    if (mistake.status === 'unmastered') {
+      unmastered += 1
+    }
+
+    if (mistake.last_reviewed_at) {
+      if (
+        !lastReviewedAt ||
+        new Date(mistake.last_reviewed_at) > new Date(lastReviewedAt)
+      ) {
+        lastReviewedAt = mistake.last_reviewed_at
+      }
+    }
+
+    const question = questionMap.get(mistake.question_id)
+    if (question?.module_type) {
+      moduleCounts.set(
+        question.module_type,
+        (moduleCounts.get(question.module_type) || 0) + 1
+      )
+    }
+
+    if (question?.exam_id) {
+      const exam = examMap.get(question.exam_id)
+      const title = exam?.title || 'Unlabeled Exam'
+      if (examCounts.has(question.exam_id)) {
+        const existing = examCounts.get(question.exam_id)!
+        existing.count += 1
+      } else {
+        examCounts.set(question.exam_id, {
+          examId: question.exam_id,
+          examTitle: title,
+          count: 1,
+        })
+      }
+    } else {
+      if (examCounts.has('unlinked')) {
+        const existing = examCounts.get('unlinked')!
+        existing.count += 1
+      } else {
+        examCounts.set('unlinked', {
+          examId: null,
+          examTitle: 'Unlinked Questions',
+          count: 1,
+        })
+      }
+    }
+  })
+
+  const mastered = mistakes.length - unmastered
+
+  return {
+    total: mistakes.length,
+    unmastered,
+    mastered,
+    lastReviewedAt,
+    countsByExam: Array.from(examCounts.values()).sort(
+      (a, b) => b.count - a.count
+    ),
+    countsByModule: Array.from(moduleCounts.entries())
+      .map(([module, count]) => ({ module, count }))
+      .sort((a, b) => b.count - a.count),
+  }
+}
+
+async function fetchVocabSummary(userId: string): Promise<VocabSummary> {
+  try {
+    const [dueCount, reviewSets] = await Promise.all([
+      getTodayReviewCount(userId),
+      getVocabSetsWithReviewsDue(userId),
+    ])
+
+    const [{ count: totalWords }, { data: nextReview }] = await Promise.all([
+      supabase
+        .from('vocab_entries')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId),
+      supabase
+        .from('user_vocab_progress')
+        .select('next_review_date')
+        .eq('user_id', userId)
+        .gt('next_review_date', new Date().toISOString())
+        .order('next_review_date', { ascending: true })
+        .limit(1)
+        .maybeSingle(),
+    ])
+
+    return {
+      dueToday: dueCount,
+      totalWords: totalWords || 0,
+      nextReviewAt: nextReview?.next_review_date ?? null,
+      reviewSets,
+    }
+  } catch (error) {
+    console.error('Error fetching vocab summary:', error)
+    return {
+      dueToday: 0,
+      totalWords: 0,
+      nextReviewAt: null,
+      reviewSets: [],
+    }
+  }
+}
+
 export default function StudentDashboard() {
   const { user } = useAuth()
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
@@ -354,8 +796,8 @@ export default function StudentDashboard() {
       const { data, canShowResults: canShow } = await getDashboardData(user.id)
       setDashboardData(data)
       setCanShowResults(canShow)
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }

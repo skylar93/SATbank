@@ -12,6 +12,7 @@ import type {
   TestAttempt,
   UserAnswer,
   Exam,
+  ModuleType,
 } from '../../../../../../lib/exam-service'
 import {
   canShowAnswers,
@@ -42,6 +43,62 @@ export default function ReviewPage() {
 
   const attemptId = params.attemptId as string
 
+  const normalizeModuleType = (moduleType?: string | null): ModuleType => {
+    if (!moduleType) return 'english1'
+
+    const raw = moduleType.toString().trim()
+    const lower = raw.toLowerCase()
+    const sanitized = lower.replace(/[^a-z0-9]/g, '')
+
+    const moduleTwoPatterns = [
+      /(module|mod|section)[\s_-]*2\b/,
+      /\bsecond\b/,
+      /\bmodule[\s_-]*b\b/,
+      /\bpart[\s_-]*2\b/,
+      /\bmoduleii\b/,
+    ]
+    const moduleOnePatterns = [
+      /(module|mod|section)[\s_-]*1\b/,
+      /\bfirst\b/,
+      /\bmodule[\s_-]*a\b/,
+      /\bpart[\s_-]*1\b/,
+      /\bmodulei\b/,
+    ]
+
+    const isModuleTwo = moduleTwoPatterns.some((pattern) => pattern.test(lower))
+    const isModuleOne = moduleOnePatterns.some((pattern) => pattern.test(lower))
+
+    const isEnglish =
+      sanitized.includes('english') ||
+      sanitized.includes('readingwriting') ||
+      sanitized.includes('reading') ||
+      sanitized.includes('writing') ||
+      sanitized.includes('verbal') ||
+      sanitized.includes('rw')
+
+    const isMath =
+      sanitized.includes('math') ||
+      sanitized.includes('calculator') ||
+      sanitized.includes('quant')
+
+    if (isMath) {
+      return isModuleTwo ? 'math2' : 'math1'
+    }
+
+    if (isEnglish) {
+      return isModuleTwo ? 'english2' : 'english1'
+    }
+
+    if (isModuleTwo) {
+      return 'math2'
+    }
+
+    if (isModuleOne) {
+      return 'math1'
+    }
+
+    return 'english1'
+  }
   useEffect(() => {
     if (user && attemptId) {
       loadReviewData()
@@ -122,6 +179,50 @@ export default function ReviewPage() {
   const loadReviewData = async () => {
     if (!user) return
 
+    const sanitizeModuleToken = (value?: string | null) =>
+      value
+        ? value.toString().toLowerCase().replace(/[^a-z0-9]/g, '')
+        : ''
+    const normalizationWarningsLimit = 5
+
+    let normalizationWarningsCount = 0
+
+    const applyNormalizedModuleTypes = (
+      questions: QuestionWithMetadata[]
+    ): QuestionWithMetadata[] =>
+      questions.map((question, index) => {
+        const rawModuleType =
+          ((question.module_type as unknown as string | undefined) ??
+            (question._module_type as string | undefined) ??
+            null) || null
+
+        const normalizedModuleType = normalizeModuleType(rawModuleType)
+        const sanitizedRaw = sanitizeModuleToken(rawModuleType)
+        const sanitizedNormalized = sanitizeModuleToken(normalizedModuleType)
+
+        if (
+          sanitizedRaw &&
+          sanitizedRaw !== sanitizedNormalized &&
+          normalizationWarningsCount < normalizationWarningsLimit
+        ) {
+          console.warn(
+            '🔄 Normalizing module type for exam review question',
+            {
+              questionIndex: index,
+              questionId: question.id,
+              original: rawModuleType,
+              normalized: normalizedModuleType,
+            }
+          )
+          normalizationWarningsCount += 1
+        }
+
+        return {
+          ...question,
+          module_type: normalizedModuleType,
+        }
+      })
+
     try {
       // Check if user has access to this attempt
       const { data: attemptCheck, error: accessError } = await supabase
@@ -185,6 +286,8 @@ export default function ReviewPage() {
               _exam_question_number: index + 1,
               _module_type: 'practice',
             })) || []
+
+        allQuestions = applyNormalizedModuleTypes(allQuestions)
 
         console.log('🔍 Practice mode loaded questions:', allQuestions.length)
 
@@ -301,6 +404,8 @@ export default function ReviewPage() {
       }
 
       console.log('🔍 Total questions loaded:', allQuestions.length)
+
+      allQuestions = applyNormalizedModuleTypes(allQuestions)
 
       // Get user answers for this attempt
       const { data: userAnswers, error: answersError } = await supabase

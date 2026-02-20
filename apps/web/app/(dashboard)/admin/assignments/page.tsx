@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../../../../contexts/auth-context'
 import { supabase } from '../../../../lib/supabase'
 import {
@@ -17,6 +17,9 @@ interface Exam {
   title: string
   description: string
   is_active: boolean
+  template_id?: string | null
+  module_composition?: Record<string, boolean> | null
+  is_module_source?: boolean
 }
 
 interface Student {
@@ -51,6 +54,8 @@ export default function AdminAssignmentsPage() {
   const [showResults, setShowResults] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [examSearchTerm, setExamSearchTerm] = useState('')
+  const [showAllExams, setShowAllExams] = useState(false)
+  const [showAssignedExams, setShowAssignedExams] = useState(false)
   const [studentSearchTerm, setStudentSearchTerm] = useState('')
 
   // Edit assignment states
@@ -59,6 +64,45 @@ export default function AdminAssignmentsPage() {
     useState<ExamAssignment | null>(null)
   const [editDueDate, setEditDueDate] = useState('')
   const [editShowResults, setEditShowResults] = useState(true)
+
+  const assignmentsByStudent = useMemo(() => {
+    const map = new Map<string, Set<string>>()
+    assignments.forEach((assignment) => {
+      if (!map.has(assignment.student_id)) {
+        map.set(assignment.student_id, new Set<string>())
+      }
+      map.get(assignment.student_id)!.add(assignment.exam_id)
+    })
+    return map
+  }, [assignments])
+
+  const studentsById = useMemo(() => {
+    const map = new Map<string, Student>()
+    students.forEach((student) => {
+      map.set(student.id, student)
+    })
+    return map
+  }, [students])
+
+  const examsById = useMemo(() => {
+    const map = new Map<string, Exam>()
+    exams.forEach((exam) => {
+      map.set(exam.id, exam)
+    })
+    return map
+  }, [exams])
+
+  const getModuleCount = (exam: Exam) => {
+    const composition = exam.module_composition || {}
+    return Object.values(composition).filter(Boolean).length
+  }
+
+  const isTemplateExam = (exam: Exam) => Boolean(exam.template_id)
+
+  const isMultiModuleExam = (exam: Exam) => getModuleCount(exam) > 1
+
+  const isPriorityExam = (exam: Exam) =>
+    isTemplateExam(exam) || isMultiModuleExam(exam)
 
   useEffect(() => {
     if (user) {
@@ -270,11 +314,48 @@ export default function AdminAssignmentsPage() {
       assignment.exams?.title?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const filteredExams = exams.filter(
-    (exam) =>
-      exam.title.toLowerCase().includes(examSearchTerm.toLowerCase()) ||
-      exam.description?.toLowerCase().includes(examSearchTerm.toLowerCase())
-  )
+  const filteredExams = useMemo(() => {
+    const normalizedSearch = examSearchTerm.trim().toLowerCase()
+    const bypassPriority = showAllExams || normalizedSearch.length > 0
+    const hideAlreadyAssigned =
+      !showAssignedExams && selectedStudents.length > 0
+
+    const examMatchesSearch = (exam: Exam) => {
+      if (!normalizedSearch) return true
+      const title = exam.title?.toLowerCase() || ''
+      const description = exam.description?.toLowerCase() || ''
+      return title.includes(normalizedSearch) || description.includes(normalizedSearch)
+    }
+
+    const examPassesPriority = (exam: Exam) =>
+      bypassPriority || isPriorityExam(exam)
+
+    const examNotAssignedToAllSelected = (exam: Exam) => {
+      if (!hideAlreadyAssigned) return true
+      return !selectedStudents.every((studentId) => {
+        const assignedExamIds = assignmentsByStudent.get(studentId)
+        return assignedExamIds ? assignedExamIds.has(exam.id) : false
+      })
+    }
+
+    return exams
+      .filter((exam) => examMatchesSearch(exam))
+      .filter((exam) => examPassesPriority(exam))
+      .filter((exam) => examNotAssignedToAllSelected(exam))
+      .sort((a, b) => {
+        const priorityScore =
+          Number(isPriorityExam(b)) - Number(isPriorityExam(a))
+        if (priorityScore !== 0) return priorityScore
+        return a.title.localeCompare(b.title)
+      })
+  }, [
+    exams,
+    examSearchTerm,
+    showAllExams,
+    showAssignedExams,
+    selectedStudents,
+    assignmentsByStudent,
+  ])
 
   const filteredStudents = students.filter(
     (student) =>
@@ -467,7 +548,7 @@ export default function AdminAssignmentsPage() {
       {/* Assignment Modal */}
       {showAssignModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg p-8 w-full max-w-4xl max-h-[95vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-gray-900">
                 Create Assignment
@@ -498,6 +579,47 @@ export default function AdminAssignmentsPage() {
                     />
                   </div>
                 </div>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <label className="inline-flex items-center text-sm text-gray-600">
+                      <input
+                        type="checkbox"
+                        checked={showAllExams}
+                        onChange={(e) => setShowAllExams(e.target.checked)}
+                        className="mr-2 text-purple-600 focus:ring-purple-500"
+                      />
+                      <span>Show single-module exams</span>
+                    </label>
+                    {selectedStudents.length > 0 && (
+                      <label className="inline-flex items-center text-sm text-gray-600">
+                        <input
+                          type="checkbox"
+                          checked={showAssignedExams}
+                          onChange={(e) =>
+                            setShowAssignedExams(e.target.checked)
+                          }
+                          className="mr-2 text-purple-600 focus:ring-purple-500"
+                        />
+                        <span>Include exams already assigned</span>
+                      </label>
+                    )}
+                  </div>
+                  {(() => {
+                    const hints: string[] = []
+                    if (!showAllExams) {
+                      hints.push('Showing multi-module & template exams by default')
+                    }
+                    if (!showAssignedExams && selectedStudents.length > 0) {
+                      hints.push('Hiding exams already assigned to all selected students')
+                    }
+                    if (hints.length === 0) return null
+                    return (
+                      <span className="text-xs text-gray-500">
+                        {hints.join(' • ')}
+                      </span>
+                    )
+                  })()}
+                </div>
                 <div className="border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
                   {filteredExams.length === 0 ? (
                     <div className="p-4 text-center text-gray-500">
@@ -513,41 +635,109 @@ export default function AdminAssignmentsPage() {
                         <>
                           <p className="text-sm">No matching exams</p>
                           <p className="text-xs text-gray-400 mt-1">
-                            Try a different search term
+                            {examSearchTerm.trim().length > 0 ? (
+                              <>Try a different search term</>
+                            ) : showAllExams ? (
+                              <>Try a different search term</>
+                            ) : (
+                              <>
+                                Enable &ldquo;Show single-module exams&rdquo; to
+                                see module sources
+                              </>
+                            )}
                           </p>
                         </>
                       )}
                     </div>
                   ) : (
-                    filteredExams.map((exam) => (
-                      <label
-                        key={exam.id}
-                        className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedExams.includes(exam.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedExams([...selectedExams, exam.id])
-                            } else {
-                              setSelectedExams(
-                                selectedExams.filter((id) => id !== exam.id)
-                              )
-                            }
-                          }}
-                          className="mr-3 text-purple-600 focus:ring-purple-500"
-                        />
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {exam.title}
+                    filteredExams.map((exam) => {
+                      const assignedStudentsForExam = selectedStudents.filter(
+                        (studentId) => {
+                          const assignedExamIds =
+                            assignmentsByStudent.get(studentId)
+                          return assignedExamIds
+                            ? assignedExamIds.has(exam.id)
+                            : false
+                        }
+                      )
+                      const assignedStudentNames = assignedStudentsForExam
+                        .map(
+                          (studentId) => studentsById.get(studentId)?.full_name
+                        )
+                        .filter(
+                          (name): name is string => Boolean(name && name.trim())
+                        )
+                      const isFullyAssignedToSelection =
+                        selectedStudents.length > 0 &&
+                        assignedStudentsForExam.length ===
+                          selectedStudents.length
+                      const titleClasses = `text-sm font-medium ${
+                        isFullyAssignedToSelection
+                          ? 'text-gray-500'
+                          : 'text-gray-900'
+                      }`
+                      const labelClasses = `flex items-center p-3 hover:bg-gray-50 cursor-pointer ${
+                        isFullyAssignedToSelection ? 'bg-gray-50' : ''
+                      }`
+
+                      let assignedSummary = ''
+                      if (selectedStudents.length === 1) {
+                        if (assignedStudentsForExam.length === 1) {
+                          const studentName =
+                            studentsById.get(selectedStudents[0])?.full_name
+                          assignedSummary = studentName
+                            ? `${studentName} already has this exam`
+                            : 'This student already has this exam'
+                        }
+                      } else if (assignedStudentNames.length > 0) {
+                        if (assignedStudentNames.length <= 3) {
+                          assignedSummary = `Assigned to: ${assignedStudentNames.join(
+                            ', '
+                          )}`
+                        } else {
+                          assignedSummary = `${assignedStudentsForExam.length} selected students already have this exam`
+                        }
+                      }
+
+                      return (
+                        <label key={exam.id} className={labelClasses}>
+                          <input
+                            type="checkbox"
+                            checked={selectedExams.includes(exam.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedExams([...selectedExams, exam.id])
+                              } else {
+                                setSelectedExams(
+                                  selectedExams.filter((id) => id !== exam.id)
+                                )
+                              }
+                            }}
+                            className="mr-3 text-purple-600 focus:ring-purple-500"
+                          />
+                          <div>
+                            <div className={titleClasses}>{exam.title}</div>
+                            {exam.description && (
+                              <div className="text-sm text-gray-500">
+                                {exam.description}
+                              </div>
+                            )}
+                            {assignedSummary && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                {assignedSummary}
+                              </div>
+                            )}
+                            {!assignedSummary &&
+                              !exam.description &&
+                              exam.is_module_source && (
+                                <div className="text-xs text-gray-400 mt-1">
+                                  Module-only exam
+                                </div>
+                              )}
                           </div>
-                          <div className="text-sm text-gray-500">
-                            {exam.description}
-                          </div>
-                        </div>
-                      </label>
-                    ))
+                        </label>
+                      )
+                    })
                   )}
                 </div>
               </div>
@@ -590,40 +780,72 @@ export default function AdminAssignmentsPage() {
                       )}
                     </div>
                   ) : (
-                    filteredStudents.map((student) => (
-                      <label
-                        key={student.id}
-                        className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedStudents.includes(student.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedStudents([
-                                ...selectedStudents,
-                                student.id,
-                              ])
-                            } else {
-                              setSelectedStudents(
-                                selectedStudents.filter(
-                                  (id) => id !== student.id
+                    filteredStudents.map((student) => {
+                      const assignedExamIds =
+                        assignmentsByStudent.get(student.id) || new Set()
+                      const overlappingExamIds = selectedExams.filter((examId) =>
+                        assignedExamIds.has(examId)
+                      )
+                      const overlappingExamTitles = overlappingExamIds
+                        .map((examId) => examsById.get(examId)?.title)
+                        .filter(
+                          (title): title is string => Boolean(title && title.trim())
+                        )
+                      const fullyAssignedToSelectedExams =
+                        selectedExams.length > 0 &&
+                        overlappingExamIds.length === selectedExams.length
+                      const labelClasses = `flex items-center p-3 hover:bg-gray-50 cursor-pointer ${
+                        fullyAssignedToSelectedExams ? 'bg-gray-50' : ''
+                      }`
+                      const titleClasses = `text-sm font-medium ${
+                        fullyAssignedToSelectedExams
+                          ? 'text-gray-500'
+                          : 'text-gray-900'
+                      }`
+                      const assignmentSummary =
+                        overlappingExamTitles.length === 0
+                          ? ''
+                          : overlappingExamTitles.length <= 2
+                          ? `Already assigned: ${overlappingExamTitles.join(', ')}`
+                          : `Already assigned to ${overlappingExamTitles.length} selected exams`
+
+                      return (
+                        <label key={student.id} className={labelClasses}>
+                          <input
+                            type="checkbox"
+                            checked={selectedStudents.includes(student.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedStudents([
+                                  ...selectedStudents,
+                                  student.id,
+                                ])
+                              } else {
+                                setSelectedStudents(
+                                  selectedStudents.filter(
+                                    (id) => id !== student.id
+                                  )
                                 )
-                              )
-                            }
-                          }}
-                          className="mr-3 text-purple-600 focus:ring-purple-500"
-                        />
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {student.full_name}
+                              }
+                            }}
+                            className="mr-3 text-purple-600 focus:ring-purple-500"
+                          />
+                          <div>
+                            <div className={titleClasses}>
+                              {student.full_name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {student.email} • Grade {student.grade_level}
+                            </div>
+                            {assignmentSummary && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                {assignmentSummary}
+                              </div>
+                            )}
                           </div>
-                          <div className="text-sm text-gray-500">
-                            {student.email} • Grade {student.grade_level}
-                          </div>
-                        </div>
-                      </label>
-                    ))
+                        </label>
+                      )
+                    })
                   )}
                 </div>
               </div>
