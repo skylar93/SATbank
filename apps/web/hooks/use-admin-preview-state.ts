@@ -37,7 +37,7 @@ interface AdminPreviewState {
   status: 'not_started' | 'in_progress' | 'completed'
 }
 
-const MODULE_ORDER: ModuleType[] = ['english1', 'english2', 'math1', 'math2']
+const MODULE_ORDER: ModuleType[] = ['english1', 'english2', 'math1', 'math2', 'tcf_reading']
 
 export function useAdminPreviewState() {
   const { user } = useAuth()
