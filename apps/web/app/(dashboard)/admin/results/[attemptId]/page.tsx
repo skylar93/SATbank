@@ -412,11 +412,12 @@ export default function AdminDetailedResultsPage() {
   }
 
   const getModuleDisplayName = (moduleType: ModuleType) => {
-    const names = {
+    const names: Record<ModuleType, string> = {
       english1: 'Reading & Writing Module 1',
       english2: 'Reading & Writing Module 2',
       math1: 'Math Module 1 (No Calculator)',
       math2: 'Math Module 2 (Calculator)',
+      tcf_reading: 'TCF 독해',
     }
     return names[moduleType]
   }
@@ -467,6 +468,7 @@ export default function AdminDetailedResultsPage() {
       english2: [] as typeof filteredQuestions,
       math1: [] as typeof filteredQuestions,
       math2: [] as typeof filteredQuestions,
+      tcf_reading: [] as typeof filteredQuestions,
     }
 
     filteredQuestions.forEach((question) => {
@@ -700,8 +702,8 @@ export default function AdminDetailedResultsPage() {
                 {Object.entries(detailedScore.rawScores).map(
                   ([module, score]) => {
                     const moduleType = module as ModuleType
-                    const percentage = detailedScore.percentages[moduleType]
-                    const percentile = detailedScore.percentiles[moduleType]
+                    const percentage = detailedScore.percentages[moduleType] ?? 0
+                    const percentile = detailedScore.percentiles[moduleType] ?? 0
 
                     return (
                       <div key={module} className="bg-gray-50 p-4 rounded-lg">

@@ -62,11 +62,12 @@ export function ExamNavigation({
   secondTryCorrectQuestions = new Set(),
 }: ExamNavigationProps) {
   const getModuleName = (module: ModuleType) => {
-    const moduleNames = {
+    const moduleNames: Record<ModuleType, string> = {
       english1: 'English Module 1',
       english2: 'English Module 2',
       math1: 'Math Module 1',
       math2: 'Math Module 2',
+      tcf_reading: 'TCF 독해',
     }
     return moduleNames[module]
   }

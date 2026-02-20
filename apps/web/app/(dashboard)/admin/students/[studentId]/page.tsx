@@ -442,7 +442,7 @@ export default function StudentDetailPage() {
                             {Math.round(
                               selectedAttempt.detailedScore.percentages[
                                 module as keyof typeof selectedAttempt.detailedScore.percentages
-                              ]
+                              ] ?? 0
                             )}
                             %)
                           </span>

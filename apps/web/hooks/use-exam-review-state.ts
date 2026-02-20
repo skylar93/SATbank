@@ -32,6 +32,7 @@ export function useExamReviewState(reviewData: ReviewData) {
       english2: [],
       math1: [],
       math2: [],
+      tcf_reading: [],
     }
 
     reviewData.questions.forEach((question) => {

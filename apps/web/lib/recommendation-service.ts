@@ -196,6 +196,7 @@ export class RecommendationService {
       english2: { attempted: 0, correct: 0, timeSpent: 0, mistakes: [] },
       math1: { attempted: 0, correct: 0, timeSpent: 0, mistakes: [] },
       math2: { attempted: 0, correct: 0, timeSpent: 0, mistakes: [] },
+      tcf_reading: { attempted: 0, correct: 0, timeSpent: 0, mistakes: [] },
     }
 
     allAnswers.forEach((answer) => {
@@ -327,6 +328,7 @@ export class RecommendationService {
         english2: 'Writing and Language',
         math1: 'Math (No Calculator)',
         math2: 'Math (Calculator)',
+        tcf_reading: 'TCF 독해',
       }
 
       recommendations.push({
