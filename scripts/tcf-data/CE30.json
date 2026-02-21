@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE30",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Madame Dousson est malade aujourd'hui. Son cours est reporté à jeudi (même salle, même heure).\n\nDe quel changement informe ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Un changement de jour",
+        "B": "Un changement de professeur",
+        "C": "Un changement de salle",
+        "D": "Un changement d'heure"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Menu déjeuner 16 euros :\nEntrée du jour charcuterie.\nPlat du jour ou steak frites\nfromage ou dessert\n20 euros :\nAvec un verre de vin et un café.\n\nQu'inclut le menu à 16 euros ?",
+      "image_url": null,
+      "options": {
+        "A": "Un plat, un dessert et un café",
+        "B": "Une entrée, un plat et une boisson",
+        "C": "Une entrée, un plat et un fromage",
+        "D": "Un plat, un fromage et une boisson"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Initiation à l'informatique\n25, 26 et 27 mars de 9h à 14h\nSalle de réunion\n\nPendant cette formation, qu'est-ce qu'on va apprendre à utiliser ?",
+      "image_url": null,
+      "options": {
+        "A": "Un photocopieur",
+        "B": "Un climatiseur",
+        "C": "Un ordinateur",
+        "D": "Un télécopieur"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Madame, Monsieur,\nVous êtes convoqués à l'école avec votre fils, Paul Lemaire, inscrit en 6°B, le jeudi 13 janvier à 10 h, bureau 8.\nMerci de vous présenter au secrétariat du directeur adjoint.\n\nQui est Paul Lemaire ?",
+      "image_url": null,
+      "options": {
+        "A": "Un secrétaire",
+        "B": "Un parent",
+        "C": "Un élève",
+        "D": "Un professeur"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Salut Alex,\nPourrais-tu m'emmener à la fête de Lina demain soir ? Ma voiture est en panne et c'est moi qui ai son cadeau d'anniversaire.\nÀ demain,\nElsa\n\nQue doit faire Alex ?",
+      "image_url": null,
+      "options": {
+        "A": "Acheter un cadeau",
+        "B": "Emmener une amie",
+        "C": "Organiser une fête",
+        "D": "Réparer une voiture"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Monsieur,\nVeuillez nous retourner ce dossier complété et signé. Nous vous informerons de notre décision par courrier avant la fin du mois.\nMerci de votre compréhension.\nLes services de préfecture.\n\nQue doit faire cette personne ?",
+      "image_url": null,
+      "options": {
+        "A": "Compléter des documents",
+        "B": "Demander des informations",
+        "C": "Écrire un courrier",
+        "D": "Téléphoner à la préfecture"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Dimanche 27 mai, venez faire connaissance avec Les HABITANTS DU QUARTIER !\nAssociation Immeubles en fête vous donne rendez-vous vers midi. Apportez un plat et une boisson, et partageons-les ensemble !\nANIMATION Tennis de TABLE 15 H, Place De La VICTOIRE.\n\nQu'est-ce que l'association « Immeubles en fête » propose ?",
+      "image_url": null,
+      "options": {
+        "A": "De cuisiner tous ensemble",
+        "B": "De faire un repas entre voisins",
+        "C": "De s'inscrire à des activités",
+        "D": "De visiter de nouveaux logements"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Je ne connaissais pas www.lamode.com, mais j'ai lu des avis positifs sur un forum. Alors, je suis allée sur le site et j'y ai trouvé une jolie robe vraiment pas chère. Je l'ai commandée, et je la portais cinq jours plus tard. Je suis ravie !\n\nQu'explique cette personne ?",
+      "image_url": null,
+      "options": {
+        "A": "Comment elle a acheté un article en ligne",
+        "B": "Où elle a cherché un cadeau bon marché",
+        "C": "Pourquoi elle a eu un chèque de réduction",
+        "D": "Quand elle a échangé un vêtement soldé"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Le soin d'origine naturelle « Nuit sommeil » est étudié pour les peaux fragiles. Il corrige les signes de fatigue et réveille votre visage. Votre peau est parfaite, même en plein hiver.\n\nQu'est-ce que « Nuit sommeil » ?",
+      "image_url": null,
+      "options": {
+        "A": "Un savon pour le corps",
+        "B": "Un shampoing aux herbes",
+        "C": "Une boisson pour dormir",
+        "D": "Une crème de beauté"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 10,
+      "question_text": "L'Union européenne va offrir une \"Carte Jeunes\" aux étudiants du continent qui ont vingt ans cette année. Pendant un mois maximum, ces jeunes pourront voyager gratuitement en train et visiter plus de quinze pays.\n\nQu'est-ce qui est proposé aux jeunes Européens ?",
+      "image_url": null,
+      "options": {
+        "A": "Des visites de musées",
+        "B": "Des voyages en Europe",
+        "C": "Un mois de vacances",
+        "D": "Un semestre d'études"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Aux habitants de la résidence Les Lilas\nLe gestionnaire de la résidence rappelle aux habitants que les travaux prévus dans le logement de Madame BERTRAND commenceront le 15 avril. Afin que les ouvriers de l'entreprise puissent travailler facilement, il vous est demandé de garer vos voitures sur l'aire de stationnement installée de l'autre côté de la rue pendant la durée des travaux. Vous ne devez en aucun cas laisser vos véhicules devant l'entrée de la résidence.\nNous vous remercions de votre compréhension.\n\nQu'annonce ce courrier aux habitants de la résidence ?",
+      "image_url": null,
+      "options": {
+        "A": "L'agrandissement d'un parking",
+        "B": "La modernisation d'un bâtiment",
+        "C": "La transformation d'un logement",
+        "D": "Le déménagement d'une locataire"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 12,
+      "question_text": "La semaine dernière, les écoles de commerce ont organisé leur traditionnel rendez-vous « Avenir Jeunesse ». Comme tous les ans, son objectif a été de favoriser la rencontre entre les entreprises qui recrutent et les élèves. Ces derniers ont pu se renseigner sur les différents secteurs d'activité et déposer leur candidature pour les postes qui les intéressent. Des ateliers conseil étaient animés par des professionnels.\n\nQuel était le but de l'événement « Avenir Jeunesse » ?",
+      "image_url": null,
+      "options": {
+        "A": "Accueillir les étudiants étrangers",
+        "B": "Faciliter la recherche d'emploi",
+        "C": "Préparer la rentrée universitaire",
+        "D": "Présenter de nouvelles formations"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Un salon automobile est un lieu de rêve, mais pas le salon de cette année. Voici mon classement des modèles les plus laids :\n1. La V210 : un aspirateur sur quatre roues.\n2. La Tata Aria : pas chère, mais pas belle non plus.\n3. Le cabriolet Aurus : plus large que haut.\nVivement l'année prochaine !\n\nQuel est le problème de ces voitures ?",
+      "image_url": null,
+      "options": {
+        "A": "Leur couleur",
+        "B": "Leur forme",
+        "C": "Leur prix",
+        "D": "Leur taille"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Martine,\nC'est d'accord, nous pouvons faire une fête chez moi samedi prochain. Il y aura 15 personnes. C'est dommage, Ali ne peut pas venir, il est parti à la montagne. Est-ce que tu peux acheter les boissons ? Je m'occupe des desserts. Viens vers 19 heures, les autres arriveront à partir de 20 heures.\nMerci, à samedi.\nRomuald\n\nQue doit faire Martine ?",
+      "image_url": null,
+      "options": {
+        "A": "Apporter à boire",
+        "B": "Préparer un gâteau",
+        "C": "Contacter un ami",
+        "D": "Animer la soirée"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Vous pensez qu'il est un peu fou de partir en bateau avec des enfants ? Clément, Marine et leurs deux filles de six et deux ans devraient vous inspirer. Tous les quatre ou à plusieurs familles, ils maintiennent le rythme d'une croisière par an. « Des vacances où on se déconnecte à l'instant même où on pose le pied sur le pont », dit Clément. « Une vie en contact permanent avec la nature, l'océan, les côtes sauvages, les dauphins... » rajoute Marine.\n\nSelon Marine et Clément, que permettent des vacances en bateau ?",
+      "image_url": null,
+      "options": {
+        "A": "De faire du sport et de rencontrer des personnes",
+        "B": "De nager régulièrement et de manger du poisson",
+        "C": "De se reposer et de découvrir le milieu marin",
+        "D": "De vivre au calme et de se retrouver en famille"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 16,
+      "question_text": "C'est en France que se tient le salon du raisin biologique. Avec 600 professionnels venus de quarante pays, c'est le salon bio le plus important en Europe. Pourtant, si l'Europe produit la plus grande part de raisin bio, avec 88% des surfaces biologiques dans le monde, la France n'est pas championne en la matière ! L'année dernière, l'agriculture biologique concernait seulement 4% de la production française... On parle toujours plus du bio qu'on ne le consomme.\n\nQuelle est la situation du marché français en ce qui concerne la culture du raisin biologique ?",
+      "image_url": null,
+      "options": {
+        "A": "La France compte de nombreux producteurs qui exportent peu",
+        "B": "La France demeure une petite productrice sur le plan européen",
+        "C": "La France fournit une part importante de la production mondiale",
+        "D": "La France parvient tout juste à répondre à sa demande nationale"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Vous n'avez plus le courage d'ouvrir un magazine, vous ne prenez plus le temps de lire, votre emploi du temps est surchargé, vous passez du temps dans les transports... Alors, retrouvez le plaisir de la lecture différemment. Socrate Editions transforme la presse écrite en presse audio et garantit la qualité de la lecture grâce à des comédiens. Vous suivez ainsi l'actualité et vous continuez à vous informer. Retrouvez nos offres sur notre site Internet.\n\nQue propose cet éditeur ?",
+      "image_url": null,
+      "options": {
+        "A": "Des enregistrements sonores d'articles de journaux",
+        "B": "Des extraits choisis de romans classiques",
+        "C": "Des publications résumées de contenus de sites web",
+        "D": "Des sélections de répliques de théâtre célèbres"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 18,
+      "question_text": "RAPPEL\nPour un tri efficace des ordures, ne jeter dans les poubelles jaunes que les petits cartons tels que paquets de céréales ou de produits laitiers. Les couvercles de ces poubelles ont un trou de la taille des cartons et ne peuvent pas être ouverts complètement, afin d'éviter le mélange des ordures. Les gros cartons vont avec les ordures ménagères. Les poubelles sont vidées tous les mardis.\n\nÀ quoi faut-il faire attention en triant les déchets ?",
+      "image_url": null,
+      "options": {
+        "A": "À leur couleur",
+        "B": "À leur dimension",
+        "C": "À leur emballage",
+        "D": "À leur quantité"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Recherche de partenaire pour un projet collaboratif par Internet. Pour inscrire votre classe à ce projet, communiquez directement avec la personne responsable ou suivez la consigne indiquée, selon le cas.\nTitre : Comparaison des constellations entre les hémisphères nord et sud\nPersonne responsable : Sandrine Grun\nAdresse électronique : sandrine.grun@collegerenoir.fr\nPays d'origine : France\nDomaine concerné : astronomie/sciences de l'espace\nDescription : un groupe d'élèves participant à un atelier d'astronomie avec leur professeur de sciences physiques souhaiterait comparer les constellations des hémisphères nord et sud et étudier leurs histoires. Ces élèves recherchent un groupe d'élèves situé dans l'hémisphère sud, parlant français. Ils voudraient commencer le projet entre élèves à la rentrée de septembre. Mais le travail entre professeurs pourrait commencer avant.\n\nEn quoi consiste le projet décrit dans cette annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Participer à un concours international d'astronomie",
+        "B": "Réaliser une étude d'observation des astres",
+        "C": "Se joindre à une formation d'enseignants en sciences",
+        "D": "Suivre un cours de rattrapage en sciences physiques"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 20,
+      "question_text": "En Provence et sur la Côte d'Azur, les campagnes sont jalonnées d'oliviers, d'orangers et d'autres pruniers dont les fruits ne sont jamais ramassés. À Grasse, l'association d'insertion « Renouer » a eu l'excellente idée de valoriser ces denrées pour s'autofinancer. Depuis 2012, la structure intervient dans les vergers de particuliers via des cueillettes dites solidaires. « Nous répertorions des parcelles laissées en friche et nous proposons aux propriétaires de ramasser les fruits à leur place », précise Sophie Allain, bénévole qui coordonne l'opération. Tous les ans, l'action mobilise entre 10 et 15 employés en insertion ainsi que des citoyens séduits par la dimension à la fois sociale et écologique de l'initiative.\n\nQuelle est l'activité de cette association ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle cultive des espaces verts abandonnés",
+        "B": "Elle réalise de petits services d'entretien",
+        "C": "Elle récolte les produits de terrains privés",
+        "D": "Elle s'occupe de gérer des jardins collectifs"
+      },
+      "correct_answer": "C"
+    },
+        {
+      "question_number": 21,
+      "question_text": "Théo, la poupée « inter-affective ». Théo a deux ans. Il mesure 52 cm et communique spontanément avec sa maman. Lancé par Berchet, ce robot est bourré d'électronique et de capteurs pour interagir avec l'enfant. Ainsi, Théo dort lorsqu'il fait nuit, se réveille au lever du jour, réclame à manger ou à boire et même à aller au pot. Sa voix numérisée est d'un naturel confondant. Surtout, il s'adapte aux capacités de jeux de chaque enfant : plus il manifestera son désir de jouer, plus le jouet sera réactif.\n\nQue signifie le fait que la voix numérisée de Théo soit d'un « naturel confondant » ?",
+      "image_url": null,
+      "options": {
+        "A": "À un timbre qui n'existe pas naturellement",
+        "B": "Se confond avec la voix de l'enfant qui joue",
+        "C": "Enregistre et reproduit les voix entendues",
+        "D": "Imite à la perfection la voix d'un enfant"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 22,
+      "question_text": "La décision du gouvernement d'abattre 40 loups a fait grincer les dents d'un grand nombre d'organisations non gouvernementales. L'espèce est en effet sur la liste rouge des animaux en voie d'extinction de l'Office National de la Chasse et de la Faune Sauvage. Selon une étude scientifique récente, la disparition du loup dans le parc de Yellowstone aux États-Unis a perturbé tout un écosystème. Certaines espèces consommatrices d'arbres et d'arbustes que le canidé chassait ont proliféré au point de menacer la végétation. De surcroit, le loup aurait d'autres bienfaits : prédateur opportuniste, il cible les proies les plus fragiles ou en mauvaise santé favorisant ainsi la vigueur des espèces qu'il traque.\n\nQu'apprend-on sur les loups ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils ont de moins en moins d'espace naturel",
+        "B": "Ils permettent de protéger la biodiversité",
+        "C": "Ils représentent un danger exagéré",
+        "D": "Ils sont décimés par la maladie"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Il change le clavier de ses deux ordinateurs tous les six mois. Les touches cèdent sous ses mains qui, telles des araignées possédées, tissent roman après roman. En vingt ans, il a écrit près de mille cent titres. C'est un touche-à-tout : il pond aussi bien de la littérature pour herboristes que de la pharmacopée policière. Cet ancien chirurgien a abandonné le festin sanglant des blocs opératoires pour les joies de la graphomanie. « Je me suis lassé de la médecine. Mais j'écris mes romans avec toute la passion que j'avais pour la chirurgie », explique-t-il.\n\nQuelle est la particularité de cet écrivain ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a écrit une œuvre abondante et variée",
+        "B": "Il a toujours rêvé de devenir médecin",
+        "C": "Il est emballé par les histoires d'épouvante",
+        "D": "Il peine à écrire depuis quelque temps"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Plus de trente monnaies locales circulent en France, la plupart sont créées et pilotées par des groupes de citoyens. En version papier ou exclusivement numériques, elles dessinent une nouvelle carte économique des villes, fondée sur le développement local des entreprises et la promotion des circuits courts. Ces nouveaux moyens de paiement complémentaires de l'euro se veulent aussi des outils de réappropriation de l'économie locale par les habitants. Si leurs effets sur l'environnement sont moins mesurables que les impacts économiques et sociaux, les monnaies locales restent des outils intéressants pour encourager l'adoption de comportements plus écologiques. Elles orientent ainsi le consommateur vers des acteurs économiques plus respectueux de la planète.\n\nSelon cet article, quel intérêt présentent les monnaies locales ?",
+      "image_url": null,
+      "options": {
+        "A": "Elles concurrencent le marché numérique",
+        "B": "Elles contribuent à protéger l'environnement",
+        "C": "Elles favorisent l'épargne des citoyens",
+        "D": "Elles sécurisent les modes de paiement"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Le ministère de l'Éducation nationale prépare une campagne promotionnelle afin de revaloriser le métier d'enseignant. En effet, s'il a supprimé des milliers de postes ces dernières années, il peine cependant à embaucher des professeurs. La présidente de la première organisation syndicale enseignante du pays ne décolère pas. « Le ministère prend le Problème à l'envers. Ce n'est pas en faisant de la communication que nous rendrons le métier d'enseignant attractif, proteste la syndicaliste. Comment donner envie aux étudiants de devenir enseignant quand on leur supprime leur formation ? » Pour elle, l'attractivité du métier passe aussi par une revalorisation de la paie. Or, le gouvernement a annoncé un gel des salaires dans la Fonction publique.\n\nComment rendre le métier d'enseignant plus attirant ?",
+      "image_url": null,
+      "options": {
+        "A": "En limitant la part de l'apprentissage pratique",
+        "B": "En rendant compréhensibles les décisions politiques",
+        "C": "En renouvelant les perspectives d'évolution",
+        "D": "En révisant les conditions de rémunération"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 26,
+      "question_text": "C'est un fait majeur dans l'histoire du français : la France est devenue minoritaire en nombre de locuteurs dans le monde francophone. Ce qui vaut mieux que de faire partie des 2 000 langues qui, par les hasards de l'histoire et des rapports de force, risquent d'avoir disparu d'ici à la fin du siècle. En revanche, nous allons devoir abandonner certaines de nos postures traditionnelles. Et ce, pour une raison simple : le français ne dépend pas seulement d'une élite intellectuelle — écrivains, enseignants ou académiciens — mais surtout de ses locuteurs. Aussi, la langue va-t-elle nécessairement s'ouvrir davantage. Il semble acquis, en tout cas, que l'origine de la norme va se déplacer des rives de la Seine au vaste monde, sachant qu'il s'agit là d'un enrichissement, et non d'une perte.\n\nComment l'auteur voit-il l'évolution du français ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est dépendante de décisions politiques",
+        "B": "Elle est limitée par les intellectuels",
+        "C": "Elle est menacée par l'essor d'autres langues",
+        "D": "Elle est modelée par ses locuteurs"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Prendre le métro à Lyon est devenu compliqué pour celui qui ne veut pas se faire accoster. En découvrant l'écran publicitaire géant installé à la station Bellecour, j'ai été sidéré. Le publicitaire, qui a reçu la bénédiction des élus pour installer cet écran géant ainsi qu'une centaine d'écrans de télévision de 2 m² sur les quais, peut être fier de lui. Il se félicite d'ailleurs, sur son site Internet, de « susciter encore plus d'émotion ». Générer des sentiments, de la peur ou de la joie, c'est s'assurer que le message publicitaire aura plus d'impact. Il pourra alors vendre plus cher aux marques le droit d'accaparer toujours plus notre attention.\n\nQuelle est l'attitude de l'auteur vis-à-vis de cette campagne publicitaire ?",
+      "image_url": null,
+      "options": {
+        "A": "Il critique son concept",
+        "B": "Il dénonce son coût élevé",
+        "C": "Il doute de son efficacité",
+        "D": "Il prédit son échec"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Elle écrivait récemment sa dernière chronique, lancée comme un appel à la résistance. « Je m'en vais, et je pense que vous devriez me rejoindre... ». La journaliste Kelly H. annonçait trois choses : qu'elle démissionnait après une longue carrière dans un prestigieux quotidien, qu'elle devenait professeure de mathématiques, et qu'elle créait une fondation pour encourager d'anciens entrepreneurs à devenir enseignants. « Vous avez eu une carrière à succès. Maintenant, faites quelque chose de plus important ! Enseignez. » En tant que journaliste, elle avait mené des enquêtes sur la vie des cadres supérieurs, ridiculisant le plus souvent l'engouement pour les concepts managériaux à la mode et soulignant les crises existentielles des cadres.\n\nQuelle est la nouvelle priorité de Kelly H. ?",
+      "image_url": null,
+      "options": {
+        "A": "Changer la façon de gérer des équipes",
+        "B": "Compenser le manque de formateurs",
+        "C": "Réussir au sein d'une société",
+        "D": "Transmettre des connaissances"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 29,
+      "question_text": "— En tant que philosophe, que répondez-vous à ceux qui s'inquiètent de voir les jeunes évoluer dans l'univers virtuel des nouvelles technologies ?\n— Rendez-vous compte : la culture est désormais à la portée de tous ! Quel progrès ! On sait que les nouvelles technologies n'activent pas les mêmes régions du cerveau que les livres. Cet organe évolue, de la même façon qu'il avait déjà révélé de nouvelles capacités lorsqu'on est passé de l'oral à l'écrit.\n— Que faisaient donc nos neurones avant l'invention de l'écriture ?\n— Les facultés cognitives ne sont pas stables chez l'homme. C'est très intéressant. C'est ma réponse aux vieux grognons qui accusent les jeunes de ne plus avoir de mémoire. Ils jugent avec les facultés cognitives qui sont les leurs, sans admettre que le cerveau évolue.\n\nQuel est l'avis de ce philosophe concernant les nouvelles technologies ?",
+      "image_url": null,
+      "options": {
+        "A": "Elles détruisent les cellules du cerveau",
+        "B": "Elles développent la mémoire à court terme",
+        "C": "Elles modifient nos processus cognitifs",
+        "D": "Elles provoquent la disparition de l'écriture"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Ne pas dormir suffisamment plusieurs nuits de suite perturbe, tout le monde s'en rend compte. Ce qui est moins visible, c'est comment cela affecte notre santé. (...) Des scientifiques ont montré que le manque de sommeil modifiait l'intensité de l'activité de plus de 700 gènes, parmi eux ceux liés au stress et à la lutte contre les maladies. Mais ils ne peuvent pas encore dire si ces modifications génétiques sont une réponse à court terme et sans danger à un sommeil de mauvaise qualité, un signe d'adaptation du corps à la privation de sommeil, ou un danger potentiel pour la santé.\n\nQu'est-ce que les scientifiques ont découvert concernant le manque de sommeil ?",
+      "image_url": null,
+      "options": {
+        "A": "La gestion du stress est difficile",
+        "B": "La santé est mise en péril",
+        "C": "Le corps est moins réactif",
+        "D": "Le système génétique est affecté"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Il ne viendrait à personne l'idée d'entrer dans un cinéma ou un théâtre sans payer sa place, ni à ces industries de ne pas rémunérer leurs auteurs. De nombreux festivals ou lieux dédiés à la photographie se targuent pourtant de la gratuité de leurs expositions. D'autant plus que, dans la majorité des cas, il est admis qu'aucun budget ni aucun droit d'auteur ne soient prévus pour le photographe. Même si le motif initial de rendre la photographie accessible à tous est plus que légitime, ce qui choquerait pour tout autre secteur ou corps de métier n'offusque personne dès lors qu'il s'agit du photographe, pourtant producteur de la matière première de ces activités.\n\nQue constate l'auteur de l'article ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est la photographie qui est la forme d'art la moins valorisée",
+        "B": "Il y a peu d'événements culturels consacrés à la photographie",
+        "C": "Les photographies sont commercialisées à bas prix",
+        "D": "N'importe qui peut s'improviser photographe"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Au début de l'adolescence, vers 11-12 ans, les enfants aspirent à l'autonomie. C'est à cette période que les écrans jouent un rôle important au niveau de leur intégration sociale, mais aussi que les risques d'excès se profilent. « Les parents doivent abandonner leur position de prescription et passer à une position d'accompagnement. » Le docteur Huerre leur recommande donc d'explorer avec leur enfant les jeux qui l'intéressent et la manière dont il circule sur la toile, afin de faciliter les échanges. « Au lieu d'avoir peur des jeux vidéo, demandez-lui de vous les montrer et n'hésitez pas à jouer avec lui. Certains procurent un réel plaisir visuel et esthétique », conseille-t-il.\n\nQue préconise le médecin aux parents ?",
+      "image_url": null,
+      "options": {
+        "A": "De participer à l'exploration du monde numérique",
+        "B": "De restreindre le temps consacré aux jeux vidéo",
+        "C": "De sélectionner des contenus adaptés aux enfants",
+        "D": "De surveiller la navigation des jeunes sur la toile"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Certains économistes spécialisés dans la politique en matière de mobilité estiment que la gratuité des transports en commun n'est pas souhaitable. Pour eux, la question de savoir qui va les financer est un peu simpliste. « La gratuité existe déjà dans notre pays. » Il y a une quinzaine de réseaux en dehors de l'Île-de-France qui le font déjà totalement. Le problème actuel est celui des ressources. En effet, les réseaux des grandes métropoles ne sont pas formatés pour pouvoir absorber ce supplément de fréquentation. Et donc de ce point de vue, il n'est pas possible de se poser la question de la gratuité, avant de savoir quelle offre sera proposée aux usagers qui voyagent sur le réseau.\n\nD'après ces spécialistes, quel est le fond du problème de la gratuité des transports ?",
+      "image_url": null,
+      "options": {
+        "A": "L'absence de modèle comparatif de mobilité",
+        "B": "La déresponsabilisation des usagers",
+        "C": "Le déficit provoqué par son financement",
+        "D": "Le risque de saturation des réseaux"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 34,
+      "question_text": "L'apprentissage en Europe\nÀ l'heure actuelle, l'utilisation des nouvelles technologies de l'information et de la communication (TIC) dans les salles de classe est rare. Les établissements travaillent encore selon un modèle ancien de l'éducation. Cela signifie que les établissements n'ont pas pu se détacher d'une structure trop rigide : ils fondent leurs ressources d'enseignement sur des manuels, ont peu recours aux connaissances mises à leur portée grâce à la mondialisation et travaillent au sein d'espaces d'apprentissage très spécifiques. Les établissements appliquent toujours une philosophie plus caractéristique du XIX° siècle (industriel) que du XXI° siècle (informationnel). L'enseignement se caractérise actuellement par des établissements du XIX° siècle dans lesquels des enseignants du XX° siècle travaillent auprès d'étudiants du XXI° siècle.\n\nQue présente l'auteur de l'article ?",
+      "image_url": null,
+      "options": {
+        "A": "Des méthodes innovantes sur l'usage des TIC",
+        "B": "Des pistes de recherche sur l'apprentissage",
+        "C": "Un état des lieux des ressources pédagogiques",
+        "D": "Une analyse du contexte socio-éducatif actuel"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 35,
+      "question_text": "La génération Y\nCe sont les 20-30 ans qui ont grandi avec les nouvelles technologies. Phénomène de société, ils sont ultra-connectés et surfent sur les réseaux sociaux, disposant de compétences que ne détenaient pas leurs aînés. Une autre caractéristique les rassemble, la précarité au travail : 25% des jeunes sont au chômage, d'autres ont des emplois temporaires. Conséquence : on les présente comme sans illusions, peu impliqués au travail, individualistes et réfractaires à l'autorité. Pourtant, cette précarité aurait du bon : elle pousserait la génération Y à se prendre en charge plus que ses aînés, en créant ses propres entreprises. Cependant, des sociologues ont montré qu'il est très difficile de distinguer l'effet d'âge de l'effet période économique sur les attitudes au travail.\n\nD'après ce texte, de quelle qualité serait dotée la génération Y ?",
+      "image_url": null,
+      "options": {
+        "A": "Un esprit créatif dans le secteur des technologies Internet",
+        "B": "Une grande autonomie dans le domaine professionnel",
+        "C": "Une aptitude étonnante à savoir se mettre en avant",
+        "D": "Un esprit de solidarité avec les personnes sans emploi"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 36,
+      "question_text": "J'ai commencé ma vie comme je la finirai sans doute : au milieu des livres. Dans le bureau de mon grand-père, il y en avait partout ; il était défendu de les épousseter, sauf une fois l'an, avant la rentrée d'octobre. Je ne savais pas encore lire que, déjà, je les révérai. Je les touchais en cachette pour honorer mes mains de leur poussière, mais je ne savais trop qu'en faire. Mon grand-père maniait ces objets culturels avec une dextérité d'officiant. Je l'ai vu mille fois se lever d'un air absent, faire le tour de sa table, traverser la pièce en deux enjambées, prendre un volume sans hésiter, le feuilleter en regagnant son fauteuil, puis, à peine assis, l'ouvrir d'un coup sec à la bonne page.\n\nQue fait l'écrivain dans cet extrait ?",
+      "image_url": null,
+      "options": {
+        "A": "Il revit des souvenirs lointains dans le bureau de la maison familiale",
+        "B": "Il se rappelle une pièce de travail poussiéreuse interdite aux enfants",
+        "C": "Il raconte son apprentissage de la lecture auprès de son grand-père",
+        "D": "Il évoque ses rentrées scolaires alors qu'il ne savait pas encore lire"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 37,
+      "question_text": "L'avenir réside dans la formation de la jeunesse, dans l'innovation et dans la recherche. Pour assumer pleinement ses responsabilités, l'université de Nantes propose un nouveau modèle universitaire en France : un modèle décloisonné, qui réunit les acteurs de l'enseignement supérieur et de la recherche (grandes écoles, organismes de recherche, centre hospitalier universitaire, etc.). Ce nouveau modèle replace au cœur des priorités la question de l'accès à un enseignement supérieur de qualité pour le plus grand nombre. Il a pour ambition de créer les conditions de réussite et d'épanouissement pour tous les étudiants, tout en favorisant des innovations majeures. À travers ce projet de nouvelle université, le président et son équipe défendent une vision novatrice et proposent un modèle qui conjugue exigence et bienveillance, excellence et lien social.\n\nQuel est l'objectif de cette université ?",
+      "image_url": null,
+      "options": {
+        "A": "Attirer davantage d'étudiants brillants",
+        "B": "Être à la pointe de la technologie",
+        "C": "Ouvrir ses cours à un public élargi",
+        "D": "Proposer des disciplines inédites"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Ça pourrait être une tragédie, avec les meilleurs ingrédients du genre : rencontres hasardeuses de personnages abîmés par un lourd passé, malheurs successifs et révélations inattendues... Sauf qu'entre le jeune pompier Roméo et l'infirmière Juliette, victime de la cruauté de son compagnon, le chemin tracé par Agnès Ledig dans son roman Pars avec lui est plein de pudeur, riche de personnages ordinaires mais surprenants, vrais mais imprévisibles, dans une France provinciale qu'on décrit trop peu. Il y a chez eux une envie de dire, d'avouer ce qui fut trop longtemps caché. Ainsi, l'histoire devient peu à peu libération et rédemption. Avec un art direct et familier de conteuse, l'auteure offre à ses personnages un espoir, un bonheur encore possible.\n\nSelon la critique, quel est le principal atout du roman d'Agnès Ledig ?",
+      "image_url": null,
+      "options": {
+        "A": "L'alternance entre le comique et le drame",
+        "B": "L'atmosphère énigmatique et inquiétante",
+        "C": "La présentation de particularités régionales",
+        "D": "L'émancipation des héros au cours du récit"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Une époque inimaginable pour un enfant d'aujourd'hui : ce temps où les parents n'avaient pas Internet et leur progéniture, pas de portable. Les parents les mieux informés se tenaient au courant de l'actualité une, voire deux fois par jour. Aujourd'hui, nous savons que le monde va mal en permanence. Chaque seconde, une mauvaise nouvelle tombe de l'autre bout du globe sur notre smartphone. En quelques années, nous avons basculé dans un nouveau monde. Plus vaste, immense même, tissé de rencontres improbables et d'opportunités fabuleuses, mais aussi surpeuplé de contrées hostiles et de tribus numériques agressives. Notre nouvelle vie est absolument excitante, vertigineuse même. Mais, justement, il nous revient de dompter ce vertige.\n\nQue constate ce journaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "La dégradation des relations sociales à cause d'internet",
+        "B": "La multiplication des sources d'information",
+        "C": "La nocivité des écrans sur le développement des enfants",
+        "D": "La recrudescence d'informations mensongères"
+      },
+      "correct_answer": "B"
+    }
+  ]
+}

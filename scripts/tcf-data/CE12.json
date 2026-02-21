@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE12",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "500 euros/mois : Location deux pièces, cuisine, vue sur mer.\n\nQue présente cette annonce?",
+      "image_url": null,
+      "options": {
+        "A": "Un appartement",
+        "B": "Un restaurant",
+        "C": "Un voyage",
+        "D": "Une voiture"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Marie,\n\nAppelez l'agence de voyage et prenez une place pour le directeur sur le vol Paris-Marseille de demain, SVP.\nLe n° de l'agence : 01 22 35 53 46\nMerci,\n\nDelmant\n\nQu'est-ce que Marie doit faire ?",
+      "image_url": null,
+      "options": {
+        "A": "Acheter un billet d'avion",
+        "B": "Aller à Marseille",
+        "C": "Prendre un rendez-vous",
+        "D": "Téléphoner à un collègue"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Venez apprendre le français à Paris\n\nClaude, votre professeur, vous accueille dans son confortable appartement à Montmartre. Au programme : des leçons de français, de bons repas et des activités pour mieux connaître la culture française.\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "Un cours de langue",
+        "B": "Un logement à louer",
+        "C": "Une sortie au restaurant",
+        "D": "Une visite touristique"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Vous souhaitez améliorer votre niveau en langue étrangère ? Le Conseil de l'Europe offre à ses salariés des formations dans les langues des pays de l'Union européenne. Inscrivez-vous dès maintenant pour les cours d'italien et d'allemand.\n\nQu'est-ce que le Conseil de l'Europe propose à ses employés ?",
+      "image_url": null,
+      "options": {
+        "A": "Des cours gratuits",
+        "B": "Des postes à l'étranger",
+        "C": "Des stages en Italie",
+        "D": "Des voyages en Europe"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 5,
+      "question_text": "À bord du Tip Top, le plus grand bateau du bassin d'Arcachon, laissez-vous guider pour 2h30 de promenade au gré des vents et des courants marins.\n\nDépart de la jetée Thiers tous les jours en juillet et août, en fonction des horaires de la marée. Renseignez-vous la veille.\nPrix: 25 € par personne, 28 Passagers maximum par croisière\n\nQue propose ce document ?",
+      "image_url": null,
+      "options": {
+        "A": "La visite d'un bateau",
+        "B": "Une promenade en mer",
+        "C": "Une promenade en ville",
+        "D": "La visite du port d'Arcachon"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Le centre de Branféré a ouvert ses portes au printemps dernier dans un parc de Bretagne. Des classes de l'école primaire y sont invitées. Les élèves y apprennent, pendant quelques jours, à connaître et à respecter la nature\n\nQu'apprend-on sur le centre de Branféré ?",
+      "image_url": null,
+      "options": {
+        "A": "Il accueille les élèves et leurs parents",
+        "B": "Il est ouvert seulement au printemps",
+        "C": "Il est réservé aux écoles de Bretagne",
+        "D": "Il informe les enfants sur la nature"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Cher Monsieur Damier,\n\nNous avons le plaisir de vous annoncer que vous êtes l'heureux gagnant de notre grand jeu de l'été. Vous pouvez dès maintenant venir chercher votre prix dans votre magasin préféré où nos soldes d'automne ont déjà commencé !\n\nBien Cordialement\n\nSolange Lofer (relations clients)\n\nQue va recevoir monsieur Damier ?",
+      "image_url": null,
+      "options": {
+        "A": "Un cadeau",
+        "B": "Une lettre",
+        "C": "Une publicité",
+        "D": "Une visite"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 8,
+      "question_text": "OFFRE SPÉCIALE LIVRES.COM\n\nPour tout achat de 3 livres ou plus sur notre site, recevez un bon d'achat de 10 euros à valider sur votre prochaine commande. Profitez-en vite, cette offre est valable jusqu'au 31 décembre !\n\nQuelle est l'avantage de commander sur Livres.com?",
+      "image_url": null,
+      "options": {
+        "A": "De bénéficier d'une réduction immédiate",
+        "B": "De recevoir un cadeau surprise",
+        "C": "De gagner un bon d'achat différé",
+        "D": "De participer à un tirage au sort"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Bonjour Léa,\n\nCe message pour te confirmer la formation de jeudi. Nous aurons besoin de ton ordinateur portable pour suivre les modules en ligne. Peux-tu le vérifier et le charger avant de venir ?\nMerci d'avance, À jeudi.\n\nSophie\n\nQue demande Sophie à Léa ?",
+      "image_url": null,
+      "options": {
+        "A": "De préparer son matériel",
+        "B": "De changer de date",
+        "C": "De réserver une salle",
+        "D": "De créer un compte"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 10,
+      "question_text": "À: slira@perso.fr\nObjet : Formation à l'informatique\n\nMademoiselle Brun,\n\nNous avons bien enregistré votre dossier en ligne. Pour votre participation à notre prochain stage de formation, nous vous attendons donc le 12 octobre à 9 heures. Nous vous rappelons que la présentation de vos diplômes est obligatoire.\n\nCordialement.\n\nMuriel Simonet\n\nQue doit faire mademoiselle Brun?",
+      "image_url": null,
+      "options": {
+        "A": "Apporter des documents",
+        "B": "Confirmer son inscription",
+        "C": "Remplir un formulaire",
+        "D": "Réserver un ordinateur"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Chers collègues,\n\nLa prochaine session du Concours général des lycées se déroulera du mardi 9 mars au mercredi 31 mars. Je vous serais reconnaissant(e) de bien vouloir me transmettre les candidatures de vos élèves avant les vacances de Noël. Je vous remercie par avance de votre collaboration.\nTrès cordialement,\n\nLe Proviseur,\n\nÀ qui s'adresse ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Aux élèves qui souhaitent participer aux épreuves",
+        "B": "Aux personnels qui organiseront les épreuves",
+        "C": "Aux professeurs qui feront participer leurs élèves",
+        "D": "Aux enseignants qui surveilleront les épreuves"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Connaître deux langues présente des avantages!\n\nLa gymnastique mentale du passage d'une langue à une autre est aussi une gymnastique des émotions et du comportement quand on change de langue, on change de culture. Quand le bilingue utilise une langue, la deuxième est aussi activée dans le cerveau, comme pour une traduction. Cette activité mentale est bénéfique pour le cerveau : elle aide à lutter contre certaines maladies.\n\nSelon cet article, qu'apporte la pratique de deux langues ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est bonne pour la santé",
+        "B": "Elle facilite la socialisation",
+        "C": "Elle développe la mémoire",
+        "D": "Elle enrichit la personnalité"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Un salon automobile est un lieu de rêve mais pas le salon de cette année, voici mon classement des modèles les plus laids:\n\n1- La V210: un aspirateur sur quatre roues\n2- La Tata Aria : pas chère mais pas belle non plus\n3- Le Cabriolet Aurus: plus large que haut\n\nVivement l'année prochaine !\n\nQuel est le problème de ces voitures ?",
+      "image_url": null,
+      "options": {
+        "A": "Leur couleur",
+        "B": "Leur forme",
+        "C": "Leur prix",
+        "D": "Leur taille"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Bonjour Nathalie.\n\nJ'ai bien reçu votre message téléphonique. Je pense arriver en avance mardi prochain et pouvoir passer dans votre bureau avant 10 heures, si cela vous convient, pour parler du projet de mission de David. Sinon, je serai également présente dans vos locaux mercredi. Il est absolument nécessaire que nous nous rencontrions avant la fin de la semaine prochaine, car je dois récupérer les copies des évaluations du stage qui a eu lieu le mois dernier.\n\nCordialement,\n\nHélène\n\nPourquoi Hélène écrit-elle à Nathalie?",
+      "image_url": null,
+      "options": {
+        "A": "Pour venir lui déposer des documents",
+        "B": "Pour lui demander l'envoi de documents",
+        "C": "Pour lui rendre compte du déroulement d'un stage",
+        "D": "Pour lui proposer des dates de rencontre"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Madame,\n\nJe suis étudiant en français langue étrangère. Je suis passionné par la lecture et les arts. J'aimerais faire un stage dans votre maison d'édition afin de mieux connaître ce domaine professionnel. J'ai déjà plusieurs expériences comme libraire dans mon pays d'origine, la Norvège. Je suis responsable, dynamique et motivé.\nDans l'attente d'une réponse de votre part, veuillez accepter, Madame, l'expression de mes sincères salutations.\n\nJörg Hans\n\nQue souhaite Jörg ?",
+      "image_url": null,
+      "options": {
+        "A": "Obtenir un poste chez un libraire",
+        "B": "Se spécialiser dans l'art et la culture",
+        "C": "S'inscrire à un cours de langue",
+        "D": "Travailler dans une maison d'édition"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 16,
+      "question_text": "« Il y a beaucoup d'avantages, démontrés par les faits, à choisir la Suisse pour y effectuer ses études ou une partie de celles-ci. La qualité de vie, celle des formations dispensées — même si elles sont souvent chères —, la situation géographique et l'ouverture internationale du pays... Du côté des défauts, mentionnons le fait que toutes les filières et formations ne sont pas représentées, ce qui est le cas dans la plupart des petits pays.\n\nQuel avantage présente l'enseignement supérieur dans ce pays?",
+      "image_url": null,
+      "options": {
+        "A": "Le choix des matières est vaste",
+        "B": "Le nombre d'étudiants est limité",
+        "C": "Le prix des études est peu élevé",
+        "D": "L'enseignement est de bon niveau"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Les soldes démarrent ce mercredi à Paris\n\nEt dans la moitié des départements, une date précoce qui exaspère les commerçants, obligés de solder les vêtements à peine mis en vente. Malgré cette polémique, les commerçants acceptent le jeu car ils comptent sur les soldes qui représentent 10% des ventes textiles de l'année.\n\nPourquoi les commerçants sont-ils mécontents cette année ?",
+      "image_url": null,
+      "options": {
+        "A": "Ne rapportent pas assez d'argent",
+        "B": "Commencent plus tôt que d'habitude",
+        "C": "N'attirent pas beaucoup de clients",
+        "D": "Sont organisés uniquement à Paris"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Infirmières, boulangers, chauffeurs de taxi : traditionnellement, ce sont des métiers de la nuit. Aujourd'hui, compétitivité oblige, d'autres travailleurs les rejoignent : des hommes d'affaires connectés avec l'Asie à 2 heures du matin, des caissières dans des commerces ouverts après 20 h, des ouvriers dans l'industrie. Or, le travail de nuit a un prix. Bien qu'il soit mieux rétribué en argent et/ou en jours de congé, il a des effets souvent dramatiques : Temps Présent a suivi quatre salariés de la nuit dont la fatigue accumulée perturbe la santé, l'humeur et la vie privée.\n\nQuel aspect du travail de nuit le documentaire va-t-il présenter ?",
+      "image_url": null,
+      "options": {
+        "A": "Les conséquences du travail de nuit sur la santé",
+        "B": "Les dangers des professions de nuit en ville",
+        "C": "Les évolutions des métiers habituels de la nuit",
+        "D": "Les motivations des salariés pour travailler la nuit"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 19,
+      "question_text": "De: Camping « Les Barques »\nÀ: Madame Baril\nObjet : Réservation\n\nMadame,\n\nSuite à votre demande, nous vous informons que nous avons un emplacement disponible pour la semaine du 10 au 17 août. Merci de confirmer rapidement votre venue. Je vous rappelle que les réservations se font uniquement par internet.\n\nCordialement,\n\nLa direction du camping « Les Barques »\n\nQue doit faire madame Baril?",
+      "image_url": null,
+      "options": {
+        "A": "Envoyer un courriel",
+        "B": "Payer sa réservation",
+        "C": "Refaire une demande",
+        "D": "Téléphoner à la direction"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Match Sète - Tours\nMercredi 12 novembre\n\n• Achat des billets aux points de vente habituels : 15 €\n• Réduction pour les étudiants et les détenteurs de carte « famille nombreuse »\n• Vente aux guichets du stade, le soir même : 20 €\n\nÀ quelle condition l'acheteur obtient-il un meilleur prix ?",
+      "image_url": null,
+      "options": {
+        "A": "En achetant les billets à l'avance",
+        "B": "En choisissant des places pour quatre matchs",
+        "C": "En prenant des billets pour un groupe",
+        "D": "En présentant une carte de club de sport"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 21,
+      "question_text": "Rendez-vous majeur de la scène numérique française, Les Rencontres de la Pyramide vous présentent une création révolutionnaire ! Cette année, vous êtes invités à vivre une expérience unique, à la fois en extérieur et en intérieur : exposition dans notre salle spécialement métamorphosée pour l'occasion, lancement d'un jeu multimédia grandeur nature dans la ville, spectacle de cirque en 3D, rencontres avec les artistes, ateliers innovants...\n\nQu'annonce cette publicité ?",
+      "image_url": null,
+      "options": {
+        "A": "L'organisation d'un événement culturel",
+        "B": "L'ouverture d'une salle de cinéma",
+        "C": "La construction d'un musée futuriste",
+        "D": "La sortie d'un nouveau jeu vidéo"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 22,
+      "question_text": "La voie est libre pour la maire de Paris, mais pas sans embûches. Décidée à déployer 700 km de nouvelles pistes cyclables à Paris d'ici 2020, elle n'entend pas laisser le préfet de police lui mettre des bâtons dans les roues. Or, le préfet tire la sonnette d'alarme, car le projet municipal met en péril la capacité d'intervention de ses services en cas de crise majeure dans certains secteurs de la capitale. Sans nier l'intérêt certain d'une piste cyclable, il estime que restreindre la circulation automobile à une seule file au lieu de deux dans certaines rues aboutira « à des phénomènes de congestion inquiétants en cas d'urgence. »\n\nQue reproche le préfet de police au projet de la maire de Paris ?",
+      "image_url": null,
+      "options": {
+        "A": "Il néglige les commerces dans les rues piétonnes",
+        "B": "Il rend difficile l'accès aux secteurs touristiques",
+        "C": "Il répond peu aux besoins en pistes cyclables des habitants",
+        "D": "Il risque d'entraver la circulation des véhicules de secours"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 23,
+      "question_text": "La crèche Tanger a rouvert ses portes\n\nAprès un an de travaux, la crèche municipale Tanger accueille à nouveau depuis mai dernier des enfants de 3 mois à 3 ans. Elle a été complètement réaménagée et ses capacités d'accueil augmentées. Elle reçoit à présent 52 enfants. Un passage permet aux « grands » d'accéder directement au jardin dont le revêtement au sol a été changé. Les enfants ont à leur disposition un nouveau toboggan et un double banc en forme de crocodile.\n\nPourquoi la crèche était-elle en travaux?",
+      "image_url": null,
+      "options": {
+        "A": "Pour accueillir des enfants plus âgés",
+        "B": "Pour améliorer la sécurité du bâtiment",
+        "C": "Pour multiplier les activités artistiques",
+        "D": "Pour proposer davantage de places"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Dans sa lutte constante contre l'analphabétisme, l'association ''Au Cœur des Mots'' innove cette année en mettant sur pied son centre de livres d'occasion à emprunter : La Bouquinerie. Cet espace réunira des livres de seconde main, dons de particuliers ou d'institutions. En plus d'être un loisir merveilleux, la lecture est à la base de tous les apprentissages, et il est important de communiquer ce plaisir au plus grand nombre de personnes possible. La Bouquinerie permettra donc de promouvoir la lecture et de la rendre accessible à tous.\n\nQuel est le projet de l'association Au Cœur des Mots ?",
+      "image_url": null,
+      "options": {
+        "A": "Animer des lectures publiques",
+        "B": "Faire la promotion d'un club de lecteurs",
+        "C": "Ouvrir une bibliothèque pour tous",
+        "D": "Publier une méthode pour apprendre à lire"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Sandrine Mercier et Michel Fonovich ont le voyage dans la peau. Les deux journalistes ont longtemps exploré le monde avant d'écrire un livre ensemble. Ils sont partis vivre ailleurs est constitué des histoires d'une trentaine d'expatriés et d'autant de destins et de trajectoires. Les auteurs sont allés chercher des personnages tous très différents mais toujours touchants et sincères en racontant leurs parcours lointains l'appel du large, les premiers pas, les déceptions, le rapport à la France, la découverte des autres... C'est certainement ce qui unit tous ces Français du bout du monde, par-delà leurs différences et leurs expériences: une ouverture d'esprit, une volonté de partager et, au final, une richesse et une joie de vivre communicative.\n\nD'après l'auteur de cet article, quelle est la particularité de cet ouvrage ?",
+      "image_url": null,
+      "options": {
+        "A": "L'originalité des pays visités",
+        "B": "La description des habitudes quotidiennes",
+        "C": "La diversité des portraits présentés",
+        "D": "Les qualités littéraires des écrivains"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Dans l'ensemble des espaces verts de la ville de Toulouse, les pelouses tondues régulièrement laissent place à 150 hectares de prairies urbaines, plus sauvages. « En coupant l'herbe, on stoppe le cycle des végétaux. Or si on ne la coupe qu'une fois par an, c'est bon pour l'écosystème et ça permet l'intégration de nouvelles espèces », explique la conseillère municipale en charge des espaces verts. Seul inconvénient, le résultat est nettement moins esthétique. « Au début, c'était mal compris car les gens pensaient que c'était sale, reconnait l'élue. Mais aujourd'hui, on voit des petites fleurs réapparaître et je ne reçois plus de courriers »\n\nPourquoi les gens écrivaient-ils à la conseillère municipale à propos des espaces verts ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour demander une diminution des frais",
+        "B": "Pour dénoncer le manque d'entretien",
+        "C": "Pour exiger plus de variété de plantes",
+        "D": "Pour réclamer l'ouverture d'autres parcs"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 27,
+      "question_text": "D'abord surpris par la naïveté du film, puis sceptique face aux clichés habituels et gentillets de ce genre de longs métrages potaches, on se laisse progressivement porter par la réalisation décalée du cinéaste et par l'interprétation savoureuse de la distribution. S'il manque parfois de rythme et s'il a un peu vieilli, ce film n'en demeure pas moins réussi dans sa capacité à capter l'esprit bohème et bon enfant des échanges Erasmus ! Après, ce n'est bien sûr pas le chef-d'œuvre de l'année, mais il est tellement rare aujourd'hui de voir un film français proposer quelque chose d'assez original et drôle sans se départir d'une certaine simplicité et d'une réelle justesse, qu'on ne peut que saluer le travail du réalisateur et de sa sympathique équipe.\n\nQuelle critique négative ce spectateur émet-il sur ce film ?",
+      "image_url": null,
+      "options": {
+        "A": "La réalisation de l'œuvre manque de maîtrise",
+        "B": "Le film tombe dans les stéréotypes du genre",
+        "C": "Le jeu des comédiens lui semble plutôt médiocre",
+        "D": "Le scenario du film est maladroitement construit"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Depuis des siècles, les gestes sont les mêmes. La précision est obligatoire. Et le temps, indispensable. Pourtant, avant les défilés des collections automne-hiver, la fièvre règne dans les ganteries de Saint-Junien, principale ville gantière de France. Industrie saisonnière, pour que les gants soient livrés à l'automne, les cadences de fabrication atteignent leur maximum entre le printemps et l'été. Avec un handicap majeur : l'impossibilité d'embaucher en renfort des gantiers artisans supplémentaires, pour la simple raison qu'il n'en existe pas. L'apprentissage de ces métiers s'effectue forcément en interne, puisque la dernière école de ganterie a mis la clé sous la porte.\n\nQuel est le principal problème que rencontre l'industrie du gant ?",
+      "image_url": null,
+      "options": {
+        "A": "La réactivité aux changements de la mode",
+        "B": "Le recrutement de personnels qualifiés",
+        "C": "Les formations inadaptées aux besoins",
+        "D": "Les techniques de production dépassées"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Chère Madame,\n\nJe vous remercie de votre commande mais votre règlement ne couvre pas totalement le montant de votre achat. Plutôt que de vous faire supporter des frais supplémentaires, je vous expédie votre colis dès aujourd'hui et je vous demande de me faire parvenir un chèque de 20 euros, à réception.\n\nBien sincèrement,\n\nQuel est l'objet de cette lettre ?",
+      "image_url": null,
+      "options": {
+        "A": "Demander à une cliente de payer l'intégralité de sa commande",
+        "B": "Prévenir une cliente que sa commande sera livrée en retard",
+        "C": "Confirmer à une cliente que sa commande a bien été expédiée",
+        "D": "Prévenir une cliente qu'elle devra payer 20 euros de frais d'envoi"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 30,
+      "question_text": "On s'est habitué depuis belle lurette à ne plus rencontrer de poinçonneurs dans le métro ni de pompistes dans les stations-service. Mais la liste des professions en voie de disparition ne cesse de s'allonger. Caissières dans les supermarchés, guichetiers dans les banques, hôtesses dans les cinémas... Tous remplacés par des machines? Pas si simple. Comme l'analyse Thibaut Carpentier, directeur du cabinet de conseil Obstand, la tentation industrielle de réduire les frais de personnel est grande mais cette logique se heurte à celle des consommateurs qui ont du mal à se passer d'une présence humaine. D'ailleurs, toutes les entreprises concernées l'ont bien compris : pas de suppression de postes mais des redéploiements avec élargissement des compétences.\n\nQuel obstacle l'automatisation des services rencontre-t-elle ?",
+      "image_url": null,
+      "options": {
+        "A": "Les coûts élevés des investissements",
+        "B": "Les faibles qualifications des employés",
+        "C": "Les réticences émises par la clientèle",
+        "D": "Les spécificités de certains métiers"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 31,
+      "question_text": "De: pascale@radioair.fr\nObjet : Remerciements\n\nChers tous,\n\nAmis, techniciens, auditeurs, animateurs, président de notre radio, vous qui avez toujours été là pour Des Airs, je voulais vous adresser un très grand merci ! Je le redirai le 1er juillet, pour la dernière fois sur les ondes, à l'occasion de la 200e : notre radio a été pour moi un merveilleux espace de liberté. Laissez-moi remercier encore une fois notre président, qui continue à la faire vivre. Quel bonheur de vous avoir tous eus autour de moi samedi !\n\nMerci encore,\nPascale,\n\nQu'ont-ils tous fêté samedi ?",
+      "image_url": null,
+      "options": {
+        "A": "L'anniversaire d'une radio",
+        "B": "La 200e édition d'une émission",
+        "C": "Le départ d'une animatrice",
+        "D": "Le travail d'un directeur"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Les séances de matinée, au cinéma, me comblaient. Elles me donnaient le courage d'affronter la curiosité des uns et des autres. Elles ne m'éloignaient pas longtemps de mes enfants. Je m'asseyais à ma place, avec de moins en moins de gêne, au fil des mois. Le cinéma, quel dérivatif puissant à l'angoisse ! Films intellectuels, à thèse, films sentimentaux, films policiers, films drôles, films à suspense furent mes compagnons. Je puisais en eux des leçons de grandeur, de courage et de persévérance. Ils approfondissaient et élargissaient ma vision du monde, grâce à leur apport culturel. J'oubliais mes tourments en partageant ceux d'autrui. Le cinéma, distraction peu onéreuse, peut donc procurer une joie saine.\n\nQue ressent cette personne quand elle va au cinéma ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle éprouve un sentiment d'invulnérabilité",
+        "B": "Elle s'imagine vivre une vie meilleure",
+        "C": "Elle savoure le bonheur d'avoir une famille",
+        "D": "Elle s'abstrait un temps de ses soucis"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 33,
+      "question_text": "La Commission européenne s'était penchée sur la demande d'adhésion de l'Islande à l'Union moins de deux semaines après son dépôt, preuve que le pays présentait des atouts indéniables. Jusqu'alors, l'Islande s'était montrée peu encline à rejoindre l'Union. Toutefois, à la suite de l'effondrement de ses principaux établissements financiers et de la chute de la couronne, sa monnaie nationale, le pays avait vu dans cette adhésion, ainsi que dans l'adoption de l'euro, un moyen de stabiliser son économie. Pour le président de l'Union, cette volonté d'intégrer l'espace européen renforçait la crédibilité du projet communautaire du Vieux Continent. Finalement, l'Islande a retiré sa demande, à la suite d'un changement de gouvernement et afin d'éviter des sujets sensibles tels que les quotas de pêche.\n\nSelon cet article, pourquoi l'Islande a-t-elle souhaité adhérer à l'Union européenne ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour bénéficier des aides financières de l'Union",
+        "B": "Pour mieux contrôler ses établissements financiers",
+        "C": "Pour redonner de la valeur à la monnaie nationale",
+        "D": "Pour sortir de la crise que son économie subissait"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 34,
+      "question_text": "La démocratie semble, dans son principe, une façon séduisante d'organiser le pouvoir dans une société. Le peuple se gouverne lui-même ou par ses représentants et chacun, étant à la fois gouverné et gouvernant, apprend à tenir compte de l'intérêt général aussi bien que de ses intérêts individuels. Un tel apprentissage n'a pas été facile il a fallu beaucoup d'approximations et d'échecs avant de parvenir aux démocraties actuelles. Face aux difficultés, ces constructions complexes et fragiles se sont montrées incroyablement résilientes, peut-être parce que leur légitimité s'enracine au plus profond des « passions du cœur de l'homme ». « Structurellement inachevée», la démocratie surprend par sa capacité à se transformer tout en restant fidèle à son ambition première. En dépit des critiques et des attaques, elle a su évoluer au gré des siècles et affronte aujourd'hui de nouveaux défis. Polymorphe, elle diffère également selon les pays, chaque expérience nationale ou régionale étant le fruit d'une histoire qui dépend avant tout des peuples qui l'écrivent.\n\nQuelle est l'idée principale de cet article?",
+      "image_url": null,
+      "options": {
+        "A": "L'idée de démocratie est aujourd'hui plus controversée qu'avant",
+        "B": "La démocratie est affaiblie par la diversité de ses formes",
+        "C": "La mise en place de la démocratie résulte d'un long processus",
+        "D": "Les fondements théoriques de la démocratie sont utopiques"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Il faut se rendre à l'évidence : le « jour » n'est plus l'unité de temps d'un journal.\n\nUn quotidien papier ne peut pas rivaliser avec la vitesse à laquelle les sites web, les blogs, les réseaux sociaux, les journaux en ligne, les radios et télés, les « news » des grands serveurs diffusent les nouvelles du jour. Aussi, au moment où il est en kiosques, se condamne-t-il à apparaître comme « le journal de la veille » perdant progressivement ses lecteurs qui, bombardés de scoops tous azimuts, sont déçus de n'y trouver que ce qu'ils savent déjà.\n\nQuelle est la position de l'auteur de l'article ?",
+      "image_url": null,
+      "options": {
+        "A": "Il conteste la fiabilité des sources d'internet",
+        "B": "Il critique la surabondance de l'information",
+        "C": "Il dénonce la médiocrité de la presse écrite",
+        "D": "Il doute de l'intérêt des médias traditionnels"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Histoires d'école\nBernard Martin\n\nLongtemps, l'auteur de ce livre fut un objet de stupeur pour sa famille : incapable d'apprendre l'alphabet, détestant les majuscules, les noms propres et les listes de vocabulaire à retenir. « D'où venait mon ânerie? », se demande-t-il dans cet ouvrage qui en réconfortera plus d'un. Car ce romancier jubilatoire fut un mauvais élève, terrassé par l'école. Il fut aussi professeur de français, histoire de contredire le destin. Ce récit est à la fois un manuel de pédagogie et un recueil de souvenirs. Un beau témoignage à offrir à tous ceux qui n'ont pas la science infuse. À tout le monde, donc.\n\nPourquoi ce livre est-il réjouissant, selon l'auteur de cette critique ?",
+      "image_url": null,
+      "options": {
+        "A": "Il permet d'apprendre à lire et à écrire de façon ludique",
+        "B": "Il raconte les aventures d'un professeur d'histoire",
+        "C": "Il ravive l'intérêt des littéraires pour les matières scientifiques",
+        "D": "Il retrace l'improbable parcours de vie d'un ancien cancre"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Dans leur nouvelle collection, les éditions Nil invitent des auteurs à se livrer à un exercice épistolaire intime en écrivant une lettre pour dire l'indicible. Le modèle en est celle que Kafka rédigea à l'intention de son père, mais qu'il préféra ranger dans un tiroir tant l'accusation portée était peu amène. Avec L'autre fille, missive adressée à sa sœur aînée, morte avant sa naissance, Annie Ernaux inaugure brillamment le concept, fidèle à son écriture tranchante et analytique. Rejetant le terme d'autofiction, l'écrivaine se dit fascinée par la réalité, partant à la recherche d'une vérité sur une mort que ses parents lui ont toujours cachée. En demandant à des auteurs de se libérer d'un vieux tourment, la collection entend réhabiliter un genre littéraire oublié.\n\nÀ quel résultat la participation à cette collection conduit-elle Annie Ernaux ?",
+      "image_url": null,
+      "options": {
+        "A": "À s'acquitter d'un engagement moral",
+        "B": "À s'affranchir d'une histoire ancienne",
+        "C": "À se défaire d'un sentiment de culpabilité",
+        "D": "Cherchant à se justifier d'une action peu glorieuse"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Qu'est-ce que la « banquise » ? Un amas de glace flottante, un peu comme un glaçon géant. D'ailleurs, ce mot nous fait spontanément penser à un banc de glace. On parle bien de banquette, alors pourquoi pas de banquise ? Hélas, l'origine du mot est tout autre.\n\nEn fait, on devrait plutôt dire « panquise » , puisque le mot provient d'une vieille langue scandinave, le norrois, dans laquelle un « pakkis » est un bloc de glace. Le début du mot appartiendrait à la famille de « paquet » et le « -is » final signifie « glace » dans de nombreuses langues du Nord. Alors bien sûr, c'est la proximité du mot français « banc » qui a prêté à confusion.\n\nQu'apprend-on dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "« Banquise » est un bon exemple d'une traduction fidèle",
+        "B": "Il est facile d'attribuer une étymologie erronée à un mot",
+        "C": "Il y a des différences subtiles entre les dialectes nordiques",
+        "D": "Les linguistes déplorent les mutations du lexique scandinave"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Les technologies de l'information et de la communication (TIC) ont révolutionné presque tous les aspects de la vie privée et professionnelle. Si les élèves ne sont pas capables de naviguer dans un environnement numérique complexe, ils ne pourront pas participer pleinement à la vie économique, sociale et culturelle du monde qui les entoure. Les systèmes d'éducation doivent fournir aux professionnels de l'éducation de nouveaux environnements d'apprentissage. Ceux-ci permettront de développer les pédagogies du XXI° siècle et de doter les élèves des compétences dont ils auront besoin pour réussir dans le monde de demain. La technologie est le seul moyen d'élargir au maximum l'accès à la connaissance; elle peut être utilisée au service des nouvelles pédagogies en plaçant les apprenants au cœur d'un apprentissage actif.\n\nSelon l'auteur, quel intérêt un professeur trouve-t-il à utiliser les TIC ?",
+      "image_url": null,
+      "options": {
+        "A": "Disposer de ressources multiples",
+        "B": "Employer les réseaux sociaux pour motiver les enfants",
+        "C": "Pallier les défaillances des méthodes traditionnelles",
+        "D": "Simplifier l'enseignement"
+      },
+      "correct_answer": "C"
+    }
+  ]
+}

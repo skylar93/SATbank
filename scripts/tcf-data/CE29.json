@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE29",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Bonjour Anna,\n\nEst-ce que vous pouvez vous occuper de Jérôme après l'école vendredi ? Pour le repas, j'ai fait les courses et un gâteau. Il doit se coucher avant 21h, Je rentrerai vers 23h.\n\nMerci beaucoup !\nAgnès,\n\nQue demande Agnès à Anna ?",
+      "image_url": null,
+      "options": {
+        "A": "D'aller au supermarché",
+        "B": "De garder son fils",
+        "C": "De préparer un dessert",
+        "D": "De rester dormir"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Restaurant La bonne fourchette\n\nFormule légère 9€ — Salade au choix\nFormule express 12,50€ — Plat du jour\nFormule déjeuner 16€ (1/2 eau minérale et café compris) — Entrée + plat du jour / Plat du jour + dessert\nFormule plaisir 20€ — Entrée + plat du jour + dessert\n\nCombien coûte la formule avec boisson ?",
+      "image_url": null,
+      "options": {
+        "A": "9 euros",
+        "B": "12,50 euros",
+        "C": "16 euros",
+        "D": "20 euros"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Vous souhaitez améliorer votre niveau en langue étrangère ? Le Conseil de l'Europe offre à ses salariés des formations dans les langues des pays de l'Union européenne. Inscrivez-vous dès maintenant aux cours d'italien et d'allemand.\n\nQu'est-ce que le conseil de l'Europe propose à ses employés ?",
+      "image_url": null,
+      "options": {
+        "A": "Des cours gratuits",
+        "B": "Des postes à l'étranger",
+        "C": "Des stages en Italie",
+        "D": "Des voyages en Europe"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 4,
+      "question_text": "La comédienne franco-suisse Pascale Rocard part tourner un film à Paris. Actrice et réalisatrice à succès, elle est aussi peintre et photographe. Mère de deux enfants, elle vit à Verbier, en Suisse.\n\nQue va faire Pascale Rocard ?",
+      "image_url": null,
+      "options": {
+        "A": "Avoir un bébé",
+        "B": "Déménager en France",
+        "C": "Jouer au cinéma",
+        "D": "Organiser une exposition"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Une société de production recherche, pour faire de la figuration dans un film sur le thème des relations parent-enfant, de jeunes mères confrontées aux défis de l'éducation de leurs enfants.\n\nQue recherche la société de production ?",
+      "image_url": null,
+      "options": {
+        "A": "De jeunes enfants",
+        "B": "Des femmes et des enfants",
+        "C": "De jeunes mamans",
+        "D": "Des parents avec leurs enfants"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 6,
+      "question_text": "1 PLACE\nFILM : LES 3 FRÈRES\nSÉANCE : 20h30\nTARIF ÉTUDIANT : 6.00€\n\nOù peut-on obtenir ce ticket ?",
+      "image_url": null,
+      "options": {
+        "A": "À la caisse d'un cinéma",
+        "B": "À l'accueil d'un opéra",
+        "C": "À l'entrée d'un musée",
+        "D": "Au guichet d'un théâtre"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Chers parents, Les élèves de l'école du Centre sont heureux de vous inviter à voir la pièce « Vive les vacances » qu'ils ont écrite et qu'ils joueront pour vous le vendredi 9 mars à 19 heures.\n\nQu'est-ce qu'on propose aux parents ?",
+      "image_url": null,
+      "options": {
+        "A": "De préparer un voyage",
+        "B": "De regarder un spectacle",
+        "C": "De venir à une réunion",
+        "D": "De visiter une classe"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Chers professeurs,\nCher étudiants,\n\nVenez rencontrer les nouveaux étudiants de la semaine ! Ce mardi, de 8h30 à 10h30. Rendez-vous dans la salle « Les Mimosas ».\n\nJ. Lebon, directrice\nÉcole de langues ABC\n\nPourquoi Madame Lebon écrit-elle cette annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour changer un horaire",
+        "B": "Pour organiser une fête",
+        "C": "Pour présenter des élèves",
+        "D": "Pour proposer une sortie"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 9,
+      "question_text": "LA CUISINE DE JEAN-ÉMILE\n\nJean-Émile Nodier, chef depuis 10 ans, propose DES COURS DE CUISINE À DOMICILE pour une à quatre personnes. Apprenez à cuisiner des recettes de qualité.\n\nPour plus de renseignements : www.lacuisinedejeanemile.fr\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "D'apprendre à préparer des plats chez soi",
+        "B": "De devenir un chef cuisinier professionnel",
+        "C": "De réaliser des repas pour de grands groupes",
+        "D": "De trouver de bonnes recettes sur internet"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Madame, Monsieur,\n\nEn raison de travaux rue Paul Vaillant, l'accès à la piscine municipale se fera côté boulevard Camélines, du 15 au 25 mars inclus. Veuillez nous excuser pour la gêne occasionnée. Le service municipal.\n\nQuelle information est donnée au sujet de la piscine ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle sera fermée au mois de mars",
+        "B": "Il y aura des travaux à l'intérieur",
+        "C": "L'entrée se fera par une autre porte",
+        "D": "Le service municipal réparera les lieux"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Cher Jacques,\n\nCe petit mot pour vous dire que Natacha et moi-même allons être dans la région de Toulouse au mois de juillet. Nous voudrions vous rendre visite à cette occasion. Merci de nous dire si cela est possible.\n\nTrès sincèrement,\n\nPourquoi Ahmed écrit-il à Jacques ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour lui communiquer la date de ses fiançailles",
+        "B": "Pour lui proposer de passer le voir avec son amie",
+        "C": "Pour lui annoncer son déménagement à Toulouse",
+        "D": "Pour lui demander de l'accompagner en voyage"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Vous travaillez à la mairie de Rouen, êtes musicien(ne) et pratiquez un instrument depuis plusieurs années ? Rejoignez l'Orchestre des agents de la Ville de Rouen ! Les répétitions reprennent en septembre, à la fin des congés d'été, et ont lieu tous les jeudis de 12h à 13h30 au Conservatoire de Rouen.\n\nQu'est-ce qui est proposé aux agents de la mairie ?",
+      "image_url": null,
+      "options": {
+        "A": "D'assister à un concert à Rouen",
+        "B": "De devenir membre de l'orchestre municipal",
+        "C": "De suivre des cours de musique à la rentrée",
+        "D": "De visiter le conservatoire"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Nous vivons dans une grande maison à 15 minutes du centre de Marseille. Nos enfants ont quitté la maison et nous souhaitons louer une chambre à un(e) étudiant(e) pour 150€ par mois. Si vous êtes intéressé(e),\n\nÉcrivez-nous à : alouer@mailnet.com\n\nQu'est-ce qui est proposé dans cette annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Un échange de maison",
+        "B": "Un studio en centre-ville",
+        "C": "Une chambre chez l'habitant",
+        "D": "Une colocation entre étudiants"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 14,
+      "question_text": "INFORMATION\n\nPendant la conférence internationale sur la ville, vous pouvez demander un accompagnateur. Il pourra vous aider dans vos déplacements, vos recherches, vos repas, etc. Pour plus d'informations, adressez-vous à l'accueil.\n\nQue pouvez-vous demander à l'accueil ?",
+      "image_url": null,
+      "options": {
+        "A": "L'assistance d'une personne",
+        "B": "Le menu de vos déjeuners",
+        "C": "Le programme de la réunion",
+        "D": "Le plan des transports publics"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Ah ! Le bel été ! Par trente-cinq degrés à l'ombre, les enfants réclament le goûter après la baignade et coup de chance, le vendeur de beignets se profile à l'horizon. Résultat : visite aux urgences, car les beignets à la crème avaient passé la journée au soleil. Des histoires comme celle-là circulent dans toutes les associations de consommateurs. La direction générale de la répression des fraudes dresse tout de même un bilan encourageant. Peu d'endroits publics échappent aux vérifications et les escroqueries ont diminué. Mais tout de même, en matière d'hygiène le bon sens du consommateur doit prévaloir et lui permettre de prévenir tout incident.\n\nQue dénonce l'anecdote racontée dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Le grand nombre de vendeurs ambulants",
+        "B": "Les dangers des aliments mal conservés",
+        "C": "Les méfaits des collations après le bain",
+        "D": "L'inconscience des enfants imprudents"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 16,
+      "question_text": "« L'art et ses modes de production contribuent à sensibiliser les gens au développement durable », commente Elise Morin, créatrice de l'œuvre Waste Landscape composé de vieux CD. « Le recyclage, ça ne se passe pas que dans la poubelle », intervient le photographe Joachim Romain, dont le travail est centré sur les affiches promotionnelles. « Les déchets sont partout, on ne peut pas y échapper, on est envahi. Alors pourquoi ne pas m'en servir pour aller plus loin ? Pour montrer aux gens qu'à un moment, ces questions sur l'environnement vont arriver chez eux »\n\nQue proposent ces artistes ?",
+      "image_url": null,
+      "options": {
+        "A": "De diffuser de la musique",
+        "B": "De réutiliser des objets",
+        "C": "De s'engager en politique",
+        "D": "De tourner des publicités"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 17,
+      "question_text": "DU 4 AU 26 JUIN\nVenez visiter :\nLE SALON DE L'AGRICULTURE À STRASBOURG\n\n• Ateliers pour les adultes, balades avec des animaux pour les enfants.\n• Stands de nourriture et boissons sur place.\n• Tarif spécial pour les groupes et enfants de moins de 12 ans.\n\nInformations sur : salon-agriculture-strasbourg.fr\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "De découvrir un parc d'animation",
+        "B": "De gagner un séjour en famille",
+        "C": "De se promener dans une ferme",
+        "D": "De visiter une grande exposition"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Sur la bouteille de sa boisson de jus de fruits bio, un fabricant utilise une belle image d'ananas et de noix de coco. À y regarder de plus près, VOUS découvrirez que « des oranges gorgées de soleil et des bananes » viennent s'ajouter à l'ananas et à la noix de coco. Une manière subtile d'expliquer que l'ananas et la noix de coco ne représentent que 30 % des fruits de la boisson, les autres étant des jus plus courants (et moins coûteux).\n\nQue dénonce cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "L'ajout d'ingrédients malsains",
+        "B": "Le prix des produits exotiques",
+        "C": "Les annonces publicitaires",
+        "D": "Les étiquettes trompeuses"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 19,
+      "question_text": "L'exposition des sculptures de César s'est terminée hier. Pour la première fois, les visiteurs ont pu voir une centaine d'œuvres de l'artiste, exposées pendant 3 semaines dans un large espace, au dernier étage du Centre Pompidou.\n\nQu'est-ce qu'on apprend sur cette exposition ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est un succès",
+        "B": "Elle changera de lieu",
+        "C": "Elle est déjà finie",
+        "D": "L'entrée est gratuite"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Plus de peur que de mal pour ce petit garçon, près de Lorient, qui, dimanche soir, mangeait une part de fromage. « Papa, le fromage, il est dur !! » Dimanche, Youenn, 4 ans, mange une portion individuelle de fromage dans la maison familiale. Ses parents, occupés dans la pièce d'à côté, l'entendent tousser. « Comme s'il voulait vomir », raconte Yann, son père. En fait, l'enfant est en train de recracher... un bout de plastique qui aurait pu l'étouffer.\n\nQu'est-il arrivé à Youenn ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a avalé un mauvais morceau de fromage",
+        "B": "Il a trouvé quelque chose dans son fromage",
+        "C": "Il est tombé malade en mangeant du fromage",
+        "D": "Il s'est fait mal aux dents avec le fromage"
+      },
+      "correct_answer": "B"
+    },
+        {
+      "question_number": 21,
+      "question_text": "En tournage dans le Vaucluse jusqu'en décembre, l'héroïne d'« Une femme d'honneur », l'un des feuilletons phares de la première chaîne de télévision (TF1), a pris le temps de marquer une pause pour parler de la sécurité routière. « Non pas avec le prisme de mon rôle de gendarme, dit-elle, mais en tant que mère et automobiliste choquée par le comportement de certains conducteurs. » Corinne Touzet sait de quoi elle parle : chaque année, elle parcourt en monospace 25 000 kilomètres sur les routes de France.\n\nQui est Corinne Touzet ?",
+      "image_url": null,
+      "options": {
+        "A": "Actrice à la télévision française",
+        "B": "Gendarme sur les routes de France",
+        "C": "Championne française de conduite",
+        "D": "Reporter pour la télévision française"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 22,
+      "question_text": "On dit souvent que, pour avoir un bon moral et résister au stress, il faut une bonne condition physique, c'est encore plus vrai en période d'examen où il faut s'astreindre à quelques règles d'hygiène simples pour une bonne concentration. Le cerveau a besoin plus que jamais d'aliments et de nutriments variés pour être le plus efficace. Personnellement, j'ai arrêté les sandwiches et le café, et privilégié les œufs (vitamine B9), les céréales (vitamine B1), les viandes riches en Fer, l'iode avec les poissons et les légumes verts.\n\nQuelle conduite alimentaire a tenu cette étudiante pendant ses examens ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle a consommé des sucres lents",
+        "B": "Elle a diversifié son alimentation",
+        "C": "Elle a préféré sauter certains repas",
+        "D": "Elle a privilégié les repas rapides"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 23,
+      "question_text": "En Belgique, un studio de technologie créative propose au public de se livrer à une expérience artistique d'un genre inédit coiffés d'un casque spécial, les participants doivent se remémorer une histoire personnelle durant trente à soixante secondes. Des données ressortent alors sous forme d'algorithmes et sont analysées par un système de mesure émotionnelle, ce qui permet de leur donner forme et couleur. Ainsi, des peintures virtuelles sont créées à partir des émotions de chacun. Et comme chaque histoire est unique, chaque œuvre l'est aussi !\n\nQuel est le rôle des participants à cette expérience ?",
+      "image_url": null,
+      "options": {
+        "A": "Effectuer un calcul",
+        "B": "Évoquer un fait divers",
+        "C": "Fournir un support",
+        "D": "Sélectionner un souvenir"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Les arts premiers au musée !\n\nSi cette reconnaissance sonne comme un cri de victoire, c'est qu'elle marque l'issue d'un combat idéaliste qui n'a fait d'autres victimes que l'arrogance et les préjugés. Le signal en fut donné par Guillaume Apollinaire en 1909 : « Le Louvre devrait recueillir certains chefs-d'œuvre exotiques dont l'aspect n'est pas moins émouvant que celui des beaux spécimens de la statuaire occidentale. » Près d'un siècle plus tard, le vœu du poète est enfin exaucé : plus d'une centaine de sculptures primitives d'Afrique, d'Asie, d'Océanie et des Amériques, jusqu'alors confinées dans des réserves ethnographiques, prennent place dans le temple de l'Art, jusque-là réservé à l'Europe et à ses sources.\n\nComment cet événement est-il présenté dans l'article ?",
+      "image_url": null,
+      "options": {
+        "A": "Le résultat d'une lutte menée par des gens orgueilleux et intolérants",
+        "B": "Le triomphe d'une opinion émise par Apollinaire, mais autrefois combattue",
+        "C": "Un miracle dû à la persévérance des archéologues sur plusieurs continents",
+        "D": "La consécration des œuvres européennes jusqu'alors remisées dans les musées"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Comment recruter la bonne personne, baby-sitter ou collaborateur ? Si le bouche-à-oreille ou les tests constituent des méthodes largement répandues, difficile pour autant d'être sûr à 100% que la personne choisie soit vraiment la bonne. C'est pourquoi, pour une somme modique, une entreprise californienne, Predictim, promet une analyse complète de la personnalité des candidats via les réseaux sociaux grâce à un algorithme, toutes leurs publications sont étudiées en seulement quelques secondes. Cependant, l'usage de l'intelligence artificielle pour la sélection de candidats a rapidement montré ses limites. L'entreprise Amazon, par exemple, a dû renoncer à son logiciel de recrutement, car celui-ci avait tendance à privilégier les hommes.\n\nQue devrait permettre l'intelligence artificielle dans le monde professionnel ?",
+      "image_url": null,
+      "options": {
+        "A": "De protéger les droits du personnel",
+        "B": "De vérifier le profil des postulants",
+        "C": "D'encourager la création d'emplois",
+        "D": "D'éviter la discrimination à l'embauche"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Selon plusieurs scientifiques, les nouvelles solutions « écologiques » comme la voiture électrique, tendent en fait à accroître l'activité économique et ne pourront pas préserver notre modèle de développement. Au-delà du double écueil de la fabrication des voitures électriques qui est énergivore et génère beaucoup de déchets, le problème des technologies dites « vertes » est principalement dû à l'effet rebond, c'est-à-dire l'augmentation de l'activité globale qu'entraîne toute découverte ou amélioration technologique. Ainsi, une véritable approche écologique devrait obligatoirement comporter une part de sobriété, grâce à laquelle le progrès technique servirait une réduction de la consommation.\n\nQue pense l'auteur des nouvelles solutions écologiques ?",
+      "image_url": null,
+      "options": {
+        "A": "Il déconseille au grand public de les adopter",
+        "B": "Il estime qu'elles sont insuffisamment promues",
+        "C": "Il remet en question leurs retombées positives",
+        "D": "Il révèle qu'elles contribuent au déclin industriel"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 27,
+      "question_text": "7116 TONNES\n\nC'est la quantité de médicaments non utilisés qui dorment dans les armoires des Français. Pour les inciter à les ramener en pharmacie, l'Association santé environnement France (Asef) lance une grande opération.\n\nDes tampons avec l'inscription « rapportez vos médicaments non utilisés à votre pharmacie, vont être remis aux 1.500 médecins et professionnels de santé adhérents de l'Asef. Ces derniers pourront les appliquer sur les ordonnances pour sensibiliser les patients au gaspillage des médicaments. »\n\nSur quoi repose le bon fonctionnement de l'opération lancée par l'Asef ?",
+      "image_url": null,
+      "options": {
+        "A": "L'efficacité d'un slogan choc",
+        "B": "La coopération de ses membres",
+        "C": "La distribution de brochures",
+        "D": "La promotion en ligne de la campagne"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Minoritaires au sein des filières scientifiques universitaires et dans les écoles d'ingénieurs, les filles sont de plus en plus nombreuses à suivre des études de médecine. Elles représentent désormais près de 70 % des inscrits en première année. L'attirance pour le secteur sanitaire et social, une plus grande motivation et une maturité accrue sont des raisons invoquées pour expliquer cette forte féminisation de la profession. Mais l'origine sociale des étudiants en médecine a peu changé : 40 % de ces étudiants ont des parents cadres supérieurs ou exerçant une profession libérale – contre 30 % à l'université. Des chiffres stables qui en font l'une des formations les plus clivées socialement, derrière les classes préparatoires aux grandes écoles.\n\nQue constate le journaliste à propos des études de médecine ?",
+      "image_url": null,
+      "options": {
+        "A": "Elles ont moins de succès que les cursus scientifiques",
+        "B": "Elles représentent inégalement les milieux sociaux",
+        "C": "Elles séduisent des étudiants aux profils variés",
+        "D": "Elles sont source de discrimination envers les femmes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Les implants médicaux (prothèses mammaires, de hanche, etc.) sont censés améliorer la vie des patients. Mais des lacunes dans leur contrôle seraient à l'origine d'un nombre croissant d'incidents. C'est ce que révèle la dernière enquête du Consortium international des journalistes d'investigation. On y apprend qu'en France, le nombre d'incidents liés à ces implants aurait doublé en dix ans. Le problème, souligne l'enquête, c'est que les informations sur les patients restent globalement très incomplètes et que leurs données sont souvent confidentielles. Il est donc difficile de dénombrer avec précision les incidents, de connaître la marque et le modèle des implants posés, et de retrouver les patients en cas de problème.\n\nQuel problème révèle cet article à propos des implants médicaux ?",
+      "image_url": null,
+      "options": {
+        "A": "Les données des malades sont transmises aux fabricants",
+        "B": "Les incidents dus aux erreurs de diagnostic augmentent",
+        "C": "Les patients se méfient des innovations technologiques",
+        "D": "Les recherches sont limitées par le manque d'informations"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Selon une ancienne théorie sur la différence entre cerveau gauche et cerveau droit, les individus pourraient être classés selon leur dominance hémisphérique. Les « plus à gauche » seraient ainsi plus logiques et analytiques tandis que les « plus à droite » seraient créatifs et intuitifs. S'il existe bel et bien une forme de dominance hémisphérique, elle dépend non pas de la personne, mais du type d'activité en cours. Par exemple, chez 99% des droitiers et plus de 70% des gauchers, le langage fait appel le plus souvent à des neurones situés dans l'hémisphère gauche.\n\nQu'apprend-on sur le cerveau ?",
+      "image_url": null,
+      "options": {
+        "A": "Il est stimulé en phase d'apprentissage du langage",
+        "B": "À chaque activité correspond une région précise",
+        "C": "Les neurones sont concentrés dans quelques zones",
+        "D": "Son développement est lié au caractère d'un individu"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Deux petites saisons et puis s'en vont. Sur les plates-formes de streaming vidéo par abonnement, les séries ont beau être reines, elles n'en sont pas moins soumises à une rude concurrence. Et leur durée de vie peut s'avérer bien plus courte que sur les chaînes traditionnelles. Cette stratégie ne doit rien au hasard. Dans leur objectif de conquête de nouveaux abonnés, les plates-formes accordent en effet plus de valeur à la nouveauté qu'à la longévité. Quitte à décevoir certains fans, qui paient pour un service de streaming spécialisé, dont le baromètre de satisfaction devrait, en théorie, être plus déterminant que celui de l'audimat.\n\nD'après l'article, que privilégient les plates-formes de streaming ?",
+      "image_url": null,
+      "options": {
+        "A": "La longévité des programmes",
+        "B": "La qualité des services offerts",
+        "C": "Le changement régulier des séries",
+        "D": "Le contentement de leurs abonnés"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Cette année encore, les adeptes de la culture ne savent plus où donner de la tête et du porte-monnaie. En nombre sans cesse croissant notamment depuis que les collectivités territoriales (régions, départements...) ont compris le parti qu'elles pouvaient tirer de leur investissement en matière de communication, les festivals de musique foisonnent et les indicateurs sont au beau fixe, avec des rendez-vous emblématiques comme les Francofolies de La Rochelle et les Vieilles Charrues. L'année dernière, ils assuraient avoir battu des records de fréquentation.\n\nDans cet article, qu'apprend-on sur les festivals ?",
+      "image_url": null,
+      "options": {
+        "A": "D'anciens artistes ont l'occasion de monter sur scène",
+        "B": "Les financements publics contribuent à leur expansion",
+        "C": "Les organisateurs s'adaptent aux nouvelles tendances",
+        "D": "Les tarifs proposés dépendent de la programmation"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Le programme de mobilité Erasmus n'est plus réservé aux étudiants, explique Sophie Roque, enseignante. Peu répandu, le programme Erasmus+ pour les enseignants bénéficie depuis quelques années d'un grand appel d'air. La demande progresse, et l'offre de mobilité aussi. Le système éducatif finlandais et les formations en anglais attirent beaucoup. Si le programme Erasmus+ pour les enseignants semble très apprécié de ceux qui y participent, il souffre néanmoins d'un vrai déficit de notoriété. On le découvre souvent par hasard ou à la faveur d'une rencontre. Franck Le Cars, délégué académique, confirme que le bouche-à-oreille entre enseignants est le meilleur moyen de développer le dispositif. Il souligne également que ces mobilités à l'étranger restent complexes à mettre en œuvre, car très chronophages.\n\nQu'apprend-on sur le programme Erasmus+ ?",
+      "image_url": null,
+      "options": {
+        "A": "Il est méconnu du public visé",
+        "B": "Il est restreint à quelques pays",
+        "C": "Il favorise certains établissements",
+        "D": "Il souffre d'une image négative"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Je ne connais pas son prénom, mais il y a, dans les Alpes, une personne à la verve savoureuse. Elle émaille la visite des gravures rupestres, dont les plus anciennes datent du Néolithique, de remises en perspective sur les prémices préhistoriques du capitalisme et de la domination masculine. Elle chantera peut-être, à condition que vous ne l'applaudissiez pas, pour vous permettre de ressentir l'acoustique d'un cirque rocheux. Elle vous proposera aussi de vous allonger et de fermer les yeux pour percevoir les vibrations du sol, riche en uranium. Bref, elle guidera les êtres minuscules que vous êtes à travers les plis grandioses de l'écorce terrestre.\n\nOù exerce la personne décrite ?",
+      "image_url": null,
+      "options": {
+        "A": "Dans un centre de relaxation",
+        "B": "Dans un laboratoire",
+        "C": "Dans un musée archéologique",
+        "D": "Dans un parc naturel"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Bonjour,\n\nVous parlez dans votre article du risque de coupure générale d'électricité pour la Bretagne du fait d'une surconsommation. Or, cette région ne possède pas de source de production locale, ce qui implique une dépendance vis-à-vis du réseau et des lignes à haute tension ! La pression est forte à chaque épisode de grand froid. Le risque est réel, cependant les Bretons se serrent la ceinture ! La Bretagne s'est toujours montrée en avance dans l'action, comme un village d'irréductibles Gaulois entouré par les Romains ! Ce qui est agaçant, c'est que, pendant qu'ils jettent la pierre aux particuliers, les médias ne dénoncent l'absence d'efforts des milieux pas industriels ! C'est même écœurant de le constater, ils ne subissent aucune restriction à ce jour ! Qui consomme réellement plus ?\n\nQuelle est la réaction dont ce lecteur fait part ?",
+      "image_url": null,
+      "options": {
+        "A": "Il aimerait que sa région soit plus combative et engagée face aux problèmes locaux",
+        "B": "Il réclame de nouvelles dispositions tarifaires pour que les factures soient moins élevées",
+        "C": "Il s'indigne en estimant que les reproches faits aux consommateurs sont injustifiés",
+        "D": "Il trouve inquiétantes les conséquences de la mauvaise gestion des sources d'énergie"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Dans l'intérêt de leurs peuples, les gouvernements doivent répondre à la fois à des enjeux de court et de long terme. Cet exercice est si difficile que l'on peut comprendre qu'une certaine cacophonie règne au niveau politique. Pourtant, face aux périls, le mot « ensemble » est une arme souvent victorieuse. Les stratégies de développement durable des pays ont ainsi plus de chance de succès si elles s'harmonisent. Pour commencer, cherchons à nous rapprocher entre Européens, pour mener de front transition économique et transition environnementale, afin de mettre un bémol au dérèglement climatique et à la perte de biodiversité.\n\nQuel point de vue défend l'auteur ?",
+      "image_url": null,
+      "options": {
+        "A": "L'écologie est avant tout une affaire d'État",
+        "B": "La concertation est la clé d'une action réussie",
+        "C": "Les mesures protectionnistes sont dépassées",
+        "D": "L'influence des lobbies est à prendre en compte"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 37,
+      "question_text": "L'avenir repose sur la formation de la jeunesse, l'innovation et la recherche. Pour assumer pleinement ses responsabilités, l'université de Nantes propose un nouveau modèle universitaire en France, décloisonné, qui rassemble les acteurs de l'enseignement supérieur et de la recherche (grandes écoles, organismes de recherche, centre hospitalier universitaire, etc.). Ce nouveau modèle remet au centre des préoccupations la question de l'accès à un enseignement supérieur de qualité pour le plus grand nombre. Il a pour ambition de créer les conditions de réussite et d'épanouissement pour tous ses étudiants, et de permettre des innovations majeures. À travers ce projet de nouvelle université, le président et son équipe défendent une vision novatrice et proposent un modèle qui conjugue exigence et solidarité, excellence et lien social.\n\nQuel est l'objectif de cette université ?",
+      "image_url": null,
+      "options": {
+        "A": "Attirer davantage d'étudiants brillants",
+        "B": "Être à la pointe de la technologie",
+        "C": "Ouvrir ses cours à un public élargi",
+        "D": "Proposer des disciplines inédites"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 38,
+      "question_text": "La révolution numérique aura, selon le philosophe Michel Serres, des effets au moins aussi considérables qu'en leur temps l'invention de l'écriture, puis celle de l'imprimerie. Les notions de temps et d'espace en sont transformées, et les façons d'accéder à la connaissance profondément modifiées. À cet égard, chaque grande rupture dans l'histoire de l'humanité conduit à priver l'homme de certaines facultés (« il perd »), mais chaque révolution lui en apporte de nouvelles (« il gagne »). Pour chaque perte d'une part de mémoire et de capacité de traitement de l'information liée à la diffusion des technologies numériques, l'homme gagne une possibilité nouvelle de mise en relation (entre les individus et entre les savoirs), ainsi qu'une faculté décuplée d'invention et de création.\n\nSur quoi Michel Serres attire-t-il l'attention ?",
+      "image_url": null,
+      "options": {
+        "A": "L'évolution des aptitudes mentales",
+        "B": "La mondialisation de la recherche scientifique",
+        "C": "La transformation des savoirs fondamentaux",
+        "D": "Le maintien du patrimoine culturel"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 39,
+      "question_text": "L'histoire des sociétés humaines tourne autour de la recherche d'un monde plus juste. Les idéologies religieuses et politiques ont toujours visé une certaine forme de justice et d'égalité. Les êtres humains ont besoin de donner un sens à leur existence, notamment sociale : ils se soucient forcément de la vie des autres et veulent trouver une raison d'être à l'état de la société. Aucune élite ne peut se contenter de posséder davantage d'argent ou de pouvoir que les autres de façon explicitement arbitraire. De ce fait, l'organisation sociale est expliquée et justifiée par un discours sophistiqué. Ce discours doit être un minimum plausible et repose souvent sur un mélange de sincérité et d'hypocrisie.\n\nQu'explique l'auteur sur les inégalités sociales ?",
+      "image_url": null,
+      "options": {
+        "A": "Elles diminuent dans toutes les organisations",
+        "B": "Elles résultent du fonctionnement d'une société",
+        "C": "Elles se combattent mieux avec de la sincérité",
+        "D": "Elles se justifient par des arguments fallacieux"
+      },
+      "correct_answer": "D"
+    }
+  ]
+}

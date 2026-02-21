@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE3",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "L'Association des étudiants de l'École des sciences et techniques VOUS INVITE À LA SOIRÉE DE FIN D'ANNÉE. Samedi 15 décembre à partir de 20h. VENEZ NOMBREUX !\n\nQu'est-ce que les étudiants organisent ?",
+      "image_url": null,
+      "options": {
+        "A": "Un anniversaire",
+        "B": "Un concert",
+        "C": "Une exposition",
+        "D": "Une fête"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Logement, études ou téléphone portable, tout coûte cher pour les jeunes à l'université. Alors 80% des parents aident leurs enfants. Le père d'Hamza, 18 ans, calcule combien ça lui coûtera : environ 8% de son salaire.\n\nQu'est-ce que cet article dit sur les jeunes ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils ont besoin de l'aide de leur famille",
+        "B": "Ils travaillent pour payer leur logement",
+        "C": "Ils veulent finir leurs études rapidement",
+        "D": "Ils vont à l'université dans une autre ville"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 3,
+      "question_text": "VOUS AUSSI, VOUS SOUHAITEZ DONNER DE VOTRE TEMPS À DES HOMMES ET DES FEMMES DANS LE BESOIN ? L'association « Les Restos du Cœur » de Nice vous propose de participer à la préparation des déjeuners du lundi au samedi, le matin. Appelez-nous au 08 44 25 68 79 87\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "D'aider à faire des repas",
+        "B": "De changer de profession",
+        "C": "De servir dans une cantine",
+        "D": "De soigner des habitants"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Camille, Je ne peux pas te retrouver au concert ce soir, désolé. Mes enfants sont malades et je dois rester avec eux. Viens déjeuner à la maison dimanche. Je pars bientôt en voyage, j'aimerais te voir avant mon départ. Bises, Céline\n\nQu'est-ce que Céline propose à son amie ?",
+      "image_url": null,
+      "options": {
+        "A": "D'aller à un concert",
+        "B": "D'organiser un voyage",
+        "C": "De déjeuner chez lui",
+        "D": "De garder les enfants"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Désignation : Nuit + petit-déjeuner. Parking sécurisé : Gratuit. Client : Entreprise Jolifleur (Bruxelles). Facture n° : 13. Quantité : 3 nuits. Prix total : 250,00 €\n\nQue doit payer l'entreprise Jolifleur ?",
+      "image_url": null,
+      "options": {
+        "A": "Un repas au restaurant",
+        "B": "Un séjour à l'hôtel",
+        "C": "Une commande de matériel",
+        "D": "Une location de voiture"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 6,
+      "question_text": "De : cannelle@lilo.com\nÀ : Elke@mail.com\n\nSalut Elke, C'est bientôt la fête de nos 20 ans de mariage ! Beaucoup d'invités viendront avec leurs enfants. Comme tu adores les petits, pourrais-tu t'occuper d'eux en journée ? Quand ils seront couchés, nous pourrons danser tous ensemble ! Merci, bisous. Cannelle\n\nQue demande Cannelle à son amie ?",
+      "image_url": null,
+      "options": {
+        "A": "D'écrire aux invités",
+        "B": "D'organiser la fête",
+        "C": "De garder des enfants",
+        "D": "De préparer des danses"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Adèle, N'oublie pas l'anniversaire de Raphael ! On pourrait partir vers 19h et aller ensemble chez lui : où est-ce qu'on se retrouve ? Si tu ne peux pas venir finalement, appelle-moi ! Bonne journée, Camille\n\nPourquoi est-ce que Camille écrit ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour acheter un cadeau avec elle",
+        "B": "Pour annuler sa venue à une fête",
+        "C": "Pour décider d'un rendez-vous",
+        "D": "Pour inviter son amie à diner"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Madame Channmont, Vous avez participé à notre concours et vous avez gagné un séjour d'une semaine tout compris (transport, hébergement, restauration) pour deux personnes en Italie ! Prenez Contact par courriel avec notre service clientèle pour avoir toutes les informations. Le service commercial\n\nQue doit faire madame Chanmont ?",
+      "image_url": null,
+      "options": {
+        "A": "Écrire un message",
+        "B": "Prendre un billet d'avion",
+        "C": "Réserver un hôtel",
+        "D": "S'inscrire à un jeu"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Studio Céline. L'école de danse « Studio Céline » ouvre ses portes au public le 16 septembre. C'est GRATUIT : Venez essayer nos cours toute la journée. Au programme : salsa, tango, danse moderne et un goûter (boissons et gâteaux)!\n\nQu'est-ce que cette école de danse propose ?",
+      "image_url": null,
+      "options": {
+        "A": "De participer à un concours",
+        "B": "De s'inscrire à un stage",
+        "C": "De tester des activités",
+        "D": "De voir un spectacle"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 10,
+      "question_text": "La commune de Saint-Brieuc participe au concours Europann sur le thème « De la gare à la mer ». De jeunes architectes ont imaginé la ville de demain, avec de nouveaux espaces publics, un meilleur partage de l'espace entre piétons, vélos et véhicules. Les gagnants présenteront leur projet aux habitants qui choisirent le plus intéressant.\n\nQuel est le but du concours Europann ?",
+      "image_url": null,
+      "options": {
+        "A": "Dessiner des bâtiments publics originaux",
+        "B": "Donner le goût du voyage aux habitants",
+        "C": "Inventer une ville facile à vivre pour tous",
+        "D": "Prévoir de nouveaux moyens de transport"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 11,
+      "question_text": "VOS ENFANTS AIMENT MARCHER, COURIR OU NAGER ? NOTRE CENTRE D'ÉTÉ POUR LES 7-17 ANS EST FAIT POUR EUX ! Tarifs à la journée, à la semaine ou au mois. Prix réduits pour les habitants de Paris. Rendez-vous sur notre site www.soleilpourtous.fr pour plus d'informations.\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "Des informations sur les sports",
+        "B": "Des activités pour l'été",
+        "C": "Des promotions pour les enfants",
+        "D": "Des visites de Paris"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Le « ski lent » privilégie le plaisir. Le plaisir du ski, ce n'est plus seulement la vitesse et la performance. Certains skieurs cherchent avant tout à prendre leur temps, à vivre une nouvelle expérience : le ski lent répond à ces souhaits. Ainsi des stations proposent des zones tranquilles, où la vitesse est interdite. On descend sans se presser, on soigne son style, sans nécessairement être débutant. Une discipline qui séduit et qui demande peu d'entrainement.\n\nQue propose-t-on aux skieurs dans ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "D'améliorer leur niveau de compétence",
+        "B": "De pratiquer leur sport différemment",
+        "C": "De se préparer à des compétitions",
+        "D": "De tester un autre type de matériel"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Monsieur, Titulaire d'une licence en informatique obtenue à l'Université d'Alger, je souhaite intégrer le Master 1 d'informatique proposé par l'Université Paris XII. Rejoindre votre établissement représente pour moi une opportunité essentielle pour approfondir mes connaissances et atteindre le niveau d'expertise nécessaire à l'exercice d'un métier qui me passionne profondément. Vous trouverez, ci-joint, l'ensemble de mon dossier de candidature. En espérant que ma demande retiendra votre attention, je vous prie d'agréer, Monsieur, l'expression de mes salutations distinguées. Sélim Néri\n\nQui est Sélim Néri ?",
+      "image_url": null,
+      "options": {
+        "A": "Un candidat aux études supérieures",
+        "B": "Un étudiant en quête d'un stage",
+        "C": "Un informaticien en recherche d'emploi",
+        "D": "Un lycéen en demande d'orientation"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Un projet surprenant : José, 13 ans, a gagné le Prix du Climat l'an dernier. Il a imaginé une banque écologique dans son pays. Si chaque mois, un enfant ramasse une certaine quantité de déchets (plastique, carton...), on lui donne une monnaie qu'il peut échanger contre de l'argent réel.\n\nDe quoi parle cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "D'une banque pour les mineurs",
+        "B": "D'une idée nouvelle de recyclage",
+        "C": "Des enfants qui doivent travailler",
+        "D": "Du problème créé par les déchets"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Les Français partent moins longtemps, mais plus souvent en vacances qu'il y a 20 ans. Avec la réduction du temps de travail, qui est aujourd'hui de trente-cinq heures par semaine, les Français ont des week-ends plus longs. Ils peuvent multiplier les courts séjours et cela, tout au long de l'année. Ainsi, l'activité n'est plus limitée aux saisons d'hiver et d'été pour les professions du tourisme comme, par exemple, les animateurs de clubs de vacances, il y a maintenant du travail de janvier à décembre.\n\nQu'apprend-on sur les métiers du tourisme en France ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils s'exercent sans interruption dans l'année",
+        "B": "Ils sont en difficulté à cause des trente-cinq heures",
+        "C": "Ils sont inadaptés aux besoins des vacances",
+        "D": "Ils sont saisonniers et occupés par des étudiants"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Les titres de transport (ticket, carte, etc.) en carton seront bientôt remplacés par une carte magnétique. Les voyageurs la paieront 2 euros et la rechargeront aux guichets et aux machines automatiques des gares. La carte sera valable dans le métro, les bus et les tramways.\n\nQu'est-ce qu'on apprend sur les titres de transport ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils servent pour un seul trajet",
+        "B": "Les gens les jettent dans la rue",
+        "C": "Leur prix va encore augmenter",
+        "D": "On va arrêter de les vendre"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Félicitations ! Vous avez gagné une carte cadeau de 50€. Vous pouvez l'utiliser pour acheter tous nos produits de beauté. Attention, vous ne pouvez pas l'échanger contre de l'argent ou la donner à une autre personne. Si vous la perdez, vous n'êtes pas remboursé.\n\nQu'est-ce qu'on peut faire avec cette carte ?",
+      "image_url": null,
+      "options": {
+        "A": "Avoir des réductions sur certains articles",
+        "B": "Faire des courses dans un magasin",
+        "C": "Offrir une surprise pour un anniversaire",
+        "D": "Retirer de l'argent a un distributeur"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Le sport arrive largement en tête des nombreuses activités extrascolaires proposées aux 12-16 ans. Les parents se font une obligation sociale d'inscrire leurs enfants à ces activités et de montrer aux autres qu'ils sont de « bons parents » qui veillent à l'épanouissement global de leurs enfants. Ils leur permettent ainsi de se divertir, de se dépenser, et de s'initier à un sport individuel ou collectif. C'est également l'occasion pour les enfants de découvrir et d'accepter leurs propres limites.\n\nQu'est-ce qui incite les parents à inscrire leurs enfants à des activités sportives ?",
+      "image_url": null,
+      "options": {
+        "A": "La pression de la société",
+        "B": "La réputation des clubs",
+        "C": "Les bienfaits pour la santé",
+        "D": "Les envies des adolescents"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 19,
+      "question_text": "PÉDAGOGIE. Twitter dès l'école primaire, pour donner le goût d'écrire, de lire et de l'orthographe. Un instituteur raconte : « J'utilise Twitter dans ma classe depuis un an. Les productions d'élèves sont de plus en plus intéressantes. Grâce à Twitter, je peux approfondir les notions de façon concrète. Les activités scolaires paraissent artificielles, hors contexte voire dénuées de sens. Pourquoi essayer de maîtriser l'écriture ? Les enfants n'y songent même pas, car leurs travaux sont cantonnés à des cahiers, eux-mêmes enfermés dans des casiers ou des cartables. Ils n'ont pas l'occasion de partager leurs productions, de les confronter, d'argumenter leurs choix. »\n\nD'après cet article, qu'apporte l'utilisation de Twitter aux élèves ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils apprennent à se servir correctement des réseaux sociaux",
+        "B": "Ils communiquent plus facilement avec l'instituteur",
+        "C": "Ils comprennent mieux l'intérêt des apprentissages proposés",
+        "D": "Ils sont attentifs après un moment de détente"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Dora Bruder, publié en 1997, est considéré comme l'un des meilleurs romans de Patrick Modiano. L'écrivain aime fouiller l'histoire de la capitale et fréquente de nombreuses bibliothèques. Un jour, il tombe sur une annonce parue le 31 décembre 1941 dans Paris-soir : « On recherche une jeune fille, Dora Bruder, 15 ans, 1m55, Visage ovale, yeux gris marron, manteau sport gris. Adresse toute indication à M. et Mme Bruder, 41, boulevard Ornano, Paris. » Modiano va alors s'attacher à lever le mystère de cette disparition en entraînant le lecteur dans les rues du 18e arrondissement.\n\nQue fait le journaliste dans cet extrait ?",
+      "image_url": null,
+      "options": {
+        "A": "Il cite un extrait d'une œuvre de Modiano",
+        "B": "Il explique l'idée de départ d'un livre de Modiano",
+        "C": "Il présente le métier de Modiano à ses débuts",
+        "D": "Il raconte la rencontre entre Modiano et sa femme"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 21,
+      "question_text": "Envie de faire le clown ? Pendant les vacances de Pâques, l'équipe d'animation du centre de loisirs dessinera chaque jour sur les joues des enfants de jolis animaux marins : hippocampes, phoques, manchots, poissons-clowns...\n\nQuelle activité proposera-t-on aux enfants pendant les vacances de Pâques ?",
+      "image_url": null,
+      "options": {
+        "A": "Un spectacle de cirque",
+        "B": "Une activité de maquillage",
+        "C": "Une rencontre avec un clown",
+        "D": "Une sortie au zoo"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 22,
+      "question_text": "Les consommateurs d'autrefois acceptaient de manger de la viande en gardant à l'esprit qu'elle provenait d'un animal. Aujourd'hui, on achète du poisson, mais on ne veut ni voir les yeux ni les arêtes. On préfère un bifteck anonyme. Si l'on nous dit que derrière ce steak se trouvait une génisse de 18 mois, cela nous coupe l'appétit. Il s'agit d'une consommation de viande qui n'a plus aucun lien apparent avec l'animal. En réalité, on ne veut pas savoir ce que l'on mange, tout en exigeant d'être certain de ce que l'on mange.\n\nQuel est le paradoxe évoqué à propos des consommateurs ?",
+      "image_url": null,
+      "options": {
+        "A": "Acheter les meilleurs produits et dépenser le moins possible",
+        "B": "Avoir la garantie de la qualité du produit",
+        "C": "Être amateur de viande et militer pour le bien-être animal",
+        "D": "Privilégier les aliments bio et avoir du mal à s'en procurer"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Nous vous rappelons que la présence d'élèves de moins de seize ans en milieu professionnel est autorisée, dès lors qu'ils restent sous l'autorité de l'établissement d'enseignement scolaire ou de l'école. Tous les stages ou les périodes de formation en milieu professionnel ne peuvent s'adresser qu'à des élèves qui suivent un enseignement alterné ou enseignement professionnel. Les stages ne peuvent être proposés qu'à des élèves âgés de quatorze ans au moins, comme le précise l'article 8 du décret n°96-465 du 29 mai 1996 relatif à l'organisation de la formation au collège.\n\nQuel est l'objectif de cet article adressé aux enseignants ?",
+      "image_url": null,
+      "options": {
+        "A": "Définir les conditions d'accueil des élèves en milieu professionnel",
+        "B": "Expliquer le déroulement des stages en entreprise pour les élèves",
+        "C": "Informer des mesures de sécurité des élèves lors de visites d'entreprises",
+        "D": "Lister les différents types de stages professionnels destinés aux élèves"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 24,
+      "question_text": "On réserve trop facilement le covoiturage aux étudiants sans un sou. Les clichés sont tenaces. Pourtant, le temps de la petite annonce papier accrochée près de la machine à café est bel et bien terminé, les moyens de communication ont changé les choses. L'organisation d'un trajet entre plusieurs personnes qui se rendent dans la même direction est devenue si simple et si efficace avec les sites spécialisés que le covoiturage est en train d'élargir son public et de gagner son statut de mode de transport à part entière.\n\nQuel développement connaît le covoiturage ?",
+      "image_url": null,
+      "options": {
+        "A": "Il devient la solution idéale des voyages organisés à la dernière minute",
+        "B": "Il est accessible à un nombre croissant d'utilisateurs grâce à internet",
+        "C": "Il occupe une place grandissante dans les petites annonces des journaux",
+        "D": "Il s'impose comme le moyen de déplacement à la mode chez les jeunes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 25,
+      "question_text": "SEIS sera le premier sismomètre déployé sur un autre sol que celui de la Terre. Sur Mars, cet instrument français va ausculter les séismes qui secouent la planète rouge et récolter des données qui permettront de déterminer si le noyau de la planète est liquide ou solide. Mars a le même âge que la planète Terre, mais il y a 3 ou 4 milliards d'années, toute vie y a cessé et elle est devenue une planète morte. Si nous savons déjà de quoi sont constituées son atmosphère et sa surface, nous ignorons encore ce qui s'est produit à ce moment-là et ce qu'elle recèle dans son sous-sol.\n\nPourquoi SEIS a-t-il été envoyé sur Mars ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour comparer son histoire à celle de la Terre",
+        "B": "Pour évaluer les possibilités d'aller y vivre",
+        "C": "Pour expliquer son grand nombre de séismes",
+        "D": "Pour obtenir des données sur sa composition"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Ma conviction est que l'économie collaborative, l'économie du partage, s'installe durablement. Elle repose sur la mise en réseau grâce au numérique et sur la quête de valeurs morales et culturelles. La crise économique en est un accélérateur, car ces pratiques permettent de consommer mieux pour moins cher ou de générer des revenus complémentaires. L'usage de ces services augmente à grande vitesse. Ainsi, 80% des 18-25 ans préféreraient vivre sans voiture que sans Smartphone. Car la voiture, aujourd'hui, est dans le Smartphone via le covoiturage, l'auto partage, la location entre particuliers ! L'accès à un bien devient plus pratique que sa possession. La question de demain sera : « Serez-vous assez intelligent pour ne pas posséder ? »\n\nQue constate l'auteur de cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "L'essor de nouveaux modes de consommation",
+        "B": "La stagnation de la dépendance au numérique",
+        "C": "Le développement des voitures ultra connectées",
+        "D": "Le recul des difficultés économiques des ménages"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Faire du bénévolat à l'étranger est souvent sujet à controverse : missions peu claires ou non conformes à des principes éthiques, prix exorbitants, flou artistique et manque de transparence concernant la destination de l'argent récolté... Certaines agences spécialisées dans le domaine profitent de la tendance du tourisme solidaire pour s'enrichir. D'autres, au contraire, affichent clairement leurs exigences et leurs engagements. C'est le cas de « Travailler à l'étranger », basé au Royaume-Uni et qui envoie des voyageurs volontaires à travers le monde depuis 1997. Ils s'assurent du suivi des stagiaires, visitent toutes les structures et créent de vrais liens avec leurs partenaires.\n\nQuel est l'objectif de l'agence \"Travailler à l'étranger\" ?",
+      "image_url": null,
+      "options": {
+        "A": "Faire découvrir des destinations authentiques",
+        "B": "Organiser des séjours à vocation humanitaire",
+        "C": "Recruter des salariés à l'international",
+        "D": "Reverser ses bénéfices à des associations"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Dans la nuit de samedi à dimanche, il faudra retarder ses montres à 3 heures, il sera en fait 2 heures. Ce changement est conçu pour économiser de l'énergie en profitant des périodes de jour plus longues l'été. Selon un sondage, les Français seraient majoritairement contre cette pratique. Ils mettent en avant un impact négatif sur « le sommeil, l'alimentation ou l'humeur ». Cependant un rapport de Sénat de l'année dernière assurait que le monde médical restait partagé sur l'existence de troubles imputables à l'heure d'été, mais que de nombreux pharmaciens faisaient état d'une augmentation de leurs ventes de médicaments au moment du changement d'heure, encore qu'aucune étude scientifique ne puisse l'attribuer à ce seul facteur.\n\nQu'apprend-on sur le passage à l'heure d'hiver ?",
+      "image_url": null,
+      "options": {
+        "A": "Il est difficile d'en évaluer l'impact sur la santé",
+        "B": "Il permet la consommation de médicaments",
+        "C": "Le sénat a toujours refusé de voter une loi sur le sujet",
+        "D": "Les Français sont encore attachés à cette tradition"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Durant les investigations journalistiques, le recours à la caméra cachée est de plus en plus fréquent. Mais souvent, son utilisation n'est aussi qu'un cache-misère, un moyen de compenser l'absence d'informations dans les reportages, de remplir le vide par des scènes un peu spectaculaires. C'est une manière pour certains aussi de faire des économies. Par ailleurs, cette pratique pose une autre question : celle du statut de personne filmée à son insu. La filmer en caméra cachée, n'est-ce pas supposer qu'elle a quelque chose à se reprocher avant d'avoir commencé à parler ?\n\nD'après ce texte, pourquoi les journalistes utilisent-ils des caméras cachées ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour améliorer la qualité des documentaires",
+        "B": "Pour dissimuler la pauvreté des contenus",
+        "C": "Pour moderniser leurs méthodes de travail",
+        "D": "Pour piéger les gens visés par les enquêtes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Nouvelle arrestation de pilleurs. Après l'arrestation de pilleurs en France, l'UNESCO lance un cri d'alarme pour la protection du patrimoine sous-marin. Au total, selon UNESCO, ce serait plus de trois millions d'épaves non explorées qui seraient menacées par les exactions des chasseurs de trésors. Le patrimoine subaquatique est de plus en plus menacé du fait des progrès techniques qui permettent aux chasseurs de trésors de sortir des objets protégés depuis des siècles par les eaux.\n\nQue dit ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "La faune aquatique est en danger",
+        "B": "La technologie facilite le pillage des mers",
+        "C": "Le nombre de voleurs dépaves augmente",
+        "D": "Les bateaux en détresse sont laissés à leur sort"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Les chutes d'attention et le relâchement musculaire signalent un besoin des plus naturels : dormir. Interrompre sa journée pour ce moment réparateur, c'est compenser les nuits trop courtes et éviter que ce manque de sommeil ne grignote la santé physique et mentale. Mais pourquoi ce remède ancestral est-il à ce point sous-estimé ? En fait, la sieste n'est pas tant incomprise que redoutée. En effet, travailler exige de répondre à des impératifs extérieurs parfois au détriment des besoins intérieurs ou physiologiques et faire la sieste devient une transgression. Rituel de l'été, la petite somme reste inacceptable au travail où le maitre mot est la productivité et pourtant, en aidant à rétablir l'équilibre physique, ne pourrait-il pas y contribuer ?\n\nQue suggère l'auteur au sujet de la sieste ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle devrait être réservée aux périodes de congés",
+        "B": "Elle est préconisée par la médecine",
+        "C": "Elle peine à se répandre en milieu professionnel",
+        "D": "Elle serait néfaste pour le rendement"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Théâtre. Joel Pommerat nous offre un très court spectacle dont à la fois la pureté formelle et le sens nous ont conquis. Le matériau en est constitué par une série de rencontres. Auxquelles lui-même et son équipe assistèrent, entre des travailleurs sociaux et des femmes d'origine simple, vivant en cité, et en proie à des problèmes familiaux. De ces confidences relatives aux tensions qu'elles connaissent dans leurs enfants. Pommerat a tiré une suite de brèves séquences qui composent une tragédie intense de la souffrance familiale, et particulièrement de la souffrance de la femme. Son regard sur la détresse humaine est d'une bienveillance et d'une tendresse infinies. Il ne nous livre aucun message moral et à peine un message social : il fait simplement appel à notre sensibilité.\n\nDans quel objectif Joël Pommerat a-t-il créé son spectacle ?",
+      "image_url": null,
+      "options": {
+        "A": "Aider les femmes à se battre pour améliorer leur situation familiale",
+        "B": "Amener les spectateurs à s'émouvoir d'un quotidien douloureux",
+        "C": "Démontrer que la condition de la femme dans les cités est désastreuse",
+        "D": "Informer des difficultés que peuvent rencontrer les enfants des cités"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Il est important d'alimenter l'imagination des enfants. Dans cette perspective, les matériaux les moins finis sont plus intéressants que les jouets sophistiqués, car ils laissent à l'enfant l'espace nécessaire pour tenter de les transformer et pour développer ses capacités créatives. Il importe également de tenir compte du caractère de chaque enfant. Certains sont entreprenants, d'autres plus contemplatifs. Cela ne signifie pas qu'ils ont un monde intérieur moins riche, mais que leur créativité s'exprime davantage dans la rêverie que dans l'action. Alimenter l'imagination des enfants, c'est leur ménager des moments d'ennui où ils auront à se remplir de leur inspiration.\n\nSelon cet article, que faut-il faire pour stimuler l'imagination des enfants ?",
+      "image_url": null,
+      "options": {
+        "A": "Leur donner le goût de l'observation",
+        "B": "Leur permettre d'inventer des activités",
+        "C": "Leur procurer des jeux éducatifs",
+        "D": "Leur proposer des énigmes à résoudre"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 34,
+      "question_text": "De plus en plus de scientifiques s'intéressent au fonctionnement du cerveau des tout-petits. En effet, comprendre le développement normal du cerveau permettra d'aider les bébés touchés par des troubles. Au-delà, l'ambition est de découvrir les racines de l'intelligence humaine : pourquoi l'homme, à la différence des autres espèces animales, peut parler, compter et même envoyer des fusées dans l'espace. Pendant longtemps, ces capacités uniques ont été attribuées à la taille de notre encéphale. Une idée finalement battue en brèche : le cerveau du bébé est bien moins gros que le nôtre ou que celui de nombreux animaux. Et pourtant, les tout-petits apprennent beaucoup de choses, bien plus vite et bien plus facilement que n'importe quel animal ou même que les adultes.\n\nQu'apprend-on sur le cerveau humain ?",
+      "image_url": null,
+      "options": {
+        "A": "Sa structure est identique chez l'homme et l'animal",
+        "B": "Sa taille influe sur les compétences cognitives",
+        "C": "Son développement est ralenti les premiers mois",
+        "D": "Son fonctionnement est encore mystérieux"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 35,
+      "question_text": "L'homme est de noir vêtu. Son crâne, nu, joue avec la lumière. Tout est dit, tout est là, dans ce jeu d'ombre et de clarté qui fait d'un bâtisseur un poète. Jean Nouvel façonne le mystère pour insuffler du vivant aux édifices au cœur de pierre et bâtit sans dénaturer. Cet architecte éclairé n'érige rien, il convie cette émotion, suscite une apparition pour sa dernière création, l'œil découvre une ville-musée aux formes douces, un dôme qui semble né des mains d'une dentellière. Le dôme repose sur quatre piliers pour gagner en légèreté et s'allier au paysage, trait d'union avec les nuages.\n\nQuelle particularité de Jean Nouvel est louée dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Sa technique puise dans divers mouvements artistiques",
+        "B": "Ses œuvres se fondent dans leur environnement",
+        "C": "Son inspiration provient de ses nombreuses lectures",
+        "D": "Son savoir-faire met en valeur des procédés connus"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Imaginez un instant que nos espaces de travail soient inadaptés à la moitié des salariés : vous trouveriez cela pour le moins troublant, voire inacceptable. C'est pourtant le cas pour les personnes introverties qui, selon des recherches, représentent entre un tiers et la moitié de la population mondiale. Travail de groupe, réseaux sociaux, « Open space » : l'économie moderne exige d'interagir, faisant de l'aisance en public un avantage non négligeable dans le milieu professionnel. Les cultures d'entreprises qui mettent constamment en avant les échanges avec autrui finissent par dévaloriser l'identité des introvertis dont les capacités ne sont pas suffisamment sollicitées.\n\nQue dénonce l'auteur de cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "La primauté de l'apparence sur les compétences",
+        "B": "Le corporatisme pousse de certaines sociétés",
+        "C": "Le manque de formation aux nouvelles technologies",
+        "D": "Les principes actuels d'organisation du travail"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Suite à un accident chimique sur un site minier, les pouvoirs publics ont décidé d'obliger les sociétés minières à financer des programmes de recherche et à replanter les surfaces exploitées. Et de fait, les compagnies minières jouent très bien le jeu. Comme il serait bien naïf de penser que leurs dirigeants soient tout à coup devenus philanthropes, il faut chercher la raison de cet intérêt ailleurs. Il se trouve qu'un scientifique, Anthony Van der Hent, a prouvé que des « super-plantes » avaient la faculté d'extraire du sol des métaux économiquement exploitables. C'est donc la possibilité d'allier la régénération de sites industriels à des assurances de gains financiers supplémentaires qui motivent tant les industriels.\n\nSur quel point porte le scepticisme du journaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "La capacité des plantes à nettoyer les sols",
+        "B": "La rentabilité d'un nouveau système d'extraction",
+        "C": "Le résultat des recherches de Mr Van der Hent",
+        "D": "Les préoccupations écologistes des industriels"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Une entreprise japonaise a présenté une étude sur une gigantesque structure d'habitation immergée. Futuriste ? Oui, car certaines technologies restent à mettre au point. Mais la recherche a été poussée assez loin et d'après ses concepteurs, une telle cité de la mer pourrait devenir envisageable à partir de 2030. Une vaste sphère de 500 mètres de diamètre abriterait des appartements, des hôtels, des bureaux et des laboratoires pour 4000 personnes. Le projet ne consiste pas en un espace aménagé en surface. Il s'agit au contraire d'exploiter le potentiel de l'océan profond et d'assurer la pérennité de l'espèce humaine. L'océan est une source d'énergie, d'eau douce et de nourriture. C'est aussi un très bon endroit pour retraiter notre production de dioxyde de carbone.\n\nQuel est l'objectif de ce projet ?",
+      "image_url": null,
+      "options": {
+        "A": "Concevoir des lieux de vie alternatifs",
+        "B": "Étudier de nouvelles technologies",
+        "C": "Proposer des activités futuristes",
+        "D": "Protéger des espaces marins menacés"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Selon la conception de Descartes, le corps est perçu comme séparé de l'esprit à éduquer. Cette idée selon laquelle le corps ne serait que naturel et biologique a été déconstruite par le sociologue Marcel Mauss en 1934. Dans ses travaux, il montre que le corps est le résultat d'une construction sociale, un matériau dans lequel s'impriment les marques d'une culture donnée dans une société donnée. Il n'existerait pas de manière « naturelle » de se développer, de bouger, de se comporter pour le corps humain. La marche ou la nage, qui paraissent ordinaires ou allant de soi, sont en réalité le reflet d'une éducation qui institue les manières dont les êtres humains apprennent à se servir de leur corps.\n\nQue montrent les travaux de Marcel Mauss sur la façon de se mouvoir ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle représenterait l'influence de l'inconscient",
+        "B": "Elle résulterait de l'observation de normes",
+        "C": "Elle résulterait la part de l'acquis dû au groupe",
+        "D": "Elle serait issue du patrimoine génétique"
+      },
+      "correct_answer": "C"
+    }
+  ]
+}

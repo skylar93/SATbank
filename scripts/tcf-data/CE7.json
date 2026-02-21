@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE7",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Paul,\n\nM. Redon a téléphoné. Il ne vient pas aujourd'hui car il a la grippe.\n\nPourquoi M. Redon annule-t-il son rendez-vous ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a perdu ses papiers",
+        "B": "Il a trop de travail",
+        "C": "Il est très malade",
+        "D": "Il part en vacances"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 2,
+      "question_text": "« LA TABLE »\nVotre restaurant d'entreprise.\n\nOUVERT DU LUNDI AU VENDREDI.\nSERVICE DE 12H À 14H\nFERMETURE : SAMEDI / DIMANCHE.\n\nQue peut-on faire dans ce lieu ?",
+      "image_url": null,
+      "options": {
+        "A": "Boire un thé ou un café l'après-midi",
+        "B": "Inviter des enfants pour le goûter",
+        "C": "Manger avec des collègues à midi",
+        "D": "Partager un repas entre amis le soir"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Lyon, le 22 juin 2011\n\nMadame,\nSuite à votre courrier du 17 juin dernier, je vous envoie le catalogue de nos produits.\n\nTrès cordialement,\n\nSophie Leloux\nService clientèle\n\nPourquoi Sophie Leloux écrit-elle cette lettre ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle cherche une vendeuse",
+        "B": "Elle demande un renseignement",
+        "C": "Elle informe une cliente",
+        "D": "Elle prend un rendez-vous"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Karim,\n\nPense à appeler ta sœur pour avoir de ses nouvelles.\n\nQue doit faire Karim ?",
+      "image_url": null,
+      "options": {
+        "A": "Aller chez sa sœur",
+        "B": "Inviter sa sœur",
+        "C": "Jouer avec sa sœur",
+        "D": "Téléphoner à sa sœur"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Antoine,\n\nS'il te plaît, viens dans mon bureau après la réunion.\nMerci,\n\nLudovic\n\nQue doit faire Antoine ?",
+      "image_url": null,
+      "options": {
+        "A": "Apporter un document",
+        "B": "Organiser un entretien",
+        "C": "Rencontrer un collègue",
+        "D": "Téléphoner à Ludovic"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Chers parents,\n\nLa fête annuelle de notre école se déroulera cette année le samedi 12 juin.\nPour que cette journée soit réussie, nous faisons une fois encore appel à votre participation.\nNous avons besoin d'adultes pour animer les stands et surveiller les jeux.\nFaites-nous part de vos disponibilités.\n\nLa directrice\n\nQue demande la directrice de l'école ?",
+      "image_url": null,
+      "options": {
+        "A": "De la nourriture",
+        "B": "De l'argent",
+        "C": "Des idées",
+        "D": "Des volontaires"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 7,
+      "question_text": "L'Association des Bretons vous offre une « Soirée musicale irlandaise », vendredi 10 novembre à 20h30.\n\nÀ la fin du spectacle, une vente de boissons sera organisée et vous pourrez goûter des spécialités d'Irlande.\n\nQu'est-ce que propose cette association ?",
+      "image_url": null,
+      "options": {
+        "A": "Un concert gratuit",
+        "B": "Un concours de chant",
+        "C": "Un cours de cuisine",
+        "D": "Un voyage à l'étranger"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 8,
+      "question_text": "La cuisine de Jean-Émile\n\nJean-Émile Nodier, chef depuis 10 ans, propose des cours de cuisine à domicile pour une à quatre personnes.\nApprenez à cuisiner des recettes de qualité.\n\nPour plus de renseignements :\nhttp://www.lacuisinedejeanemile.fr\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "D'apprendre à préparer des plats chez soi",
+        "B": "De devenir un chef cuisinier professionnel",
+        "C": "De réaliser des repas pour des grands groupes",
+        "D": "De trouver de bonnes recettes sur internet"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Objet : réunion de service.\n\nNotre prochaine réunion de service aura lieu mercredi 12 octobre à 13h en salle 3.\nNous discuterons des nouveaux produits et de l'organisation de la fête pour le départ à la retraite de Mme Fournival.\n\nE. Frachon\n\nQue va-t-il se passer le mercredi 12 ?",
+      "image_url": null,
+      "options": {
+        "A": "Des collègues vont changer de service",
+        "B": "Les employés vont préparer une fête",
+        "C": "M. Frachon va quitter l'entreprise",
+        "D": "Mme Fournival va arriver dans l'entreprise"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Chers collègues,\n\nNous vous informons que la réunion parents-professeurs des classes de seconde prévue pour ce samedi est reportée au samedi prochain à midi.\nVotre présence est obligatoire.\n\nLa direction du lycée\n\nÀ qui ce message est-il adressé ?",
+      "image_url": null,
+      "options": {
+        "A": "Aux élèves",
+        "B": "Aux étudiants",
+        "C": "Aux parents",
+        "D": "Aux professeurs"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Un voyage à prix raisonnable en train de nuit, en couchettes 6 places.\nDe centre-ville à centre-ville, vous arriverez plus tôt, vos fins de semaine durent plus longtemps.\nBoissons chaudes et gâteaux sont offerts au réveil.\n\nQue propose le message ?",
+      "image_url": null,
+      "options": {
+        "A": "Une restauration simple et efficace",
+        "B": "Un long weekend à bas prix",
+        "C": "Un court séjour en centre-ville",
+        "D": "Un voyage en train couchettes"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Le « ski lent » privilégie le plaisir\n\nLe plaisir du ski, ce n'est pas seulement la vitesse et la performance. Certains skieurs cherchent avant tout à prendre leur temps, à vivre une nouvelle expérience : le ski lent répond à ces souhaits.\nAinsi des stations proposent des zones tranquilles, où la vitesse est interdite. On descend sans se presser, on soigne son style, sans nécessairement être débutant, une discipline qui séduit et qui demande peu d'entraînement.\n\nQue propose-t-on aux skieurs dans ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "D'améliorer leur niveau de compétence",
+        "B": "De pratiquer leur sport différemment",
+        "C": "De se préparer à des compétitions",
+        "D": "De tester un autre type de matériel"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Monsieur,\n\nTitulaire d'une licence en informatique de l'Université d'Alger, je souhaiterais poursuivre un cursus à Paris XII dans le cadre d'un master 1 d'informatique.\nIntégrer votre université devrait me permettre d'atteindre le niveau d'expertise que je souhaite acquérir dans un métier qui est pour moi une vraie passion.\nVous trouverez, ci-joint, mon dossier de candidature complet.\n\nEn espérant que ma candidature saura retenir votre attention, je vous prie de croire, Monsieur, à l'expression de mes salutations distinguées.\n\nSélim Néri\n\nQui est Sélim Néri ?",
+      "image_url": null,
+      "options": {
+        "A": "Un candidat aux études supérieures",
+        "B": "Un étudiant en quête d'un stage",
+        "C": "Un informaticien en recherche d'emploi",
+        "D": "Un lycéen en demande d'orientation"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Après les cartes de cinéma illimitées, la carte Scène+ !\n\nParis est la première ville à tester cette formule des places à tarifs réduits à utiliser quand on veut, dans quarante théâtres environ, pour aller voir plus de 150 pièces.\nOn achète la carte, valable un mois ou un semestre et on peut aller dans les petites scènes de théâtre parisiennes qui accueillent surtout des comédies populaires plutôt que des pièces classiques.\n\nQue peut-on faire avec la carte Scène+ ?",
+      "image_url": null,
+      "options": {
+        "A": "Assister à des spectacles",
+        "B": "Obtenir de meilleures places",
+        "C": "Rencontrer des comédiens",
+        "D": "Suivre des visites guidées"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 15,
+      "question_text": "« Il faut savoir que toute personne n'ayant pas pratiqué d'activité physique pendant un certain temps doit accepter de repartir de zéro. Même si la maîtrise du geste peut revenir rapidement, le corps mettra, lui, plus de temps avant de pouvoir faire face aux efforts demandés. D'autant plus qu'entre-temps, il aura vieilli.\n\nUne période d'environ trois mois, avec des entraînements réguliers et progressifs, est indispensable dans un premier temps. Ensuite, le « nouveau » sportif pourra se lancer des défis pour améliorer ses performances. »\n\nQuel conseil donne l'auteur au « nouveau » sportif ?",
+      "image_url": null,
+      "options": {
+        "A": "Il faut reprendre au niveau où on avait arrêté",
+        "B": "Il faut s'entrainer avec des personnes de son âge",
+        "C": "Il faut se fixer des objectifs élevés dès le départ",
+        "D": "Il faut se remettre à bouger de façon régulière"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Bien se vêtir, ce n'est pas seulement succomber au dernier cri de la mode, c'est également prendre conscience que les conditions de production du textile sont une menace pour notre écosystème.\nSaviez-vous, par exemple, que le coton est très gourmand en pesticides ?\nChez Fibis, vous trouverez de la fibre naturelle, sans adjonction de produits chimiques, issue de cultures biologiques pour des habits au confort incomparable.\n\nQuel genre de produits vend la société Fibis ?",
+      "image_url": null,
+      "options": {
+        "A": "Des tenues particulièrement à la mode",
+        "B": "Des produits alimentaires biologiques",
+        "C": "Des engrais naturels pour les plantes",
+        "D": "Des vêtements en tissus non traités"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 17,
+      "question_text": "En hiver, à l'extérieur, pour piloter n'importe quel appareil à écran tactile, il faut souvent enlever ses gants, au risque d'attraper des engelures par temps de grand froid.\nIl n'y a plus de risque de se geler les mains désormais avec ce modèle de gants en chevreau doublé de soie. Les perforations au niveau de l'index permettent un meilleur contact avec l'écran tactile.\nOn pourra ainsi être à la pointe de la technologie et de la mode. Mais être à la page a un prix : la paire de gants est plus chère que l'appareil à écran tactile, à 370 euros.\n\nQuelle est la particularité de ces gants ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils évitent de rayer les appareils à écran tactile",
+        "B": "Ils permettent un contact direct avec un écran tactile",
+        "C": "Ils sont équipés de capteurs reliés à un écran tactile",
+        "D": "Ils sont offerts lors de l'achat d'un écran tactile"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 18,
+      "question_text": "La télévision, les jeux vidéo, les ordinateurs ont envahi les foyers. Alors, certains parents craignent le risque d'addiction pour leurs enfants.\nQuel est le quota d'heures quotidien devant les écrans à ne pas dépasser ? Pour les psychologues, le critère à prendre en compte est celui de l'exclusivité.\nSi les jeux vidéo et internet sont l'unique source de relation et de distraction pour un adolescent, alors, il faut s'inquiéter et agir.\nRéguler la consommation d'images, c'est le travail des parents qui doivent faire des écrans des objets d'échange familial et non un refuge individuel.\n\nQue devraient faire les parents concernant les jeux vidéo et internet ?",
+      "image_url": null,
+      "options": {
+        "A": "Donner à ces activités une fonction éducative",
+        "B": "Faire de ces loisirs des moments de partage",
+        "C": "Fixer des plages horaires pour jouer en ligne",
+        "D": "S'informer auprès des professionnels de santé"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 19,
+      "question_text": "LE SAVIEZ-VOUS ?\n\nUne jambe cassée ? Une grosse fièvre ? Vous êtes dans l'incapacité de venir à la bibliothèque universitaire.\nSi vous avez une connexion Internet efficace, vous pouvez choisir en ligne les ouvrages qui vous intéressent et les recevoir chez vous !\n\nConditions et modalités sur\nwww.bu-parisdescartes.fr\n\nQue propose cette annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Une bourse d'échange de livres",
+        "B": "Une offre d'accès à Internet",
+        "C": "Un service de prêt à domicile",
+        "D": "Une assistance de soins chez soi"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Plus de peur que de mal pour ce petit garçon, près de Lorient, qui, dimanche soir, mangeait une part de fromage.\n« Papa, le fromage, il est dur ! »\nDimanche, Youenn, 4 ans, mange une portion individuelle de fromage dans la maison familiale. Ses parents, occupés dans la pièce d'à côté, l'entendent tousser, comme s'il voulait vomir », raconte Yann, son père.\nEn fait, l'enfant est en train de recracher... un bout de plastique qui aurait pu l'étouffer.\n\nD'après Ouest France.\n\nQu'est-il arrivé à Youenn ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a avalé un mauvais morceau de fromage",
+        "B": "Il a trouvé quelque chose dans son fromage",
+        "C": "Il est tombé malade en mangeant du fromage",
+        "D": "Il s'est fait mal aux dents avec le fromage"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 21,
+      "question_text": "Mathieu Lagouanère et Élodie Calas, deux journalistes, ont fait un tour du monde avec une idée originale : provoquer des rencontres en faisant goûter du roquefort, un fromage traditionnel fabriqué dans leur région.\n\n« Le roquefort était simplement un moyen de faire connaissance avec les habitants. Ses principales caractéristiques, les taches de moisissure et l'odeur, peuvent faire réagir », explique Mathieu.\n\nLa société Roquefort leur a fourni les fromages. Ils ont raconté leurs aventures dans un blog de voyage.\n\nQuel était l'objectif de Mathieu et Elodie ?",
+      "image_url": null,
+      "options": {
+        "A": "Découvrir des recettes locales",
+        "B": "Entrer en contact avec les gens",
+        "C": "Réaliser une opération publicitaire",
+        "D": "Vendre des spécialités françaises"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 22,
+      "question_text": "Monsieur Leroux,\n\nJ'ai l'honneur de vous informer que votre nom a été sélectionné pour « Magasins en fête » !\n\nDès à présent, rendez-vous dans votre magasin, un bulletin de participation vous sera remis en caisse à partir de 25 euros d'achat !\n\nC'est la dernière étape, alors n'attendez plus, venez remplir ce bulletin et gagnez un voyage de rêve, ou bien l'un de nos nombreux autres cadeaux !\n\nPourquoi Monsieur Leroux doit-il se rendre en magasin ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour bénéficier d'une promotion",
+        "B": "Pour participer à la finale d'un jeu",
+        "C": "Pour recevoir un coupon de voyage",
+        "D": "Pour retirer un chèque cadeau"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Savoir choisir la bonne route ne suffit pas. L'ultime clé pour gagner la Route du Rhum, c'est la connaissance de soi, et tout particulièrement de ses rythmes de sommeil.\n\nC'est l'un des aspects les plus méconnus de la voile de compétition, mais la faculté de récupération peut faire toute la différence sur un podium. Ainsi, Alain Gautier reconnaît avoir perdu la dernière Route du Rhum parce qu'il n'a pas su, dès les premiers jours de course, gérer correctement ses phases de repos.\n\n« À la fin, j'ai manqué de lucidité et j'ai commis des erreurs », avoue-t-il après sa défaite.\n\nQuel conseil le journaliste donne-t-il pour gagner la course ?",
+      "image_url": null,
+      "options": {
+        "A": "Connaître ses adversaires",
+        "B": "Cultiver sa concentration",
+        "C": "Dormir efficacement",
+        "D": "Ménager ses efforts"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Journée « Portes Ouvertes » à Polytech'Tours.\n\nVenez rencontrer les étudiants, enseignants et associations de Polytech'Tours le samedi 12 février, de 9h à 16h sans interruption.\n\n+ Espaces d'information présents sur les trois sites de l'école.\n+ Présentation des études et des métiers d'ingénieur par les responsables des spécialités sur chaque site.\n+ Visites guidées des salles de travaux pratiques, des centres de documentation, des laboratoires de recherche et de langues.\n+ Démonstrations de projets réalisés dans nos cursus.\n+ Présentation des associations étudiantes.\n\nQuel est l'objectif de cette journée ?",
+      "image_url": null,
+      "options": {
+        "A": "Découvrir le travail de recherche en laboratoire",
+        "B": "Faire découvrir les formations pour devenir ingénieur",
+        "C": "Inaugurer l'ouverture d'un campus universitaire",
+        "D": "Obtenir des conseils afin de créer une association"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Près du Nil,\nle futur musée égyptien.\n\nEn 2002, l'Égypte lance un appel d'offres pour la construction du Grand Musée. Des architectes de renommée mondiale proposent leurs projets. C'est celui de Shih-Fu Peng, un jeune architecte inconnu, qui est choisi sur une idée simple : construire un énorme bâtiment face aux pyramides détruirait l'harmonie du plateau de Gizeh. Il faut donc bâtir cinquante mètres en contrebas. Ainsi ne verra-t-on jamais le musée au même niveau que les pyramides. En revanche, il sera toujours possible de voir celles-ci depuis des galeries et ses salles, dans un panorama inviolé.\n\nPourquoi Shi-Fu Peng a-t-il été choisi pour construire le musée ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a associé un architecte célèbre à son projet",
+        "B": "Il a cherché à préserver la beauté du site",
+        "C": "Il a conçu un bâtiment qui ressemble aux pyramides",
+        "D": "Il a imaginé un projet qui modifie le paysage"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Fini le poulet-purée !\n\nRictus inquiet du garçon de salle, regard accusateur des voisins de table... Oser se présenter au restaurant avec un enfant en bas âge déclenche bien souvent la fâcheuse impression d'être persona non grata. Heureusement, les choses changent : la clientèle rajeunit et l'univers de la gastronomie se renouvelle. Les grands chefs, longtemps réticents à l'idée d'une cuisine pour enfants, ont pris l'initiative de concocter un menu destiné aux gastronomes en culottes courtes. Comme si ces derniers ne pouvaient apprécier autre chose que du blanc de volaille ou des carottes râpées ! Ils ont préféré adapter la taille des assiettes plutôt que de simplifier leur contenu, afin d'éduquer les papilles des bambins.\n\nD'après lexpress.fr du 06/04/2007\n\nQue font les grands chefs pour les enfants ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils développent leur culture du goût",
+        "B": "Ils leur donnent des cours de cuisine",
+        "C": "Ils leur proposent un plat unique",
+        "D": "Ils limitent la variété de leurs menus"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Dans une interview, le ministre de l'Écologie proposait ces quelques conseils, mis en pratique par lui-même au quotidien, afin de mieux contribuer au respect de l'environnement : « Ma famille et moi-même avons d'abord installé des économiseurs sur tous les robinets de la maison. D'autre part, nous faisons très attention à ne consommer que des produits de saison afin de réduire au maximum les emballages inutiles que produisent les techniques de congélation et de mise en conserve des aliments. Bref, nous essayons d'appliquer tous ces petits gestes qui doivent devenir de vrais réflexes. »\n\nQuelle pratique, parmi d'autres, le ministre de l'écologie cherche-t-il à limiter ?",
+      "image_url": null,
+      "options": {
+        "A": "La consommation de produits importés par avion",
+        "B": "La distribution de sacs en plastique en magasin",
+        "C": "L'utilisation de métaux toxiques dans les tuyaux",
+        "D": "Le gaspillage de l'eau dans le réseau domestique"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Un Français sur quatre renonce à se soigner faute de moyens. Beaucoup d'hôpitaux diminuent leur personnel et facturent plus cher leurs services aux malades. Le prix des médicaments a doublé en 20 ans. Les inégalités face aux soins s'aggravent. C'est pourquoi nous demandons au gouvernement de mettre en place le remboursement à 100 % des dépenses médicales, de faciliter l'installation des jeunes médecins dans les zones qui en manquent, de développer la prévention des maladies et de multiplier les centres médicaux avec des consultations gratuites ! La santé ne peut pas être un commerce !\n\nQu'est-ce qui indigne l'auteur de cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "La multiplication des pathologies",
+        "B": "L'absence de programme politique",
+        "C": "Le manque de qualité des infrastructures",
+        "D": "L'incompétence du personnel de santé"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 29,
+      "question_text": "L'émotion des aborigènes.\n\nLorsque les aborigènes Ngarinyin, venus pour la première fois en Europe en 1997 pour une série d'expositions et de conférences sur l'histoire de l'Océanie, entrèrent à Lascaux, ils fondirent en larmes en tombant en arrêt devant les dessins préhistoriques. L'espace d'un instant, ils avaient cru que leur territoire sacré, peint en Australie, les avait suivis jusqu'en France...\n\nC'est l'une des anecdotes que raconte l'archéologue Jean-Pierre Mohen dans son livre Art et préhistoire.\n\nPourquoi les aborigènes ont-ils pleuré en voyant les peintures de Lascaux ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils étaient étonnés devant tant de splendeur",
+        "B": "Elles représentaient un lien avec le sacré",
+        "C": "Elles leur rappelaient leur propre histoire",
+        "D": "Ils croyaient voir là leurs propres peintures"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Chaque année, le 10 août, les cordons bleus de l'île de la Guadeloupe se retrouvent à Pointe-à-Pitre pour célébrer saint Laurent, leur patron. Après une grande messe donnée à l'église de Saint-Pierre-et-Saint-Paul, une procession de cuisinières vêtues de leurs plus beaux madras sillonne la ville avant de convier la population à un grand festin composé des meilleurs plats créoles.\n\nSituée dans le village du Gosier, à proximité de Pointe-à-Pitre, l'Auberge de la Vieille Tour, construite autour d'un moulin à vent du XVIII° siècle, sera un lieu de séjour idéal pour assister à cette manifestation haute en couleur et pour goûter au vrai parfum des Antilles.\n\nQu'est-ce qui distingue la fête de la Saint-Laurent à Pointe-à-Pitre ?",
+      "image_url": null,
+      "options": {
+        "A": "Consiste en un grand évènement religieux",
+        "B": "Permet de découvrir les saveurs antillaises",
+        "C": "Se réduit à une manifestation pour touristes",
+        "D": "Se déroule dans un ancien monument restauré"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 31,
+      "question_text": "\"Faut-il te le dire en quelle langue ?\"\n\nCette question, que des milliers de mères posent à leur enfant lorsqu'elles veulent se faire écouter, est en réalité très pertinente (comme tout ce que disent les mères). Des travaux scientifiques récents ont en effet démontré une réalité étonnante : nous réfléchissons et prenons des décisions différemment lorsque nous traitons l'information dans une autre langue que notre langue maternelle.\n\nNous comprenons tout aussi bien l'idée ou le problème, mais lorsque nous utilisons une autre langue, notre raisonnement est plus réfléchi, moins dicté par les émotions, et davantage orienté vers l'utilité.\n\nQue permet l'utilisation d'une langue autre que la langue maternelle ?",
+      "image_url": null,
+      "options": {
+        "A": "D'attirer l'attention de l'interlocuteur",
+        "B": "D'imaginer des solutions originales",
+        "C": "De solliciter davantage la raison",
+        "D": "De trouver des réponses rapides"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Pas de clash ni de portes qui claquent. À l'issue de la deuxième conférence sociale, le gouvernement peut au moins se réjouir de ce résultat. Les représentants du patronat et des syndicats n'ont pas applaudi à tout rompre l'intervention du Premier ministre, mais il n'y a pas non plus eu de fâcherie, comme celle qui avait marqué la première conférence.\n\nSi certains se sont dits déçus par la minceur des annonces dévoilées par le Premier ministre, ou par les zones de flou qui persistent sur plusieurs dossiers brûlants — les retraites en tête —, personne n'a cependant laissé éclater sa colère. Il faut dire que, pendant deux jours, ministres et conseillers se sont évertués à repousser les sujets sensibles à plus tard.\n\nComment la conférence s'est-elle conclue ?",
+      "image_url": null,
+      "options": {
+        "A": "L'affrontement entre partenaires sociaux",
+        "B": "L'avancée majeure en termes de fiscalité",
+        "C": "La proclamation de réformes importantes",
+        "D": "L'absence de prise de décisions effectives"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 33,
+      "question_text": "En France, entre 200.000 et 500.000 cas de troubles psychiques sont liés au monde du travail. L'apparition de nouvelles méthodes de travail, plus intenses et contraignantes, serait à l'origine de l'augmentation des cas de syndrome d'épuisement professionnel : c'est le mal du siècle et pourtant, il n'est pas encore reconnu.\n\nLes salariés, prisonniers de l'idéologie ambiante, s'imaginent trop souvent, quand ils craquent, qu'un collègue plus solide qu'eux aurait été capable de résister. Mais cela s'avère faux la plupart du temps. Une reconnaissance de la maladie obligerait les entreprises à réfléchir à leur fonctionnement et représenterait une réelle mesure d'utilité publique.\n\nD'après capital.fr\n\nQuel constat est dressé à propos de ce syndrome ?",
+      "image_url": null,
+      "options": {
+        "A": "Il inquiète les patrons de sociétés",
+        "B": "Il touche les employés les plus faibles",
+        "C": "Son existence doit être officialisée",
+        "D": "Son traitement est peu efficace"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 34,
+      "question_text": "L'APPRENTISSAGE EN EUROPE\n\nActuellement, l'utilisation des nouvelles technologies de l'information et de la communication (TIC) dans les salles de classe reste limitée. Les établissements continuent de fonctionner selon un modèle éducatif ancien. Ils peinent à se détacher d'une structure trop rigide : l'enseignement repose encore principalement sur des manuels, exploite peu les connaissances accessibles grâce à la mondialisation, et s'inscrit dans des espaces d'apprentissage traditionnels. Les établissements appliquent ainsi une philosophie davantage héritée du XIXe siècle industriel que du XXIe siècle informationnel.\n\nAujourd'hui, l'enseignement est caractérisé par des établissements du XIXe siècle, où des enseignants du XXe siècle instruisent des étudiants du XXIe siècle.\n\nQue présente l'auteur de l'article ?",
+      "image_url": null,
+      "options": {
+        "A": "Des méthodes innovantes sur l'usage des TIC",
+        "B": "Des pistes de recherche sur l'apprentissage",
+        "C": "Un état des lieux des ressources pédagogiques",
+        "D": "Une analyse du contexte socio-éducatif actuel"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 35,
+      "question_text": "On connaît Cézanne surtout pour ses paysages, mais le Musée d'Orsay montre, pour la première fois, une partie méconnue de l'œuvre de l'artiste. On y croisera ainsi le visage de son épouse, seul motif autant étudié par le peintre que la montagne Sainte-Victoire. Au fil des versions, Hortense Fiquet devient l'objet d'une recherche plastique, de mise en scène et de géométrisation des formes. Mais Cézanne peut aussi avoir le pinceau cruel. Dès ses débuts, les figures de son père et de sa mère sont tourmentées. Lui-même se représente à 27 ans, patibulaire et le regard injecté de sang. À la fin de sa vie, Cézanne choisit des anonymes du monde rural. Ses tableaux ne sont alors qu'une autre forme de paysage.\n\nQue souligne cette exposition sur Paul Cézanne ?",
+      "image_url": null,
+      "options": {
+        "A": "L'influence de ses contemporains",
+        "B": "La singularité de ses portraits",
+        "C": "Son engouement pour la nature",
+        "D": "Son travail postimpressionniste"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Suite à un accident chimique sur un site minier, les pouvoirs publics ont décidé d'obliger les sociétés minières à financer des programmes de recherche et à replanter les surfaces exploitées. Et de fait, les compagnies minières jouent très bien le jeu. Comme il serait bien naïf de penser que leurs dirigeants soient tout à coup devenus philanthropes. Il faut chercher la raison de cet intérêt ailleurs. Il se trouve qu'un scientifique, Anthony Van der Hent, a prouvé que des « super-plantes » avaient la faculté d'extraire du sol des métaux économiquement exploitables. C'est donc la possibilité d'allier la régénération de sites industriels à des assurances de gains financiers supplémentaires qui motive tant les industriels.\n\nD'après fruits et abeilles.\n\nSur quel point porte le scepticisme du journaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "La capacité des plantes à nettoyer les sols",
+        "B": "La rentabilité d'un nouveau système d'extraction",
+        "C": "Le résultat des recherches de M. Van der Hent",
+        "D": "Les préoccupations écologistes des industriels"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Aliocha - Blog [S'abonner +]\n\nQuand j'ai ouvert ce blog il y a bientôt trois ans, je lisais partout sur Internet que le journalisme professionnel était mort, puisque chacun pouvait désormais devenir journaliste, au sens de diffuseur d'informations. Ce point de vue, à mon sens erroné, tend aujourd'hui à disparaître. Il s'efface à mesure que s'affirme sur Internet la distinction entre faits et opinions, entre travail professionnel et amateur, entre la capacité à aller chercher l'information et la simple possibilité technique de la diffuser. Tout le monde n'est pas devenu journaliste grâce à Internet ; en revanche, nous sommes de plus en plus nombreux à accéder au statut de membres actifs du système médiatique.\n\nQuelle est l'opinion de cette personne sur l'évolution du métier de journaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "La formation au métier de journaliste est devenue tout à fait inutile",
+        "B": "Une frontière est apparue entre les journalistes confirmés et les autres",
+        "C": "L'évolution d'internet a affaibli le respect porté au statut de journaliste",
+        "D": "Des internautes publiant sur le net se prennent pour des journalistes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 38,
+      "question_text": "C'est au sein des populations françaises du Canada que s'est développée, au XIXe siècle, la littérature québécoise. Une littérature porte nécessairement l'empreinte de l'esprit qui l'a façonnée. L'esprit canadien-français repose évidemment sur des qualités françaises. Toutefois, notre esprit a visiblement subi l'influence des conditions nouvelles de vie — historiques, géographiques et sociales. Bien que, pendant deux siècles, les tâches utilitaires aient absorbé toutes nos énergies au détriment de la culture de l'esprit, aujourd'hui, une conscience plus aiguë de nos déficiences, une ambition plus vive d'accroître notre vie intellectuelle et artistique, ainsi qu'un souci plus marqué des pouvoirs publics de coopérer avec les initiatives privées ont favorisé des progrès prometteurs d'un avenir meilleur.\n\nSelon ce spécialiste, qu'est-ce qui caractérise la littérature québécoise contemporaine ?",
+      "image_url": null,
+      "options": {
+        "A": "L'absence d'attirance pour les thèmes traditionnels",
+        "B": "L'affirmation d'un style distinct de celui des Français",
+        "C": "L'effervescence créatrice contrastant avec le passé",
+        "D": "Le projet national de produire des œuvres majeures"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Pluie d'enfer\nPièce de théâtre de K. Hufr\n\nUn face-à-face entre deux flics, deux hommes forts, durs mais terriblement humains, dont les destins vont basculer. Ce qui fait courir les foules, ce sont les deux acteurs O. Marchal et B. Wolkowitch. La pièce est habilement stylisée, ne joue jamais les effets réalistes : plateau noir, pluie monotone en fond sonore qui s'inscrit dans l'atmosphère d'un monde violent. Sans doute cette tension fait-elle la force de Pluie d'enfer et son intense pouvoir d'attraction. Cependant, l'interprétation sur scène n'atteint jamais la présence fascinante des deux personnages fictifs de l'œuvre dramatique.\n\nPour ce journaliste, quel est le point négatif de cette pièce ?",
+      "image_url": null,
+      "options": {
+        "A": "L'intrigue déçoit par son invraisemblance",
+        "B": "La mise en scène est simplifiée à l'extrême",
+        "C": "La tension dramatique demeure inexistante",
+        "D": "Le jeu des comédiens manque de puissance"
+      },
+      "correct_answer": "D"
+    }
+  ]
+}

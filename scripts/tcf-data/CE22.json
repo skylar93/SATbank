@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE22",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Perdu : chat gris. Porte un collier jaune.\n\nQu'est-ce que Stéphanie cherche ?",
+      "image_url": null,
+      "options": {
+        "A": "Un animal",
+        "B": "Un bijou",
+        "C": "Un sac",
+        "D": "Un téléphone"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Pièce de théâtre Rhinocéros, à 19h30, salle des fêtes de Versailles.\n\nQue présente l'affiche ?",
+      "image_url": null,
+      "options": {
+        "A": "Un cours",
+        "B": "Une fête",
+        "C": "Un match",
+        "D": "Un spectacle"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Vie pratique\n\nConsommez cinq fruits et légumes par jour, limitez la quantité de viande rouge, de beurre, de sucre et de sel et buvez au moins huit verres d'eau par jour ! vous ferez le plein d'énergie !\n\nQue permet le conseil de « Vie pratique » ?",
+      "image_url": null,
+      "options": {
+        "A": "De faire des économies",
+        "B": "De pratiquer du sport",
+        "C": "De rester en bonne santé",
+        "D": "De trouver des produits Bio"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Bonjour Jean-Eudes,\n\nC'est mon anniversaire samedi et j'ai encore beaucoup de choses à faire. Tu pourrais m'aider s'il te plait ? il faut décorer la salle du restaurant et je sais que tu as toujours de bonnes idées ! en plus, c'est à cinq minutes de ton appartement.\n\nMerci d'avance,\nEmma,\n\nQu'est-ce qu'Emma demande à Jean-Eudes ?",
+      "image_url": null,
+      "options": {
+        "A": "De choisir une salle pour la fête",
+        "B": "De s'occuper de la décoration",
+        "C": "De trouver un bon restaurant",
+        "D": "D'organiser son anniversaire chez lui"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Françoise,\n\nPouvons-nous nous rencontrer dans ton bureau demain matin ?\n\nArriance,\n\nPourquoi Arriance écrit-elle ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle doit partir une journée",
+        "B": "Elle propose un déjeuner",
+        "C": "Elle souhaite parler à Françoise",
+        "D": "Elle veut visiter une entreprise"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Vous avez peur en avion ? Vous n'êtes pas le seul ! les statistiques montrent qu'un quart des passagers sont inquiets quand ils prennent l'avion ! L'avion n'est pas un jeu ! des stages peuvent vous aider à monter dans un avion sans avoir peur ! Pour en savoir plus, contactez Airplus au : 09.48.36.22.11\n\nQue propose la société Airplus ?",
+      "image_url": null,
+      "options": {
+        "A": "Des avions",
+        "B": "Des jeux",
+        "C": "Des stages",
+        "D": "Des statistiques"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Devenez reporter pour le mensuel de notre ville ! Envoyez-nous votre article sur l'un des thèmes suivants : vie du quartier, sport, cuisine, poésie… S'il est sélectionné, il sera publié dans le numéro du mois prochain.\n\nNotre contact : publication@nanterre.fr\n\nQui a écrit cette proposition ?",
+      "image_url": null,
+      "options": {
+        "A": "Un journal",
+        "B": "Un restaurant",
+        "C": "Une association",
+        "D": "Une école"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Monsieur Giannorsi,\n\nNous vous informons que votre commande est arrivée à la poste. Vous pouvez venir la retirer du lundi au vendredi, de 8h à 18h. n'oubliez pas prendre votre pièce d'identité. Nous vous remercions pour votre commande chez Culture et Compagnie.\n\nQu'est-ce que M. Giannorsi doit faire ?",
+      "image_url": null,
+      "options": {
+        "A": "Aller chercher un colis",
+        "B": "Échanger son chat",
+        "C": "Envoyer une lettre",
+        "D": "Réserver son article"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 9,
+      "question_text": "La France est le pays d'Europe où il y a le plus d'animaux par habitant. Chien, chat, poisson, cheval ou même serpent, les français adorent s'occuper d'eux, les nourrir, les sortir et vivre à leurs côtés.\n\nQu'apprend-on sur les français et les animaux ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils aiment en voir dans la nature",
+        "B": "Ils les regardent à la télévision",
+        "C": "Ils sont nombreux à en avoir",
+        "D": "Ils vont les voir dans des zones"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Que puis-je dire de ce documentaire, moi qui pleure depuis tant d'années sur le manque de saveur de ce que je mange ? Je me rappelle encore le bon goût des pêches et des abricots ! Maintenant, je comprends mieux pourquoi la majorité des agriculteurs ne mangeraient pas ce qu'ils vendent — c'est fou ! J'ai apprécié d'avoir les points de vue de différentes personnes concernées : agriculteurs, consommateurs, enseignants, cuisiniers.\n\nQuel est le thème du documentaire ?",
+      "image_url": null,
+      "options": {
+        "A": "L'alimentation",
+        "B": "L'éducation",
+        "C": "La cuisine",
+        "D": "Le commerce"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Pierre,\n\nCe soir je rentre tard. Peux-tu acheter du pain et du fromage pour le diner ?\n\nAnne,\n\nQue doit faire Pierre ?",
+      "image_url": null,
+      "options": {
+        "A": "Aller chercher Anne",
+        "B": "Faire des courses",
+        "C": "Préparer le repas",
+        "D": "Se coucher tôt"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "La semaine dernière, les écoles de commerce ont organisé leur traditionnel rendez-vous « avenir jeunesse ». Comme tous les ans, son objectif a été de favoriser la rencontre entre les entreprises qui recrutent et les élèves. Ces derniers ont pu se renseigner sur les différents secteurs d'activité et déposer leur candidature pour les postes qui les intéressent. Des ateliers conseil étaient animés par des professionnels.\n\nQuel était le but de l'événement « Avenir Jeunesse » ?",
+      "image_url": null,
+      "options": {
+        "A": "Accueillir les étudiants étrangers",
+        "B": "Faciliter la recherche de l'emploi",
+        "C": "Préparer la rentrée universitaire",
+        "D": "Présenter de nouvelles formations"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Nous vivons dans une grande maison à 15 minutes du centre de Marseille. Nos enfants ont quitté la maison et nous souhaitons louer une chambre à un étudiant pour 150 dollars par mois. Si vous êtes intéressé, écrivez-nous à : alouer@maintenant.com\n\nQu'est-ce qui est proposé dans cette annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Un échange de maison",
+        "B": "Un studio en centre-ville",
+        "C": "Une chambre chez l'habitant",
+        "D": "Une colocation entre étudiants"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Madame,\n\nNous vous informons que vous pouvez consulter, sur notre site internet, votre facture de téléphone du mois de juin. Son montant est de 25 dollars. Nous vous remercions de votre confiance.\n\nLe responsable commercial de Télécom Bleu.\n\nQue peut faire la personne qui reçoit cette lettre ?",
+      "image_url": null,
+      "options": {
+        "A": "Changer d'abonnement",
+        "B": "Choisir un appareil",
+        "C": "Payer une commande",
+        "D": "Vérifier sa consommation"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Information Voyageurs\n\nLes bus de la ligne N°25 ne circulent pas cette semaine à cause de réparations sur les routes. Les métros et tramways fonctionnent normalement. Pour plus d'informations, présentez-vous aux guichets.\n\nMerci pour votre compréhension,\n\nQu'est-ce qui est annoncé ?",
+      "image_url": null,
+      "options": {
+        "A": "Des pannes d'autobus",
+        "B": "Des travaux sur la ligne",
+        "C": "Un accident de circulation",
+        "D": "Une grève des transports"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Venez découvrir la beauté du Haut-Rhin grâce à Marie-Dominique, qui vous accueille dans sa chaleureuse famille pour une ou deux nuits à petits prix. Elle vous fait goûter les spécialités de cette région, comme les fromages ou les charcuteries faits maison.\n\nDe quoi le texte fait-il la publicité ?",
+      "image_url": null,
+      "options": {
+        "A": "D'un lieu d'accueil",
+        "B": "D'un monument historique",
+        "C": "D'une épicerie familiale",
+        "D": "D'un restaurant traditionnel"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Le sport arrive largement en tête de nombreuses activités extrascolaires proposées aux 12-16 ans. Les parents se font une obligation sociale d'inscrire leurs enfants à ces activités et de montrer aux autres qu'ils sont de « bons parents » qui veullent l'épanouissement global de leurs enfants. Ils leur permettent ainsi de se divertir, de se dépenser, et de s'initier à un sport individuel ou collectif. C'est également l'occasion pour les enfants de découvrir et d'accepter leurs propres limites.\n\nQu'est-ce qui incite les parents à inscrire leurs enfants à des activités sportives ?",
+      "image_url": null,
+      "options": {
+        "A": "La pression de la société",
+        "B": "La réputation des clubs",
+        "C": "Les bienfaits pour la santé",
+        "D": "Les envies des adolescents"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Parcourir un roman n'est qu'une distraction. Votre cerveau a besoin de stimulation pour garder ses pleines capacités. Certaines études montrent d'ailleurs que cela diminue le risque de déclenchement de la maladie d'Alzheimer. Ce passe-temps offre aussi un remède au stress, car lire vous éloigne de vos soucis et détend. C'est d'ailleurs souvent un agréable prélude au sommeil. Evidemment, lire accroit aussi votre vocabulaire, votre orthographe et votre culture générale : des atouts qui font la différence dans votre vie professionnelle. Cela permet aussi de renforcer vos capacités d'analyse, de mémorisation et de concentration tout comme votre capacité à reconnaître les émotions des autres.\n\nQue démontre l'auteur de cet article à propos de la lecture ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est une activité qui enrichit l'imagination",
+        "B": "Elle permet d'améliorer ses performances",
+        "C": "Il est difficile de s'y livrer si on est angoissé",
+        "D": "Sa pratique exige des connaissances variées"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Il y a quelque chose de rare dans « Normandie nue ». Ce film est résolument léger, tout en ayant du fond. À travers une histoire qui sert de fil conducteur cocasse et insolite – celle d'un artiste américain qui veut photographier des paysans dévêtus – « Normandie nue » aborde la crise des éleveurs avec beaucoup d'humanité, notamment grâce au maire du village, qui voit dans la venue du photographe l'occasion de faire valoir sa cause aux yeux de la planète. Parfois un peu maladroite, cette comédie amuse en caricaturant gentiment les médias, les artistes et les bobos parisiens en mal de verdure.\n\nQuelle est l'opinion du journaliste sur le film « Normandie Nue » ?",
+      "image_url": null,
+      "options": {
+        "A": "Il est facile de s'identifier aux personnages",
+        "B": "Les lieux de tournage sont authentiques",
+        "C": "On y dresse un portrait juste de la société",
+        "D": "Son humour fait passer un message sérieux"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Parents Mode d'Emploi\nSérie télévisée, du lundi au vendredi à 20h40\nPersonnages\n\nNous découvrons le quotidien de Gaby et Isa, les personnages principaux, quadragénaires d'aujourd'hui, qui cherchent un mode d'emploi pour être de bons parents ! Ils essaient de contrôler la situation et seraient même prêts à nous donner des conseils, mais comme tous les parents, ils font de grosses erreurs… ce qui nous amuse et nous fait rire, pour notre plus grand plaisir !\n\nQuel est l'objectif de cette série télévisée ?",
+      "image_url": null,
+      "options": {
+        "A": "Informer sur de nouvelles méthodes éducatives",
+        "B": "Montrer la vie de tous les jours d'un jeune couple",
+        "C": "Présenter les relations familiales avec humour",
+        "D": "Proposer des solutions à des situations de crise"
+      },
+      "correct_answer": "C"
+    },
+        {
+      "question_number": 21,
+      "question_text": "Envie de faire le Clown ?\n\nPendant les vacances de pâques, l'équipe d'animateurs du centre de loisirs dessinera chaque jour sur les joues des enfants des animaux marins : hippocampes, phoques, manchots, poissons clowns….\n\nQuelle activité proposera-t-on aux enfants pendant les vacances de pâques ?",
+      "image_url": null,
+      "options": {
+        "A": "Un spectacle de cirque",
+        "B": "Une activité de maquillage",
+        "C": "Une rencontre avec un clown",
+        "D": "Une sortie au Zoo"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 22,
+      "question_text": "Outre-manche, une jeune députée a attiré l'attention des médias et photographes en proposant un décret qui imposerait la mention « retouchée numériquement » sur toutes les photos corrigées. Le parti libéral démocratique a d'ailleurs approuvé cette proposition « je ne veux pas interdire aux publicitaires de recourir à des mannequins plus beaux que la femme de tous les jours, mais il y a une différence entre choisir la beauté et retoucher cette beauté pour atteindre des propositions impossibles en ce qui me concerne, par exemple, la taille des jambes », s'insurge la députée.\n\nQue propose cette députée à propos des publicités mettant en scène des femmes ?",
+      "image_url": null,
+      "options": {
+        "A": "D'interdire les photos portant atteinte à leur dignité",
+        "B": "De diversifier le type de femmes prises pour modèles",
+        "C": "De mentionner les références précises des produits",
+        "D": "De signaler sur les photos les modifications effectuées"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 23,
+      "question_text": "En quelques années, le camping est devenu le premier mode d'hébergement touristique, devant les hôtels, les résidences et les villages de vacances. « Les familles qui louaient des villas ou partaient à l'hôtel choisissent de plus en plus ce type de séjour en plein air et tout compris », déclare un expert. Ces nouveaux adeptes du camping, souvent plus fortunés, se tournent vers les tentes meublées, chalets et mobil-home classés 3 à 5 étoiles qui existaient peu auparavant. Il y a quelques années, certains avaient honte de dire : je suis allé au camping. Aujourd'hui, ce n'est plus vrai.\n\nQue constate l'expert à propos du camping ?",
+      "image_url": null,
+      "options": {
+        "A": "Le confort a été très nettement amélioré",
+        "B": "Le mode d'hébergement est écologique",
+        "C": "Les prestations proposées sont inédites",
+        "D": "Les prix deviennent de plus en plus attractifs"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Certaines grandes surfaces ont désigné un coach antigaspi au sein du personnel, ont cassé les prix des produits à date de péremption proche, ont réduit le nombre d'articles en rayon et ont proposé les fruits et légumes en vrac. Ces mesures ont permis de réduire les pertes alimentaires de 22 % en trois mois ! Les solutions pour lutter contre le gaspillage en grande distribution existent donc bel et bien. Des initiatives similaires, dont les résultats devraient paraître prochainement, sont en cours dans d'autres secteurs (industries agroalimentaires, producteurs, etc.).\n\nSelon cet article, quel type d'action faudrait-il poursuivre ?",
+      "image_url": null,
+      "options": {
+        "A": "De nouvelles pratiques de vente",
+        "B": "Des comportements d'achat différents",
+        "C": "Des habitudes alimentaires saines",
+        "D": "Des modes de recyclage innovants"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Mario Leno\nAvenue d'Italie\n76500 Paris\n\nSociété immobilière\n30 boulevard Raspail\n750600 Paris\n\nParis, le 26 janvier.\n\nJe vous écris pour vous faire part des nuisances sonores provoquées par les locataires du 7ème étage. Ils écoutent de la musique jusque tard dans la nuit, à un volume qui m'empêche de dormir dans de bonnes conditions. Je leur ai demandé plusieurs fois de baisser le son et de faire attention à l'heure, mais ils ne m'ont pas écouté. Je vous demande de bien vouloir agir afin qu'ils changent de comportement au plus vite.\n\nCordialement,\nMario Leno,\n\nQuel est l'objet de ce courriel ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est un dépôt de plainte destiné aux services de police",
+        "B": "C'est une lettre de menace destinée à des voisins bruyants",
+        "C": "C'est une mise en demeure destinée à un propriétaire",
+        "D": "C'est une réclamation destinée au gérant d'un immeuble"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Futur manager, soyez gentil!\n\nDepuis les scandales des traders, les grandes écoles ont été mises au banc des accusés : ce qu'elles transmettaient se limitait à du savoir technique, directement exploitable par les entreprises. Myopie sociale et absence d'esprit critique menaçaient les futurs managers du monde économique. L'éthique est maintenant à la mode dans toutes les grandes écoles de management. Il n'y est question que de « social business » ou de « développement durable ». à côté des activités associatives traditionnelles, les actions humanitaires ont fleuri et de plus en plus d'étudiants s'y investissent chaque année. Désormais, un étudiant doit avoir fait du soutien scolaire en banlieue ou monté du microcrédit en Afrique.\n\nD'après ce texte, quelle est la nouvelle orientation des grandes écoles ?",
+      "image_url": null,
+      "options": {
+        "A": "Créer des partenaires avec le milieu associatif",
+        "B": "Former des jeunes défavorisés au management",
+        "C": "Intégrer des valeurs sociales et environnementales",
+        "D": "Préparer des techniciens aux dangers de la finance"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Direction l'Italie pour découvrir la brigade des fromages\n\nUn département entier de policiers situé à Rome traque les imitations alimentaires et notamment celle du plus célèbre des fromages italiens, le parmesan. Ils ont, en effet, fort à faire avec des meules de parmesan AOP (appellation d'origine protégée) qui peuvent valoir plusieurs milliers d'euros. Le parmesan représente 900 ans de tradition concentrés entre les mains de 350 fabricants dans le nord de la péninsule, un savoir fièrement défendu par cette brigade.\n\nQuel est l'objectif de cette brigade spéciale ?",
+      "image_url": null,
+      "options": {
+        "A": "Contrôler la qualité sanitaire des fromages",
+        "B": "Empêcher le trafic des fromages de contrebande",
+        "C": "Enquêter sur les vols de fromage de luxe",
+        "D": "Protéger les secrets d'élaboration des fromages"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 28,
+      "question_text": "La sonorité naturelle qui berce l'océan depuis des millions d'années a presque disparu, éclipsée par les bruits artificiels générés depuis la première révolution industrielle. Le bioacousticien Michel André alerte sur cette nuisance invisible qui menace la vie marine : la cacophonie engendrée par les activités humaines. À la différence de la lumière, qui pénètre à peine à quelques mètres sous l'eau et n'est d'aucune utilité pour transmettre des informations sur de longues distances, le son, lui, se propage sur des centaines de kilomètres. Heureusement, le bruit, dès qu'on le supprime, n'a plus aucun effet. Si nous travaillons sur des méthodes pour éliminer ces sons produits par les êtres humains, la nuisance pourrait être réduite.\n\nDe quoi parle cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "D'un moyen de communication inédit",
+        "B": "D'un système de guidage par ondes",
+        "C": "D'une innovation technologique",
+        "D": "D'une pollution imperceptible"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Les gens empilaient les objets dans les chariots en métal, avec frénésie. Ils avaient des visages sérieux, contractés, et leurs paupières battaient de façon anormalement lente. Les femmes tendaient les mains vers les étals. On aurait dit que les gens ne savaient plus ce qu'ils faisaient. Comment l'auraient-ils su ? Ce n'étaient pas eux qui saisissaient la marchandise. C'était la marchandise qui se collait d'elle-même à leurs mains, elle entrait directement dans les caddies. La nourriture n'était plus que des formes, des couleurs : rouge, blanc, vert, orange. Les yeux avaient faim — des sphères et des pyramides — faim de plastiques lisses et de capsules de fer-blanc.\n\nDans cet extrait, qu'apprend-on sur les acheteurs ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils donnent l'impression de vénérer les produits",
+        "B": "Ils ont l'air éblouis par le gigantisme des magasins",
+        "C": "Ils paraissent manipulés par une force supérieure",
+        "D": "Ils semblent perdus dans le labyrinthe des rayons"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Paul Bocuse n'était pas le plus créatif, ni le meilleur technicien de cette génération de chefs d'exception qui a vu éclore des cuisiniers de renommée internationale. Mais il avait une vision, du culot et un véritable talent de meneur. Histoire de donner une stature plus imposante aux cuisiniers, il a lancé la mode de la fameuse veste blanche « grand chef », avec le nom brodé sur la poitrine et le port de la toque démesurée qui évoque la coiffe des pharaons. Dès ses débuts, sa personnalité et son sens de la formule ont fait mouche auprès de la presse, qui a publié de nombreux portraits flatteurs, faisant affluer les clients dans son restaurant.\n\nD'après ce journaliste, quel a été le secret du succès de Paul Bocuse ?",
+      "image_url": null,
+      "options": {
+        "A": "Sa connaissance des médias",
+        "B": "Ses méthodes ancestrales",
+        "C": "Ses recettes originales",
+        "D": "Son charisme incroyable"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Deux petites saisons et puis s'en vont. Sur les plates-formes de streaming par abonnement, les séries ont beau être reines, elles n'en sont pas moins soumises à rude concurrence. Et leur durée de vie peut se révéler bien plus courte que sur les chaines traditionnelles.\n\nCette stratégie ne doit rien au hasard. Dans leur objectif de conquête de nouveaux abonnées, les plates-formes accordent en effet plus de vertus à la nouveauté qu'à la longévité. Quitte à décevoir certains fans qui payent un service streaming spécialisé dont le baromètre de satisfaction devient en théorie plus important que celui de l'audimat.\n\nQue privilégient les plateformes de streaming, selon l'article ?",
+      "image_url": null,
+      "options": {
+        "A": "La longévité des programmes",
+        "B": "La qualité des services offerts",
+        "C": "Le changement régulier des séries",
+        "D": "Le contentement de leurs abonnés"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Le numérique bouleverse profondément l'enseignement, mais d'après le philosophe Marcel Gauchet, on aura plus que jamais besoin de professeurs et d'écoles. Excellent moyen de stimuler la curiosité, le numérique pousse à chercher, à creuser encore. Surtout, il enseigne une chose essentielle : personne ne sait tout et, nulle part, il n'existe de détenteur ultime du savoir. Ainsi, les élèves sont de plus en plus en contact avec des sources hétéroclites, et cela constitue un changement majeur en termes pédagogiques. L'enseignant est alors celui qui va expliquer qu'il existe plusieurs versions d'une même chose et que savoir, c'est se confronter à l'incertitude, et non réciter bêtement des connaissances.\n\nSelon Marcel Gauchet, que va être le rôle de l'enseignant auprès des élèves ?",
+      "image_url": null,
+      "options": {
+        "A": "Développer leur esprit critique",
+        "B": "Encourager les débats entre eux",
+        "C": "Enrichir leur capacité mémorielle",
+        "D": "Évaluer régulièrement leurs acquis"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Les néo-nomades ont souvent moins de 30 ans et vivent dans leur camion ou d'anciens cars scolaires transformés en caravanes ou camping-cars. Ces nouveaux voyageurs intermittents vont d'un lieu à l'autre, au gré des impératifs de leur travail, souvent saisonnier, et forment une population hétérogène. Ils contournent la difficulté d'accéder à un logement lorsqu'on n'a pas de travail permanent en s'installant en marge de notre paysage contemporain : aux abords des routes secondaires, en périphérie des villes, le long des rails, sur des friches ou des terrains privés. Les néo-nomades forment, de fait, une entité structurée au cœur de notre société individualiste.\n\nSelon le journaliste, quelle est l'origine du néo-nomadisme ?",
+      "image_url": null,
+      "options": {
+        "A": "L'attirance pour les espaces naturels",
+        "B": "L'insécurité des zones urbaines",
+        "C": "La précarité du monde professionnel",
+        "D": "Le désir de vivre en communauté"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Une exposition de l'Institut d'Art Contemporain de Villeurbanne est consacrée à l'Américain Jimi Durham et la brésilienne Maria Telisa. Depuis 20 ans, ils parcourent, au fil de leurs déplacements, le territoire méditerranéen et sont réunis au sein de cette exposition à la forme inédite. Le parcours se veut éloigner de tout didactisme, laissant assez d'espace au spectateur pour construire son propre récit autour d'une mer connue pour être le berceau fertile des civilisations. Dans un jeu de matières de couleurs et d'objets, tous tangibles, Durham et Telisa tentent de décrypter une certaine pensée historique et mythologique notamment en déjouant les codes classiques utilisés dans les musées.\n\nQu'est-ce qui fait la singularité de cette exposition ?",
+      "image_url": null,
+      "options": {
+        "A": "La liberté accordée aux visiteurs",
+        "B": "La simplicité des moyens artistiques",
+        "C": "Le classicisme de sa présentation",
+        "D": "Le discours politique des plasticiens"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Que pensent les français de la mobilité territoriale ?\n\nSi la mobilité n'est ni bonne, ni mauvaise en soi, elle peut être perçue de manière radicalement différente en fonction des circonstances dans lesquelles elle se réalise et surtout au fait d'être choisie ou non. Des mobilités personnelles, professionnelles et spatiales, voulues et recherchées, peuvent être un facteur d'épanouissement individuel et professionnel pour certains groupes favorisés, alors qu'elles peuvent être un facteur de précarité pour les groupes défavorisés, notamment si elles sont subies.\n\nDans quelles conditions une mobilité territoriale est-elle bien vécue ?",
+      "image_url": null,
+      "options": {
+        "A": "Si c'est une occasion d'élargir son réseau social",
+        "B": "Si c'est une opportunité de changer de mode de vie",
+        "C": "Si c'est la possibilité de trouver un emploi",
+        "D": "Si c'est le fruit d'une décision personnelle"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Instaurer un grand oral pour réformer le baccalauréat est un nouveau défi à relever pour le système éducatif français. L'oral a autant d'importance que l'écrit. Il possède ses propres règles et ses méthodes d'apprentissage : selon moi, une quinzaine d'heures suffit, avec douze élèves, pour parvenir à parler debout devant les autres de façon argumentée. Loin d'être un facteur de discrimination sociale, l'oral peut représenter une formidable opportunité de réussite pour tous les élèves, à condition qu'il s'agisse bien d'une épreuve orale, et non d'un écrit transposé à l'oral. Contrairement aux idées reçues, je pense que l'oral ne demande quasiment aucun prérequis, ni un quelconque talent inné — y compris social — qui aurait été accordé au berceau par une fée bienveillante.\n\nSelon l'auteur, quel est l'intérêt d'une épreuve orale au baccalauréat ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle favorise l'égalité des chances",
+        "B": "Elle prépare à la vie professionnelle",
+        "C": "Elle remplace l'évaluation continue",
+        "D": "Elle simplifie le travail des enseignants"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 37,
+      "question_text": "L'avenir réside dans la formation de la jeunesse, dans l'innovation et dans la recherche. Pour assumer pleinement ses responsabilités, l'Université de Nantes propose un nouveau modèle universitaire pour la France, en lien avec les organismes de recherche, le centre hospitalier universitaire, etc. Ce nouveau modèle remet au centre des préoccupations la question de l'accès à un enseignement supérieur de qualité pour le plus grand nombre. Il a pour ambition de créer les conditions de la réussite et de l'épanouissement de tous les étudiants, tout en permettant des innovations majeures. À travers ce projet de nouvelle université, le président et son équipe défendent une vision innovante et proposent un nouveau modèle qui conjugue exigence et solidarité, excellence et lien social.\n\nQuel est l'objectif de cette université ?",
+      "image_url": null,
+      "options": {
+        "A": "Attirer davantage d'étudiants brillants",
+        "B": "Être à la pointe de la technologie",
+        "C": "Ouvrir ses cours à un public élargi",
+        "D": "Proposer des disciplines inédites"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Le stress, la fatigue, les troubles du sommeil : voilà ce qui menace notre organisme à la suite d'une exposition excessive à une lumière artificielle. Au contraire, la lumière naturelle influence notre comportement et régit nos processus physiologiques, notre efficacité au quotidien, nos humeurs, jouant donc un rôle fondamental sur notre métabolisme. Ainsi, par une diminution des effets de fatigue, de stress et par un accroissement de la concentration, nous sommes alors plus réceptifs et attentifs aux différents stimuli que notre organisme pourra plus facilement assimiler. En entreprise, un aménagement adéquat des bureaux, de préférence dans un environnement préservant au maximum la lumière naturelle, est donc un atout pour nos performances journalières.\n\nSur quoi insiste l'auteur de cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "L'importance des agencements intérieurs",
+        "B": "L'insuffisance des plages de repos",
+        "C": "Les bienfaits d'un éclairage électrique optimal",
+        "D": "Les effets du surmenage sur la santé"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Treize jeunes cinéastes, achevant leur formation dans les plus prestigieuses écoles d'animation, ont planché sur quelques vers de Paul Éluard, livrant leur vision originale de son univers poétique. S'inscrivant dans la continuité des programmes de courts-métrages dédiés à Prévert et Apollinaire, ce nouveau florilège de la série En sortant de l'école met en lumière l'œuvre d'un « apparenté surréaliste », bien au-delà de son seul – et incontournable – poème de la liberté… Sa délicatesse, en amour comme en fantaisie, s'avère un combustible merveilleux pour de jeunes cinéastes.\n\nSelon cette critique, quel est l'apport de ce dernier ensemble de courts-métrages ?",
+      "image_url": null,
+      "options": {
+        "A": "Il constitue une création artistique novatrice",
+        "B": "Il établit des ponts avec d'autres auteurs",
+        "C": "Il fait connaître les travaux d'un écrivain",
+        "D": "Il ouvre la voie à de prochaines réalisations"
+      },
+      "correct_answer": "C"
+    }
+  ]
+}

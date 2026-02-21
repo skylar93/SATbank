@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE27",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Salut Hamza,\nÇa y est, j'ai commencé mon tour du monde ! Je viens d'arriver à Montréal : il fait très beau et l'hôtel est génial. Je pars pour les États-Unis jeudi. J'espère que tout va bien au bureau.\nBises,\nAntoine,\n\nDe quoi parle ce message?",
+      "image_url": null,
+      "options": {
+        "A": "D'un déménagement",
+        "B": "D'un grand voyage",
+        "C": "D'une réunion de travail",
+        "D": "D'une sortie culturelle"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Le musée cherche un guide. Vous aimez la peinture, la sculpture et vous êtes disponible le week-end entre 14h et 20h. Pour plus d'informations, allez sur notre site Internet.\nSi vous êtes intéressé(e), envoyez votre CV à : direction@musee.maville.com\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "Des informations culturelles",
+        "B": "Des visites en ligne gratuites",
+        "C": "Un cours d'initiation à l'art",
+        "D": "Un travail à temps partiel"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Lyon, le 22 juin 2011\nMadame,\nSuite à votre courrier du 17 juin dernier, je vous fais parvenir le catalogue de nos produits. Je reste à votre disposition pour toute information complémentaire.\nTrès cordialement,\nSophie Leloux\nService clientèle\n\nPourquoi Sophie Leloux écrit-elle cette lettre ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle cherche une vendeuse",
+        "B": "Elle demande un renseignement",
+        "C": "Elle informe une cliente",
+        "D": "Elle prend un rendez-vous"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 4,
+      "question_text": "PARTICIPEZ À NOTRE GRAND JEU !\nRemplissez un formulaire à l'accueil du magasin.\n10 clients seront sélectionnés : ils gagneront un superbe cadeau pour leur cuisine !\nLa liste des cadeaux est disponible sur www.grandjeu.fr\n\nQue faut-il faire pour participer à ce jeu ?",
+      "image_url": null,
+      "options": {
+        "A": "Compléter une fiche",
+        "B": "Proposer une recette",
+        "C": "Répondre à une question",
+        "D": "S'inscrire sur Internet"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Antoine,\nS'il te plait, viens dans mon bureau après la réunion.\nMerci,\nLudovic,\n\nQue doit faire Antoine ?",
+      "image_url": null,
+      "options": {
+        "A": "Apporter un document",
+        "B": "Organiser un entretien",
+        "C": "Rencontrer un collègue",
+        "D": "Téléphoner à Ludovic"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Chère Corinne,\nÀ partir de la semaine prochaine, le magasin Zoreilles n'ouvrira plus le samedi matin. C'est dommage. En revanche, il sera ouvert le vendredi jusqu'à 22 heures. C'est parfait pour nous ! Est-ce que tu veux y faire un tour avec moi vendredi prochain ?\n\nQue veut faire Nathalie avec Corinne ?",
+      "image_url": null,
+      "options": {
+        "A": "Aller dans une boutique",
+        "B": "Faire une fête ensemble",
+        "C": "Vendre des vêtements",
+        "D": "Voir une exposition de bijoux"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 7,
+      "question_text": "GRANDE MARCHE POUR DÉFENDRE NOS EMPLOIS\nMARDI 12 JUIN\nVENEZ NOMBREUX !\nDÉPART PLACE DES NATIONS. DEVANT LE CENTRE DES CONGRÈS À 10H. ARRIVÉE PRÉVUE VERS MIDI DEVANT LA MAISON DES ENTREPRISES. BOULEVARD DES PLATANES.\n\nQu'annonce cette affiche ?",
+      "image_url": null,
+      "options": {
+        "A": "Un salon des entrepreneurs",
+        "B": "Une compétition sportive",
+        "C": "Une conférence sur le chômage",
+        "D": "Une manifestation sociale"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Pour la fête de fin d'année,\nles enfants du club de théâtre vous offrent un spectacle musical extraordinaire et plein d'humour !\nParticipez à la fête : venez avec des gâteaux, des boissons... et votre bonne humeur !\n\nQue peuvent apporter les parents?",
+      "image_url": null,
+      "options": {
+        "A": "De la nourriture",
+        "B": "Des cadeaux",
+        "C": "Des chansons",
+        "D": "Des jeux"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Bonjour Madame Grange,\nJe vous confirme notre rendez-vous de demain. Je viendrai vous chercher à l'aéroport. Nous irons ensuite manger au restaurant. Enfin, nous rencontrerons les responsables de l'entreprise à 14h pour signer le contrat.\nÀ demain,\nMadame Dire\n\nPourquoi est-ce que Madame Dire écrit à Madame Grange ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour lui annoncer un projet",
+        "B": "Pour lui présenter un nouveau produit",
+        "C": "Pour organiser leur journée de travail",
+        "D": "Pour préparer son voyage"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Semaine du 6 au 10 septembre Le restaurant universitaire vous propose des recettes régionales variées au tarif normal. Rendez-vous de 11h15 à 13h dans la salle du premier étage.\nBon appétit!\n\nQue propose le restaurant du 6 au 10 septembre ?",
+      "image_url": null,
+      "options": {
+        "A": "Des cours de cuisine",
+        "B": "Des menus différents",
+        "C": "Des plats à emporter",
+        "D": "Des tickets bon marché"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 11,
+      "question_text": "JE M'OCCUPE DE MON CHIEN\nLes chiens, comme les humains, n'aiment pas la chaleur excessive. Il est donc important de les rafraîchir, par exemple en leur donnant à boire ou en les douchant, et en privilégiant les promenades le matin ou le soir.\n\nQu'est-ce que cet article conseille pour les chiens ?",
+      "image_url": null,
+      "options": {
+        "A": "De les doucher tous les jours",
+        "B": "De les nourrir le matin",
+        "C": "De les promener souvent",
+        "D": "De les protéger de la chaleur"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 12,
+      "question_text": "CuisineAZ.com\nVous propose de gagner des appareils de cuisine qui facilitent la vie ! N'hésitez pas, allez sur notre site, c'est gratuit !\nBonne chance !\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "De participer à un jeu",
+        "B": "De préparer un repas",
+        "C": "De recevoir de l'argent",
+        "D": "De remplir un formulaire"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Pierre,\nJe suis sorti pour une urgence. Tu peux m'attendre au café au coin de la rue, c'est le plus sympa du quartier. Je serai de retour à la maison vers 19h.\nDésolé !\nDominique,\nP.-S. : Mon téléphone est cassé !\n\nQu'est-ce que Dominique explique à Pierre ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a un rendez-vous à l'hôpital",
+        "B": "Il doit annuler leur rencontre",
+        "C": "Il est parti acheter un portable",
+        "D": "Il va arriver en retard chez lui"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Les vacanciers français ont trouvé, cet été, le bonheur chez eux, avec une nette préférence pour les côtes ensoleillées. Quant aux touristes étrangers, européens ou non, qui n'avaient pas choisi la France l'année dernière, ils sont revenus. Globalement, la fréquentation touristique a légèrement progressé, selon des données statistiques recueillies. La montagne a également connu une belle saison, avec des taux de réservation en hausse de 4 % dans les résidences de tourisme en Savoie et en Haute-Savoie, dans les Alpes.\n\nOù les français ont-ils préféré passer leurs vacances d'été ?",
+      "image_url": null,
+      "options": {
+        "A": "À l'étranger",
+        "B": "Dans les Alpes",
+        "C": "En Europe",
+        "D": "En France"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Au service des urgences de l'hôpital, nous recevons beaucoup de personnes très angoissées, confrontées à des situations souvent traumatisantes. Quel que soit leur état, la gentillesse reste sans conteste la meilleure façon de leur répondre. Il me serait impossible de gérer le stress et l'agressivité auxquels je suis continuellement exposée sans adopter ce parti pris calme et souriant. La gentillesse est la réponse idéale, et même une compétence indispensable pour les médecins que nous sommes.\n\nSelon ce texte que doit faire un urgentiste ?",
+      "image_url": null,
+      "options": {
+        "A": "Accueillir les patients avec bienveillance",
+        "B": "Évaluer rapidement la gravité des situations",
+        "C": "Expliquer clairement les problèmes",
+        "D": "Savoir travailler en équipe restreinte"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 16,
+      "question_text": "LE VAL D'OISE C'EST NOUS\nLe magazine du conseil général\nFORUMS DES COLLÉGIENS POUR UNE ORIENTATION RÉUSSIE :\nC'EST QUOI ?\nPour des collégiens se destinant à des filières professionnelles, une information de qualité est gage d'une orientation pertinente. Cela vise autant une approche du métier envisagé qu'une bonne connaissance des filières. Chaque année, quatre forums accueillant quelque 8000 collégiens sont organisés dans cette perspective. Ils s'inscrivent dans des dispositifs mis en place ou soutenus par le Conseil Général dans le domaine des actions éducatives. Les élèves préparent ces rendez-vous avec leurs professeurs ou les conseillers d'orientation pour tirer le meilleur profit de rencontres avec des professionnels.\n\nQue permettent ces forums aux collégiens ?",
+      "image_url": null,
+      "options": {
+        "A": "D'avoir rapidement un emploi",
+        "B": "De bien choisir une formation",
+        "C": "De s'entretenir avec des élus",
+        "D": "De s'inscrire dans une école"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Selon le docteur Michel L., spécialiste du sommeil à l'hôpital de l'Hôtel-Dieu à Montréal, « on ne sait pas encore à quoi sert exactement le sommeil ». Mais on sait au moins que dormir permet au cerveau et au corps de fonctionner de manière optimale : le sommeil répond à un besoin de récupération physique et intellectuelle. À signaler que le sommeil de début de nuit est plus réparateur.\n\nQuel titre correspond le mieux à cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Dormir ou pas?",
+        "B": "Pourquoi dormir?",
+        "C": "Mieux dormir comment ?",
+        "D": "Dormir, c'est quoi ?"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Congé parental:\nIl est question de changer les règles du congé parental, aide versée aux parents interrompant leur activité après la naissance d'un enfant jusqu'à ses trois ans. En effet, une étude souligne que l'extension de la mesure aux familles de deux enfants a fait chuter l'activité générale des mères de deux enfants et que le chômage ou les emplois précaires sont plus fréquents chez celles qui se sont arrêtées de travailler. L'idée serait de doubler le montant de cette aide en limitant sa durée à un an au lieu de trois. Autre proposition : à partir du troisième enfant, les employeurs seraient incités à garantir aux salariées une reprise d'activité dans des conditions fixées à l'avance.\n\nQuel serait l'objectif d'une réforme du congé parental?",
+      "image_url": null,
+      "options": {
+        "A": "Allonger la durée du congé parental",
+        "B": "Faciliter le retour à l'emploi des mères",
+        "C": "Augmenter la participation des entreprises",
+        "D": "Restreindre le nombre de familles concernées"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Il y a quelque chose de rare dans Normandie nue : ce film est résolument léger, tout en ayant du fond. À travers une histoire qui sert de fil conducteur cocasse et insolite — celle d'un artiste américain qui veut photographier des paysans dévêtus — Normandie nue aborde la crise des éleveurs avec beaucoup d'humanité, notamment grâce au maire du village, qui voit dans la venue du photographe l'occasion de faire valoir sa cause aux yeux de la planète. Parfois un peu maladroite, cette comédie amuse en caricaturant gentiment les médias, les artistes et les bobos parisiens en mal de verdure.\n\nQuelle est l'opinion du journaliste sur le film « Normandie nue » ?",
+      "image_url": null,
+      "options": {
+        "A": "Il est facile de s'identifier aux personnages",
+        "B": "Les lieux de tournage sont authentiques",
+        "C": "On y dresse un portrait juste de la société",
+        "D": "Son humour fait passer un message sérieux"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 20,
+      "question_text": "En Provence et sur la Côte d'Azur, les campagnes sont jalonnées d'oliviers, d'orangers et d'autres pruniers dont les fruits ne sont jamais ramassés. À Grasse, l'association d'insertion « Renouer » a eu l'excellente idée de valoriser ces denrées pour s'autofinancer. Depuis 2012, la structure intervient dans les vergers de particuliers via des cueillettes dites solidaires. « Nous répertorions des parcelles laissées en friche et proposons aux propriétaires de ramasser les fruits à leur place », précise Sophie Allain, bénévole qui coordonne l'opération. Chaque année, l'action mobilise entre 10 et 15 employés en insertion, ainsi que des citoyens séduits par la dimension à la fois sociale et écologique de l'initiative.\n\nQuelle est l'activité de cette association ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle cultive des espaces verts abandonnés",
+        "B": "Elle réalise de petits services d'entretien",
+        "C": "Elle récolte les produits de terrains privés",
+        "D": "Elle s'occupe de gérer des jardins collectifs"
+      },
+      "correct_answer": "C"
+    },
+        {
+      "question_number": 21,
+      "question_text": "Ralentissement du traitement de l'information, baisse de l'attention et de notre mémorisation à court terme... Avec l'âge, le vieillissement du cerveau semble inévitable. Pourtant, notre santé cognitive dépend aussi de notre mode de vie. Il est ainsi primordial, après la soixantaine, de conserver une vie active, physiquement par une pratique sportive régulière et aussi intellectuellement en sollicitant nos fonctions mentales par un apprentissage permanent. Pour cela, il est essentiel de garder une vie sociale riche d'interactions avec les autres et également de cultiver des activités associatives ou sportives par exemple.\n\nQuel est l'objectif des conseils donnés dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Améliorer les capacités physiques",
+        "B": "Découvrir de nouveaux types de sports",
+        "C": "Développer le cercle de ses relations sociales",
+        "D": "Maintenir les performances de la mémoire"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 22,
+      "question_text": "En Belgique, un studio de technologie créative propose au public de vivre une expérience artistique inédite. Coiffés d'un casque spécial, les participants sont invités à se remémorer une histoire personnelle pendant trente à soixante secondes. Les données ainsi générées prennent la forme d'algorithmes, analysées ensuite par un système de mesure émotionnelle. Cela permet de leur attribuer une forme et des couleurs. Des peintures virtuelles sont ainsi créées à partir des émotions de chacun. Et puisque chaque histoire est unique, chaque œuvre l'est aussi !\n\nQuel est le rôle des participants à cette expérience ?",
+      "image_url": null,
+      "options": {
+        "A": "Effectuer un calcul",
+        "B": "Évoquer un fait divers",
+        "C": "Fournir un support",
+        "D": "Sélectionner un souvenir"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Il change le clavier de ses deux ordinateurs tous les six mois. Les touches cèdent sous ses mains qui, telles des araignées possédées, tissent roman après roman. En vingt ans, il a écrit près de mille cent titres. C'est un touche-à-tout : il pond aussi bien de la littérature pour herboristes que de la pharmacopée policière. Cet ancien chirurgien a abandonné le festin sanglant des blocs opératoires pour les joies de la graphomanie. « Je me suis lassé de la médecine. Mais j'écris mes romans avec toute la passion que j'avais pour la chirurgie », explique-t-il.\n\nQuelle est la particularité de cet écrivain ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a écrit une œuvre abondante et variée",
+        "B": "Il a toujours rêvé de devenir médecin",
+        "C": "Il est emballé par les histoires d'épouvante",
+        "D": "Il peine à écrire depuis quelque temps"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Plus de trente monnaies locales circulent en France, la plupart créées et pilotées par des groupes de citoyens. En version papier ou exclusivement numériques, elles dessinent une nouvelle carte économique des villes, fondée sur le développement local des entreprises et la promotion des circuits courts. Ces nouveaux moyens complémentaires se veulent aussi des outils de réappropriation de l'économie locale par les habitants. Si leurs effets sur l'environnement sont moins mesurables que leurs impacts économiques et sociaux, les monnaies locales restent des outils intéressants pour encourager l'adoption de comportements plus écologiques. Elles orientent ainsi le consommateur vers des acteurs économiques plus respectueux de la planète.\n\nSelon cet article, quel intérêt présentent les monnaies locales?",
+      "image_url": null,
+      "options": {
+        "A": "Elles concurrencent le marché numérique",
+        "B": "Elles contribuent à protéger l'environnement",
+        "C": "Elles favorisent l'épargne des citoyens",
+        "D": "Elles sécurisent les modes de paiement"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Programme d'exception:\n« C'est un endroit calme comme un village. La mairie n'est qu'à 200 mètres et, autour, tous les commerces et services dont on peut rêver sont accessibles, sans avoir besoin d'emprunter sa voiture. Inutile d'aller bien loin pour une promenade puisque le parc Étienne est à proximité de la résidence. Qui croirait que nous sommes à quelques minutes seulement de Paris ? », C'est ainsi que l'architecte décrit le lieu où il va construire deux bâtiments modernes cette année.\n\nQuelle sera la particularité de ce projet immobilier ?",
+      "image_url": null,
+      "options": {
+        "A": "Il sera éloigné des magasins",
+        "B": "Il sera isolé au milieu d'un parc",
+        "C": "Il sera proche d'un jardin public",
+        "D": "Il sera situé près d'un axe routier"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 26,
+      "question_text": "C'est un fait majeur dans l'histoire du français : la France est devenue minoritaire en nombre de locuteurs dans le monde francophone. Ce qui vaut mieux que de faire partie des 2 000 langues qui, par les hasards de l'histoire et des rapports de force, risquent d'avoir disparu d'ici à la fin du siècle. En revanche, nous allons devoir abandonner certaines de nos postures traditionnelles. Et ce pour une raison simple : le français ne dépend pas seulement d'une élite intellectuelle, écrivains, enseignants ou académiciens, mais surtout de ses locuteurs. Aussi la langue va-t-elle nécessairement s'ouvrir davantage. Il semble acquis en tout cas que l'origine de la norme va se déplacer des rives de la Seine au vaste monde, sachant qu'il s'agit là d'un enrichissement et non d'une perte.\n\nComment l'auteur voit-il l'évolution du français ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est dépendante de décisions politiques",
+        "B": "Elle est limitée par les intellectuels",
+        "C": "Elle est menacée par l'essor d'autres langues",
+        "D": "Elle est modelée par ses locuteurs"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Paris veut réduire de 30% l'exposition aux ondes des antennes-relais pour devenir la métropole la plus protectrice d'Europe. Maîtriser l'exposition des Parisiens aux ondes, tout en continuant à faire de Paris une capitale numérique, c'est le double objectif de la nouvelle charte de téléphonie mobile que la maire soumettra fin mars au Conseil de Paris. Il s'agit de trouver un équilibre entre préoccupations de santé publique et bonne qualité du service de téléphonie mobile.\n\nQuel est l'objectif de la ville de Paris ?",
+      "image_url": null,
+      "options": {
+        "A": "Améliorer la puissance de la réception",
+        "B": "Diminuer les risques sanitaires",
+        "C": "Limiter les dépenses de la ville",
+        "D": "Respecter les normes internationales"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Initiée dans les années 1960, la bataille contre les mauvaises herbes n'a jamais cessé. Depuis, les sols, en plus d'être labourés à outrance, sont aspergés de pesticides qui se propagent sur les terres et dans les eaux voisines... Claude Bourguignon, ingénieur agricole, milite depuis plus de vingt ans pour tenter de convaincre les agriculteurs que le labourage intensif et les pesticides causent la perte de la matière organique terrestre. Présente sur la couche supérieure de la terre, elle est composée de microbes, d'insectes et de champignons et elle fournit des nutriments qui sont essentiels pour les sols.\n\nQuel est l'objectif de Claude Bourguignon ?",
+      "image_url": null,
+      "options": {
+        "A": "Démontrer les dégâts des méthodes de culture intensive",
+        "B": "Prouver l'efficacité des insectes contre les parasites",
+        "C": "Recommander des procédés de gestion durable de l'eau",
+        "D": "Vulgariser des techniques de rendement des terres"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Dans les villes françaises, les arbres ont poussé tout l'hiver! Insatiables capteurs de CO2, ils sont surtout de puissants climatiseurs. Devant l'urgence, il faudrait en planter partout, dans les moindres interstices, et vite. Depuis des années, l'organisation Mondiale de la Santé recommande un verdissement maximum des villes, insistant sur l'action de la nature quant à la réduction potentielle de l'exposition à la pollution de l'air, au bruit et à la chaleur excessive. Mais sur le terrain, la mise en œuvre de tels programmes ne coule pas de source. Le temps des politiques n'est pas le temps de l'arbre. Pour qu'il rende pleinement les services qu'on attend de lui, il lui faut des dizaines d'années, un accès à l'eau, de l'espace, des congénères, un environnement écologique...\n\nQue pense ce journaliste de l'arborisation des villes ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle a peu d'action sur le dérèglement climatique",
+        "B": "Elle demande trop d'entretien aux petites villes",
+        "C": "Elle doit figurer dans les programmes électoraux",
+        "D": "Elle est incompatible avec les objectifs politiques"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Depuis plus de deux siècles, les violons fabriqués par le célèbre artisan Antonio Stradivari sont réputés pour la supériorité de leur sonorité. Des spécialistes ont voulu le vérifier par une petite expérience. Ils ont demandé à des participants de fermer les yeux et d'écouter des musiciens jouer sur des violons, trois étaient modernes et trois avaient été fabriqués par Stradivari. Que les participants aient ou non une expérience dans le domaine musical, tous ont préféré la sonorité des premiers.\n\nÀ quelle conclusion aboutit cette expérience ?",
+      "image_url": null,
+      "options": {
+        "A": "Ce sont les violons récents qui sont les plus estimés",
+        "B": "Il est difficile de maîtriser les violons anciens",
+        "C": "La qualité des violons évolue avec le temps",
+        "D": "Voir le violon modifie l'appréciation de l'auditeur"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Quarante terrains de football. C'est la superficie que les forêts perdent chaque minute à travers le monde. La destruction de la forêt tropicale provoque chaque année plus de rejet dans l'atmosphère que l'ensemble du secteur des transports. L'imaginaire collectif rendrait volontiers le commerce du bois principal responsable de la déforestation, alors qu'il n'en est rien. L'acteur majeur de ce phénomène est l'agriculture, responsable à 80% des déboisements dans les zones tropicales. Le marché illégal du bois a aussi sa part de responsabilité, il est un facteur déclenchant, et s'alimente des autres activités. Quelque 1,6 milliard d'habitants dépendent directement des forêts, et contribuent pourtant à sa raréfaction, voire à sa disparition.\n\nSelon cet article, sur quoi la déforestation a-t-elle un impact?",
+      "image_url": null,
+      "options": {
+        "A": "Sur l'industrie des bois rares",
+        "B": "Sur la démographie dans ces zones",
+        "C": "Sur la pollution atmosphérique",
+        "D": "Sur la progression des cultures tropicales"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Le numérique bouleverse profondément l'enseignement, mais, d'après le philosophe Marcel Gauchet, on aura plus que jamais besoin de professeurs et d'écoles. Excellent moyen de stimuler la curiosité, le numérique pousse à chercher, à creuser encore. Surtout, il enseigne une chose essentielle : personne ne sait et, nulle part, il n'existe de détenteur ultime du savoir. Ainsi, les élèves sont de plus en plus en contact avec des sources hétéroclites et cela constitue un changement majeur en termes pédagogiques. L'enseignant est alors celui qui va expliquer qu'il existe plusieurs versions d'une même chose et que savoir, c'est se confronter à l'incertitude et non réciter bêtement des connaissances.\n\nSelon Marcel Gauchet, quel va être le rôle de l'enseignant auprès des élèves ?",
+      "image_url": null,
+      "options": {
+        "A": "Développer leur esprit critique",
+        "B": "Encourager les débats entre eux",
+        "C": "Enrichir leur capacité mémorielle",
+        "D": "Évaluer régulièrement leurs acquis"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 33,
+      "question_text": "« Le programme de mobilité Erasmus n'est plus réservé aux étudiants », explique Sophie Roque, enseignante. Peu répandu, le programme Erasmus+ pour les enseignants bénéficie depuis quelques années d'un grand appel d'air. La demande progresse, et l'offre de mobilité aussi : Le système éducatif finlandais et les formations en anglais attirent beaucoup. Si le programme Erasmus+ pour les enseignants semble très apprécié de ceux qui y participent, il souffre néanmoins d'un vrai déficit de notoriété. On le découvre souvent par hasard ou à la faveur d'une rencontre. Franck Le Cars, délégué académique, confirme que le bouche-à-oreille entre enseignants est le meilleur moyen de développer le dispositif. Il souligne également que ces mobilités à l'étranger restent complexes à mettre en œuvre, car elles sont très chronophages.\n\nQu'apprend-on sur le programme Erasmus+ ?",
+      "image_url": null,
+      "options": {
+        "A": "Il est méconnu du public visé",
+        "B": "Il est restreint à quelques pays",
+        "C": "Il favorise certains établissements",
+        "D": "Il souffre d'une image négative"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 34,
+      "question_text": "De plus en plus de scientifiques s'intéressent au fonctionnement du cerveau des tout-petits. En effet, comprendre le développement normal du cerveau permettra d'aider les bébés touchés par des troubles. Au-delà, l'ambition est de découvrir les racines de l'intelligence humaine: pourquoi l'homme, à la différence des autres espèces animales, peut parler, compter et même envoyer des fusées dans l'espace. Pendant longtemps, ces capacités uniques ont été attribuées à la taille de notre encéphale. Une idée finalement battue en brèche : le cerveau du bébé est bien moins gros que le nôtre ou que celui de nombreux animaux. Et pourtant, les tout petits apprennent beaucoup de choses, bien plus vite et bien plus facilement que n'importe quel animal ou même que les adultes.\n\nQu'apprend-on sur le cerveau humain?",
+      "image_url": null,
+      "options": {
+        "A": "Sa structure est identique chez l'homme et l'animal",
+        "B": "Sa taille influe sur les compétences cognitives",
+        "C": "Son développement est ralenti les premiers mois",
+        "D": "Son fonctionnement est encore mystérieux"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Il faut se rendre à l'évidence : le « jour » n'est plus l'unité de temps d'un journal. Un quotidien papier ne peut pas rivaliser avec la vitesse à laquelle les sites web, les blogs, les réseaux sociaux, les journaux en ligne, les radios et télés, les « news » des grands serveurs diffusent les nouvelles du jour. Aussi, au moment où il est en kiosques, se condamne-t-il à apparaître comme « le journal de la veille » perdant progressivement ses lecteurs qui, bombardés de scoops tous azimuts, sont déçus de n'y trouver que ce qu'ils savent déjà.\n\nQuelle est la position de l'auteur de l'article ?",
+      "image_url": null,
+      "options": {
+        "A": "Il conteste la fiabilité des sources d'internet",
+        "B": "Il critique la surabondance de l'information",
+        "C": "Il dénonce la médiocrité de la presse écrite",
+        "D": "Il doute de l'intérêt des médias traditionnels"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Sexistes, les jeux vidéo ? Peut-être que oui, peut-être que non. En tout cas, à parcourir les allées de la Paris Games Week, l'œil avisé aura lui-même bien du mal à trouver un personnage principal féminin de jeu vidéo. Il y a bien la célébrissime Lara Croft du jeu vidéo Tomb Raider, aux attributs particulièrement imposants, conçus presque sur mesure pour plaire à un certain nombre de joueurs masculins. Pour le reste, circulez, il n'y a presque rien d'autre à voir, si l'on balaye, d'un coup de manette de jeu, au mieux, les princesses à sauver, au pire les calls girls de mafioso. Pourtant, l'industrie du jeu vidéo a pris conscience ces dernières années du potentiel du marché des joueuses.\n\nQuel constat est dressé sur les jeux vidéo ?",
+      "image_url": null,
+      "options": {
+        "A": "La quasi-absence d'héroïnes",
+        "B": "L'appel constant à la violence",
+        "C": "L'atténuation des clichés",
+        "D": "L'uniformité des scénarios"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 37,
+      "question_text": "La bataille de Bouvines, remportée le 27 juillet 1214 par le roi de France Philippe Auguste contre un empereur allemand, est l'un des actes fondateurs de la dynastie capétienne et l'un des épisodes les plus célèbres du « roman national » français. Du XIIIe siècle à nos jours, elle a donné lieu à de multiples légendes que le spécialiste du monde médiéval, Dominique Barthélemy, confronte à la réalité des faits. À l'issue d'une enquête approfondie, il décrit un affrontement plus modeste et moins épique que celui construit et enrichi au fil des nécessités politiques. Ainsi, il nous invite à poursuivre la réflexion sur l'idée que les Français se font d'eux-mêmes.\n\nSelon l'article, que fait Dominique Barthélemy?",
+      "image_url": null,
+      "options": {
+        "A": "Il analyse l'établissement d'une dynastie royale",
+        "B": "Il explique l'origine d'une légende médiévale",
+        "C": "Il explore la construction identitaire des Français",
+        "D": "Il renforce le mythe de la bataille de Bouvines"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Le trois-mâts d'exploration La Boudeuse va reprendre le large pour une nouvelle mission à caractère scientifique. Le voilier mettra le cap, en septembre prochain, sur l'Amérique du Sud et ses grands fleuves. Il se consacrera « aux études scientifiques et humaines concernant la biosphère, le réchauffement climatique et le développement durable », selon la « lettre de mission » adressée à son commandant, signée par le ministre d'État chargé des Transports et de l'Écologie. Cette « lettre de mission » de la République assigne à l'équipage un audacieux programme en matière de protection de l'environnement.\n\nSelon l'article que va faire l'équipage du voilier La Boudeuse ?",
+      "image_url": null,
+      "options": {
+        "A": "Former des scientifiques à la prévention de risques écologiques",
+        "B": "Innover dans les moyens de lutte contre les pollutions fluviales",
+        "C": "Observer l'écosystème dans une région de grands fleuves",
+        "D": "Représenter le gouvernement français lors d'une rencontre"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 39,
+      "question_text": "De plus en plus d'agriculteurs sont la cible d'accusations sévères de la part de leur voisinage ou d'organisations de défense des animaux. La plupart reconnaissent que la critique est légitime et que leurs modes d'exploitation sont perfectibles. Mais ils sont mis en cause de manière massive et généralisée, ce qui revient à contester en bloc leurs façons de travailler, leur utilité sociale et leur existence. Les jeunes comme les vieux, les prospères comme les plus fragiles, ceux qui ont choisi l'agriculture biologique comme ceux qui sont restés en conventionnel : tous disent souffrir, à des degrés divers, de ce discrédit qui s'ajoute à leurs difficultés habituelles, notamment financières.\n\nQue répondent les agriculteurs face aux critiques ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils défendent les pratiques traditionnelles",
+        "B": "Ils éprouvent le sentiment d'être incompris",
+        "C": "Ils réfutent les reproches qui leur sont faits",
+        "D": "Ils sont fiers de leurs apports à l'économie"
+      },
+      "correct_answer": "B"
+    }
+  ]
+}

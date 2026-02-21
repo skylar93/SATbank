@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE13",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "La bibliothèque ferme ses portes à 19h00.\n\nMerci de quitter la salle de lecture avant 18h50\n\nQuelle information est communiquée au public ?",
+      "image_url": null,
+      "options": {
+        "A": "Un évènement",
+        "B": "Un horaire",
+        "C": "Un plan",
+        "D": "Une adresse"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 2,
+      "question_text": "L'association « E comme Enfants » recherche des étudiants pour garder des enfants le soir et le week-end.\n\nQue propose l'annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Un cours",
+        "B": "Un spectacle",
+        "C": "Un travail",
+        "D": "Une visite"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Je suis bien arrivé chez moi. Je t'appelle demain pour aller voir le film. Je t'embrasse, Cyprien\n\nOù est Cyprien ?",
+      "image_url": null,
+      "options": {
+        "A": "À la gare",
+        "B": "À la maison",
+        "C": "Au cinéma",
+        "D": "Au travail"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Tous les étés nous allons à la mer avec mon père et ma mère. Ma sœur et moi regardons les gens qui achètent des glaces sur la plage. Nos parents voudraient bien aussi manger des glaces mais ils payent déjà cher pour la location et on ne peut plus dépenser beaucoup.\n\nQue savons-nous sur les parents ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils achètent souvent des sucreries",
+        "B": "Ils font attention à l'argent",
+        "C": "Ils aiment préparer des desserts",
+        "D": "Ils ont une maison de vacances"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 5,
+      "question_text": "VISITE DU CHATEAU\n\nGratuit pour les moins de 12 ans\n\nQuelle est l'information affichée sur ce panneau ?",
+      "image_url": null,
+      "options": {
+        "A": "Une adresse",
+        "B": "Une date",
+        "C": "Un horaire",
+        "D": "Un tarif"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Sophie, Viens me chercher au stade à 16h, après mon match de foot. J'ai fini mes devoirs, on peut aller au cinéma. Marc,\n\nQue fait Marc jusqu'à 16h ?",
+      "image_url": null,
+      "options": {
+        "A": "Il achète un livre",
+        "B": "Il apprend ses leçons",
+        "C": "Il fait du sport",
+        "D": "Il regarde un film"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Félicitations !\n\nC'est bientôt votre anniversaire ! Venez vite retirer votre surprise dans notre boutique. À très bientôt !\n\nVotre coiffeur Michel\n\nQue fait Michel dans cette carte ?",
+      "image_url": null,
+      "options": {
+        "A": "Il donne un conseil",
+        "B": "Il indique une fermeture",
+        "C": "Il invite à un dîner",
+        "D": "Il promet un cadeau"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Madame Charnet,\n\nJe vous prie de bien vouloir vous présenter aux lieux, date et heure indiqués ci-dessous. Merci de vous munir de cette convocation et d'une pièce d'identité qui vous seront demandées au début de l'épreuve.\n\nPourquoi madame Charnet est-elle convoquée ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour passer un examen",
+        "B": "Pour prendre son diplôme",
+        "C": "Pour surveiller des candidats",
+        "D": "Pour s'inscrire à des cours"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 9,
+      "question_text": "De : René Duroc\nÀ: Louise Anaud\nObjet : M. Lambera\n\nSalut Louise, J'ai bien reçu ton mot. Pas de problème, on pourra vérifier ensemble le dossier de M. Lambera avant ton rendez-vous avec le directeur. On en reparlera à midi à la cantine. Cordialement, René Duroc,\n\nPour quelle raison René Duroc écrit-il à Louise ?",
+      "image_url": null,
+      "options": {
+        "A": "Il accepte de l'aider",
+        "B": "Il cherche une information",
+        "C": "Il l'invite à déjeuner",
+        "D": "Il organise un entretien"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Monsieur Belveau,\n\nVous quittez l'appartement que vous louez dans notre résidence universitaire samedi prochain. Pouvez-vous passer samedi après-midi à mon bureau pour rendre votre clé et signer un document ? Cordialement, Maire Drevet, Agent immobilier\n\nPourquoi Monsieur Belveau reçoit-il ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a un nouveau travail",
+        "B": "Il change d'adresse",
+        "C": "Il part en vacances",
+        "D": "Il s'inscrit à l'université"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Les bons réflexes de sécurité à la montagne en hiver :\n• Évitez de partir seul\n• Consultez l'état du manteau neigeux auprès du service des pistes de votre station\n• Étudiez votre itinéraire avec l'aide d'un professionnel de la montagne\n• Consultez la météo\n\nÀ quoi sert ce document ?",
+      "image_url": null,
+      "options": {
+        "A": "À conseiller le promeneur",
+        "B": "À décrire les risques d'accidents",
+        "C": "À prévoir le temps qu'il fera",
+        "D": "À signaler les accès interdits"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 12,
+      "question_text": "La semaine dernière, les écoles de commerce ont organisé leur traditionnel rendez-vous « avenir jeunesse », comme tous les ans, son objectif a été de favoriser la rencontre entre les entreprises qui recrutent et les élèves. Ces derniers ont pu se renseigner sur les différents secteurs d'activité et déposer leur candidature pour les postes qui les intéressent. Des ateliers conseil étaient animés par des professionnels.\n\nQuel était le but de l'événement « Avenir Jeunesse » ?",
+      "image_url": null,
+      "options": {
+        "A": "Accueillir les étudiants étrangers",
+        "B": "Faciliter la recherche d'emploi",
+        "C": "Préparer la rentrée universitaire",
+        "D": "Présenter de nouvelles formations"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Evènement :\n\nNotre association organisera le Lundi 21 mars à 20h30 au centre culturel Augustins à Varennes, une conférence publique suivie d'un débat sur la crise financière. L'intervenant sera monsieur Étienne Borel, enfant du pays et professeur à l'université de Paris 5. Il est l'auteur de plusieurs ouvrages sur la finance. L'entrée sera libre et gratuite. Diffusez l'information autour de vous, à vos proches et à vos amis. Venez nombreux.\n\nQu'est-ce qui a conduit l'association à sélectionner cet intervenant ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est un amoureux de la région",
+        "B": "C'est un écrivain très célèbre",
+        "C": "C'est un membre de l'association",
+        "D": "C'est un spécialiste du sujet"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Lundi prochain, en France, les librairies organisent une soirée du livre de jeunesse. Au programme, des activités pour enfants et dégustations de desserts. On pourra aussi voir sur grand écran les princes et princesses du cinéma.\n\nQue pourra-t-on faire lors des soirées du livre de jeunesse ?",
+      "image_url": null,
+      "options": {
+        "A": "Écouter des chansons",
+        "B": "Gagner des cadeaux",
+        "C": "Goûter des recettes",
+        "D": "Jouer dans un film"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Avec un Master Commerce en poche, je ne pensais pas qu'il serait à ce point difficile de trouver mon premier emploi. Et pourtant... quel chemin semé d'embuches ! tout le monde me disait « ne t'inquiète pas, dans deux ou trois mois tu auras trouvé » sept mois plus tard toujours rien en vue. À 26 ans, je me retrouve sans emploi, toujours chez mes parents. L'avenir ? je le vois ailleurs, je prépare activement mon départ pour l'Angleterre.\n\nAmandine n'est pas une exception chez les jeunes. Les diplômes ne suffisent plus à assurer une situation stable en France et beaucoup de jeunes décident de partir à l'étranger pour obtenir un emploi.\n\nDe quoi est-il question dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "La difficulté de trouver un stage à l'étranger",
+        "B": "La nécessité de s'exiler pour pouvoir travailler",
+        "C": "Le manque de formation des jeunes diplômés",
+        "D": "Le niveau trop faible des salaires proposés"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Dans le cadre d'un projet européen, une partie de la route nationale 12, en Bretagne, sera bientôt équipée de 200 boitiers capables de détecter tout problème de trafic : Ralentissement, bouchon, accident ou animal sur la route. Ces boitiers transmettront rapidement ces informations à une centrale. Celle-ci, à son tour, les enverra vers 300 voitures-tests. Objectifs : expérimenter la première route intelligente, plus sûre, grâce à l'information en temps réel des automobilistes.\n\nQuelle solution est proposée pour augmenter la sécurité routière ?",
+      "image_url": null,
+      "options": {
+        "A": "Accélérer les interventions d'urgence",
+        "B": "Généraliser la conduite sans chauffeur",
+        "C": "Repérer les mauvais conducteurs",
+        "D": "Signaler les difficultés de circulation"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Société recherche un collaborateur / une collaboratrice trilingue français-anglais-espagnol. Excellente connaissance des logiciels de bureautique, une aisance au téléphone, bonne orthographe, bonne capacité rédactionnelle, notions de comptabilité, sens de l'organisation, goût du travail en équipe sont demandés pour devenir l'assistant / l'assistante du responsable de notre département comptabilité. Expérience souhaitée.\n\nEn quoi consiste l'emploi proposé ?",
+      "image_url": null,
+      "options": {
+        "A": "Diriger un service de plusieurs salariés",
+        "B": "Effectuer des tâches administratives",
+        "C": "Tester des programmes informatiques",
+        "D": "Vérifier les finances de l'entreprise"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Notre association peut aider les étudiants qui habitent seuls et les personnes qui ne gagnent pas beaucoup d'argent à payer leur loyer. Cette aide peut aller jusqu'à 75% de votre loyer et vous permet d'obtenir une réduction sur les frais d'électricité et de gaz. Pour savoir si vous pouvez recevoir cette aide, plusieurs solutions s'offrent à vous:\n1. Vous rencontrez l'un de nos conseillers, qui ouvrira un dossier de demande avec vous.\n2. Vous remplissez le questionnaire pour l'allocation logement sur notre site internet.\n\nÀ qui s'adresse ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Aux familles qui ont des factures élevées",
+        "B": "Aux jeunes qui veulent vivre en collocation",
+        "C": "Aux locataires qui ont de faibles revenus",
+        "D": "Aux personnes qui achètent un logement"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 19,
+      "question_text": "LE DIAMANT D'ESPELETTE\n\nLe piment d'Espelette, qui célèbre actuellement sa fête, est probablement aujourd'hui le produit le plus emblématique du Pays basque. Il a pourtant failli devenir un produit banal, c'est-à-dire le contraire absolu de ce qu'il est vraiment. Au début des années 1990, on trouvait en effet et on produisait du piment, dit d'Espelette, en Afrique du Nord, en Corse, en Espagne... Bref, partout où l'on aime ce goût puissant et peu piquant qui fait sa légitime réputation. Or, les Basques n'aiment pas se faire voler leurs traditions. Ils ont donc obtenu, en juin 2000, l'appellation d'origine contrôlée (AOC) interdisant tout plagiat. Aujourd'hui, le diamant rouge d'Espelette est particulièrement apprécié de certains grands chefs qui l'utilisent pour faire « exploser » les saveurs.\n\nQue permet l'Appellation d'Origine Contrôlée (AOC) accordée au piment d'Espelette aux Basques ?",
+      "image_url": null,
+      "options": {
+        "A": "De lutter contre les imitations",
+        "B": "D'en accroître la production",
+        "C": "De développer sa saveur",
+        "D": "De le faire davantage connaître"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Plus de peur que de mal pour ce petit garçon, près de Lorient, qui, dimanche soir, mangeait une part de fromage.\n\n« Papa, le fromage, il est dur !!! ... » Dimanche, Youenn, 4 ans, mange une portion individuelle de fromage dans la maison familiale. Ses parents, occupés dans la pièce d'à côté, l'entendent tousser. « Comme s'il voulait vomir », raconte Yann, son père. En réalité, l'enfant est en train de recracher un bout de plastique qui aurait pu l'étouffer.\n\nQu'est-il arrivé à Youenn ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a avalé un mauvais morceau de fromage",
+        "B": "Il a trouvé quelque chose dans son fromage",
+        "C": "Il est tombé malade en mangeant du fromage",
+        "D": "Il s'est fait mal aux dents avec le fromage"
+      },
+      "correct_answer": "B"
+    },
+        {
+      "question_number": 21,
+      "question_text": "La Néo-Ruralité est devenue un phénomène de société:\n\nCette dénomination date des années 70 : c'est le « retour à la terre ». Alors que la désertification des campagnes se poursuit, un mouvement de population inverse s'opère. Il concerne des personnes jeunes, sans enfant, portant les valeurs contestataires de mai 68. Issues de toutes les classes sociales, elles ne recherchent pas spécialement le confort. Elles veulent avant tout vivre une expérience, ce qui les différencie de la population locale et ne facilite pas leur intégration.\n\nQue veulent les néo-ruraux ?",
+      "image_url": null,
+      "options": {
+        "A": "Accéder à la propriété privée",
+        "B": "Avoir un mode de vie économique",
+        "C": "Participer à la vie associative",
+        "D": "Tenter une nouvelle aventure"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 22,
+      "question_text": "Le « moustique urbain », c'est son nom, qui hibernait depuis octobre, s'est réveillé plus tôt que prévu. Et une fois d'attaque, les mâles se sont immédiatement précipités pour féconder les femelles, qui se sont mises à pondre frénétiquement. Là où l'on ne rit plus, c'est quand on sait que les larves se nourrissent de matières organiques contenues dans les eaux stagnantes et usées qui leur servent de nurseries, et que plus il fait chaud, plus elles en profitent. Ce qui donne des moustiques taille XXL qui, sans que les scientifiques sachent pourquoi, délaissent les oiseaux pour s'attaquer de préférence aux humains. Il ne nous reste plus qu'à courir acheter du répulsif !\n\nPourquoi les moustiques sont-ils plus gros que d'habitude ?",
+      "image_url": null,
+      "options": {
+        "A": "Parce qu'il y a eu des pluies importantes",
+        "B": "Par ce que les femelles ont moins pondu",
+        "C": "Parce que les larves ont beaucoup mangé",
+        "D": "Parce qu'ils ont hiberné plus longtemps"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Selon les chercheurs spécialisés en climatologie, d'ici 2100, les températures minimales de la saison des cultures, dans les régions tropicales et subtropicales, seront plus élevées que tous les maximas enregistrés jusqu'à présent, ce qui réduira de 20% à 40% les récoltes affectées par la chaleur. Ce constat ne tient même pas compte de la diminution des quantités d'eau qui seront disponibles. Nous devons repenser le système agricole dans son ensemble, pas seulement en recourant à de nouvelles variétés (mieux adaptées à la chaleur et à la sécheresse) mais aussi en reconnaissant qu'une grande partie de la population, aujourd'hui employée dans le secteur agricole, devra changer d'activité.\n\nQue prédisent les spécialistes ?",
+      "image_url": null,
+      "options": {
+        "A": "Des facilités d'irrigation",
+        "B": "Des moissons plus fréquentes",
+        "C": "Des paysans plus nombreux",
+        "D": "Des rendements en baisse"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Le problème des grandes associations caritatives, c'est qu'elles n'entretiennent pas de relation de proximité avec le public. Le Comité de la Charte rétablit ce lien et redonne confiance aux donateurs grâce à une charte de déontologie et à la nomination d'un censeur auprès de chaque organisme membre. Le système fonctionne comme un label : il faut se soumettre à ses exigences. Pour redonner confiance, il est nécessaire d'effectuer un travail pédagogique à destination des donateurs et de leur fournir des informations sur les moyens dont disposent les associations : elles fonctionnent, bien entendu, avec des bénévoles, mais également avec des salariés, qui doivent être correctement rémunérés pour fournir un travail de qualité.\n\nQuel est l'objectif du Comité de la Charte ?",
+      "image_url": null,
+      "options": {
+        "A": "Rationaliser la gestion des associations",
+        "B": "Élargir le recrutement à de nouveaux bénévoles",
+        "C": "Former les responsables des associations",
+        "D": "Mieux communiquer sur l'utilisation des fonds"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Les villes se montrent soucieuses d'améliorer leur qualité de l'air. Une solution: la plantation d'arbres. En effet, les arbres filtrent les particules contenues dans l'atmosphère. Mais la plantation d'arbres doit être réfléchie. Il est pertinent de mettre des arbres le long des axes de circulation pour protéger les habitations des polluants, mais aussi dans les zones piétonnes.\n\nLe choix des arbres a aussi son importance. Les espèces d'arbres plantées il y a 50 ans ne répondent pas aux besoins d'aujourd'hui car elles forment un couvercle retenant au sol la pollution. En revanche, les arbres aux feuilles poilues sont, eux, efficaces.\n\nÀ quelle condition les arbres peuvent-ils aider à combattre la pollution urbaine ?",
+      "image_url": null,
+      "options": {
+        "A": "S'ils appartiennent à une espèce adéquate",
+        "B": "S'ils ont des feuilles persistantes en hiver",
+        "C": "S'ils ont été plantés il y a longtemps",
+        "D": "S'ils se trouvent loin des zones de logement"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 26,
+      "question_text": "La population mondiale a connu une croissance fabuleuse depuis deux siècles. C'est le résultat de progrès humains extraordinaires, non pas de l'augmentation du taux de natalité qui, en réalité, a diminué et continue de diminuer. L'espérance de vie a augmenté parce qu'on a su faire reculer la mortalité infantile, celle des enfants et des adolescents, ainsi que la mortalité maternelle. La population s'est accrue d'abord en Europe, où ces progrès ont eu lieu aux 19e et 20e siècles. Puis elle s'est stabilisée et décroît dans certains pays. La même transition démographique est en train de se produire dans les pays du Sud.\n\nQue dit cet article à propos de l'augmentation de la population mondiale ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle dépend de l'essor économique d'un pays",
+        "B": "Elle est indépendante du nombre des naissances",
+        "C": "Elle résulte de l'émergence de politiques réalistes",
+        "D": "Elle traduit le recul du nombre de conflits armés"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 27,
+      "question_text": "L'espoir des enfants\n\nMarguerite Barankitse est un exemple pour toutes les burundaises. Pour sauver les enfants de la guerre, elle se bat chaque jour. Ses actions ont d'abord été financées par des organismes allemands. Puis, la renommée mondiale de la fondatrice est devenue le carburant de l'association. Aujourd'hui, elle voyage à travers le monde pour parler de son pays et de ses enfants, dans l'espoir d'obtenir des subventions. Désormais, l'aide extérieure soutient la plupart des projets. Elle a ainsi ouvert deux centres pour enfants et un hôpital. Le travail de cette humanitaire débordante d'énergie a été couronné par de nombreux prix.\n\nQuel est le but des déplacements à l'étranger de M. Barankiste ?",
+      "image_url": null,
+      "options": {
+        "A": "Obtenir de l'argent pour développer des centres d'accueil",
+        "B": "Convaincre les entreprises étrangères d'investir au Burundi",
+        "C": "Soutenir les étudiants burundais expatriés pour les études",
+        "D": "Trouver des bénévoles pour s'occuper des enfants à l'hôpital"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 28,
+      "question_text": "À cause de l'homme, 56.400 espèces marines ont disparu subitement. Rayées d'un trait de plume ! il s'agit en réalité d'un travail de recensement et de tri accompli par les scientifiques en charge du registre mondial des espèces marines. D'ores et déjà, l'existence de 120.000 espèces, prétendues uniques, sont en réalité déjà connues et nommées. Ainsi, une modeste éponge s'est-elle vu attribuer 56 identités différentes ! redondances, confusions dans l'orthographe des noms latins et erreurs diverses sont ainsi à l'origine de la suppression, sur la liste, de 56 400 espèces.\n\nQu'est-ce qui est à l'origine de la disparition de certaines espèces marines ?",
+      "image_url": null,
+      "options": {
+        "A": "L'harmonisation de leurs appellations",
+        "B": "La multiplication de leurs prédateurs",
+        "C": "La transformation de leur écosystème",
+        "D": "Le prélèvement abusif lié à leur surpêche"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 29,
+      "question_text": "La retouche de la photo a toujours existé, mais cela prenait du temps et la marge de manœuvre était limitée. Aujourd'hui retoucher, c'est « aussi banal que de manger de la salade » constate la directrice d'un magazine féminin. « On a beau demander les photos avant retouches, trop souvent on n'y a pas accès », regrette-t-elle. Le lecteur aimerait-il qu'on lui mente ? il s'est habitué en tout cas à ce que certaines stars comme Vanessa Paradis aient 20 ans... depuis vingt ans.\n\nQu'exprime le journaliste à propos des photos dans la presse féminine ?",
+      "image_url": null,
+      "options": {
+        "A": "Il constate la fréquence des modifications apportées aux photos",
+        "B": "Il espère la disparition des corrections sur les photos",
+        "C": "Il souligne la place grandissante des photos par rapport au texte",
+        "D": "Il vante la grande qualité artistique des photos de célébrités"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Diversification de l'offre, quête de nouveaux modèles économiques, redéfinition du métier de journaliste (...) L'espace médiatique français s'est profondément reconfiguré (...). À l'image des autres pays européens, la France est désormais marquée par une situation d'hyper concurrence entre supports et entreprises médiatiques. L'entrée dans cette ère s'est déclinée en 3 temps: la multiplication des titres de la presse magazine depuis le milieu des années 1970 a été suivi par la libéralisation du secteur de l'audiovisuel dans les années 1980, puis par l'expansion d'internet et des services de téléphonie mobile au milieu des années 1990. La surabondance de l'offre médiatique a intensifié la compétition pour la conquête des publics et des revenus publicitaires\n\nQuel est le thème principal de cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "La complémentarité des supports médiatiques",
+        "B": "La rivalité entre les différents médias",
+        "C": "La spécificité des médias français",
+        "D": "Le développement des médias en ligne"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 31,
+      "question_text": "On s'est habitué depuis belle lurette à ne plus rencontrer de poinçonneurs dans le métro ni de pompistes dans les stations-service. Mais la liste des professions en voie de disparition ne cesse de s'allonger. Caissières dans les supermarchés, guichetiers dans les banques, hôtesses dans les cinémas... Tous remplacés par des machines ? Pas si simple.\n\nComme l'analyse Thibault Carpentier, directeur du cabinet de conseil Obstand, la tentation industrielle de réduire les frais de personnel est grande mais cette logique se heurte à celle des consommateurs qui ont du mal à se passer d'une présence humaine. D'ailleurs, toutes les entreprises concernées l'ont bien compris : pas de suppression de postes mais des redéploiements avec élargissement des compétences.\n\nQuel obstacle rencontré l'automatisation des services ?",
+      "image_url": null,
+      "options": {
+        "A": "Les coûts élevés des investissements",
+        "B": "Les faibles qualifications des employés",
+        "C": "Les réticences émises par la clientèle",
+        "D": "Les spécificités de certains métiers"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Cette année encore, les adeptes de la culture ne savent plus où donner de la tête et du porte-monnaie. En nombre sans cesse croissant. Notamment depuis que les collectivités territoriales (région, département...) ont compris le parti qu'elle pouvait tirer de leur investissement en matière de communication les festivals de musique foisonnent et les indicateurs sont au beau-fixe, avec des rendez-vous emblématiques comme les Francofolies de La Rochelle et les Vieilles Charrues. L'année dernière, ils assuraient avoir battu des records de fréquentation.\n\nDans cet article, qu'apprend-on sur les festivals ?",
+      "image_url": null,
+      "options": {
+        "A": "D'anciens artistes ont l'occasion de monter sur scène",
+        "B": "Les financements publics contribuent à leur expansion",
+        "C": "Les organisateurs s'adaptent aux nouvelles tendances",
+        "D": "Les tarifs proposés dépendent de la programmation"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Des taxes « vertes » ou taxes carbone sont envisagées pour faire face aux financements nécessaires à l'énergie non polluante. Les mécanismes prévus dans le protocole de Kyoto concernent notamment un crédit carbone, qui représente un volume d'émission de gaz à effet de serre (GES) évité, ainsi que des permis d'émission négociables. Le crédit carbone est doté d'une valeur marchande et s'échange entre pays industrialisés. Un pays n'arrivant pas à atteindre son objectif de réduction des GES pourrait acheter des crédits carbone à un autre qui aurait dépassé son objectif. Ce système a parfois été qualifié de « permis à polluer », car un pays riche pourrait « acheter » le droit de polluer à un autre ayant réellement réduit ses émissions.\n\nQuel est le paradoxe de la taxe carbone ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle concerne uniquement les économies fortes",
+        "B": "Elle freine l'utilisation des ressources renouvelables",
+        "C": "Elle permet le dépassement des normes édictées",
+        "D": "Elle ralentit le progrès dans les États émergents"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 34,
+      "question_text": "La démocratie semble, dans son principe, une façon séduisante d'organiser le pouvoir dans une société. Le peuple se gouverne lui-même ou par ses représentants et chacun, étant à la fois gouverné et gouvernant, apprend à tenir compte de l'intérêt général aussi bien que de ses intérêts individuels. Un tel apprentissage n'a pas été facile il a fallu beaucoup d'approximations et d'échecs avant de parvenir aux démocraties actuelles. Face aux difficultés, constructions complexes et fragiles se sont montrées incroyablement résilientes, peut-être parce que leur légitimité s'enracine au plus profond des « passions du cœur de l'homme », « Structurellement inachevée », la démocratie surprend par sa capacité à se transformer tout en restant fidèle à son ambition première. En dépit des critiques et des attaques, elle a su évoluer au gré des siècles et affronte aujourd'hui de nouveaux défis. Polymorphe, elle diffère également selon les pays, chaque expérience nationale ou régionale étant le fruit d'une histoire qui dépend avant tout des peuples qui l'écrivent.\n\nQuelle est l'idée principale de cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "L'idée de démocratie est aujourd'hui plus controversée qu'avant",
+        "B": "La démocratie est affaiblie par la diversité de ces formes",
+        "C": "La mise en place de la démocratie résulte d'un long processus",
+        "D": "Les fondements théoriques de la démocratie sont utopiques"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Le discours écologique actuel est très factuel, « pratico-pratique », comme si l'on n'osait pas parler de cette beauté dont nous avons pourtant besoin pour nous épanouir. C'est peut-être l'une des raisons pour lesquelles l'écologie politique ne rallie pas tant que ça. Si l'on n'est pas sensible à la terre, aux végétaux, on devient un technicien de l'écologie, on emploie un langage neutre et rassurant, fait « d'environnement » et de « développement durable ». Mais il faut pouvoir parler de la beauté spécifique de la nature qui nous enchante, qui nous fait vibrer. Nous avons besoin de nous nourrir de sa splendeur, de son mystère, et pas seulement de ses aspects matériels, pratiques, biologiques.\n\nSelon l'intervenant, qu'est-ce qui caractérise le discours écologique actuel ?",
+      "image_url": null,
+      "options": {
+        "A": "Il apaise les tensions de la société",
+        "B": "Il insiste sur le point de vue matériel",
+        "C": "Il propose des programmes utopiques",
+        "D": "Il traite les problèmes liés au sol"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Dans l'intérêt de leurs peuples, les gouvernements doivent répondre à la fois à des enjeux de court et de long terme. Cet exercice et si difficile que l'on peut comprendre qu'une certaine cacophonie règne au niveau politique. Pourtant, face au péril, le mot « ensemble » est une arme souvent victorieuse. Les stratégies de développement durable des pays ont ainsi plus de chances de succès si elles s'harmonisent. Pour commencer, cherchons à nous rapprocher entre Européens, pour mener de front transition économique et transition environnementale, afin de mettre un bémol au dérèglement climatique et à la perte de biodiversité Hubert Reeves.\n\nQuel point de vue défend l'auteur ?",
+      "image_url": null,
+      "options": {
+        "A": "L'écologie est avant tout une affaire d'État",
+        "B": "La concertation est la clé d'une action réussie",
+        "C": "Les mesures protectionnistes sont dépassées",
+        "D": "L'influence des lobbies est à prendre en compte"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Depuis plusieurs années, à la fin de l'année scolaire et universitaire, au moment où des centaines de milliers de jeunes, du collège à l'université, passent des examens et doivent faire des choix pour la poursuite de leurs études pour leur futur métier, dés débats agitent le secteur de l'orientation qui est en pleine mutation. Il semble y avoir un paradoxe entre la pratique d'une orientation précoce qui va figer très tôt les destins socio-professionnels de beaucoup de jeunes et les discours portés par la Commission Européenne et relayés par les pouvoirs publics, sur la nécessité d'une éducation et d'une orientation tout au long de la vie.\n\nQue souligne ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "La Commission Européenne est en désaccord avec les autorités",
+        "B": "Le contenu des programmes universitaires est inadapté à la vie active",
+        "C": "Le discours sur la formation continue s'oppose à la réalité observée",
+        "D": "L'obtention de diplômes cesse d'assurer l'avenir professionnel des jeunes"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Le recul est considérable : les accidents du travail ont diminué de plus de 7 % cette année. Cette baisse est due en partie aux campagnes de prévention menées auprès du public. Mais elle reflète aussi une situation économique marquée par la baisse d'activité, notamment dans les secteurs industriels, du bâtiment et des travaux publics. Cependant, si les accidents sont moins nombreux, les maladies professionnelles, elles, ne cessent de progresser, avec une hausse de 5 % en 2009. Les troubles musculo-squelettiques sont particulièrement concernés : leur fréquence a ainsi augmenté de plus de 7 % en un an. En cause : le stress, mais aussi les activités physiques répétitives.\n\nQu'apprend-on sur les accidents du travail ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils ont une influence très préoccupante sur l'économie",
+        "B": "Ils se produisent dans les entreprises industrielles",
+        "C": "Ils sont remplacés par des pathologies professionnelles",
+        "D": "Ils sont source de traumatismes musculaires graves"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 39,
+      "question_text": "NOVENCENTO\nD'Alessandre Barico\nCompagnie Vertigo\n\nDécouvrez la vie de Lemon Novecento, un pianiste extraordinaire abandonné à sa naissance sur un paquebot qui fait la liaison entre l'Europe et l'Amérique. Il passera son existence à jouer pour les voyageurs, se nourrissant de leurs récits et sa musique, sans trouver le courage de descendre à terre. Porté par l'écriture, riche, fluide et musicale du texte de Barico, le comédien principal nous entraine avec une étonnante facilité dans un extraordinaire voyage où résonnent les notes de jazz (...)\n\nQuelle est, selon le texte, la qualité de ce spectacle ?",
+      "image_url": null,
+      "options": {
+        "A": "L'aisance de l'acteur qui tient le rôle principal",
+        "B": "La finesse de l'humour présent dans la pièce",
+        "C": "Le mystère qui entoure le personnage",
+        "D": "Le talent de l'ensemble des musiciens"
+      },
+      "correct_answer": "A"
+    }
+  ]
+}
