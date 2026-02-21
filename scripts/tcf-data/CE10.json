@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE10",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Paul, M. Redon a téléphoné. Il ne vient pas aujourd'hui car il a la grippe.\n\nPourquoi est-ce que M. Redon annule son rendez-vous ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a perdu ses papiers",
+        "B": "Il a trop de travail",
+        "C": "Il est très malade",
+        "D": "Il part en vacances"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 2,
+      "question_text": "ATTENTION ! Du 10 avril au 15 septembre, les ascenseurs de votre station de métro seront en réparation. Pour faciliter vos déplacements, des aménagements temporaires sont mis en place. Pendant les travaux, veuillez emprunter l'escalier situé à droite des guichets.\n\nQu'est-ce qui est fermé du 10 avril au 15 septembre ?",
+      "image_url": null,
+      "options": {
+        "A": "L'escalier",
+        "B": "La station de métro",
+        "C": "Les ascenseurs",
+        "D": "Les guichets"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Au club des enfants Ciné-Goûter Samedi à 16 heure salle des jouets « L'histoire sans fin » (De W.Peterson) 1h35\n\nQue propose le club des enfants ce samedi ?",
+      "image_url": null,
+      "options": {
+        "A": "D'écouter une histoire",
+        "B": "De faire des gâteaux",
+        "C": "De jouer aux cartes",
+        "D": "De regarder un film"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Pascal, Nous sommes en réunion concernant la publicité du jus de fruit Koj. Cela se passe en salle 20.\nJean,\n\nOù est Jean ?",
+      "image_url": null,
+      "options": {
+        "A": "Dans un café",
+        "B": "Dans un cinéma",
+        "C": "Dans une boutique",
+        "D": "Dans une entreprise"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 5,
+      "question_text": "De : Société BALY INFORMATIQUE\nÀ : Monsieur Lefort\nObjet : Printemps des conférences - Lyon\n\nMonsieur, Une voiture de notre société va vous attendre à votre arrivée à l'aéroport (porte F) pour vous conduire au Palais des Congrès.\nCordialement, Mme Deor,\n\nComment est-ce que M. Lefort va aller au Palais des Congrès ?",
+      "image_url": null,
+      "options": {
+        "A": "Avec Mme Deor",
+        "B": "Avec un chauffeur",
+        "C": "En autobus",
+        "D": "En taxi"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Nous avons prévu quelques réparations dans l'appartement à la fin de la semaine. Veuillez nous excuser pour le bruit.\nMme et M. Garnier, 7 Avenue Leclerc, Appt. 307\n\nQu'est-ce que M. et Mme Garnier écrivent à leurs voisins ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils vont bientôt déménager",
+        "B": "Ils vont faire des travaux",
+        "C": "Ils vont organiser une soirée",
+        "D": "Ils vont recevoir de la visite"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Adèle, N'oublie pas l'anniversaire de Raphaël ! On pourrait partir vers 19h et aller ensemble chez lui : où est-ce qu'on se retrouve ? Si tu ne peux pas venir finalement, appelle-moi !\nBonne journée, Camille,\n\nPourquoi Camille écrit-elle ce message à Adèle ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour acheter un cadeau avec elle",
+        "B": "Pour annuler sa venue à une fête",
+        "C": "Pour décider d'un rendez-vous",
+        "D": "Pour inviter son amie à diner"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Chers étudiants, Nous avons le plaisir de vous informer que notre centre vous offre moins 10% sur le prix de ses cours de français. Vous pouvez bénéficier de cette offre spéciale pour un stage d'une ou plusieurs semaines de juin à septembre. Vous trouverez le calendrier et le programme des formations sur notre site : www.coursdefrançais.org\nCordialement, La responsable des cours\n\nQue propose-t-on aux étudiants dans ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Une formation adaptée pendant les vacances",
+        "B": "Une grande variété de cours intensifs",
+        "C": "Une promotion spéciale pour un voyage",
+        "D": "Une réduction sur des stages pendant l'été"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 9,
+      "question_text": "L'Union européenne va offrir une « Carte Jeunes » aux étudiants du continent qui ont vingt ans cette année. Pendant un mois maximum, les jeunes pourront prendre le train gratuitement pour visiter plus de quinze pays.\n\nQu'est-ce qui est proposé aux jeunes Européens ?",
+      "image_url": null,
+      "options": {
+        "A": "Des visites de musées",
+        "B": "Des voyages en Europe",
+        "C": "Un mois de vacances",
+        "D": "Un semestre d'études"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Chers collègues, Nous vous informons que la réunion parents-professeurs des classes de seconde, initialement prévue ce samedi, est reportée au samedi suivant à midi. Votre présence est obligatoire.\nLa Direction Du Lycée\n\nÀ qui ce message est-il adressé ?",
+      "image_url": null,
+      "options": {
+        "A": "Aux élèves",
+        "B": "Aux étudiants",
+        "C": "Aux parents",
+        "D": "Aux professeurs"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Pierre, Ce soir, je rentre tard. Peux-tu acheter du pain et du fromage pour le dîner ?\nAnne\n\nQue doit faire Pierre ?",
+      "image_url": null,
+      "options": {
+        "A": "Aller chercher Anne",
+        "B": "Faire des courses",
+        "C": "Préparer le repas",
+        "D": "Se coucher tôt"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Les petits Allemands ont de la chance\n\nDepuis quelques années, leurs établissements, de la maternelle au lycée, ont de nouvelles chaises aux formes arrondies et colorées. Ces chaises, pensées pour les besoins des écoliers, répondent à une nouvelle philosophie de l'enseignement. Avant il fallait rester immobile et écouter, aujourd'hui les psychologues pensent qu'il faut laisser les écoliers bouger, en particulier les très jeunes enfants, car le mouvement aide à la concentration. Il renforce également la construction musculaire.\n\nPourquoi le mobilier des écoles allemandes a-t-il été remplacé ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour accueillir des élèves handicapés",
+        "B": "Pour favoriser une autre pédagogie",
+        "C": "Pour limiter les problèmes de santé",
+        "D": "Pour rénover les salles de classe"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Un salon automobile est un lieu de rêve mais pas le salon de cette année. Voici mon classement des modèles les plus laids :\n1. La V210 : un aspirateur sur quatre roues.\n2. La Tata Aria : pas chère mais pas belle non plus.\n3. Le cabriolet Aurus : plus large que haut.\nVivement l'année prochaine !\n\nQuel est le problème de ces voitures ?",
+      "image_url": null,
+      "options": {
+        "A": "Leur couleur",
+        "B": "Leur forme",
+        "C": "Leur prix",
+        "D": "Leur taille"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Selon une étude, les salariés passent chaque jour en moyenne une heure et demie à surfer au bureau et y consacrent un peu plus d'une demi-heure à un usage professionnel, contre 53 minutes à des fins personnelles. L'étude chiffre cette « chute de productivité » à 12,4%. Concrètement, l'utilisation personnelle d'internet au travail coûterait 26 jours par an à l'entreprise soit près d'un mois de travail ! En comparant les catégories de sites les plus conseillés entre 2010 et 2011, on remarque que les sites de jeu en ligne gagnent 5%, tandis que la vidéo progresse, elle, de 3%.\n\nQu'apprend-on sur les salariés qui utilisent Internet ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils téléchargent des jeux sur leur poste",
+        "B": "Ils trouvent difficilement des informations",
+        "C": "Leur rendement au travail diminue",
+        "D": "Leurs échanges perdent en efficacité"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Plus de 95 % des enfants français affirment avoir reçu les consignes parentales de base destinées à encadrer leur navigation sur Internet : ne pas se rendre seul à un rendez-vous avec un inconnu, ne pas répondre aux messages de personnes qu'ils ne connaissent pas, ne pas divulguer d'informations personnelles comme leur nom, leur adresse ou celle de leur école, etc. Pourtant, dans les faits, plus d'un enfant sur deux a le sentiment de pouvoir faire ce qu'il veut sur Internet sans que ses parents ne le sachent.\n\nD'après ce texte, comment la plupart des enfants se comportent-ils avec Internet ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils l'utilisent plus que les adultes",
+        "B": "Ils manquent de formation pratique",
+        "C": "Ils s'en servent avec prudence",
+        "D": "Ils se connectent en toute liberté"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 16,
+      "question_text": "« L'art et ses modes de production contribuent à sensibiliser les gens au développement durable », commente Élise Morin, créatrice de l'œuvre Waste Landscape, composée de vieux CD. « Le recyclage, ça ne se passe pas que dans la poubelle », intervient le photographe Joachim Romain, dont le travail est centré sur les affiches promotionnelles. « Les déchets sont partout, on ne peut pas y échapper, on est envahis. Alors pourquoi ne pas m'en servir pour aller plus loin ? Pour montrer aux gens qu'un jour ou l'autre, ces questions environnementales finiront par les concerner personnellement. »\n\nQue proposent ces artistes ?",
+      "image_url": null,
+      "options": {
+        "A": "De diffuser de la musique",
+        "B": "De réutiliser des objets",
+        "C": "De s'engager en politique",
+        "D": "De tourner des publicités"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Dans le secteur de la téléphonie mobile, il est indispensable de disposer de boutiques physiques. ONTEL possède déjà un petit réseau implanté dans les grandes surfaces. En effet, malgré le développement d'Internet, 70 % des ventes s'effectuent encore en magasin. Le téléphone mobile étant un objet technique, les clients ont besoin d'un interlocuteur en face d'eux pour les rassurer et leur expliquer le fonctionnement de l'appareil. Le portable est devenu un objet complexe, et les utilisateurs se sentent plus en confiance lorsqu'ils bénéficient d'une aide au moment de l'achat.\n\nD'après ce document, pourquoi les clients préfèrent-ils acheter leur téléphone en magasin ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils bénéficient d'un meilleur service après-vente",
+        "B": "Ils obtiennent des conseils sur le mode d'emploi",
+        "C": "Ils ont accès immédiatement aux nouveaux modèles",
+        "D": "Ils ont la possibilité d'essayer les appareils"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 18,
+      "question_text": "L'expérience « cours le matin, sport l'après-midi », qui a commencé à la rentrée, concerne 7000 élèves, dans 120 lycées. Les parents affirment que « la santé de leur enfant a peu varié par rapport à l'an dernier ». Ils semblent avoir meilleur appétit et « ils parlent plus de leurs activités avec leurs parents ». Cependant, il n'y a pas « d'influence sur la ponctualité, la concentration ou les résultats scolaires ».\n\nQuels sont les effets de cette expérience ?",
+      "image_url": null,
+      "options": {
+        "A": "Les échanges en famille s'améliorent",
+        "B": "L'attention en classe est en hausse",
+        "C": "Les adolescents sont plus en forme",
+        "D": "La réussite aux examens augmente"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Pipelettes, soyez fières de l'être !\n\nD'après les psychologues, ce charmant défaut n'en est finalement pas un. S'il irrite parfois notre conjoint, le bavardage peut libérer les tensions et s'avérer aussi efficace qu'une thérapie ! Papoter avec sa voisine de table, la gardienne de l'immeuble ou sa coiffeuse, parler de tout et de rien, du beau temps qui s'en va et des vacances qui sont loin, ou encore des dernières tendances de la mode, cela n'a l'air de rien, mais c'est essentiel ! Ces bavardages nous permettent de nous évader du quotidien et d'établir le contact avec les autres. D'autre part, quand les confidences se font plus sérieuses, formuler nos soucis ou nos contrariétés nous aide à les relativiser : cela soulage.\n\nD'après ce texte, dans quelle mesure le bavardage est-il positif ?",
+      "image_url": null,
+      "options": {
+        "A": "Il encourage les initiatives",
+        "B": "Il favorise le rendement au travail",
+        "C": "Il permet d'être plus détendu",
+        "D": "Il rend les gens plus cultivés"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 20,
+      "question_text": "MATCH SÈTE - TOURS\nMercredi 12 novembre\n• Achat des billets aux points de vente habituels : 15 €\n• Réduction pour les étudiants et les détenteurs de carte « Famille nombreuse »\n• Vente aux guichets du stade, le soir même : 20 €\n\nÀ quelle condition l'acheteur bénéficie-t-il d'un meilleur prix ?",
+      "image_url": null,
+      "options": {
+        "A": "En achetant les billets à l'avance",
+        "B": "En choisissant des places pour quatre matchs",
+        "C": "En prenant des billets pour un groupe",
+        "D": "En présentant une carte de club de sport"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 21,
+      "question_text": "Les bons vieux bancs verts sur les trottoirs parisiens ont de la concurrence. Depuis le mois de décembre, sur certains boulevards, un nouveau mobilier urbain a fait son apparition, avec 12 modèles de banquettes, chaises et tabourets. Pour la première fois, la Ville de Paris recueille l'avis des usagers et des riverains. Le traditionnel banc en fonte et bois a-t-il encore de l'avenir au milieu de ce mobilier futuriste ?\n\nQuelle est l'originalité de ce projet ?",
+      "image_url": null,
+      "options": {
+        "A": "La priorité donnée à l'aspect écologique",
+        "B": "La prise en compte de l'opinion publique",
+        "C": "Le caractère provisoire de l'installation",
+        "D": "Le choix des matériaux de fabrication"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 22,
+      "question_text": "Un jour, en réfléchissant aux raisons qui m'avaient éloigné d'une carrière universitaire pourtant bien partie afin de me consacrer à mon travail de médecin praticien, j'ai compris que mon choix tenait en partie au fait que l'on riait beaucoup plus au contact des êtres humains plongés dans la vie qu'à celui des chercheurs. Comme un animal qui migre vers le sud en hiver, j'avais suivi le soleil de cette vibration qui fabrique du bonheur, du lien, de la santé. Je ne l'ai jamais regretté.\n\nQu'est-ce qui a guidé l'auteur dans ses choix professionnels ?",
+      "image_url": null,
+      "options": {
+        "A": "L'attirance pour les études",
+        "B": "L'appel des pays chauds",
+        "C": "Le besoin d'interaction sociale",
+        "D": "Le désir de reconnaissance"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 23,
+      "question_text": "EMPLOI\n\nChanger de métier : évitez les aléas ! Changer de métier ne doit pas être une décision prise à la légère. Il est important de prendre le temps de déterminer avec précision les raisons qui vous poussent à vouloir faire ce choix. Il est essentiel de bien s'orienter pour la recherche d'un nouveau travail, surtout si vous êtes dans le flou par rapport à vos envies. Faire le point sur vos compétences vous permettra de déterminer vers quels secteurs vous pouvez vous diriger. Avoir conscience de vos compétences sera également un plus au moment de vous vendre à un employeur potentiel.\n\nQue conseille cet article à ceux qui désirent changer de métier ?",
+      "image_url": null,
+      "options": {
+        "A": "D'élargir leurs perspectives professionnelles",
+        "B": "D'évaluer les possibilités d'évolution de leur carrière",
+        "C": "De faire un bilan de leurs aptitudes",
+        "D": "De privilégier leur épanouissement personnel"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 24,
+      "question_text": "On réserve trop facilement le covoiturage aux étudiants sans un sou. Les clichés sont tenaces. Pourtant, le temps de la petite annonce papier accrochée près de la machine à café est bel et bien terminé, les nouveaux moyens de communication ont changé les choses. L'organisation d'un trajet entre plusieurs personnes qui se rendent dans la même direction est devenue si simple et si efficace avec les sites spécialisés que le covoiturage est en train d'élargir son public et de gagner son statut de mode de transport à part entière.\n\nQuel développement connaît le covoiturage ?",
+      "image_url": null,
+      "options": {
+        "A": "Il devient la solution idéale des voyages organisés à la dernière minute",
+        "B": "Il est accessible à un nombre croissant d'utilisateurs grâce à internet",
+        "C": "Il occupe une place grandissante dans les petites annonces des journaux",
+        "D": "Il s'impose comme le moyen de déplacement à la mode chez les jeunes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Les salariés européens seraient 74% à songer à se reconvertir, et seuls 8% se déclarent satisfaits de leur carrière. La crise économique actuelle, loin de décourager les aspirants au changement, semble même précipiter les réorientations professionnelles volontaires. Ce mouvement est à la fois individuel et social. Certes, l'individu, majeur et responsable, demeure l'acteur principal de sa reconversion. Mais la société, à tant valoriser le changement personnel, transforme le changement professionnel en expérience sociale. L'idée qu'une autre vie est possible est admise dans tous les niveaux de la société.\n\nQuel phénomène associé à la crise économique est décrit dans ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "La lutte pour le maintien du niveau des salaires",
+        "B": "La volonté de déménager à l'âge adulte",
+        "C": "L'attachement aux valeurs de l'entreprise",
+        "D": "Le désir d'évolution durant la vie active"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Selon une analyse approfondie réalisée par l'agence d'urbanisation de la région d'Angers, la périurbanisation gagne du terrain. Ce terme un peu technique désigne l'installation à la campagne de personnes qui travaillent en zone urbaine et y reviennent pour différentes activités et services. L'agence mène actuellement une étude sociologique pour mieux comprendre ce qui pousse les habitants à s'éloigner des métropoles. Leurs motivations correspondent souvent au désir d'accéder à la propriété ou de trouver un logement adapté lorsque la famille s'agrandit.\n\nQuelle est l'une des caractéristiques des « périurbains » ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils ont une bonne situation financière",
+        "B": "Ils pratiquent des loisirs en extérieur",
+        "C": "Ils se préoccupent de l'environnement",
+        "D": "Ils se rendent régulièrement en ville"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 27,
+      "question_text": "En écrivant à la main, chacun trouve sa manière de tracer, son rythme et choisit son moment et ses mots. Le monde de la communication par textos, lui, est celui d'une communication homogène. Avec la numérisation des échanges, on ne connaît plus l'attente d'une lettre ou d'une carte postale. Rendez-vous avec un ami : un SMS pour prévenir qu'on arrive dans cinq minutes, un autre dès qu'on est arrivé, un autre si on est en retard. Bienvenue dans un monde sans attente, où tous les vides doivent être comblés.\n\nQu'apprend-on sur la communication numérique ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle appauvrit le lexique courant",
+        "B": "Elle modifie le rapport au temps",
+        "C": "Elle provoque la fin du courrier postal",
+        "D": "Elle transforme le geste graphique"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Marilyn Monroe\n\nC'était une grande actrice, et aussi une véritable énigme. Ce qui est frappant, c'est que tout le monde l'aime. Il existe, toutes générations confondues, une tendresse, une compréhension, un attachement à son égard. Son souvenir reste vif. Elle voulait toujours que ce soit mieux, toujours plus intense. Elle était en quête d'absolu, ce qui se traduisait à l'écran par un don de soi total. Elle ne comptait pas. Et Marilyn Monroe continue de hanter les consciences, parce qu'elle a donné plus que d'autres.\n\nSelon l'auteur, qu'est-ce qui explique la passion du public pour l'actrice Marilyn Monroe ?",
+      "image_url": null,
+      "options": {
+        "A": "L'affection qu'elle portait à ses admirateurs",
+        "B": "L'originalité qui caractérisait le choix de ses rôles",
+        "C": "La générosité qu'elle manifestait dans sa vie",
+        "D": "La séduction qui était son principal atout"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 29,
+      "question_text": "L'Europe s'est dotée de son propre Label du patrimoine décerné à de hauts lieux de l'histoire et de la culture du Vieux Continent, en complément de la célèbre liste mondiale établie par l'UNESCO. Un accord est intervenu lors d'une réunion des ministres de la Culture de l'Union européenne. Ce label incitera un plus grand nombre de personnes à réfléchir à la dimension européenne de notre histoire commune. Le tourisme et l'économie devraient également en tirer parti. Le label sera accordé en fonction non de qualités architecturales ou esthétiques, mais de la valeur symbolique européenne des lieux et de leur dimension pédagogique.\n\nD'après l'article, à quoi servira le label du patrimoine européen ?",
+      "image_url": null,
+      "options": {
+        "A": "À concurrencer la liste des hauts lieux dressée par l'UNESCO",
+        "B": "À définir les critères esthétiques de l'architecture européenne",
+        "C": "À favoriser l'émergence de valeurs culturelles collectives",
+        "D": "À réfléchir sur la place du tourisme et de l'économie en Europe"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Chère Madame, Je vous remercie de votre commande mais votre règlement ne couvre pas totalement le montant de votre achat. Plutôt que de vous faire supporter des frais supplémentaires, je vous expédie votre colis dès aujourd'hui et je vous demande de me faire parvenir un chèque de 20 euros, à réception.\nBien sincèrement,\n\nQuel est l'objet de cette lettre ?",
+      "image_url": null,
+      "options": {
+        "A": "Demander à une cliente de payer l'intégralité de sa commande",
+        "B": "Prévenir une cliente que sa commande sera livrée en retard",
+        "C": "Confirmer à une cliente que sa commande a bien été expédiée",
+        "D": "Prévenir une cliente qu'elle devra payer 20 euros de frais d'envoi"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Le partage d'expérience d'Adeline et de Jérôme\n\nAdeline et Jérôme ont créé Pyrénées-randonnées, un site qui propose un ensemble d'itinéraires dans ces montagnes, accompagnés de leurs photos personnelles et du tracé sur la carte. Animé depuis Bordeaux, où ils poursuivent leurs études, le blog s'enrichit à chacune de leurs vacances. On y trouve également des informations sur la météo, l'équipement nécessaire, les techniques d'orientation… Un blog conçu pour partager, échanger, faire des rencontres — souvent virtuelles — et se faire plaisir.\n\nQui sont Adeline et Jérôme ?",
+      "image_url": null,
+      "options": {
+        "A": "Des blogueurs professionnels",
+        "B": "Des étudiants en climatologie",
+        "C": "Des guides de montagne",
+        "D": "Des passionnés de randonnée"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Vincent Van Gogh, un illuminé miséreux à l'oreille coupée, méconnu de son vivant ? Ce mythe tenace s'est construit autour du peintre à partir d'une histoire largement romancée. Or, une étude approfondie de l'ensemble de la correspondance de Vincent Van Gogh — échangée essentiellement avec son frère Théo, mais aussi avec Gauguin — donne une impression beaucoup plus nuancée. Van Gogh n'était ni si pauvre, ni si fou, et il a bénéficié d'une certaine notoriété de son vivant, même si ce n'était pas auprès du grand public. Doté d'une forte personnalité, il savait, dans ses lettres, raconter de manière merveilleuse et captivante ce qui l'occupait, ainsi que les raisons pour lesquelles il choisissait de peindre tel ou tel sujet.\n\nQue révèle la correspondance de Van Gogh ?",
+      "image_url": null,
+      "options": {
+        "A": "Il appréciait de lire les récits d'écrivains de sa génération",
+        "B": "Il était déjà, en son temps, un artiste reconnu par ses pairs",
+        "C": "Il se plaisait à véhiculer une fausse image de lui-même",
+        "D": "Il souffrait beaucoup à cause de son état mental fragile"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Le linguiste Alain Rey explique le sentiment de honte à l'idée de faire une faute par le fait qu'avoir une bonne orthographe fait partie des comportements attendus : la mauvaise orthographe est devenue problématique à partir du moment où tout le monde est allé à l'école. On peut tolérer une orthographe incertaine dans les lettres privées ou dans les SMS, mais une faute dans le milieu professionnel a plus de conséquences, on risque de donner une mauvaise image de soi et donc d'être mal jugé.\n\nComment Alain Rey explique-t-il l'importance d'avoir une bonne orthographe ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est un indice de savoir-vivre",
+        "B": "C'est un marqueur social",
+        "C": "C'est un signe de respect",
+        "D": "C'est une preuve d'éducation"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Le terme « famille monoparentale » évoque le plus souvent les mères qui élèvent seules leurs enfants, éludant la réalité des pères confrontés à cette situation. Le développement de la garde alternée a conduit les pères à faire face à des situations auxquelles ils n'étaient pas forcément préparés. De même que les femmes qui élèvent seules leurs enfants sont parfois démunies par l'absence du père, notamment pour exercer leur autorité, certains hommes ont du mal à trouver leur juste place. Ces hommes font encore l'objet d'un regard particulier de la société. Contrairement aux mères, ils doivent très souvent justifier leur statut. On considère encore qu'un enfant, dans les premières années de sa vie, ne peut grandir correctement qu'en présence d'une figure maternelle.\n\nQuelle est l'idée abordée par le texte ?",
+      "image_url": null,
+      "options": {
+        "A": "L'absence du père oblige les mères à mettre leur vie affective entre parenthèses",
+        "B": "La société actuelle accepte mal qu'un enfant soit élevé uniquement par son père",
+        "C": "Les pères considèrent que l'absence de la mère doit être absolument compensée",
+        "D": "Les pères seuls reconstruisent vite une vie de couple après une séparation"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Il me semble pertinent de ne pas confondre, même si le fait d'être un intellectuel renvoie banalement à une certaine aptitude au maniement des idées, les intellectuels avec des catégories proches. Les écrivains, notamment les romanciers, ne constituent pas naturellement des « intellectuels », dans la mesure où, précisément, le genre romanesque, pour être pleinement réussi, a toujours exigé une certaine distance vis-à-vis de l'univers théorique. La qualité fondamentale de la fiction est l'imagination, alors que le brassage d'idées et de concepts s'oppose à la liberté et à l'imprévisibilité du roman. Ainsi, si dans telle ou telle œuvre de fiction, un auteur peut apparaître plus « intellectuel » que romancier, c'est parce que le second a capitulé devant le premier ou n'est jamais parvenu à s'en libérer. Cela ne donne pas forcément de mauvais livres, mais empêche, à mon sens, qu'ils soient de grands romans. Ils font penser, mais je ne suis pas persuadé qu'ils fassent rêver le lecteur.\n\nQuelle est la thèse défendue par cet auteur ?",
+      "image_url": null,
+      "options": {
+        "A": "L'écriture requiert les mêmes qualités pour une fiction ou un essai",
+        "B": "Le raisonnement du penseur représente une entrave à la création",
+        "C": "Les grands romans sont issus des réflexions théoriques d'un auteur",
+        "D": "Les modes d'écritures du romancier et de l'intellectuel sont identiques"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 36,
+      "question_text": "J'ai commencé ma vie comme je la finirai sans doute : au milieu des livres. Dans le bureau de mon grand-père, il y en avait partout ; il était interdit de les épousseter, sauf une fois l'an, avant la rentrée d'octobre. Je ne savais pas encore lire, mais déjà, je les révérais. Je les touchais en cachette, pour honorer mes mains de leur poussière, mais je ne savais trop quoi en faire. Mon grand-père maniait ces objets culturels avec la dextérité d'un officiant. Je l'ai vu mille fois se lever d'un air absent, faire le tour de sa table, traverser la pièce en deux enjambées, prendre un volume sans hésiter, le feuilleter en regagnant son fauteuil, puis, à peine assis, l'ouvrir d'un coup sec à la bonne page.\n\nQue fait l'écrivain dans cet extrait ?",
+      "image_url": null,
+      "options": {
+        "A": "Il revit des souvenirs lointains dans le bureau de la maison familiale",
+        "B": "Il se rappelle une pièce de travail poussiéreuse interdite aux enfants",
+        "C": "Il raconte son apprentissage de la lecture auprès de son grand-père",
+        "D": "Il évoque ses rentrées scolaires alors qu'il ne savait pas encore lire"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Dans leur nouvelle collection, les éditions Nil invitent des auteurs à se livrer à un exercice épistolaire intime en écrivant une lettre pour dire l'indicible. Le modèle est celle que Kafka rédigea à l'intention de son père et qu'il préféra ranger dans un tiroir tant l'accusation portée était peu amène. Avec L'autre fille, missive adressée à sa sœur ainée, morte avant sa naissance, Annie Ernaux inaugure brillamment le concept, fidèle à son écriture tranchante et analytique. Rejetant le terme d'autofiction, l'écrivain se dit fascinée par la réalité, partant à la recherche d'une vérité sur une mort que ses parents lui ont toujours cachée. En demandant à des auteurs de se libérer d'un vieux tourment, la collection souhaite réhabiliter un genre littéraire oublié.\n\nÀ quel résultat la participation à cette collection conduit-elle Annie Ernaux ?",
+      "image_url": null,
+      "options": {
+        "A": "À s'acquitter d'un engagement moral",
+        "B": "À s'affranchir d'une histoire ancienne",
+        "C": "À se défaire d'un sentiment de culpabilité",
+        "D": "À se justifier d'une action peu glorieuse"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Le contrôle, en toute matière, aboutit à pervertir l'action… Dès qu'une action est soumise à un contrôle, le but profond de celui qui agit n'est plus l'action, mais la prévision du contrôle, la mise en échec des moyens de contrôle. Le contrôle des études n'est qu'un cas particulier, une démonstration éclatante de cette observation très générale. Le diplôme donne à la société un fantôme de garantie, et aux diplômés des fantômes de droits. Le diplômé passe officiellement pour détenir un savoir : il garde toute sa vie ce brevet d'une science momentanée. C'est pour accéder au diplôme qu'on a vu se substituer à la lecture des auteurs l'usage des résumés, des manuels, des recueils de questions et de réponses toutes faites, et autres abominations.\n\nQue soutient l'auteur de ce texte à propos du contrôle ?",
+      "image_url": null,
+      "options": {
+        "A": "Contribue à améliorer les méthodes d'apprentissage",
+        "B": "Il est indispensable pour accéder au monde professionnel",
+        "C": "Il permet de certifier les compétences réelles d'un candidat",
+        "D": "Il perturbe le processus d'acquisition des connaissances"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Depuis l'adolescence, je fréquente assidûment les dictionnaires\n\nChaque fois que je bute sur un mot, que je suis dans le flou culturel, ils m'apportent la réponse et ouvrent de nouveaux horizons à ma curiosité en me renvoyant souvent à d'autres ouvrages. J'en possède une centaine et chacun est une bibliothèque à lui seul. Tous sont autant de béquilles de ma culture. Par exemple, quand vous cherchez le mot juste, rien de tel qu'un dictionnaire des synonymes ! On ouvre un dictionnaire pour se renseigner sur une question précise comme on lirait la notice d'un produit pharmaceutique destiné à soigner ceci ou cela. C'est le self-service de la pensée !\nJean-Claude Simon, éditeur\n\nPourquoi Jean-Claude Simon aime-t-il les dictionnaires ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour découvrir de nouvelles références",
+        "B": "Pour posséder une bibliothèque fournie",
+        "C": "Pour s'évader vers des horizons lointains",
+        "D": "Pour trouver des remèdes à ses maux"
+      },
+      "correct_answer": "A"
+    }
+]
+}

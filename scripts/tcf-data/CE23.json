@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE23",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "La société des transports T2C offre plusieurs moyens de transport publics : trente-quatre stations de tramway, de train et de métro en journée, 23 lignes de bus, dont une de nuit. Plus de renseignements sur notre site: www.t2c.fr\n\nQuel moyen de transport circule après 23h ?",
+      "image_url": null,
+      "options": {
+        "A": "Le bus",
+        "B": "Le métro",
+        "C": "Le train",
+        "D": "Le tramway"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Visite du Musée des Beaux-Arts Vendredi prochain.\nMerci de donner deux Tickets de métro à Votre enfant.\n\nLe professeur\n\nQu'est-ce que les parents payent pour cette activité ?",
+      "image_url": null,
+      "options": {
+        "A": "L'entrée",
+        "B": "Le guide",
+        "C": "Le repas",
+        "D": "Le transport"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 3,
+      "question_text": "À louer : logement très lumineux de trois pièces avec une cuisine équipée, parfait pour des parents avec enfants. Situé au deuxième étage d'un bel immeuble avec ascenseur, dans un quartier calme, proche des commerces. 10 minutes à pied de l'université.\n\nQu'est-ce qu'on peut louer ?",
+      "image_url": null,
+      "options": {
+        "A": "Un appartement familial",
+        "B": "Un logement étudiant",
+        "C": "Une chambre en colocation",
+        "D": "Une maison de campagne"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Collège S. Veil - Concert Chant et Musique pour tous\n\nLe 20 mai à 20h00, venez écouter vos enfants et leurs professeurs de musique chanter et jouer de leurs instruments.\nEntrée : minimum 5 €\nL'argent des entrées financera une visite à l'opéra pour les classes du collège.\n\nVenez nombreux !\n\nQui est invité ?",
+      "image_url": null,
+      "options": {
+        "A": "Les artistes",
+        "B": "Les élèves",
+        "C": "Les enseignants",
+        "D": "Les familles"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 5,
+      "question_text": "SAMEDI 29 JUIN, VENEZ COURIR 10 KM POUR AIDER L'ASSOCIATION «TOUS ENSEMBLE POUR LA PAIX» RENDEZ-VOUS À 10H, AU PARC DE VINCENNES. AMBIANCE SYMPATHIQUE ET REPAS OFFERT POUR LES SPORTIFS, VENEZ NOMBREUX !\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "D'aider à organiser une fête",
+        "B": "De devenir membre d'une association",
+        "C": "De distribuer des repas gratuits",
+        "D": "De participer à un événement sportif"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Salut Éric !\n\nJ'ai fini les cours et je suis maintenant à Montpellier. Je suis serveuse dans un restaurant depuis une semaine. C'est fatigant, mais j'apprends beaucoup ! je serai à Paris à la fin des vacances d'été pour te voir avec les copains.\n\nCamille,\n\nQu'est-ce que Camille explique ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est en voyage à Montpellier",
+        "B": "Elle rencontre des amis à Paris",
+        "C": "Elle suit des cours à l'université",
+        "D": "Elle travaille dans un restaurant"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Un cinéma historique en centre-ville, c'est exceptionnel ! La famille propriétaire de ce monument n'a pas changé depuis son ouverture en 1911, dans ses sept salles Vous trouverez des films internationaux et des événements de qualité chaque semaine.\n\nQu'est-ce qu'on apprend sur ce cinéma ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est un bâtiment ancien",
+        "B": "Il se trouve en banlieue",
+        "C": "On peut y rencontrer des acteurs",
+        "D": "Ses films sont en noir et blanc"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 8,
+      "question_text": "La France est le pays d'Europe où il y a le plus d'animaux par habitant. Chien, chat, poisson, cheval ou même serpent, les français adorent s'occuper d'eux, les nourrir, les sortir et vivre à leurs côtés.\n\nQu'apprend-on sur les Français et les animaux ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils aiment en voir dans la nature",
+        "B": "Ils les regardent à la télévision",
+        "C": "Ils sont nombreux à en avoir",
+        "D": "Ils vont les voir dans les zoos"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Le saviez-vous ?\n\nLes Galeries Lafayette Sont aujourd'hui le site le plus visité à Paris après le musée du Louvre ! Vous pouvez Y trouver des vêtements à la mode, des objets pour la maison ou encore des articles de cuisine.\n\nQu'est-ce qu'on apprend sur ce grand magasin ?",
+      "image_url": null,
+      "options": {
+        "A": "Beaucoup de personnes le visitent",
+        "B": "Il vend des articles bon marché",
+        "C": "Il y a un célèbre musée à l'intérieur",
+        "D": "On y donne des cours de cuisine"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Marché facile est une application pour téléphone portable qui vous conseille les bons fruits et légumes de saison dans les supermarchés. Elle donne aussi des informations sur le fromage, la viande et le poisson.\n\nÀ quoi sert cette application ?",
+      "image_url": null,
+      "options": {
+        "A": "À acheter sur internet",
+        "B": "À choisir ses produits",
+        "C": "À noter les magasins",
+        "D": "À trouver des recettes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Notre association sportive organise un stage «enfants» pendant les vacances de printemps. Nous cherchons un animateur/une animatrice avec un bon niveau en tennis pour entraîner les enfants.\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "Un travail avec des enfants",
+        "B": "Une colonie de vacances",
+        "C": "Une compétition de sport",
+        "D": "Une formation d'entraîneur"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Depuis le début de l'année, l'enseigne Devigne a multiplié les offres promotionnelles. Au rayon frais, toutes ses plus grandes marques — Dania, Actoveet — ont été bradées. Même tendance pour les boissons, avec des offres du type « trois paquets pour le prix de deux ». Résultat : cette année, 25 % des ventes de Devigne se feront grâce à ces soldes. Franck Ribaud, le patron de Devigne, a donc l'intention de prolonger cette stratégie. « Mieux vaut, dit-il, diminuer les prix que fermer les usines. »\n\nQuelle stratégie commerciale est utilisée par les magasins ?",
+      "image_url": null,
+      "options": {
+        "A": "Baisser certains tarifs",
+        "B": "Faire plus de publicité",
+        "C": "Multiplier les produits",
+        "D": "Ouvrir d'autres magasins"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Du 30 décembre au 15 janvier, dans les magasins « Jouons à tous les âges », les produits des rayons vélos et jeux vidéo sont à -50%. Pour chaque achat, 2 euros seront donnés à « Apprendre mieux à l'école », une association qui s'occupe d'enfants de 6 à 15ans.\n\nQu'est-ce que cette publicité annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "De l'aide pour une association",
+        "B": "De nouveaux rayons jouets",
+        "C": "Un concours de jeux vidéo",
+        "D": "Une remise de 2 euros par article"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 14,
+      "question_text": "VOUS VOULEZ FAIRE LE TOUR DE FRANCE EN UN APRES-MIDI ?\n\nVenez au parc FRANCE MINI !\nDécouvrez les monuments emblématiques de toute la France... en version miniature !\nEn quelques minutes, passez de la Tour Eiffel au Mont Saint-Michel.\nTarifs :\n• Adulte : 7 €\n• Enfant (à partir de 6 ans) : 5 €\n\nQu'est-ce qu'on peut faire dans ce parc ?",
+      "image_url": null,
+      "options": {
+        "A": "Acheter des souvenirs bon marché",
+        "B": "Découvrir des monuments connus",
+        "C": "Se promener à vélo en famille",
+        "D": "Suivre des visites avec un guide"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Trouver le bon diplôme\n\nLa validation des acquis de l'expérience est un dispositif qui permet d'obtenir un diplôme après trois années d'activité. L'activité exercée doit être en rapport avec le diplôme demandé, et le bénévolat dans la vie associative est pris en compte. On peut valider son expérience quel que soit le niveau d'étude, et il est possible de bénéficier d'un congé spécial pour présenter son dossier. Malheureusement, l'employeur peut le repousser pour raison de service.\n\nQuels acquis sont requis pour l'obtention d'un diplôme ?",
+      "image_url": null,
+      "options": {
+        "A": "Trois années d'études rémunérées",
+        "B": "Une période courte sans emploi",
+        "C": "Un niveau d'études universitaires minimum",
+        "D": "Trois ans d'expérience professionnelle"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Cette maison a été achetée en 1709 par la famille de Montgrand, qui l'a conservée jusqu'en 1801. Jules Cantini, entrepreneur ayant construit de nombreux bâtiments civils et religieux à Marseille, en a été le dernier propriétaire. En 1916, il a fait don de sa collection et de sa maison à la ville de Marseille afin d'en faire un musée consacré à l'art de son époque : le modernisme. Y sont réunis des tableaux d'artistes adeptes de ce mouvement.\n\nQue peut-on voir au musée Cantini de Marseille ?",
+      "image_url": null,
+      "options": {
+        "A": "Les objets de la vie quotidienne d'autrefois",
+        "B": "Les œuvres de peintres du début du 20e siècle",
+        "C": "Les pièces de mobilier du dernier propriétaire",
+        "D": "Les plans de plusieurs églises marseillaises"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 17,
+      "question_text": "La région a décidé de sensibiliser les enfants du territoire au développement durable, grâce au programme « Éco-mômes » sur l'environnement, lancé avec les centres de loisirs. Pendant toute l'année scolaire, les enfants vont participer à des projets créatifs, en réalisant une exposition sur les économies d'eau, en apprenant à cuisiner sans trop jeter... et en faisant une chasse au gaspillage d'eau dans les centres de loisirs ! Le but final est de leur apporter les connaissances et l'autonomie nécessaires à tout éco-citoyen.\n\nQue vont faire les enfants qui participent à ce programme ?",
+      "image_url": null,
+      "options": {
+        "A": "Apprendre des gestes pour protéger l'environnement",
+        "B": "Dessiner des affiches contre le gaspillage alimentaire",
+        "C": "Participer à un concours sur le développement durable",
+        "D": "Sensibiliser leur entourage aux dangers de la pollution"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Pour trouver des personnalités sortant du lot à fort potentiel d'évolution, un cabinet de recrutement organise des entretiens individuels sans consulter au préalable le dossier des candidats. Confrontés à une étude de cas, une discussion d'idées ou un questionnaire croisé, ils peuvent se démarquer grâce à leur savoir-être ou à un talent particulier. Les entretiens n'ont pas pour enjeu de poste précis, ils visent à constituer une réserve de talents, dans laquelle il sera possible de puiser. Un cadre ayant testé ce système voit le recrutement différemment : « On se retrouve en position d'égal à égal ».\n\nQuelle est la méthode de recrutement retenue par le cabinet ?",
+      "image_url": null,
+      "options": {
+        "A": "Auditionner plusieurs candidats en même temps",
+        "B": "Faire mener l'entrevue des candidats par un futur collègue",
+        "C": "Laisser les candidats s'exprimer sans les interrompe",
+        "D": "Rencontrer les candidats sans rien savoir d'eux"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Des études de marché récentes montrent que les frites signent leur grand retour. Leur cote de popularité ne faiblit pas, mais elles doivent être préparées dans les règles de l'art. Pour obtenir des frites dorées, moelleuses à l'intérieur et croquantes à l'extérieur, il faut les cuire puis les frire en deux temps. Si la Belgique et la France s'en disputent la paternité, leur origine reste incertaine. Avec le bond spectaculaire du burger, dont elles sont l'accompagnement idéal, les frites sont fortement consommées au restaurant.\n\nQue révèle cet article sur les frites ?",
+      "image_url": null,
+      "options": {
+        "A": "L'origine historique de la recette",
+        "B": "Le secret d'une bonne préparation",
+        "C": "Les adresses où les consommer",
+        "D": "Les raisons de leur popularité"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Les jours rallongent, la température monte, les arbres sont en fleurs, bref... l'été approche, et les grandes vacances aussi. Mais savez-vous déjà comment vos enfants vont passer ces deux mois ? Ils ont un besoin vital de se détendre et ils sont curieux de tout. De votre côté, vous cherchez des solutions pratiques et des vacances intelligentes et sûres, nous vous proposons des ateliers scientifiques passionnants dans des centres de vacances rigoureusement sélectionnés.\n\nAlors, appelez-nous vite !\n\nQu'offrent ces centres de vacances ?",
+      "image_url": null,
+      "options": {
+        "A": "Des cours de rattrapage scolaires en sciences",
+        "B": "Des activités de découverte de la nature",
+        "C": "Des stages de travail en laboratoire",
+        "D": "Des séjours alliant détente et découvertes"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 21,
+      "question_text": "La ville de Nantes a de quoi séduire grâce à son dynamisme culturel. Son renouveau, débute il y a plus de deux décennies, est exceptionnel. Elle a retrouvé le goût du risque, un grain de folie et un peu de naïveté. Nantes, «la bourgeoise cité des ducs de Bretagne », est une vraie boite à idées, toujours en quête de nouvelles manières de conjuguer le « vivre ensemble ». Pas étonnant qu'elle connaisse une des plus fortes croissances des métropoles de France.\n\nQu'est-ce qui attire les gens à Nantes ?",
+      "image_url": null,
+      "options": {
+        "A": "Sa position géographique",
+        "B": "Ses traditions régionales",
+        "C": "Son ambiance créative",
+        "D": "Son économie stable"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 22,
+      "question_text": "En quelques années, le camping est devenu le premier mode d'hébergement touristique, devant les hôtels, les résidences et les villages de vacances. Les familles qui louaient des villas ou séjournaient à l'hôtel choisissent de plus en plus ce type de séjour en plein air et tout compris, déclare un expert. Ces nouveaux adeptes du camping, souvent plus fortunés, se tournent vers les tentes meublées, chalets et mobil-homes classés de 3 à 5 étoiles, qui étaient peu répandus auparavant. Il y a quelques années, certains avaient honte de dire : \"Je suis allé au camping.\" Aujourd'hui, ce n'est plus le cas.\n\nQue constate l'expert à propos du camping ?",
+      "image_url": null,
+      "options": {
+        "A": "Le confort a été très nettement amélioré",
+        "B": "Le mode d'hébergement est écologique",
+        "C": "Les prestations proposées sont inédites",
+        "D": "Les prix deviennent de plus en plus attractifs"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Le « moustique urbain », c'est son nom, qui hibernait depuis octobre, s'est réveillé plus tôt. Et une fois d'attaque, les mâles sont immédiatement allés féconder les femelles, qui se sont mises à pondre frénétiquement. Là où l'on ne rit plus, c'est quand on sait que les larves se nourrissent de matières organiques contenues dans les eaux stagnantes usées qui leur servent de nurseries, et que, plus il fait chaud, plus il y a des moustiques de taille XXL qui, sans que les scientifiques sachent pourquoi, délaissent les oiseaux pour s'attaquer de préférence aux humains... Il ne nous reste plus qu'à courir acheter du répulsif !\n\nPourquoi les moustiques sont-ils plus gros que d'habitude ?",
+      "image_url": null,
+      "options": {
+        "A": "Parce qu'il y a eu des pluies importantes",
+        "B": "Parce que les femelles ont moins pondu",
+        "C": "Parce que les larves ont beaucoup mangé",
+        "D": "Parce qu'ils ont hiberné plus longtemps"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Le château de la Bussière est une demeure du 17e siècle, située dans le Loiret. Surnommé le « château des Pêcheurs », il possède des collections d'objets rares sur la pêche. Sans oublier un superbe parc. Aujourd'hui, ce monument est confronté à un fléau : un champignon ronge ses édifices. Les propriétaires ont déjà lancé une campagne de restauration, mais le champignon s'attaque aussi à d'autres parties du domaine. Les maîtres des lieux souhaitaient que le bâtiment retrouve son éclat en sollicitant les internautes. À partir de 15€, les contributeurs pourront recevoir des entrées gratuites, l'inscription de leur nom sur une plaque dans le château ou bien encore un dîner avec les propriétaires.\n\nD'après l'article, à quoi les internautes sont-ils encouragés ?",
+      "image_url": null,
+      "options": {
+        "A": "À aider à la rénovation en travaillant au château",
+        "B": "À entrer en contact avec les occupants du château",
+        "C": "À financer les travaux du château par un don",
+        "D": "À visiter le château, ses jardins et expositions"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Naya a rejoint le lycée agricole de Valdoie en janvier. Cette chienne, appartenant au documentaliste de l'établissement, est l'un des seuls animaux de compagnie présents en milieu scolaire en France. Si elle est dans les locaux du lycée, ce n'est pas par hasard : l'établissement a décidé de l'associer à part entière à son projet pédagogique. « Elle apporte une présence apaisante et permet aux élèves de tisser un lien. Au lieu d'être sur leur téléphone portable, ils dialoguent beaucoup avec elle. » D'autre part, Naya s'est fait des copains pour se promener, pour jouer, pour être câlinée, pour causer... et tous respectent son sommeil. C'est une belle carrière qui se dessine pour Naya, nous en sommes très heureux et nous souhaitons qu'elle apporte beaucoup de satisfaction aux élèves... et à ses maîtres.\n\nQuel est l'intérêt de la présence de NAYA ?",
+      "image_url": null,
+      "options": {
+        "A": "Aider les élèves en situation de handicap",
+        "B": "Améliorer les relations au sein du lycée",
+        "C": "Expérimenter une méthode pédagogique",
+        "D": "Renforcer la sécurité de l'établissement"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Dans les familles, il y a des conflits entre les parents, tout simplement parce que chacun a son style éducatif, ses valeurs, son expérience et sa culture familiale. Chacun a ses idées sur le rôle d'un père, d'une mère, la place d'un enfant... et, quand chacun veut les mettre en application, il se heurte à celles de l'autre, et cela crée des disputes dans le couple. C'est inévitable, tout à fait normal. Et il n'y a pas lieu de s'en inquiéter. On peut parfaitement éduquer son enfant sans être d'accord sur tout, à une condition : que les parents s'entendent sur les valeurs fondamentales qu'ils veulent lui transmettre. Et qu'ils respectent les méthodes éducatives de l'autre, même s'ils ne les approuvent pas.\n\nSelon l'article, que doivent faire les parents en matière d'éducation ?",
+      "image_url": null,
+      "options": {
+        "A": "Dialoguer avec leurs enfants",
+        "B": "Prendre appui sur leur expérience",
+        "C": "S'affranchir de leur héritage familial",
+        "D": "Trouver des valeurs communes"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Prendre le métro à Lyon est devenu compliqué pour ceux qui ne veulent pas se faire racoler. En découvrant l'écran publicitaire géant installé à la station Bellecour, j'ai été sidéré. Le publicitaire qui a reçu la bénédiction des élus pour installer cet écran géant et près de cent écrans de télévision de 2 m² sur les quais se félicite de cette initiative. Sur son site internet, il se vante d'« susciter encore plus d'émotion ». Générer des sentiments de peur ou de joie, c'est s'assurer que le message publicitaire aura plus d'impact, permettant ainsi de vendre plus cher aux marques le droit d'accaparer toujours plus notre attention.\n\nQuelle est l'attitude de l'auteur vis-à-vis de cette campagne publicitaire ?",
+      "image_url": null,
+      "options": {
+        "A": "Il critique son concept",
+        "B": "Il dénonce son coût élevé",
+        "C": "Il doute de son efficacité",
+        "D": "Il prédit son échec"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Supprimer les concours des grandes écoles ? Changer nos élites ? Le débat a largement ouvert la porte aux envies de remettre en question la formation de la jeunesse. Pendant longtemps, on a cru que les concours étaient des garants indépassables de l'idéal républicain d'égalité. On a mis beaucoup de temps à se rendre compte qu'ils pouvaient contribuer à la reproduction des élites, ou écarter insidieusement une partie des jeunes, en fonction de leur origine sociale, voire ethnique. De ce constat, certains en déduisent qu'il faut introduire des discriminations positives au sein des concours existants. Mais il existe une alternative pour répondre rapidement à cette nécessité de démocratisation : reconnaître d'autres compétences dans les processus de sélection, comme l'esprit d'entraide, de solidarité et de coopération.\n\nQu'apprend-on sur les concours ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils perpétuent une forme d'exclusion",
+        "B": "Le nombre de candidats s'amenuise",
+        "C": "Leur niveau d'exigence diminue",
+        "D": "On les réforme régulièrement"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Plus de 40 % des espèces d'insectes sont en déclin et un tiers sont menacées. Leur taux de mortalité est huit fois plus rapide que celui des mammifères. À ce rythme, s'inquiètent les scientifiques, les insectes pourraient disparaître d'ici un siècle. Cette prévision est préoccupante, car ils sont essentiels au bon fonctionnement de tous les écosystèmes. Ils pollinisent les plantes, recyclent les nutriments et servent de nourriture à d'autres animaux. Leur disparition « aura des conséquences catastrophiques, tant pour les écosystèmes de la planète que pour la survie de l'humanité ». « Si les modes de production alimentaire ne changent pas, les insectes dans leur ensemble s'engageront sur la voie de l'extinction dans quelques décennies », écrivent les chercheurs.\n\nD'après l'article, qu'est-ce qui est à l'origine de la disparition des insectes ?",
+      "image_url": null,
+      "options": {
+        "A": "Les changements de climat",
+        "B": "Les méthodes de culture",
+        "C": "Les oiseaux prédateurs",
+        "D": "Les politiques publiques"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 30,
+      "question_text": "À l'ère de l'écran généralisé, les images ont prit une place déterminante dans notre culture visuelle. En quelques années, elles ont connu une double évolution : d'une part, leur multiplication industrielle ; d'autre part leur cumul et leur circulation planétaire grâce à internet. Cette réalité pose des questions de plus en plus importantes. En termes d'éducation à l'image et plus généralement aux médias. En effet, malgré un nombre presque illimité d'informations disponibles, seules quelques-unes nous sont diffusées en boucle. Il est donc absolument nécessaire de développer des médias relais et d'éclairer le public par une pédagogie visant à savoir choisir et interpréter les médias et leurs images.\n\nQuel problème évoque le journaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "L'information est trop rarement contrôlée à sa source",
+        "B": "La population est insuffisamment formée aux médias",
+        "C": "Les fausses nouvelles facilement diffusées en ligne",
+        "D": "Les images influencent en permanence les consommateurs"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Là où leurs prédécesseurs rêvaient d'un contrat à durée indéterminée, les Millénial (génération née entre 1980 et 2000) sont en quête d'expériences diversifiées. Beaucoup ont déjà connu le chômage et ont conscience de l'obsolescence de leurs compétences et de leur diplôme d'où leur sentiment de n'avoir rien à perdre. L'heure n'est plus à la relation de subordination, mais à la coopération. Au quotidien, il y a de quoi déconcerter les managers... Un Millénial accepte qu'on lui explique le sens du travail mais pas la manière de le faire. Face à ces collaborateurs qui font rimer bien-être professionnel avec connexion, confiance, autonomie et flexibilité, il faut en finir avec le syndrome de la hiérarchie pyramidale.\n\nQu'apprend-on sur les Millénial dans le monde du travail ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils bouleversent les rapports d'autorité",
+        "B": "Ils évitent les postes à responsabilité",
+        "C": "Ils sont moins motivés que leurs aînés",
+        "D": "Ils tiennent à la stabilité de l'emploi"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Depuis un an, l'association du Théâtre de la Poudrerie, située à Sevran, à quelques kilomètres de Paris, organise des représentations gratuites à domicile d'une pièce inédite. Pour cela, l'association a invité une autrice professionnelle en résidence afin d'écrire le texte. Celle-ci a recueilli les témoignages d'une trentaine d'habitantes autour du thème du pouvoir féminin, puis a rédigé la pièce à partir de cette matière première. L'enjeu pour l'association est que les spectateurs s'approprient la pièce : lorsqu'un phénomène d'identification se produit, la parole se libère lors de la rencontre qui suit la représentation. Ce phénomène est renforcé par le cadre intimiste, qui favorise le rapprochement entre spectateurs et comédiens.\n\nQuel objectif cette association poursuit-elle avec ce projet ?",
+      "image_url": null,
+      "options": {
+        "A": "Encourager le dialogue avec le public",
+        "B": "Former des acteurs en banlieue",
+        "C": "Réaliser une œuvre à plusieurs mains",
+        "D": "Sensibiliser à l'égalité des sexes"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Les néo-nomades ont souvent moins de 30 ans et vivent dans leur camion ou d'anciens cars scolaires transformés en caravanes ou camping-cars. Ces nouveaux voyageurs intermittents vont d'un lieu à l'autre, au gré des impératifs de leur travail, souvent saisonnier, et forment une population hétérogène. Ils résolvent la difficulté d'accéder à un logement lorsque l'on n'a pas de travail permanent en se plaçant en marge de notre paysage contemporain : aux abords des routes secondaires, dans la périphérie des villes, le long des rails, sur des friches ou des terrains privés. Les néo-nomades forment de fait une entité structurée au cœur de notre société individualiste.\n\nSelon le journaliste, quelle est l'origine du néo-nomadisme ?",
+      "image_url": null,
+      "options": {
+        "A": "L'attirance pour les espaces naturels",
+        "B": "L'insécurité des zones urbaines",
+        "C": "La précarité du monde professionnel",
+        "D": "Le désir de vivre en communauté"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Un nouveau mot se banalise sur les campus américains : « microagression ». Qualifiant les blessures subtiles qui affectent les individus exposés à une forme de dévalorisation par le langage, il alimente le débat sur la liberté d'expression. Forgé dans les années 1970, le terme a été développé à partir de 2007 par Derald Wing Sue, qui le définit ainsi : des insultes ou attitudes, intentionnelles ou non, qui communiquent des messages hostiles ou méprisants envers des personnes sur la seule base de leur appartenance à un groupe marginalisé. Des universités ont mis en place des mécanismes de prévention et de dénonciation de ces microagressions, mais certains redoutent que l'excès de précaution ne vienne tuer le débat d'idées.\n\nQu'apprend-on sur les microagressions ?",
+      "image_url": null,
+      "options": {
+        "A": "Ce sont des blessures corporelles superficielles",
+        "B": "Elles sont commises par des groupes minoritaires",
+        "C": "Les autorités universitaires s'en préoccupent peu",
+        "D": "Elles peuvent nuire à certaines libertés"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Que pensent les français de la mobilité territoriale ? Si la mobilité n'est ni bonne, ni mauvaise en soi, elle peut être perçue de manière radicalement différente en fonction des circonstances dans lesquelles elle se réalise et surtout du fait d'être choisie ou non. Des mobilités personnelles, professionnelles et spatiales, voulues et recherchées, peuvent être un facteur d'épanouissement individuel et professionnel pour certains groupes favorisés. Alors qu'elles peuvent être un facteur de précarité pour les groupes défavorisés notamment si elles sont subies.\n\nQuand une mobilité territoriale est-elle vécue positivement ?",
+      "image_url": null,
+      "options": {
+        "A": "Si c'est une occasion d'élargir son réseau social",
+        "B": "Si c'est une opportunité de changer de mode de vie",
+        "C": "Si c'est la possibilité de trouver un emploi",
+        "D": "Si c'est le fruit d'une décision personnelle"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Il est rare que les journalistes de notre mensuel ou moi-même rentrions de reportage en renonçant à rédiger un article. La plupart du temps, les découvertes que nous faisons sont comme de grands bols d'air : elles annihilent tout défaitisme, font disparaître la fatalité ambiante et ouvrent de nouveaux horizons. Nous rencontrons des hommes et des femmes qui nous expliquent leurs envies, leurs rêves, leur utopie, et comment ils s'y prennent pour, à leur échelle, faire évoluer le monde. C'est simple, c'est lent, c'est « proprement humain ». Il est tellement jouissif de pouvoir se dire que nous allons partager tous ces « petits riens » avec nos abonnés !\n\nQuel est le parti pris de ces journalistes ?",
+      "image_url": null,
+      "options": {
+        "A": "Être au plus près de l'actualité",
+        "B": "Présenter des histoires positives",
+        "C": "Proposer des anecdotes amusantes",
+        "D": "Recenser des dérives de la société"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Défenseur.e.s et détracteur.e.s de l'écriture inclusive, qui consiste à féminiser les mots en plaçant entre des points la terminaison du féminin, s'écharpent sur cet épineux sujet. Pour Éliane Viennot, il est important de défendre l'écriture inclusive qui, en remaniant l'orthographe, vise à combattre les stéréotypes sexistes. Selon elle, la langue structure notre représentation du monde. Apprendre aux plus jeunes que le masculin l'emporte sur le féminin ne peut guère contribuer à forger des consciences égalitaristes. Elle rappelle de surcroit que la langue française a longtemps été plus égalitaire qu'elle ne l'est aujourd'hui : il y a eu une masculinisation délibérée du langage à partir du XVII° siècle. Ceux qui se piquaient alors de définir le bon usage en ont profité pour renforcer l'ordre masculin.\n\nQue pense Eliane Viennot de l'écriture inclusive ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle favorise l'évolution des mentalités",
+        "B": "Elle incarne une première historique",
+        "C": "Elle permet de moderniser le lexique",
+        "D": "Elle reflète les clivages de la société"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Il est incroyable que la perspective de devoir lire son propre livre en public n'ait jamais dissuadé un écrivain de l'écrire. Rien n'est plus extravagant que ces émissions littéraires où l'on exige régulièrement d'eux qu'ils se plient à ce rituel, lequel suppose tout de même une habitude, une habileté, pour ne pas dire une technique, qui ne sont pas données à tous les romanciers. La plupart n'osent pas refuser, et ils ont tort. Pour les convaincre de renoncer à ce dernier avatar de leur vanité, il suffirait de les emmener, un soir, écouter des comédiens lire leur livre. Le principe, si l'on est lucide et de bonne foi : on ne se remet pas d'une telle épreuve.\n\nQue pense cet écrivain de la lecture publique d'un roman par son auteur ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle demande de posséder des talents d'acteur",
+        "B": "Elle dessert le travail d'écriture du romancier",
+        "C": "Elle est particulièrement adaptée au petit écran",
+        "D": "Elle rend les émissions littéraires prétentieuses"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 39,
+      "question_text": "De nombreuses destinations prisées des touristes s'inquiètent des foules sans cesse plus denses qui viennent les envahir. Dégradation et usure des sites, exclusion des populations locales : la manne financière apportée par ces hordes de visiteurs ne suffit plus à calmer les mécontents, et la sensibilité croissante au gâchis énergétique alourdit l'acte d'accusation. Le tourisme de masse avait accompagné et symbolisé la démocratisation des loisirs et le rapprochement des peuples. Il se trouve désormais dans une impasse, après avoir pris la forme de monstrueuses migrations dont le principe n'est plus de découvrir et de s'ouvrir, mais de se désennuyer. Le voyage n'est plus le lent cheminement de ceux qui cherchaient à apprendre, mais l'expression d'une quête sans sens, désespérée, de populations culturellement désorientées.\n\nSelon l'article, que recherchent les touristes ?",
+      "image_url": null,
+      "options": {
+        "A": "À diminuer leur empreinte écologique",
+        "B": "À échapper à la banalité du quotidien",
+        "C": "À participer à l'essor économique des pays visités",
+        "D": "À s'enrichir au contact de nouvelles civilisations"
+      },
+      "correct_answer": "B"
+    }
+  ]
+}

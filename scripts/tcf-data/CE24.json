@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE24",
+  "description": "TCF Académie - Compréhension Écrite",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Maman,\n\nJe fais mes devoirs de mathématiques chez Louise, je rentre à 21h. Bises et à ce soir,\n\nPatrick.\n\nQu'est-ce que Patrick fait chez Louise ?",
+      "image_url": null,
+      "options": {
+        "A": "Il dort",
+        "B": "Il joue",
+        "C": "Il mange",
+        "D": "Il travaille"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Attention !\n\nCette semaine, l'accueil de l'université est fermé lundi toute la journée et vendredi après-midi.\n\nÀ quoi sert cette affiche ?",
+      "image_url": null,
+      "options": {
+        "A": "Annoncer un changement",
+        "B": "Décrire un endroit",
+        "C": "Donner un rendez-vous",
+        "D": "Organiser une réunion"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Bonjour Aline,\n\nC'est d'accord, rendez-vous avec les copines chez moi le 30 avril pour déjeuner.\n\nBisous, Yvette\n\nQuelles sont les relations entre Aline et Yvette ?",
+      "image_url": null,
+      "options": {
+        "A": "Professionnelles",
+        "B": "Familiales",
+        "C": "Amicales",
+        "D": "Commerciales"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Chers clients,\n\nNous vous informons que notre magasin est actuellement fermé pour congés jusqu'au dimanche 1er septembre inclus. Nous serons ravis de vous retrouver à partir du lundi 2 septembre, dès 11h, comme à l'habitude.\n\nBonnes vacances à toutes et à tous !\n\nQu'apprend-on sur le magasin ?",
+      "image_url": null,
+      "options": {
+        "A": "Il va avoir de nouveaux horaires",
+        "B": "Il va changer de propriétaire",
+        "C": "Il va déménager en septembre",
+        "D": "Il va fermer pendant l'été"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Salut Paul,\n\nJe t'écris du Canada. J'ai rencontré un étudiant mexicain. Je suis contenté de parler ma langue avec lui, car l'Espagne me manque beaucoup ! En juin, nous suivons ensemble une formation en Italie. Je t'appelle bientôt.\n\nBises, Elisa\n\nQuelle est la nationalité d'Elsa ?",
+      "image_url": null,
+      "options": {
+        "A": "Canadienne",
+        "B": "Espagnol",
+        "C": "Italienne",
+        "D": "Mexicaine"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Nous avons prévu quelques réparations dans l'appartement à la fin de la semaine. Veuillez nous excuser pour le bruit.\n\nM. et Mme Garnier, 7 avenue du Général Leclerc, Appt. 307\n\nQu'est-ce que M. et Mme Garnier écrivent à leurs voisins ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils vont bientôt déménager",
+        "B": "Ils vont faire des travaux",
+        "C": "Ils vont organiser une soirée",
+        "D": "Ils vont recevoir de la visite"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Chère Cathy,\n\nAprès 6 mois de travaux, Pierre et moi, avons quitté la maison de ses parents et nous nous sommes enfin installés chez nous ! Nous fêtons l'événement le dimanche 23 juin, à partir de 19h30. J'espère que tu pourras venir !\n\nLina\n\nQu'est-ce que Lina va fêter ?",
+      "image_url": null,
+      "options": {
+        "A": "La retraite de ses parents",
+        "B": "Son anniversaire de mariage",
+        "C": "Un nouveau logement",
+        "D": "Une création d'entreprises"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Un poste est libre dans votre association ?\n\nLe site www.place-public.fr vous propose de publier une annonce. Envoyez-nous la description du poste, le salaire et vos coordonnées. Votre annonce sera visible pendant un mois.\n\nQue peuvent faire les associations sur ce site internet ?",
+      "image_url": null,
+      "options": {
+        "A": "Offrir des emplois",
+        "B": "Participer à un forum",
+        "C": "Présenter leur action",
+        "D": "Trouver de l'argent"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Madame,\n\nNous avons bien reçu votre demande de remboursement pour un billet de train (voyage professionnel). Vous nous avez envoyé le ticket de carte bancaire mais nous avons aussi besoin d'une attestation de votre employeur. Merci de nous l'adresser par courrier postal ou sous format électronique.\n\nCordialement, Le service financier\n\nQuels documents doit fournir la femme ?",
+      "image_url": null,
+      "options": {
+        "A": "Un document professionnel",
+        "B": "Un titre de transport",
+        "C": "Une enveloppe timbrée",
+        "D": "Une somme d'argent"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Semaine du 6 au 10 septembre :\nLe restaurant universitaire vous propose des recettes régionales variées au tarif normal. Rendez-vous de 11h15 à 13h dans la salle du premier étage.\n\nBon appétit !\n\nQue propose le restaurant du 6 au 10 septembre ?",
+      "image_url": null,
+      "options": {
+        "A": "Des cours de cuisine",
+        "B": "Des menus différents",
+        "C": "Des plats à emporter",
+        "D": "Des tickets bon marché"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Vous voulez faire connaître votre entreprise ?\n\nNous vous proposons de très bons prix pour mettre une annonce sur notre site internet. Envoyez-nous votre texte, nous vous contacterons pour vous informer sur nos prix.\n\nQue propose cette annonce aux entreprises ?",
+      "image_url": null,
+      "options": {
+        "A": "Un service de création de sites",
+        "B": "Une aide informatique rapide",
+        "C": "Une formation sur internet",
+        "D": "Une publicité à faible coût"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 12,
+      "question_text": "La librairie des Orgues, à Paris, a récolté 9000€ de ses clients afin de financer son déménagement. Un résultat inespéré qui a permis à la librairie de s'agrandir. Lors de l'inauguration, la librairie a offert un verre à ses généreux donateurs. En fonction du montant de leur participation, ils ont reçu un livre de leur choix ou ont obtenu le statut de client d'or, signifiée par une plaque à leur nom sur le mobilier de la librairie.\n\nDans quel but la librairie a-t-elle organisé une collecte de fonds ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour acheter des meubles de bibliothèque",
+        "B": "Pour organiser un concours de lecture",
+        "C": "Pour ouvrir un salon de thé littéraire",
+        "D": "Pour s'installer dans un local plus vaste"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Madame Gilbert,\n\nL'imprimante de mon bureau ne fonctionne pas. Mes consultations commencent demain à 14h. Pourriez-vous commander rapidement du papier et de l'encre, s'il vous plaît ?\n\nMerci, Docteur Philippe\n\nQue doit faire Madame Gilbert ?",
+      "image_url": null,
+      "options": {
+        "A": "Acheter du matériel",
+        "B": "Appeler un réparateur",
+        "C": "Imprimer un document",
+        "D": "Noter un rendez-vous"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Cher Paul,\n\nJe suis désolée de t'avoir laissé sans nouvelles. Je pensais t'écrire de Fès, mais notre séjour ne s'est pas déroulé comme nous l'espérions. Nous avons passé trois nuits supplémentaires à Tanger à cause d'un problème technique sur l'une de nos lignes touristiques. Nous avons également annulé le rendez-vous prévu aujourd'hui avec notre client de Casablanca, car nous avons dû nous rendre à Marrakech pour régler les frais occasionnés par cet incident. Nous rentrons demain à Paris.\n\nBises, Mathilde\n\nDans quelle ville se trouve Mathilde d'après cette lettre ?",
+      "image_url": null,
+      "options": {
+        "A": "Casablanca",
+        "B": "Fès",
+        "C": "Marrakech",
+        "D": "Tanger"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Olivier Pollet, cofondateur d'Escursia, veut développer le tourisme scientifique. C'est un tourisme permettant de découvrir et d'apprendre sur la nature, la faune et la flore, au cours de treks ou de randonnées guidées par des accompagnateurs scientifiques professionnels désirant faire partager leurs connaissances. Ces séjours sont ouverts à tous les publics et pour y prendre part, il ne faut pas nécessairement disposer d'une excellente condition physique, il faut juste une pointe de curiosité et le sens de l'observation.\n\nQuelle est la particularité du tourisme scientifique ?",
+      "image_url": null,
+      "options": {
+        "A": "Il fait observer la nature de façon différente",
+        "B": "Il aide au développement de la recherche",
+        "C": "Il nécessite un bon entraînement sportif",
+        "D": "Il s'adresse à des spécialistes passionnés"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Les gardes-chasse d'Orly ont lancé une campagne de capture des lapins vivant sur l'aéroport, afin de les expatrier vers le sud de la France, dont la faune et la flore ont été dévastées par les grands incendies de l'été dernier. Le lapin est élevé au kérosène va donc se refaire une santé auprès des romarins et des thyms de Provence. On connaît des riverains qui aimeraient bien être des petits lapins !\n\nQu'est-il arrivé aux lapins de l'aéroport d'Orly ?",
+      "image_url": null,
+      "options": {
+        "A": "On les a tués afin de les manger",
+        "B": "On les a attrapés et emmenés ailleurs",
+        "C": "On les a chassés de l'aéroport",
+        "D": "On les a soignés et relâchés"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Il y a de nombreux avantages, démontrés par les faits, à choisir la Suisse pour y effectuer ses études ou une partie de celles-ci. La qualité de vie, celle des formations dispensées — même si elles sont souvent coûteuses —, la situation géographique et l'ouverture internationale du pays... Du côté des inconvénients, mentionnons le fait que toutes les filières et formations ne sont pas représentées, ce qui est le cas dans la plupart des petits pays.\n\nQuel avantage présente l'enseignement supérieur dans ce pays ?",
+      "image_url": null,
+      "options": {
+        "A": "Le choix des matières est vaste",
+        "B": "Le nombre d'étudiants est limité",
+        "C": "Le prix des études est peu élevé",
+        "D": "L'enseignement est d'un bon niveau"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 18,
+      "question_text": "On croyait leur métier en voie de disparition et pourtant le nombre de secrétaires a doublé en 20 ans. Ceux qui avaient dit que l'informatique les remplacerait se sont trompés. Au contraire elles n'ont jamais été aussi recherchées. Leurs tâches classiques en tendance à diminuer au profit de nouvelles responsabilités. Elles sont de moins en moins rattachées à une seule personne, mais à une équipe. Toutefois, malgré l'importance qu'elles ont prise, elles souffrent toujours d'un certain manque de reconnaissance.\n\nAujourd'hui, quel est l'inconvénient du métier de secrétaire ?",
+      "image_url": null,
+      "options": {
+        "A": "La qualité de travail est importante",
+        "B": "Le rôle est peu valorisé",
+        "C": "Les postes sont supprimés",
+        "D": "Les tâches sont limitées"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 19,
+      "question_text": "L'anglais est arrivé, au vingtième siècle, à la première place du palmarès des langues internationales. Près de la moitié de l'humanité est concernée par cette langue car elle est quasi obligatoire dans de nombreux secteurs d'activité. Pourtant, cette situation a des limites et l'anglais devra faire face à la progression d'autres langues dans les années à venir. Les raisons sont la montée en puissance économique et industrielle de grands pays émergents, le développement d'échanges régionaux et ceux entre pays voisins.\n\nQue dit-on de la langue anglaise dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle doit devenir la langue de l'administration publique",
+        "B": "Elle peut perdre son statut de langue dominante",
+        "C": "Elle restera la langue privilégiée dans le commerce",
+        "D": "Elle va provoquer la disparition de langues minoritaires"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Job d'été, la première expérience :\n\nQuand une entreprise fait appel pour la première fois à un jeune, elle n'a pas d'attente vis-à-vis de ses compétences professionnelles. Ce sont donc son attitude et son comportement qui seront les principaux critères d'évaluation. Même pour un emploi saisonnier, il faut montrer qu'on a vraiment envie de décrocher un job. Les jeunes sans expérience ont tout intérêt à parler de leurs passions et à démontrer leur motivation. Pour un employeur, cela reste souvent le critère le plus important.\n\nSelon l'article, que faut-il faire pour trouver un job d'été ?",
+      "image_url": null,
+      "options": {
+        "A": "Exposer l'ensemble de ses qualités professionnelles",
+        "B": "Faire preuve de son désir de travailler",
+        "C": "Parler avec enthousiasme de ses projets de formation",
+        "D": "Parler des emplois qu'on a déjà occupés"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 21,
+      "question_text": "Le jour viendra où un fonds de pension ou un groupe alimentaire mondial investira dans l'entreprise d'un cuisinier reconnu pour orchestrer son développement international. Bien sûr, on ne peut qu'éprouver de la nostalgie pour les temps héroïques où une bande de copains inventait les codes de la nouvelle cuisine. Aujourd'hui, n'importe quel jeune cuisinier est prêt à payer très cher pour le privilège d'un stage de six mois chez un « grand chef ». Il rentabilisera vite cet investissement en s'autoproclamant « élève de ... », car les marques des grands chefs ne cessent de prendre de la valeur.\n\nQu'apprend-on sur les grands chefs ?",
+      "image_url": null,
+      "options": {
+        "A": "Leur conception de la cuisine est passée de mode",
+        "B": "Leur créativité leur assure une célébrité mondiale",
+        "C": "Leur nom s'est transformé en label de prestige",
+        "D": "Leurs établissements sont cotés en bourse"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 22,
+      "question_text": "Non, Maupassant n'est pas qu'un écrivain pour cours de français. Comme tout bon auteur culte, ses thématiques sont percutantes, grinçantes, toujours d'actualité et tellement vraies dans le fond hypocrisie de la bourgeoisie, monde paysan décrit sans artifice, rapports humains aliénés par le contexte social et culturel ... Du pain bénit pour les auteurs de « Chez Maupassant », une collection de huit téléfilms titrés des contes et nouvelles du grand Guy.\n\nQue présente l'auteur de l'article ?",
+      "image_url": null,
+      "options": {
+        "A": "Des adaptations télévisées de Maupassant",
+        "B": "Des programmes d'études littéraires",
+        "C": "Une exposition consacrée à Maupassant",
+        "D": "Un ouvrage critique récemment paru"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Elle devait être démolie et un nouveau lieu de culte reconstruit à l'arrière de l'église actuelle, le long du boulevard. Le projet qui prévoyait la restructuration complète de l'ilot avec la création de logements sociaux, ne verra finalement pas le jour. La ville et le diocèse ont pris la décision de conserver l'église Sainte-madeleine considérant certains experts que sa démolition aurait causé la perte regrettable d'un élément important du patrimoine nantais. Des travaux d'urgence vont être réalisés avant le lancement d'un véritable programme de restauration et de mise en valeur du bâtiment.\n\nSelon cet article, quelle décision a été prise ?",
+      "image_url": null,
+      "options": {
+        "A": "Bâtir une église identique dans le quartier",
+        "B": "Débuter le réaménagement du boulevard",
+        "C": "Entreprendre une rénovation du lieu",
+        "D": "Réhabiliter les logements sociaux existants"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 24,
+      "question_text": "L'insecte pourrait devenir une solution économique à notre appétit de protéines. Vous attrapez trois grillons déshydratés et les enfournez dans votre bouche : vous voilà mangeur d'insectes. Vous contribuez ainsi à la préservation des ressources. En effet, il faut 10 kg de céréales pour produire 1 kg de bœuf, contre seulement 9 kg pour obtenir 1 kg d'insectes. La demande mondiale en protéines va doubler, et les insectes sont riches en protéines. Depuis l'an dernier, la communauté européenne subventionne les projets de recherche dans ce secteur. Les grands groupes alimentaires s'y intéressent, mais attendent que les citoyens soient psychologiquement prêts.\n\nQu'apprend-on sur la production d'insectes ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est une réponse à des besoins alimentaires accrus",
+        "B": "Des recherches remettent en cause l'intérêt nutritif",
+        "C": "Elle s'avère moins rentable que les cultures de céréales",
+        "D": "Les citoyens exigent des garanties sanitaires"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Ces dernières années, les nouvelles versions de films à succès se sont multipliées, et ce mouvement ne semble pas près de s'arrêter, comme si l'industrie cinématographique ne parvenait plus à inventer de nouvelles histoires, de nouveaux concepts capables d'éveiller la curiosité d'un large public. Pourtant, de nouvelles idées, de nouvelles sensibilités existent bel et bien ; encore faut-il qu'elles trouvent un soutien financier pour voir le jour. Or, l'industrie cinématographique hésite à investir dans la nouveauté, et préfère se tourner vers les valeurs sûres des succès passés.\n\nQuelle constatation ce journaliste fait-il sur le cinéma contemporain ?",
+      "image_url": null,
+      "options": {
+        "A": "Les producteurs évitent de prendre des risques",
+        "B": "Les réalisateurs sont à la recherche d'idées neuves",
+        "C": "Les scénaristes font preuve d'une imagination limitée",
+        "D": "Les spectateurs privilégient les créations classiques"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Le droit à l'oubli sur Internet est fondamental. Aujourd'hui, Internet nous expose à des risques en mettant à la portée d'institutions ou d'entreprises des informations personnelles que nous avons oubliées ou que nous souhaiterions oublier. Or, l'oubli, autant que la mémoire, est essentiel à l'être humain pour être capable d'agir et de fonctionner dans le présent. Un spécialiste de la question propose une solution : si les gens souhaitent sauvegarder des informations les concernant, ils pourraient y attacher une date d'expiration. Les citoyens doivent pouvoir choisir eux-mêmes quelles informations personnelles seront conservées ou effacées. Cela ne doit pas relever du choix de grandes entreprises ou des gouvernements.\n\nPourquoi le droit à l'oubli sur Internet est-il important ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour aider à faire le deuil du passé",
+        "B": "Pour alléger le stockage des données",
+        "C": "Pour faire obstacle aux multinationales",
+        "D": "Pour rester maître de sa vie privée"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Une étude récente révèle que la concentration de déchets plastiques flottant à la surface du Pacifique nord a été multipliée par cent en quarante ans. Ce constat, émis par les pêcheurs en haute mers, est alarmant car cette pollution a des conséquences écologiques. La gigantesque plaque de déchets flottant sur l'océan Pacifique, épaisse par endroits de plusieurs dizaines de mètres, constitue un milieu favorable à la reproduction d'une espèce d'araignée d'eau. Cet insecte est en train de se multiplier dans le Pacifique nord. Si la densité des plastiques continue à augmenter, certaines espèces pourraient continuer à se multiplier, risquant de déséquilibrer l'écosystème du Pacifique.\n\nQuel danger représentent ces déchets ?",
+      "image_url": null,
+      "options": {
+        "A": "Un obstacle pour les bateaux de pêche",
+        "B": "Un réchauffement dramatique des eaux",
+        "C": "Un risque d'intoxication des populations du Pacifique",
+        "D": "Une diminution de la diversité de la faune océanique"
+      },
+      "correct_answer": "D"
+    },
+        {
+      "question_number": 28,
+      "question_text": "Les jeunes du Lycée Professionnel Hôtelier Paul-Valéry ont des idées :\n\nAfin de pallier la faiblesse des moyens de l'Éducation nationale pour financer leurs voyages d'étude, ils ne cessent de mobiliser les bonnes volontés à coups d'initiatives originales et efficaces. Après l'exemple donné par les terminales de restauration, qui proposent un repas « tout citron » pour financer un voyage d'étude à Barcelone, c'est au tour des élèves de seconde de battre le rappel. Ceux-ci bénéficieront des retombées d'un vide-greniers organisé par le Lions Club pour boucler le budget de leur voyage d'étude en Corse à la rentrée.\n\nQuel est l'objectif des élèves de seconde ?",
+      "image_url": null,
+      "options": {
+        "A": "Élaborer le budget de leur voyage à Barcelone",
+        "B": "Gagner de l'argent pour payer leur séjour",
+        "C": "Montrer aux autres classes leurs talents culinaires",
+        "D": "Soutenir le futur projet des élèves de terminale"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Les gens empilaient les objets dans les chariots de métal, avec frénésie. Ils avaient des visages sérieux, contractés, et leurs paupières battaient d'une façon anormalement lente. Les femmes tendaient les mains vers les étals. On aurait dit que les gens ne savaient plus ce qu'ils faisaient. Comment l'auraient-ils su ? Ce n'étaient pas eux qui saisissaient la marchandise. C'était la marchandise qui se collait d'elle-même à leurs mains, elle entrait directement dans les caddies. La nourriture n'était plus que des formes, et des couleurs : rouge, blanc, vert, orange. Les yeux avaient faim, faim de sphères et de pyramides, faim de plastiques lisses et de capsules de fer-blanc.\n\nQue peut-on apprendre sur les acheteurs dans cet extrait ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils donnent l'impression de vénérer les produits",
+        "B": "Ils ont l'air éblouis par le gigantisme des magasins",
+        "C": "Ils paraissent manipulés par une force supérieure",
+        "D": "Ils semblent perdus dans le labyrinthe des rayons"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Ne pas assez dormir\n\nPlusieurs nuits de suite perturbées, tout le monde s'en rend compte. Ce qui est moins visible, c'est la façon dont cela affecte notre santé. (...) Des scientifiques ont montré que le manque de sommeil modifiait l'intensité de l'activité de 700 gènes, parmi lesquels ceux liés au stress et à la lutte contre les maladies. Mais ils ne peuvent pas encore dire si ces modifications génétiques sont une réponse à court terme et sans danger à un sommeil de mauvaise qualité, un signe d'adaptation du corps à la privation de sommeil, ou un danger potentiel pour la santé.\n\nQu'est-ce que les scientifiques ont découvert concernant le manque de sommeil ?",
+      "image_url": null,
+      "options": {
+        "A": "La gestion du stress est difficile",
+        "B": "La santé est mise en péril",
+        "C": "Le corps est moins réactif",
+        "D": "Le système génétique est affecté"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Solitude, conflit avec les parents, difficultés scolaires... Les adolescents peuvent se confier sur des sites spécialisés où leur parole sera prise en compte. Fil Santé Jeunes a vu ses visites augmenter de 313% ces dernières années. De l'autre côté de l'écran, animateurs et psychologues s'efforcent de maintenir le contact et de prolonger la discussion. L'entreprise est délicate puisque les regards et les gestes ne peuvent être pris en compte par le professionnel. Le réconfort naît aussi, et peut-être avant tout, des autres internautes qui vivent une situation similaire.\n\nÀ quelle difficulté se heurtent les spécialistes ?",
+      "image_url": null,
+      "options": {
+        "A": "L'absence totale des signes visuels du langage",
+        "B": "L'opposition des familles à leurs interventions",
+        "C": "La nécessité de modérer le ton des échanges",
+        "D": "Les nombreuses remarques des participants"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Méthode originale, la psychologie narrative propose les clés d'un nouvel art de vivre pour renoncer définitivement aux comportements susceptibles de brider notre propension au bonheur !\n\nCette pratique, loin de vanter le bienfait de vaines chimères, repose sur prise de conscience: celle que le monde tel que je le pense n'est pas tel que je le vis. Le travestissement de la réalité est incessant. « Il y a d'un côté la réalité des faits, et de l'autre, ma représentation », explique Yves-Alexandre Thalmann. Avec notre cerveau, nous passons notre temps à organiser les liens de cause à effet de façon à ce que ça prenne une signification à nos yeux. Or, selon le psychologue, la manière dont nous appréhendons les choses détermine davantage notre qualité de vie que les événements eux-mêmes. À ce titre, nos représentations mentales ont donc la capacité de nous procurer une vie plus agréable.\n\nComment la perception des évènements permet-elle d'accéder au bonheur ?",
+      "image_url": null,
+      "options": {
+        "A": "Si on les prend en compte avec lucidité",
+        "B": "Si on les remodèle à travers l'imagination",
+        "C": "Si on modifie la façon dont on les perçoit",
+        "D": "Si on recherche leur signification profonde"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 33,
+      "question_text": "« Le fait du roi »\nUn roman d'A. Thonon\n\nC'est l'histoire d'un homme qui prend l'identité d'un autre, mort, en se glissant dans sa peau, dans sa vie, dans sa maison... Rien ne sert de raconter l'intrigue de ce roman tant elle est simple et sans surprise. L'écriture de l'auteur reste cependant toujours aussi piquante et agréable à lire. Le héros principal, quant à lui, est dépeint avec une certaine profondeur.\n\nSur quel point porte la critique négative faite à ce livre ?",
+      "image_url": null,
+      "options": {
+        "A": "La description du personnage",
+        "B": "La longueur du texte",
+        "C": "La qualité de l'écriture",
+        "D": "Le déroulement des évènements"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Monsieur et Madame Martin n'ont pas un emploi du temps également captivant. Quand Monsieur se rend au travail, Madame passe l'aspirateur. Quand il est au bureau, elle achète des surgelés au supermarché. Quand il se cale devant la télé, l'épouse modèle se met aux fourneaux. Une illustration exhumée d'un manuel des années 1950 ? Non, les images d'un exercice destiné à une classe de CP, visant à « comprendre la simultanéité » en étudiant les moments de la « journée d'une famille ». Quand Virginie Sassoon est tombée sur ce document ultra-stéréotypé dans le classeur de sa fille, cette maman est restée stupéfaite. « Cette fiche dévoile une forme de violence symbolique qui persiste dans notre société et qui relève, selon moi, de la responsabilité collective. »\n\nPourquoi Virginie Sassoon est-elle choquée par les exercices proposés dans la classe de sa fille ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils correspondent à des programmes scolaires obsolètes",
+        "B": "Ils méconnaissent l'existence des familles recomposées",
+        "C": "Ils présentent un partage sexiste des tâches dans le couple",
+        "D": "Ils se moquent du quotidien des personnes sans emploi"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Des chercheurs remettent en question l'idée largement répandue selon laquelle la langue que nous parlons influence notre façon de penser. Ils présentent une étude sur l'ordre des mots dans les phrases : Sujet, Verbe, Objet pour certaines langues et Sujet, Objet, Verbe pour d'autres. Quarante participants, locuteurs d'anglais, d'espagnol, de mandarin et de turc, ont d'abord décrit des séquences vidéo dans leur langue, puis en utilisant des gestes. Si les descriptions verbales différaient selon les langues dans l'ordre des mots, les descriptions faites avec les mains suivaient toutes le même ordre (sujet, objet, verbe), celui des langues des signes créées par des locuteurs sourds.\n\nQuel est le résultat de l'expérience présentée dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Les gestes révèleraient systématiquement la langue maternelle des locuteurs",
+        "B": "Il existerait un ordre universel de la pensée, indépendant de l'ordre linguistique",
+        "C": "Il y aurait autant de façons de penser que de structures de langue différentes",
+        "D": "Les structures des langues seraient dépendantes de notre expérience du monde"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Sexistes, les jeux vidéo ? Peut-être bien que oui, peut-être bien que non. En tout cas, à parcourir les allées de la Paris Games Week, l'œil avisé aura lui-même bien du mal à trouver un personnage principal féminin dans un jeu vidéo. Il y a bien la célébrissime Lara Croft du jeu Tomb Raider, aux attributs particulièrement imposants, conçue presque sur mesure pour plaire aux regards masculins. Pour le reste, circulez, il n'y a presque rien d'autre à voir : si l'on balaye d'un coup de manette, au mieux ce sont des princesses à sauver, au pire, des call-girls de mafieux. Pourtant, l'industrie du jeu vidéo a pris conscience, ces dernières années, du potentiel du marché des joueuses.\n\nQuel constat est dressé sur les jeux vidéo ?",
+      "image_url": null,
+      "options": {
+        "A": "La quasi absence d'héroïnes",
+        "B": "L'appel constant a la violence",
+        "C": "L'atténuation des clichés",
+        "D": "L'uniformité des scénarios"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Les technologies de l'information et de la communication (TIC) sont de plus en plus utilisées et adoptées de façon variable par les établissements d'enseignement supérieur à travers le monde. Les TIC apparaissent autant comme une prestation en présence sur le campus que comme un enseignement ouvert et à distance. Les actions de l'UNESCO se concentrent sur l'aide aux États membres afin de développer des politiques durables dans le domaine des TIC dans l'enseignement supérieur. Les plans d'action et les investissements positifs en matière de TIC sont clairement bénéfiques pour les institutions d'enseignement supérieur (IES), même si les TIC n'ont pas remplacé les modes d'apprentissage ou d'enseignement classiques tels que les salles de classe.\n\nPourquoi l'UNESCO est-elle active dans le domaine des TIC ?",
+      "image_url": null,
+      "options": {
+        "A": "Parce qu'elle finance les programmes de développement des TIC",
+        "B": "Parce qu'elle organise des débats entre États membres sur les TIC",
+        "C": "Parce qu'elle sensibilise les établissements d'enseignement aux TIC",
+        "D": "Parce qu'elle habilite des formateurs à l'utilisation des TIC"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Travailler avec son mari ou son petit ami, sa sœur ou sa mère n'est pas une punition pour tout le monde ! Pour certains, c'est même la condition du bien être professionnel. Si cette idée évoquait jadis une petite entreprise conservatrice, transmise de père en fils, aujourd'hui, travailler en famille relève de réalités très différentes. Critères retenus: confiance, valeurs et goûts communs; et surtout, besoin de réaliser ses projets plutôt que ceux des autres. Depuis toujours, la majorité des entreprises en France, toutes tailles confondues, sont familiales et de plus en plus de créations sont le fait de femmes. Ce sont d'ailleurs des entreprises où l'on vit mieux et qui durent plus longtemps que les autres. Aujourd'hui la création d'une entreprise est plus souvent motivée par le désir d'assurer un travail à ses enfants ou d'échapper à des structures jugées déshumanisation.\n\nQue permet la structure d'entreprise présentée ?",
+      "image_url": null,
+      "options": {
+        "A": "De concrétiser des objectifs personnels",
+        "B": "De fonctionner dans un cadre innovant",
+        "C": "De limiter la répartition des gains",
+        "D": "De renforcer les liens entre les générations"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Le contrôle, en toute matière, aboutit à pervertir l'action. Dès qu'une action est soumise à un contrôle, le but profond de celui qui agit n'est plus l'action, mais la prévision du contrôle, la mise en échec des moyens de contrôle. Le contrôle des études n'est qu'un cas particulier et une démonstration éclatante de cette observation très générale. Le diplôme donne à la société un fantôme de garantie, et aux diplômés des fantômes de droits. Le diplômé passe officiellement pour détenir un savoir: il garde toute sa vie ce brevet d'une science momentanée. C'est pour accéder au diplôme qu'on a vu se substituer à la lecture des auteurs, l'usage des résumés, des manuels, des recueils de questions et de réponses toutes faites et autres abominations.\n\nQue soutient l'auteur de ce texte à propos du contrôle ?",
+      "image_url": null,
+      "options": {
+        "A": "Il contribue à améliorer les méthodes d'apprentissage",
+        "B": "Il est indispensable pour accéder au monde professionnel",
+        "C": "Il permet de certifier les compétences réelles d'un candidat",
+        "D": "Il perturbe le processus d'acquisition des connaissances"
+      },
+      "correct_answer": "D"
+    }
+  ]
+}

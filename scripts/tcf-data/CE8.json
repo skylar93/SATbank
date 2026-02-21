@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE8",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "INFIRMERIE:\n\nJe suis en consultation. Revenez dans quelques minutes.\n\nQue faire pour rencontrer l'infirmière ?",
+      "image_url": null,
+      "options": {
+        "A": "Frapper et entrer",
+        "B": "Prendre rendez-vous",
+        "C": "Revenir plus tard",
+        "D": "Téléphoner"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 2,
+      "question_text": "ATTENTION!\n\nDu 10 avril au 15 septembre, les ascenseurs de votre station de métro sont en réparation. Pour faciliter vos déplacements, les installations changent. Pendant les travaux, prenez l'escalier à droite des guichets.\n\nQu'est-ce qui reste fermé entre le 10 avril et le 15 septembre ?",
+      "image_url": null,
+      "options": {
+        "A": "L'escalier",
+        "B": "La station de métro",
+        "C": "Les ascenseurs",
+        "D": "Les guichets"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Vie pratique\n\nConsommez cinq fruits et légumes par jour, limitez la quantité de viande rouge, de beurre, de sucre et de sel et buvez au moins huit verres d'eau par jour ! Vous ferez le plein d'énergie !\n\nQue permet le conseil de « Vie pratique » ?",
+      "image_url": null,
+      "options": {
+        "A": "De faire des économies",
+        "B": "De pratiquer un sport",
+        "C": "De rester en bonne santé",
+        "D": "De trouver des produits bio"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Vous souhaitez améliorer votre niveau en langue étrangère ?\n\nLe Conseil de l'Europe offre à ses salariés des formations dans les langues des pays de l'Union européenne. Inscrivez-vous dès maintenant pour les cours d'italien et d'allemand.\n\nQue propose le Conseil de l'Europe à ses employés ?",
+      "image_url": null,
+      "options": {
+        "A": "Des cours gratuits",
+        "B": "Des postes à l'étranger",
+        "C": "Des stages en Italie",
+        "D": "Des voyages en Europe"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 5,
+      "question_text": "EXAMEN DE BIOLOGIE À 15h30 en salle 311.\n\nQuelle information manque au sujet de cet examen ?",
+      "image_url": null,
+      "options": {
+        "A": "La date",
+        "B": "La matière",
+        "C": "Le lieu",
+        "D": "L'heure"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Stéphane,\n\nTu peux apporter le dessert jeudi soir ? Claude s'occupe des entrées, Dominique des boissons et moi du plat principal.\n\nEn invités-surprise, d'autres copains de notre terminale S3.\n\nC'est super de se retrouver tous, dix ans après le lycée.\n\nMaryse\n\nQu'est-ce que Maryse organise ?",
+      "image_url": null,
+      "options": {
+        "A": "Un concours de cuisine entre amis",
+        "B": "Un dîner entre anciens élèves",
+        "C": "Un repas avec toute sa famille",
+        "D": "Une fête de fin d'année scolaire"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Anne, gérante d'Arina, une nouvelle boutique spécialisée dans la décoration, vous attend pour vous proposer un large choix de produits et de livres spécialisés.\n\nDe quoi parle l'annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "De la fermeture d'un magasin",
+        "B": "De l'anniversaire d'un magasin",
+        "C": "De la transformation d'un magasin",
+        "D": "De l'ouverture d'un magasin"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Noël approche !\n\nPour que vos colis arrivent avant les fêtes. Nous vous proposons de les transporter en mode express. Renseignez-vous auprès de nos conseillers ou rendez-vous directement au guichet.\n\nÀ quoi sert ce service ?",
+      "image_url": null,
+      "options": {
+        "A": "À acheter des cadeaux",
+        "B": "À envoyer des paquets",
+        "C": "À louer des camions",
+        "D": "À réserver des billets"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Nous célébrons nos 40 ans ce soir : nous essaierons de ne pas mettre la musique trop fort, sinon n'hésitez pas et venez nous voir ! Les invités partiront vers 2 h du matin.\n\nMerci\n\nAnne et Patrick\n\nPour quelle raison Anne et Patrick ont-ils écrit ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour inviter des amis à leur anniversaire",
+        "B": "Pour organiser une réunion entre locataires",
+        "C": "Pour prévenir leurs voisins de leur fête",
+        "D": "Pour trouver des musiciens pour la soirée"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Lundi 20 juin\n\nMme Rico sera exceptionnellement absente de son bureau aujourd'hui, lundi. Pour prendre rendez-vous, vous pourrez la contacter à partir de demain, 14h.\n\nMerci de votre compréhension\n\nQuand Madame Rico sera-t-elle disponible ?",
+      "image_url": null,
+      "options": {
+        "A": "Dans la journée",
+        "B": "Le lendemain",
+        "C": "Le soir-même",
+        "D": "Vendredi matin"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Cher confrère,\n\nCi-joint notre catalogue de boissons pour cette année. En espérant que vous pourrez satisfaire votre clientèle, nous vous remercions pour vos futurs achats. Avec nos salutations les plus cordiales.\n\nEntreprise Labayle et Chandon\n\nQuel est l'objet de ce courrier ?",
+      "image_url": null,
+      "options": {
+        "A": "Demander des informations sur des produits",
+        "B": "Passer une commande de produits",
+        "C": "Présenter de nouveaux produits",
+        "D": "Proposer une dégustation de produits"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Fini les souvenirs de voyages trop flous. Pour s'entrainer, direction Lyon pour un weekend. Sur place, une jeune agence spécialisée vous propose un stage pour découvrir la ville autrement. L'objectif : sur une journée, travailler la photographie et découvrir en même temps avec un guide les monuments historiques de la ville. Vous profitez toute la journée des conseils d'un professionnel qui vous montre les endroits secrets de Lyon. Il vous explique comment utiliser la lumière naturelle.\n\nQue propose cette agence ?",
+      "image_url": null,
+      "options": {
+        "A": "D'apprendre à s'orienter dans la ville",
+        "B": "De se former au métier de guide",
+        "C": "De visiter des expositions photo",
+        "D": "De voir Lyon d'une façon différente"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 13,
+      "question_text": "CHERS CLIENTS,\n\nVotre supermarché vous accueille depuis 60 ans. Le propriétaire et son équipe vous invitent à une semaine de festivités. À partir du 10 août, plus de 1000 offres exceptionnelles et des réductions jusqu'à 50% sur les articles vous attendent.\n\nQu'est-ce qu'on fête ?",
+      "image_url": null,
+      "options": {
+        "A": "L'anniversaire d'un magasin",
+        "B": "L'augmentation des ventes",
+        "C": "L'ouverture d'un commerce",
+        "D": "Le début des soldes d'été"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Fils et petit-fils de vendeurs de fruits et légumes, Anthony Palou raconte les moments drôles et tendres de son enfance à Quimper, en Bretagne, dans les années 1970. Retour sur les riches heures du petit commerce et sur sa destruction par les supermarchés. Poursuivi par les banquiers, le père de l'auteur devra fermer... Le deuxième roman de l'auteur de « Camille » confirme un réel talent.\n\nQuel est l'objectif de cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Annoncer la sortie d'un roman",
+        "B": "Défendre les petits commerces",
+        "C": "Donner la parole à des enfants",
+        "D": "Faire connaître la ville de Quimper"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 15,
+      "question_text": "On fait des affaires ?\n\nC'est le titre de l'émission que notre radio vous propose d'écouter pour découvrir la vie d'une entreprise française. Apprenez à parler la langue des affaires et à comprendre les comportements et la culture du travail en France.\n\nQue propose cette émission ?",
+      "image_url": null,
+      "options": {
+        "A": "Une familiarisation avec les codes socio-professionnels français",
+        "B": "Une formation à de nouvelles méthodes technico-commerciales",
+        "C": "Une préparation pour travailler dans une entreprise à l'étranger",
+        "D": "Une présentation des emplois dans des sociétés internationales"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 16,
+      "question_text": "BONNE IDÉE\n\nNuméro 1 français de badminton, Brice Leverdez a lancé lundi une opération « financement de participatif » pour sa préparation aux Jeux Olympiques. Une manière de récolter de l'argent supplémentaire dans un sport peu sponsorisé. « C'est un moyen pour les gens de faire partie du projet. Si je rapporte une médaille des prochains JO, ils pourront dire qu'ils ont aidé Brice Leverdez à y arriver », explique-t-il.\n\nQue peuvent espérer les donateurs ?",
+      "image_url": null,
+      "options": {
+        "A": "Un rendez-vous avec le sportif",
+        "B": "Une place offerte pour les JO",
+        "C": "Une séance de badminton",
+        "D": "Une victoire de Brice Leverdez"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Courir les 42km du marathon de Paris ne s'improvise pas. C'est une épreuve qui nécessite un entraînement régulier et la capacité de surmonter le « mur de douleur » que rencontrent la plupart des marathoniens entre le 32e et le 37e kilomètre.\n\n« Pour avoir une chance de terminer l'épreuve, il faut courir depuis au moins un an et s'entraîner, durant les dix dernières semaines, trois à quatre heures par semaine, réparties en plusieurs séances », insiste un organisateur de stages de préparation.\n\nQuel est le conseil de cet organisateur avant de participer au marathon ?",
+      "image_url": null,
+      "options": {
+        "A": "Avoir comme seul objectif de terminer l'épreuve",
+        "B": "Pratiquer la course à pied plusieurs fois par semaine",
+        "C": "Prendre régulièrement des médicaments anti-douleur",
+        "D": "Se donner de longues périodes de récupération"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Le marché des saveurs est ouvert : venez y découvrir le savoir-faire de notre région poulets rôtis, viandes grillées, charcuteries, fromages frais, miel, confitures, tartes, gâteaux...\n\nVous composerez votre menu et dégusterez nos petits plats sous le chapiteau de la buvette.\n\nVous vous laisserez également séduire par nos artisans avec des peintres, des créateurs de bijoux, des couturiers, des botanistes, tous du pays et vous serez peut être tentés par des jouets en bois, un tableau romantique ou un bouquet de fleurs séchées.\n\nQue peut-on acheter au marché des saveurs ?",
+      "image_url": null,
+      "options": {
+        "A": "Des objets d'art",
+        "B": "Des spécialités locales",
+        "C": "Des produits écologiques",
+        "D": "Des marchandises exotiques"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Les repas servis dans les avions de ligne ont toujours été tristement réputés pour leur fadeur. Mais il semblerait que les chefs n'y soient pour rien. D'après une étude, les nuisances sonores importantes peuvent en effet réduire la sensibilité des palais, rendant la nourriture peu savoureuse. Le vrombissement des réacteurs expliquerait le peu d'enthousiasme des passagers pour les plateaux servis à bord. Les chercheurs ont aussi découvert que des sons agréables pouvaient faire mieux apprécier les mets.\n\nQuelle est la conclusion de cette étude ?",
+      "image_url": null,
+      "options": {
+        "A": "L'anxiété en avion diminue la sensation de faim",
+        "B": "La qualité de la nourriture se détériore en altitude",
+        "C": "Le bruit altère le sens du goût des passagers",
+        "D": "Les plats proposés en vol manquent de saveur"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Paris, le 13 mars\n\nMadame, Monsieur,\n\nCe courrier fait suite à mon achat d'un téléphone le 5 mars dernier. Après réflexion, je souhaiterais le rendre car l'ai finalement décidé d'acheter un appareil avec messagerie intégrée.\n\nAinsi, je vous prie de bien vouloir me restituer la somme de 80 euros, correspondant à la somme versée le 5 mars par chèque.\n\nDans l'attente de votre réponse, je vous transmets, Madame, Monsieur, mes meilleures salutations.\n\nAndré Cellier\n\nQuel est l'objet de la lettre de monsieur Cellier ?",
+      "image_url": null,
+      "options": {
+        "A": "Le remboursement de son article",
+        "B": "L'échange de son téléphone",
+        "C": "L'envoi de son téléphone par la poste",
+        "D": "Une réclamation sur son achat"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 21,
+      "question_text": "Pendant un an, la journaliste allemande Greta Taubert a décidé de quitter la société de consommation sans quitter son appartement berlinois. Pendant cette expérience, elle a bu, mangé, s'est habillée sans payer elle a échangé jupes et pantalons avec ses voisines, planté des légumes dans un jardin collectif. Pour ses vacances, elle est allée chez des amis en faisant de l'auto-stop. « Aujourd'hui, je suis contente de ne plus vivre aussi radicalement, c'était difficile mais je cherche à intégrer dans mon quotidien ce que j'ai appris », explique-t-elle.\n\nQuel est le constat de Greta Taubert après cette expérience ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est possible à la campagne",
+        "B": "C'est possible avec du temps",
+        "C": "C'est possible mais pénible",
+        "D": "C'est possible pour tous"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 22,
+      "question_text": "L'année dernière, une étude publiée par la revue Nature faisait grand bruit. Menée par une équipe de l'université de Zurich, l'étude montrait qu'une odeur d'ocytocine diffusée lors d'un entretien avec un banquier pousse les gens à lui confier leur argent !\n\nL'expérience portait sur 56 personnes ayant accepté de participer à un jeu d'argent. On leur remettait une somme d'argent, et ils devaient décider s'ils souhaitaient ou non la confier à un banquier après un entretien avec lui.\n\nAvant la discussion, la moitié des participants avaient inhalé un spray contenant de l'ocytocine, une hormone connue pour jouer un rôle dans l'établissement des relations interpersonnelles.\n\nQuel est le but de cette expérience ?",
+      "image_url": null,
+      "options": {
+        "A": "Apprendre à gérer une entrevue importante avec un banquier",
+        "B": "Déterminer le lien, positif ou non, que les gens ont avec l'argent",
+        "C": "Identifier les conditions et facteurs d'addiction aux jeux de hasard",
+        "D": "Montrer l'importance de la chimie dans les rapports humains"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Éducation numérique\n\nIl n'y a presque plus aujourd'hui de manuel scolaire qui paraisse sans avoir une double traduction, numérique et en ligne. C'est devenu le standard de la production au terme d'une mutation très rapide. Mais cependant, nous restons en proximité forte avec le manuel classique. De nouvelles applications qui seraient déconnectées du livre papier ne nous paraissent pas encore à ce stade conformes à notre mission, ni répondre aux attentes de la majorité des enseignants. En outre, cela ne correspond pas à l'équipement de la très grande majorité des établissements. Autrement dit, les conditions d'un changement d'ensemble ne sont pas réunies.\n\nM. Huet, éditeur de manuels scolaires\n\nQuelle est la position de cet éditeur de manuels sur la croissance du support numérique ?",
+      "image_url": null,
+      "options": {
+        "A": "Il considère que l'ère du support papier est définitivement terminée",
+        "B": "Il estime qu'il reste du travail à faire pour mieux préparer cette évolution",
+        "C": "Il juge indispensable de n'utiliser que les supports électroniques",
+        "D": "Il pense qu'il faut privilégier le contact des élèves avec l'outil internet"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 24,
+      "question_text": "On réserve trop facilement le covoiturage aux étudiants sans un sou. Les clichés sont tenaces. Pourtant, le temps de la petite annonce papier accrochée près de la machine à café est bel et bien terminé, les nouveaux moyens de communication ont changé les choses. L'organisation d'un trajet entre plusieurs personnes qui se rendent dans la même direction est devenue si simple et si efficace avec les sites spécialisés que le covoiturage est en train d'élargir son public et de gagner son statut de mode de transport à part entière.\n\nQuel développement connaît le covoiturage ?",
+      "image_url": null,
+      "options": {
+        "A": "Il devient la solution idéale des voyages organisés à la dernière minute",
+        "B": "Il est accessible à un nombre croissant d'utilisateurs grâce à Internet",
+        "C": "Il occupe une place grandissante dans les petites annonces des journaux",
+        "D": "Il s'impose comme le moyen de déplacement à la mode chez les jeunes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Le temps des cerises\nPièce de théâtre de Niels Arestrup\n\nUn vieil homme, dérangé dans sa vieille maison par une jeune femme disputes, goût de la vie retrouvé, moments de tendresse... La comédienne Cécile de France joue avec autant de talent qu'au cinéma. Le comédien Eddy Mitchell, dans le rôle du vieux peintre, manque de noirceur. Dommage que le metteur en scène n'interprète pas lui-même le personnage principal. On passe un bon moment mais pas un grand moment.\n\nSur quel aspect de la pièce porte la critique ?",
+      "image_url": null,
+      "options": {
+        "A": "La mise en scène",
+        "B": "La qualité des décors",
+        "C": "Le jeu des interprètes",
+        "D": "L'intérêt de l'intrigue"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Les auteurs européens ont persuadé la maison d'édition Livresque d'aller plus loin que la simple numérisation des livres universitaires : au lieu de ne scanner des livres qu'à des fins de recherche, les écrivains ont demandé à ce qu'ils soient remis dans le circuit commercial. Grâce à cet accord, ces millions de livres épuisés vont reprendre vie. Les bénéfices générés par la publicité et les droits de licence iront en partie à Livresque, mais la grande majorité de l'argent gagné par cette mise à disposition des ouvrages sera directement remise aux auteurs puisqu'ils toucheront leurs droits.\n\nD'après le texte, quel avantage les auteurs tireront-ils de la numérisation des livres ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle augmentera le nombre de lecteurs",
+        "B": "Elle développera la visibilité des œuvres",
+        "C": "Elle diminuera le coût des ouvrages",
+        "D": "Elle entraînera un gain financier"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Depuis plusieurs années, Thierry Marx, un grand chef français, intervient pour donner des cours de cuisine en prison. Faire découvrir à ce public, contraint de vivre en milieu fermé, qu'une profession, quelle qu'elle soit, peut être épanouissante est une tâche qui le passionne et nécessite, très naturellement, une grande énergie. Le désir de rallumer cette lueur d'espoir, de montrer qu'après, il peut y avoir une réinsertion réussie et que chacun la porte en lui, est un moteur pour relever ce défi.\n\nPourquoi Thierry Marx intervient-il dans les prisons ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour améliorer les méthodes de travail de la cantine",
+        "B": "Pour encourager la création de formations professionnelles",
+        "C": "Pour faire naître l'envie de s'investir dans un métier",
+        "D": "Pour sensibiliser le grand public à la réalité de la vie carcérale"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 28,
+      "question_text": "En rendant accessible à tout moment une multitude d'informations, Internet modifie profondément notre relation à la connaissance. Il serait pourtant tout à fait illusoire d'imaginer que ce qui est accessible sur la Toile n'a pas besoin d'être appris, sous prétexte de sa disponibilité permanente, car posséder tous les livres du monde, tout comme pouvoir accéder à tous les sites du monde, ne se substitue pas à la connaissance. Avoir accès par la Toile aux mêmes informations ne compense en rien l'absence d'apprentissage.\n\nD'après l'article, de quelle manière Internet agit-il sur nous ?",
+      "image_url": null,
+      "options": {
+        "A": "Il change notre regard sur les livres",
+        "B": "Il facilite la mémorisation de nouveaux concepts",
+        "C": "Il revalorise la culture transmise par l'école",
+        "D": "Il transforme notre rapport au savoir"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Aux débuts d'Internet, je me souviens avoir lu, éberluée, dans un magazine féminin : « Mon mari était absent, il passait tout son temps sur le chat ». J'étais en train de tenter de visualiser ce triste état de fait — imaginant l'homme assis sur un félin docile — lorsque je compris ma méprise : j'avais confondu le chat, l'animal, avec le chat, la discussion en ligne. Depuis ce jour, aucun progrès n'a été fait pour dissiper cette terrible équivoque linguistique, alors même que l'usage informatique du mot souris continue d'ajouter à la confusion. Le bon sens voudrait que la phonétique l'emporte et que l'on écrive tchat. Mais au lieu de cette solution évidente, le Petit Larousse a préféré, en 2004, introduire dans le dictionnaire le monstrueux mot-valise : clavardage.\n\nQu'est-ce qui dérange l'auteur de ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "L'abus d'anglicismes en langage informatique",
+        "B": "L'ambiguïté du néologisme « chat » à l'écrit",
+        "C": "Le laxisme orthographique dans les forums",
+        "D": "Le manque d'imagination des lexicologues"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Elle s'appelait Sarah\n\nLe cinéaste n'arrive pas à éviter mais le pouvait-il ? l'artifice du scénario: pingpong incessant et artificiel entre le passé et le présent. Néanmoins, chaque fois qu'il change d'époque, le cinéaste repart à la recherche de l'émotion perdue qu'il retrouve, d'ailleurs, à force de pudeur et de retenue. Aucun débordement lacrymal. Les acteurs restent jusqu'au bout étonnamment sobres. Le film est un mélo, un vrai, puisqu'il repose sur une faute dont chacun ne peut ou ne veut se défaire. C'est aussi un « film du samedi soir », avec ses drames, ses sacrifices, parfois même ses outrances... Bref, on est dans le cinéma humaniste à l'ancienne (et, peut-être, éternel). À la frontière exacte, en tout cas, entre bons et grands sentiments...\n\nSur quel élément du film porte la réserve du critique ?",
+      "image_url": null,
+      "options": {
+        "A": "L'atmosphère lourde et pathétique",
+        "B": "L'utilisation abusive de flashbacks",
+        "C": "La caricature du film de genre",
+        "D": "Le jeu sans conviction des comédiens"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 31,
+      "question_text": "De: Pascale@radioair.fr\nObjet : Remerciements\n\nChers tous,\n\nAmis, techniciens, auditeurs, animateurs, président de notre radio, vous qui avez toujours été là pour Des Airs, je voulais dire un très grand merci ! je le répéterai le 1er juillet pour la dernière fois sur les ondes à l'occasion de la 200° : notre radio a été pour moi un merveilleux espace de liberté Laissez-moi remercier encore notre président qui continue à la faire vivre. Quel bonheur de vous avoir eu tous autour de moi samedi !\n\nMerci encore,\n\nPascale,\n\nQu'est-ce qu'ils ont tous fêté samedi ?",
+      "image_url": null,
+      "options": {
+        "A": "L'anniversaire d'une radio",
+        "B": "La 200ème édition d'une émission",
+        "C": "Le départ d'une animatrice",
+        "D": "Le travail d'un directeur"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 32,
+      "question_text": "La première difficulté, qu'il avait en réalité sous-estimée, fut d'atteindre l'extrémité du trottoir, c'est-à-dire de franchir la masse mouvante et compacte des hommes et des femmes marchant devant lui — une frange large de deux ou trois mètres, à la texture dense, mobile, paisiblement hostile.\n\nIl eut beau, dans un premier temps, prononcer à haute voix de nombreuses paroles d'excuse, accompagner ses mots de gestes modestes pour indiquer qu'il voulait simplement passer, se montrer aussi poli que possible — voire davantage —, personne ne s'arrêta ni ne se poussa pour lui permettre de se faufiler entre les corps.\n\nLes hommes et les femmes qui avançaient ne le regardaient pas, et beaucoup portaient des écouteurs sur les oreilles.\n\nDans quelle situation se trouve le personnage principal ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a du mal à se déplacer dans la foule",
+        "B": "Il est emporté par une foule pressée",
+        "C": "Il est paralysé par l'hostilité de la foule",
+        "D": "Il imagine les répliques impolies de la foule"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Mais qu'est-ce qu'être autonome ?\n\nL'autonomie a été un idéal à la fin des années 70 et, depuis, elle est devenue une norme. Mais qu'est-ce qu'être autonome ? Est-ce puiser en soi-même les forces pour agir ? Cette représentation d'un sujet en relation avec lui-même est contestée par certains penseurs, pour qui agir par soi-même ne signifie pas s'inventer, mais être capable de se diriger seul. Autrement dit, on peut être autonome en appliquant des règles que l'on a apprises, et dont l'origine ne se trouve donc pas en nous, mais dans le contexte social dans lequel nous évoluons. Ces règles apparaissent alors comme des capacités, et non plus comme une limitation des possibilités d'action.\n\nQu'est-ce qu'être autonome, selon ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "Devenir indifférent aux autres",
+        "B": "Disposer de ressources intérieures",
+        "C": "Exploiter les compétences acquises",
+        "D": "S'éloigner de la vie en société"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Monsieur et Madame Martin n'ont pas un emploi du temps également captivant. Quand Monsieur se rend au travail, Madame manie l'aspirateur. Quand il est au bureau, elle achète des surgelés au supermarché. Quand il se cale devant la télé, l'épouse modèle se colle aux fourneaux. Une illustration exhumée d'un manuel des années 1950 ? Non, les images d'un exercice pour une classe de CP afin de « comprendre la simultanéité » en étudiant les moments de la « journée d'une famille ». Quand Virginie Sassoon est tombée sur ce document ultra-stéréotypé dans le classeur de sa fille, cette maman est tombée des nues. « Cette fiche dévoile une forme de violence symbolique qui persiste dans notre société et qui relève, selon moi, de la responsabilité collective. »\n\nPourquoi Virginie Sassoon est-elle choquée par les exercices proposés dans la classe de sa fille ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils correspondent à des programmes scolaires obsolètes",
+        "B": "Ils méconnaissent l'existence des familles recomposées",
+        "C": "Ils présentent un partage sexiste des tâches dans le couple",
+        "D": "Ils se moquent du quotidien des personnes sans emploi"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Ceux qui l'ont vu cet été aux Francofolies n'en sont pas revenus. Trente ans après ses débuts, le chanteur Joseph Many a subjugué l'assistance. Il lui a fallu du temps pour se convaincre que monter sur scène pour y pousser la chansonnette était encore possible à son âge. Les ritournelles des années 1970 l'avaient propulsé, à l'époque, sur le devant de la scène, avec l'image d'un artiste terriblement proche de la jeunesse d'alors. Puis sa brillante carrière d'écrivain l'avait convaincu de se consacrer à l'écriture, jusqu'à ce que l'inspiration musicale revienne. La preuve en est son nouvel album : une ode à la vie, à l'amour, aux femmes. Les atmosphères y sont délicieuses. Au fil des ballades, on redevient, pour quelques minutes, adolescent.\n\nPourquoi Joseph Many a-t-il tardé à revenir sur scène ?",
+      "image_url": null,
+      "options": {
+        "A": "Il se sentait trop vieux pour les tournées",
+        "B": "Il voulait fuir son image d'idole des jeunes",
+        "C": "Le public préférait l'écrivain au chanteur",
+        "D": "Ses chansons étaient passées de mode"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 36,
+      "question_text": "La bioéthique fait l'objet d'une polémique qui confronte deux écoles\n\nPour la première, composée de chercheurs et de rationalistes, le progrès scientifique ne saurait être limité. La recherche entrainera l'éradication des maladies génétiques et permettra même de les prévoir. On en viendra à un eugénisme contrôlé qui améliorera l'espèce humaine et les dépenses de santé publique seront allégées. La seconde école, des philosophes ou des ecclésiastiques, affirme ses craintes en ce qui concerne la pratique d'un eugénisme scientifique : il permettra la sélection efficace des embryons et ouvrira de plus en plus largement ses critères de choix à des exigences non pathologiques. Pour eux, il est impossible de déterminer les tares inconciliables avec l'humain, puisque certains individus en ont fait l'origine même de leur génie.\n\nSur quoi portent les réserves des partisans de la seconde école ?",
+      "image_url": null,
+      "options": {
+        "A": "Le coût social élevé de prise en charge des maladies génétiques",
+        "B": "Le développement de traitements curatifs de pathologies génétiques",
+        "C": "Le mode de financement de la recherche génétique fondamentale",
+        "D": "Les dérives induites par l'amélioration du patrimoine génétique"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Mozart est le compositeur le plus joué, le plus aimé et le plus exploité. Ainsi, en 1993, la psychologue américaine Frances Raucher annonçait que l'écoute de la Sonate pour deux pianos en ré majeur développait l'intelligence. En effet, après avoir écouté ce morceau, 36 étudiants avaient obtenu de meilleurs résultats à un test de localisation spatiale. L'étude eut un retentissement fracassant. On examina la teneur en haute fréquence de la sonate. On la fit écouter à des rats de laboratoire avant de les perdre dans un labyrinthe. On évoqua l'influence des gènes. En 1999, une nouvelle étude venait contredire les conclusions de Frances Raucher.\n\nÀ quelle conclusion est arrivée Frances Raucher concernant l'écoute de la sonate de Mozart ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle a un effet négligeable sur l'intellect",
+        "B": "Elle accroît la capacité de concentration",
+        "C": "Elle facilite le repérage dans l'espace",
+        "D": "Elle perturbe le raisonnement logique"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 38,
+      "question_text": "PRÉVOIR LE TEMPS\n\nL'énorme masse de données météorologiques collectées tous les jours par les satellites est traitée par les plus gros ordinateurs du monde. Le résultat de ces calculs est fourni sous forme de cartes des vents, des pluies ou des températures. Ces cartes peuvent être animées par l'ordinateur, ce qui donne l'impression de voir se dérouler en accéléré les mouvements de l'atmosphère.\n\nLes ordinateurs font des calculs que le météorologue doit compléter. Au vu des informations, il prépare un scénario sur le temps le plus probable dans un, deux ou trois, voire dix jours dans certains centres.\n\nEn quoi consiste la profession décrite ?",
+      "image_url": null,
+      "options": {
+        "A": "Concevoir des prévisions à court terme",
+        "B": "Élaborer des programmes de calcul",
+        "C": "Finaliser des animations visuelles",
+        "D": "Synthétiser les informations des satellites"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Panache et arrogance, élégance et futilité, galanterie et gauloiserie : s'il existe, et à condition que cette notion ait encore un sens à l'ère de la mondialisation, l'esprit français tire son essence particulière du fragile équilibre entre ces oppositions. Amateur de grands principes, de coups de sang et de bons mots, c'est l'esprit français. Quoi que nous en disions il nous obsède. Que nous exaltions le génie national ou l'exception culturelle, les racines ou l'universel, le particularisme local ou l'intérêt général, il ne s'agit toujours, au fond, que de lui.\n\nLa mondialisation va-t-elle le dissoudre, et nous renvoyer au triste rang de pays ordinaire ?\n\nSelon l'auteur, qu'est-ce que l'esprit français ?",
+      "image_url": null,
+      "options": {
+        "A": "Des attitudes contradictoires forgeant une identité",
+        "B": "Un égocentrisme désuet au temps de la mondialisation",
+        "C": "Un ensemble de valeurs partagées par une élite",
+        "D": "Une aptitude à l'ouverture qui tend à disparaître"
+      },
+      "correct_answer": "A"
+    }
+  ]
+}

@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE11",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "SERVICE DES VISAS\nOuvert du lundi au vendredi De 8 h à 13 h\n\nQuand pouvez-vous demander un visa ?",
+      "image_url": null,
+      "options": {
+        "A": "Le jeudi soir",
+        "B": "Le mardi matin",
+        "C": "Le mercredi après-midi",
+        "D": "Le samedi midi"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Lucas,\n\nEst-ce que tu viens voir avec moi le dernier film de Doillon, lundi à 20 h 00 ? La place est à quatre euros seulement !\n\nJérémy\n\nQuelle information Jérémy donne-t-il dans ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "La durée du spectacle",
+        "B": "Le nom du cinéma",
+        "C": "Le prix du billet",
+        "D": "Le titre du film"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Vie pratique\n\nConsommez cinq fruits et légumes par jour, limitez la quantité de viande rouge, de beurre, de sucre et de sel et buvez au moins huit verres d'eau par jour ! Vous ferez le plein d'énergie !\n\nQue permet le conseil de « Vie pratique » ?",
+      "image_url": null,
+      "options": {
+        "A": "De faire des économies",
+        "B": "De pratiquer un sport",
+        "C": "De rester en bonne santé",
+        "D": "De trouver des produits bio"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Prière de n'emporter ni les draps de bain, ni les objets appartenant au bar de la chambre. Nous vous remercions de votre compréhension.\n\nLa direction de l'hôtel\n\nÀ qui est destinée cette annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Aux clients de l'hôtel",
+        "B": "Au service de nettoyage",
+        "C": "Au directeur de l'hôtel",
+        "D": "Aux serveurs du bar"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Prière de ne pas toucher à la photocopieuse\n\nLe réparateur arrive demain à la première heure. En attendant, donnez vos documents à ma secrétaire qui les photocopiera au bureau de la comptable.\n\nMerci,\n\nLe directeur\n\nQui va faire les photocopies pendant que la photocopieuse est en réparation ?",
+      "image_url": null,
+      "options": {
+        "A": "La comptable",
+        "B": "La secrétaire",
+        "C": "Le directeur",
+        "D": "Le réparateur"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Le Forum de Paris s'adresse aux jeunes de moins de trente ans, avec ou sans diplôme. Des milliers d'offres sont disponibles dans près de 300 métiers. Chaque année, un grand nombre de jeunes signent un contrat de travail lors du salon.\n\nPourquoi le Forum de Paris est-il utile aux jeunes ?",
+      "image_url": null,
+      "options": {
+        "A": "Il les renseigne sur des formations",
+        "B": "Il leur permet de trouver un emploi",
+        "C": "Il leur présente des stages en entreprise",
+        "D": "Il leur propose des logements étudiants"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 7,
+      "question_text": "GRANDE MARCHE POUR DÉFENDRE NOS EMPLOIS MARDI 12 JUIN\n\nVENEZ NOMBREUX ! DÉPART PLACE DES NATIONS, DEVANT LE CENTRE DES CONGRÈS À 10H. ARRIVÉE PRÉVUE VERS MIDI DEVANT LA MAISON DES ENTREPRISES BOULEVARD DES PLATANES.\n\nQu'annonce cette affiche ?",
+      "image_url": null,
+      "options": {
+        "A": "Un salon des entrepreneurs",
+        "B": "Une compétition sportive",
+        "C": "Une conférence sur le chômage",
+        "D": "Une manifestation sociale"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Bonjour,\n\nEst-ce que vous pouvez dire à vos enfants qu'il est interdit de jouer avec l'ascenseur ? Il est souvent en panne car ils s'amusent avec les boutons. Je suis obligé de monter et de descendre les 5 étages à pied.\n\nMerci de votre compréhension,\n\nM. Déroulède/5e Gauche\n\nPourquoi M. Déroulède est-il mécontent ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est lui qui appelle le réparateur",
+        "B": "Il doit utiliser les escaliers",
+        "C": "Ses voisins sont bruyants",
+        "D": "Son logement est au dernier étage"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Vous mangez italien, dansez le flamenco ou apprenez le suédois ?\n\nPartagez vos prises de vue (portraits, paysages, etc.) qui montrent que l'Europe fait partie de votre vie. Participez au concours « Europe en images »\n\nÀ Gagner : un séjour à Bruxelles ou un atelier Cuisine\n\nQue propose ce concours ?",
+      "image_url": null,
+      "options": {
+        "A": "D'envoyer des photos",
+        "B": "D'inventer une recette",
+        "C": "De créer un spectacle",
+        "D": "De découvrir une langue"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 10,
+      "question_text": "L'école Jean Monnet organise sa « Journée Portes Ouvertes » samedi prochain, de 9h00 à 16h00. Tous les parents d'élèves sont invités. Ce sera l'occasion de rencontrer les professeurs et l'équipe administrative, qui seront prêts à répondre à vos questions.\n\nLa direction de l'école J. Monnet\n\nQue pourront faire les parents pendant cette journée ?",
+      "image_url": null,
+      "options": {
+        "A": "Échanger avec le personnel enseignant",
+        "B": "Écouter une présentation du directeur",
+        "C": "Participer à une conférence sur l'éducation",
+        "D": "Répondre à un questionnaire sur les cours"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Vous voulez faire connaître votre entreprise ? Nous vous proposons de très bons prix pour mettre une annonce.\n\nEnvoyez-nous votre texte nous vous contacterons pour vous informer sur nos prix.\n\nQue propose cette annonce aux entreprises ?",
+      "image_url": null,
+      "options": {
+        "A": "Un service de création de site",
+        "B": "Une aide informatique rapide",
+        "C": "Une formation sur internet",
+        "D": "Une publicité à faible coût"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 12,
+      "question_text": "La ville de Londres s'est offert une tour, emblème des Jeux Olympiques\n\nCette sculpture urbaine accueille ses visiteurs dans un restaurant et ceux-ci peuvent également profiter de la vue, sur la plate-forme panoramique. Cette tour est très critiquée ; elle a déjà été qualifiée de « trombone géant » ou de « gigantesque gribouillis » par un journaliste du Times. Mais ce qui choque surtout c'est le prix du monument : 21 millions d'euros, financés à hauteur de 18 millions par un groupe privé et ses 3 millions restants par la mairie de Londres.\n\nSur quoi portent les critiques de la tour ?",
+      "image_url": null,
+      "options": {
+        "A": "Sur l'architecte qui l'a conçue",
+        "B": "Sur l'emplacement qui a été choisi",
+        "C": "Sur la somme qu'elle a coûtée",
+        "D": "Sur le symbole qu'elle représente"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 13,
+      "question_text": "HÔTEL MINUTES\n\nIncroyable mais vrai : il a fallu seulement cinq jours et seize heures pour bâtir un hôtel de 16 étages et 50 mètres de haut. Le « Art HÔTEL » a été assemblé à partir de pièces détachées métalliques fabriquées en usine. D'après l'architecte, le bâtiment est conçu pour résister aux tremblements de terre et respecte les normes environnementales (consommation d'énergie, bruit, etc.)\n\nQu'est-ce qui fait l'originalité de cet hôtel ?",
+      "image_url": null,
+      "options": {
+        "A": "L'aménagement des lieux",
+        "B": "La rapidité de sa construction",
+        "C": "Le choix de son emplacement",
+        "D": "Le coût des matériaux utilisés"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Vous avez besoin d'aller à l'aéroport de Marseille ? Le parking coûte trop cher ? Avec notre société, payez seulement le nombre de kilomètres nécessaires.\n\nAppelez-nous tous les jours, 24H/24\n\nQuel service propose cette société ?",
+      "image_url": null,
+      "options": {
+        "A": "Acheter un billet d'avion",
+        "B": "Organiser des vacances",
+        "C": "Réserver un parking",
+        "D": "Transporter des personnes"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Delphine Peras a enquêté sur les clubs de lecture pour notre magazine. Elle a eu des difficultés à les trouver, car il s'agit souvent de groupes privés. L'objectif était de dresser une liste de clubs durables, car beaucoup suivent des effets de mode et ont une durée de vie très courte. Ce n'est pas le cas de « Voix au Chapitre », qui existe depuis 1986 ! Les rencontres fonctionnent selon une formule simple : autour d'un café, chaque participant donne son avis sur un livre, puis tout le monde en discute.\n\nQuelle difficulté Delphine Peras a-t-elle rencontré lors de son enquête ?",
+      "image_url": null,
+      "options": {
+        "A": "Leur curiosité, comme les clubs, disparaissait vite après leur création",
+        "B": "Les groupes concernés étaient trop nombreux",
+        "C": "Les lecteurs refusaient de parler à des journalistes",
+        "D": "Les rencontres se faisaient de manière irrégulière"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 16,
+      "question_text": "LE PROGRAMME DESCARTES\n\ns'adresse aux élèves français et allemands. Les Français séjournent dans une famille d'accueil allemande pendant 6 mois et accueillent leur correspondant allemand en France les 6 mois suivants. Les élèves Descartes fréquentent l'école de leur partenaire. L'objectif est d'approfondir leurs connaissances linguistiques dans la langue du pays d'accueil et leurs connaissances culturelles sur le pays. Les jeunes gagnent aussi en autonomie, ouverture d'esprit et tolérance. L'élève reçoit une aide pour les transports et 250€ pour les dépenses culturelles.\n\nQue permet le programme Descartes ?",
+      "image_url": null,
+      "options": {
+        "A": "D'améliorer rapidement les résultats scolaires",
+        "B": "De délivrer des bourses d'études à l'étranger",
+        "C": "De proposer des circuits touristiques complets",
+        "D": "D'organiser des échanges de longue durée"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 17,
+      "question_text": "« Un pour un », est une association de Brest qui propose un service de soutien scolaire individualisé. « Un pour un », c'est un adulte qui aide bénévolement un élève en difficulté à raison d'une séance par semaine pendant l'année scolaire, en liaison avec sa famille et son professeur. Le dispositif est ouvert à tous les élèves des établissements de la ville. Si vous aussi, vous souhaitez devenir tuteur, rejoignez notre équipe !\n\nEnvoyez-nous vos coordonnées à : Un pour un 34, rue Champion 29200 Brest\n\nQue propose cette association ?",
+      "image_url": null,
+      "options": {
+        "A": "Des ateliers pendant les vacances",
+        "B": "Des cours particuliers payants",
+        "C": "Un accompagnement personnalisé",
+        "D": "Un suivi psychologique gratuit"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Draisienne du XXI siècle\n\nÀ 88 ans, Jacques Blosseville est le participant le plus âgé de la 110° édition du concours Lépine, qui récompense les inventeurs. Il a choisi de transformer la draisienne, un vélo sans pédale pour enfant inventé au début du XIX siècle. « Il y a trois ans, j'ai commencé à me déplacer avec peine. On m'a proposé une canne, puis un fauteuil roulant, mais ça ne me convenait pas... La draisienne vous permet de ne pas avoir à supporter votre poids », explique le concurrent.\n\nDans quel but Jacques Blosseville a-t-il modernisé la draisienne ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour éviter de conduire",
+        "B": "Pour faire rêver les enfants",
+        "C": "Pour marcher sans souffrir",
+        "D": "Pour porter des objets lourds"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 19,
+      "question_text": "L'AGRICULTURE BIOLOGIQUE, TOUT LE MONDE EN VEUT, MAIS L'AGRICULTURE FRANÇAISE LA BOUDE\n\n64% des Français ont acheté bio au moins une fois. Devant l'insuffisance de certaines productions, notamment de fruits et légumes, il faut importer 32% des produits labellisés. Le bio en France ne concerne qu'un million d'hectares. D'ambitieux objectifs ont été fixés mais le ministre de l'agriculture s'est contenté de viser un doublement des surfaces d'ici à la fin du quinquennat. « Ces objectifs sont modestes, mais atteignables au moins, indique le président de la Fédération nationale d'agriculture biologique (FNAB).\n\nQuel est l'objectif des mesures gouvernementales en matière d'agriculture biologique ?",
+      "image_url": null,
+      "options": {
+        "A": "Exporter davantage de produits biologiques nationaux",
+        "B": "Inciter à la consommation de produits biologiques",
+        "C": "Satisfaire la demande en produits biologiques locaux",
+        "D": "Simplifier la certification des produits biologiques"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Pour exprimer notre conception du temps, nous utilisons des métaphores spatiales. Dans toutes les langues connues, le passé est associé à l'espace situé derrière l'individu, et le futur à l'espace situé devant lui. Sauf dans la langue aymara, parlée dans une partie de la Bolivie, du Pérou et du Chili : associé à ce qui est connu par la vue, le passé est situé devant, tandis que le futur, inconnu, est derrière soi. Une enquête de terrain, qui a recoupé les mots et les gestes des locuteurs, a permis de confirmer qu'il s'agit bien d'une façon de penser inverse de la nôtre.\n\nQuelle particularité de la langue aymara est évoquée dans ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "Le temps chronologique est impossible à représenter",
+        "B": "La notion de projection spatiale a disparu au fil du temps",
+        "C": "Les différentes expressions du temps ont la même forme linguistique",
+        "D": "L'expression du temps est opposée à la représentation habituelle"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 21,
+      "question_text": "Le jour viendra où un fonds de pension ou un groupe alimentaire mondial investira dans l'entreprise d'un cuisinier reconnu pour orchestrer son développement international. Bien sûr, on ne peut qu'avoir de la nostalgie pour les temps héroïques où une bande de copains inventait les codes de la nouvelle cuisine. Aujourd'hui, n'importe quel jeune cuisinier est prêt à payer très cher pour le privilège d'un stage de six mois chez un \"grand chef\", il rentabilisera vite cet investissement en s'autoproclamant « élève de... », car les marques des grands chefs ne cessent de prendre la valeur.\n\nQu'apprend-on sur les grands chefs ?",
+      "image_url": null,
+      "options": {
+        "A": "Leur conception de la cuisine est passée de mode",
+        "B": "Leur créativité leur assure une célébrité mondiale",
+        "C": "Leur nom s'est transformé en label de prestige",
+        "D": "Leurs établissements sont cotés en bourse"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 22,
+      "question_text": "Monsieur Lereux,\n\n« J'ai l'honneur de vous informer que votre nom a été sélectionné pour Magasins en fête ! »\n\nDès à présent, rendez-vous dans votre magasin, un bulletin de participation vous sera remis en caisse à partir de 25 euros d'achat !\n\nC'est la dernière étape, alors n'attendez plus. Venez remplir ce bulletin et gagnez un voyage de rêve, ou bien l'un de nos nombreux autres cadeaux !\n\nPourquoi Monsieur Lereux doit-il se rendre en magasin ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour bénéficier d'une promotion",
+        "B": "Pour participer à la finale d'un jeu",
+        "C": "Pour recevoir un coupon de voyage",
+        "D": "Pour retirer un chèque cadeau"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Où est la propreté de Paris ?\n\nSelon le maire, la propreté est un enjeu majeur de la vie quotidienne : « Depuis plusieurs mois, de gros efforts ont été entrepris car nous avons davantage de moyens humains et techniques que par le passé. Néanmoins, il y a toujours trop de salissures en tous genres. Le civisme n'est pas toujours au rendez-vous. En dehors de la capacité à nettoyer, il est fondamental de dissuader les gens de salir. Pendant quatre jours, nous serons sur le terrain pour aller à la rencontre des riverains pour les sensibiliser aux enjeux de la propreté »\n\nQuelle décision le maire de Paris a-t-il prise ?",
+      "image_url": null,
+      "options": {
+        "A": "De lutter contre la saleté dans la capitale",
+        "B": "De proposer plus de moyens à l'avenir",
+        "C": "De récompenser le civisme des gens",
+        "D": "D'écouter les plaintes des riverains"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Localiser un boucher, trouver un hôtel, calculer son itinéraire, observer sa maison par satellite... Les cartes fleurissent sur le web et les internautes y sont accros. Plus de 13 millions de Français consultent régulièrement des sites de localisation sur internet. Sans oublier le succès phénoménal des photos-satellite mises en ligne. Ces services gratuits pour les internautes cachent un véritable business. De grandes sociétés rémunèrent les sites de localisation pour être bien placées sur les cartes. C'est d'autant plus efficace que les utilisateurs ne perçoivent pas immédiatement ces liens sponsorisés comme une publicité, mais comme un service.\n\nQu'apprend-on sur les services de localisation sur Internet ?",
+      "image_url": null,
+      "options": {
+        "A": "Ce sont des réseaux de commerçants à l'origine de leur création",
+        "B": "Ils sont financés discrètement par des entreprises",
+        "C": "Les prestations qu'ils proposent sont payantes",
+        "D": "Leur maintenance est assurée par des bénévoles"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Futur manager, soyez gentil !\n\nDepuis les scandales des traders, les grandes écoles ont été mises au banc des accusés : ce qu'elles transmettaient se limitait à du savoir technique, directement exploitable par les entreprises. Myopie sociale et absence d'esprit critique menaçaient les futurs managers du monde économique. L'éthique est désormais à la mode dans toutes les grandes écoles de management. On ne parle plus que de \"social business\" ou de \"développement durable\". À côté des activités associatives traditionnelles, les actions humanitaires se multiplient, et de plus en plus d'étudiants s'y investissent chaque année. Aujourd'hui, un étudiant doit avoir fait du soutien scolaire en banlieue ou mis en place un projet de microcrédit en Afrique.\n\nD'après ce texte, quelle est la nouvelle orientation des grandes écoles ?",
+      "image_url": null,
+      "options": {
+        "A": "Créer des partenariats avec le milieu associatif",
+        "B": "Former des jeunes défavorisés au management",
+        "C": "Intégrer des valeurs sociales et environnementales",
+        "D": "Préparer des techniciens aux dangers de la finance"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Les bénéfices du bio pour la santé et pour l'environnement sont aujourd'hui prouvés. Mais pour ses détracteurs, ce type de production ne serait pas viable, faute de rendements suffisants pour subvenir aux besoins d'une planète à la démographie galopante. Une idée répandue que réfutent des chercheurs européens qui affirment qu'il est possible de nourrir plus de 9 milliards d'êtres humains en 2050 avec 100% d'agriculture biologique, à deux conditions : réduire le gaspillage alimentaire et limiter la consommation de produits d'origine animale. Un défi de taille, alors que le bio ne représente que 1% de la surface agricole utile dans le monde.\n\nDe quel défi est-il question ?",
+      "image_url": null,
+      "options": {
+        "A": "Augmenter la surface des terres agricoles",
+        "B": "Garantir la qualité des aliments pour animaux",
+        "C": "Généraliser l'agriculture biologique",
+        "D": "Lutter contre la démographie galopante"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Une étude récente révèle que la concentration de déchets plastiques flottant à la surface du Pacifique nord a été multipliée par cent en quarante ans. Ce constat, émis par les pêcheurs en haute mer, est alarmant car cette pollution a des conséquences écologiques. La gigantesque plaque de déchets flottant sur l'océan Pacifique, épaisse par endroits de plusieurs dizaines de mètres, constitue un milieu favorable à la reproduction d'une espèce d'araignée d'eau. Cet insecte est en train de se multiplier dans le Pacifique nord. Si la densité des plastiques continue à augmenter, certaines espèces pourraient continuer à se multiplier, risquant de déséquilibrer l'écosystème du Pacifique.\n\nQuel danger représentent ces déchets ?",
+      "image_url": null,
+      "options": {
+        "A": "Un obstacle pour les bateaux de pêche",
+        "B": "Un réchauffement dramatique des eaux",
+        "C": "Un risque d'intoxication des populations du Pacifique",
+        "D": "Une diminution de la diversité de la faune océanique"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Dragons Chinois à Paris\n\nC'est avec enthousiasme que les festivités du Nouvel An chinois ont débuté hier à 14h30 sur la place de l'Hôtel de Ville. Devant une foule joyeuse, éclairée par de petites lumières rouges, les dragons et les tigres ont commencé leur danse, rythmée par les tambours. Si vous avez manqué ce défilé coloré, vous pourrez toujours vous rattraper aujourd'hui : un autre défilé est prévu à 11h30 au métro Belleville.\n\nQu'est-ce qu'on a pu voir sur la place de l'Hôtel de Ville ?",
+      "image_url": null,
+      "options": {
+        "A": "Un marché traditionnel",
+        "B": "Un spectacle de cirque",
+        "C": "Une cérémonie officielle",
+        "D": "Une manifestation culturelle"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Durant les investigations journalistiques, le recours à la caméra cachée est de plus en plus fréquent. Mais souvent, son utilisation n'est qu'un cache-misère, un moyen de compenser l'absence d'informations dans les reportages, en remplissant le vide par des scènes quelque peu spectaculaires. C'est aussi une façon pour certains de faire des économies. Par ailleurs, cette pratique soulève une autre question : celle du statut de la personne filmée à son insu. La filmer en caméra cachée ne suppose-t-elle pas qu'elle ait quelque chose à se reprocher avant même de commencer à parler ?\n\nD'après ce texte, pourquoi les journalistes utilisent-ils des caméras cachées ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour améliorer la qualité des documentaires",
+        "B": "Pour dissimuler la pauvreté des contenus",
+        "C": "Pour moderniser leurs méthodes de travail",
+        "D": "Pour piéger les gens visés par les enquêtes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Les recherches actuelles sur la motivation indiquent que la confiance en ses capacités permet d'agir efficacement et joue un rôle crucial dans l'engagement et les performances d'un élève. Cette confiance peut varier d'un domaine à l'autre ainsi que d'une matière scolaire à l'autre. Tout comme on peut se sentir très à l'aise avec des instruments de musique mais maladroit sur un terrain de basket, on peut se sentir très compétent en français mais peu brillant en mathématiques. Les recherches ont montré que les élèves confiants en leurs capacités dans une matière choisissent de préférence des activités présentant pour eux un défi et leur donnant l'occasion de développer leurs habiletés. Inversement, ils ont tendance à se désintéresser des activités dans lesquelles ils se sentent peu efficaces.\n\nComment réagissent les élèves qui sont à l'aise dans certaines disciplines ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils finissent par maîtriser l'ensemble des matières",
+        "B": "Ils font des efforts dans les autres matières étudiées",
+        "C": "Ils négligent les matières trop faciles pour eux",
+        "D": "Ils se fixent des objectifs élevés dans ces matières"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Le jeunisme n'est certes pas un concept nouveau\n\nIl y a toujours eu des adultes croyant pouvoir jouer discrètement dans la cour des « jeunes ». On s'en moquait alors, et ils ne trompaient personne, à commencer par eux-mêmes. La nouvelle donne est différente : les intéressés ne cherchent même pas à « faire jeune ». Ils le sont. Sans effort apparent ni ridicule particulier. Finies, les demandes humbles et ringardes aux enfants d'Internet pour qu'ils expliquent telle ou telle subtilité du Web. Tout va bien, merci, les anciens « vieux » ont appris à se servir de leurs joujoux technos, tout seuls comme des grands ! Ils se tiennent d'ailleurs parfois aussi mal que des ados, envoyant des SMS à table ou bondissant à la moindre sonnerie.\n\nDans quel sens évoluent les adultes d'après l'auteur ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils résistent aux comportements de la société du tout-numérique",
+        "B": "Ils se remettent à niveau pour utiliser les téléphones portables",
+        "C": "Ils se sentent désorientés face aux outils technologiques",
+        "D": "Ils sont parfaitement à l'aise avec les derniers outils multimédias"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Après avoir été fermée au public pendant douze ans, la grotte préhistorique d'Altamira, située en Espagne, doit rouvrir ses portes mais de manière expérimentale. Il s'agit d'une expérience réservée à un groupe de cinq personnes tirées au hasard parmi les visiteurs du musée du site, qui vont pouvoir contempler les peintures rupestres originales. Cette expérience se déroulera une fois par semaine pendant huit mois afin de permettre à une équipe de scientifiques d'évaluer l'impact des visites sur l'ensemble du site et de donner son avis sur une réouverture complète.\n\nQu'évoque-t-on dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "L'inauguration d'une exposition temporaire",
+        "B": "L'inscription d'une œuvre au patrimoine mondial",
+        "C": "L'ouverture au public d'une zone dangereuse",
+        "D": "L'accès réglementé à un emplacement protégé"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Plutôt que de multiplier les tests et les mises en situation, certaines entreprises choisissent de déléguer la responsabilité du recrutement... à leurs salariés ! « Personnellement, je suis très favorable à la cooptation, affirme ce responsable. Si vous avez un bon élément dans votre équipe, vous avez une excellente chance qu'il vous amène un autre bon élément, ça permet de limiter les risques. » Signe des temps, la « cooptation » est aujourd'hui acceptée et revendiquée par tous. Dans certaines entreprises, elle est même encouragée par une prime : 4000 euros sont versés à tout employé ayant recommandé un candidat recruté à son tour.\n\nQue recherchent les entreprises en adoptant la cooptation pour le recrutement ?",
+      "image_url": null,
+      "options": {
+        "A": "À gagner du temps",
+        "B": "À minimiser les aléas",
+        "C": "À réduire les frais",
+        "D": "À simplifier les procédures"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Un cabinet de conseil en énergie annonce que des coupures de courant sont à prévoir cet hiver dans l'Hexagone. En effet, l'Allemagne, qui approvisionne la France en électricité, ne sera plus capable de le faire face à la demande en raison de la fermeture de certains de ses réacteurs nucléaires. Le gouvernement pourrait appeler au « civisme » des Français, leur demandant de modérer la consommation électrique des foyers, qui atteint des pics quotidiens autour de 19h. Pourtant, la France possède l'un des plus grands parcs nucléaires du monde, mais elle exporte la quasi-totalité de l'énergie produite.\n\nPourquoi y a-t-il des risques de coupures de courant ?",
+      "image_url": null,
+      "options": {
+        "A": "Parce que des tests sur les réacteurs nucléaires sont en cours",
+        "B": "Parce que l'approvisionnement en électricité est compromis",
+        "C": "Parce que la production française couvre à peine les besoins nationaux",
+        "D": "Parce que la régulation de la consommation d'énergie est inefficace"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Sexistes, les jeux vidéo ? Peut-être que oui, peut-être que non. En tout cas, à parcourir les allées de la Paris Games Week, l'œil avisé aura bien du mal à trouver un personnage principal féminin dans un jeu vidéo. Il y a bien la célèbre Lara Croft de Tomb Raider, dont les attributs sont particulièrement imposants, conçus presque sur mesure pour plaire à une certaine catégorie de joueurs masculins. Pour le reste, circulez, il n'y a presque rien d'autre à voir, que ce soit des princesses à sauver ou, pire, des call girls de mafieux. Pourtant, l'industrie du jeu vidéo a pris conscience ces dernières années du potentiel du marché des joueuses.\n\nQuel constat est fait concernant les jeux vidéo ?",
+      "image_url": null,
+      "options": {
+        "A": "La quasi absence d'héroïnes",
+        "B": "L'appel constant à la violence",
+        "C": "L'atténuation des clichés",
+        "D": "L'uniformité des scénarios"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Histoires d'école — Bernard Martin\n\nLongtemps, l'auteur de ce livre fut un objet de stupeur pour sa famille : incapable d'apprendre l'alphabet, détestant les majuscules, les noms propres et les listes de vocabulaire à retenir. « D'où venait mon ânerie ? », se demande-t-il dans cet ouvrage qui en réconfortera plus d'un. Car ce romancier jubilatoire fut un mauvais élève, terrassé par l'école. Il fut aussi professeur de français, histoire de contredire le destin. Ce récit est à la fois un manuel de pédagogie et un recueil de souvenirs. Un beau témoignage à offrir à tous ceux qui n'ont pas la science infuse. À tout le monde, donc.\n\nSelon l'auteur de cette critique, qu'est-ce qui rend ce livre réjouissant ?",
+      "image_url": null,
+      "options": {
+        "A": "Il permet d'apprendre à lire et à écrire de façon ludique",
+        "B": "Il raconte les aventures d'un professeur d'histoire",
+        "C": "Il ravive l'intérêt des littéraires pour les matières scientifiques",
+        "D": "Il retrace l'improbable parcours de vie d'un ancien cancre"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Dans le Val d'Oise, une grande entreprise immobilière envisage de bâtir un complexe commercial sur des terres agricoles parmi les plus fertiles de la région parisienne. Ce serait ainsi 80 hectares de champs qui disparaîtraient sous le béton pour laisser place à un grand temple de la consommation : locaux destinés à la culture (salle de spectacle, etc.), aux loisirs (manèges, etc.) et aux magasins en tout genre. L'ouvrage pharaonique ne devra son succès qu'à son gigantisme — les promoteurs expliquent en effet qu'ils pensent attirer les clients du fait que ce centre commercial sera encore plus grand que ses cousins... Ce n'est pas avec ce genre de raisonnement que le rythme d'artificialisation des terres va baisser, ni que la France diminuera ses émissions de CO2.\n\nQue déplore l'auteur ?",
+      "image_url": null,
+      "options": {
+        "A": "La démesure du complexe imaginé",
+        "B": "La flambée des prix de l'immobilier",
+        "C": "La lenteur de la construction du centre",
+        "D": "Le manque d'inventivité des promoteurs"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Stella Baruk est une fée des chiffres\n\nUne magicienne aux pouvoirs d'autant plus étonnants qu'ils donnent vie à la matière la plus redoutée — ou la plus détestée — par beaucoup d'entre nous : les mathématiques. Haut fait de cette enseignante : l'invention d'une méthode simple qui donne aux enfants le goût de cette discipline réputée austère et leur permet de réussir. Le principe de base : si les mathématiques, comme tout savoir, font appel à une langue spécifique, il faut aider les enfants qui n'entendent pas ce que dit le professeur ou qui entendent autre chose — sans comprendre souvent l'énoncé du problème — à entrer dans le sens de cette langue, en multipliant les ponts avec le langage ordinaire. Stella Baruk cerne l'inefficacité de nos méthodes et construit la sienne, fondée sur les mots, la langue, le sens, une véritable compréhension des opérations et des nombres. Car les mathématiques sont un langage spécifique. C'est l'incapacité à le comprendre qui fonde les raisons plausibles et logiques des erreurs des élèves.\n\nQuelle est, selon Stella Baruk, la solution à l'échec en mathématiques ?",
+      "image_url": null,
+      "options": {
+        "A": "Redonner un côté ludique aux mathématiques",
+        "B": "Inventer un nouveau langage mathématique",
+        "C": "Rendre intelligible le langage mathématique",
+        "D": "Trouver une explication logique aux erreurs"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 39,
+      "question_text": "C'est un fait : le football en France ne fait pas se déplacer grand monde. Certains s'en étonnent ; or, c'est l'inverse qui devrait étonner. Au fond, quel intérêt y a-t-il à aller au stade ? Pour les véritables supporters, c'est le désir de manifester leur amour pour une équipe soutenue, de se fondre dans une masse plus ou moins chaleureuse et grégaire. Mais pour les autres ? En fait, d'un point de vue strictement footballistique, on ne voit pas. Les tribunes font ressentir le drôle de paradoxe d'être très proche de l'événement — plus proche qu'on ne l'a jamais été, au point d'entendre les joueurs s'exclamer contre une décision arbitrale — tout en se sentant complètement à l'écart de l'action, orphelin des plans serrés et des ralentis, étoffés de commentaires parfois éclairants.\n\nSelon cet article, qu'est-ce qui explique la baisse de la fréquentation des stades ?",
+      "image_url": null,
+      "options": {
+        "A": "La concurrence de reportages en direct",
+        "B": "La défaillance récurrente de l'arbitrage",
+        "C": "La diminution du nombre de fans",
+        "D": "Le rajeunissement des spectateurs"
+      },
+      "correct_answer": "A"
+    }
+]
+}

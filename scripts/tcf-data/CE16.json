@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE16",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "INFIRMERIE\n\nJe suis en consultation. Revenez dans quelques minutes.\n\nQue faire pour rencontrer l'infirmière ?",
+      "image_url": null,
+      "options": {
+        "A": "Frapper et entrer",
+        "B": "Prendre rendez-vous",
+        "C": "Revenir plus tard",
+        "D": "Téléphoner"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 2,
+      "question_text": "ÉTUDIANTS INTERNATIONAUX NE RESTEZ PAS SEULS!\n\nInscrivez-vous dans l'association de l'université pour : discuter avec des étudiants français ; participer à des groupes de conversation ; faire des activités ensemble: sport, shopping, visite, sorties...\n\nET TOUT EST GRATUIT !\n\nQue propose cette association ?",
+      "image_url": null,
+      "options": {
+        "A": "Des cours particuliers",
+        "B": "Des jobs pendant le week-end",
+        "C": "Des rencontres entre jeunes",
+        "D": "Des voyages à l'étranger"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Désolé de te le dire si tard! Je ne peux pas venir ce soir.\n\nPierre\n\nPourquoi Pierre a-t-il écrit ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Il annonce son absence",
+        "B": "Il donne un rendez-vous",
+        "C": "Il indique son arrivée",
+        "D": "Il signale son retard"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Musique jazz et brésilienne durant tout l'été dans le quartier du Musée d'Art Moderne !\n\nChaque jeudi et vendredi de 17h à 19h, profitez d'un été musical sur les nombreuses terrasses de notre beau quartier.\n\nQu'est-ce qu'on peut faire dans ce quartier ?",
+      "image_url": null,
+      "options": {
+        "A": "Apprendre à jouer d'un instrument",
+        "B": "Assister à des concerts",
+        "C": "Réserver des billets de spectacle",
+        "D": "S'inscrire à des animations"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Françoise,\n\nPouvons-nous nous rencontrer dans ton bureau demain matin ?\n\nAriane\n\nPourquoi Ariane écrit-elle ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle doit partir une journée",
+        "B": "Elle propose un déjeuner",
+        "C": "Elle souhaite parler à Françoise",
+        "D": "Elle veut visiter une entreprise"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Salut Samira,\n\nLa fête du cinéma commence samedi prochain, ça t'intéresse? Viens chez moi après le travail vendredi, on choisira ce qu'on ira voir samedi ou dimanche. Réponds-moi vite !\n\nLali,\n\nQue veut faire Lali ?",
+      "image_url": null,
+      "options": {
+        "A": "Aller à un anniversaire",
+        "B": "Dîner avec son amie",
+        "C": "Partir en week-end",
+        "D": "Regarder des films"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 7,
+      "question_text": "À l'attention des élèves de 5e B,\n\nLe cours de mathématiques aura exceptionnellement lieu aujourd'hui à 15 heures, dans la salle habituelle. Merci de votre compréhension.\n\nLe professeur, M. Valmont\n\nPourquoi M. Valmont a-t-il écrit ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour annoncer un changement de salle",
+        "B": "Pour inviter les élèves à une réunion",
+        "C": "Pour modifier l'horaire d'un cours",
+        "D": "Pour remercier les élèves de 5e B"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Vous voulez rire ?\n\nDécouvrez Mimiquette et Théophilou, des personnages de bande dessinée que tous les petits adorent parce qu'ils sont gais, aiment inventer des jeux et mettent souvent leurs parents en colère : comme tous les enfants!\n\nComment sont les personnages de Mimiquette et Théophilou ?",
+      "image_url": null,
+      "options": {
+        "A": "Beaux",
+        "B": "Calmes",
+        "C": "Courageux",
+        "D": "Joyeux"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 9,
+      "question_text": "ATTENTION !\n\nDate limite pour les demandes de congés – Vacances d'été. Les demandes de congés pour les vacances d'été doivent être transmises à Mme Létourneau, au bureau du personnel (2e étage), au plus tard le 20 avril.\n\nLe Bureau du personnel\n\nÀ qui s'adresse ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "À des clients",
+        "B": "À madame Létourneau",
+        "C": "À des élèves",
+        "D": "À des employés"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Chers collègues,\n\nNous vous informons que la réunion parents-professeurs des classes de seconde prévue pour ce samedi est reportée au samedi prochain à midi. Votre présence est obligatoire.\n\nLa direction du lycée,\n\nÀ qui s'adresse ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Aux élèves",
+        "B": "Aux étudiants",
+        "C": "Aux parents",
+        "D": "Aux professeurs"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Nous sommes tous, peu ou prou, sujets au trac. C'est une réaction à la fois physique et mentale, une paralysie qui nous saisit sans prévenir. Le trac n'est autre que le résultat de notre désir de bien faire, mais il est possible de le surmonter. Inutile d'absorber des substances plus ou moins efficaces. Il suffit de bien respirer, de visualiser la scène idéale et de se reposer avant l'épreuve.\n\nSelon cet article, est-il possible de combattre le trac ?",
+      "image_url": null,
+      "options": {
+        "A": "Non, parce que c'est une réaction normale",
+        "B": "Bien sûr ! il existe des médicaments très efficaces",
+        "C": "Oui, grâce à des méthodes très simples",
+        "D": "Certainement pas. Il est insurmontable"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Les petits Allemands ont de la chance. Depuis quelques années, leurs établissements, de la maternelle au lycée, ont de nouvelles chaises aux formes arrondies et colorées. Ces chaises, pensées pour les besoins des écoliers, répondent à une nouvelle philosophie de l'enseignement. Avant il fallait rester immobile et écouter. Aujourd'hui les psychologues pensent qu'il faut laisser les écoliers bouger, en particulier les très jeunes enfants, car le mouvement aide à la concentration. Il renforce également la construction musculaire.\n\nPourquoi a-t-on remplacé le mobilier des écoles allemandes ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour accueillir des élèves handicapés",
+        "B": "Pour favoriser une autre pédagogie",
+        "C": "Pour limiter les problèmes de santé",
+        "D": "Pour rénover les salles de classe"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Madame Pierre,\n\nNous avons bien reçu votre demande de documentation concernant nos services de téléphonie. Un conseiller prendra contact avec vous très prochainement au numéro de téléphone que vous nous avez communiqué.\n\nNous vous remercions de votre confiance. Cordialement,\n\nService clients, PX\n\nPourquoi Madame Pierre a-t-elle contacté la société PX ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle demande un remboursement",
+        "B": "Elle doit prendre un rendez-vous",
+        "C": "Elle souhaite des renseignements",
+        "D": "Elle veut faire une réclamation"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Location temporaire :\n\nChambre individuelle de 20 m2 dans un appartement de 65 m2 proche de Paris. Meublé tout confort (lave-linge, lave-vaisselle, écran plat/DVD).\n\nColocation pour l'été du 1er juillet au 31 août seulement. Quartier calme et transports à proximité (métro, bus, RER).\n\n550 € toutes charges comprises (eau, électricité, chauffage, internet).\n\nPersonne sérieuse et garanties demandées! Contacter Julie au 06 76 34 39 01.\n\nQue veut Julie ?",
+      "image_url": null,
+      "options": {
+        "A": "Échanger son appartement pendant l'été",
+        "B": "Louer un appartement meublé de 20 m2",
+        "C": "Partager son appartement pour deux mois",
+        "D": "Vendre son appartement près de Paris"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Cher confrère,\n\nCi-joint notre catalogue de boissons pour cette année. En espérant que vous pourrez satisfaire votre clientèle, nous vous remercions pour vos futurs achats.\n\nAvec nos salutations les plus cordiales,\n\nEntreprise Labayle et Chandon.\n\nQuel est l'objet de ce courrier ?",
+      "image_url": null,
+      "options": {
+        "A": "Demander des informations sur des produits",
+        "B": "Passer une commande de produits",
+        "C": "Présenter de nouveaux produits",
+        "D": "Proposer une dégustation de produit"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Les termes « intelligence artificielle » entraînent généralement des inquiétudes. Pourtant, une étude menée auprès de 14.078 salariés, dans onze pays différents et dans plusieurs secteurs d'activités (santé, transports, énergie...), tente de prouver que l'intelligence artificielle pourrait augmenter de 10 %, en moyenne, les effectifs des entreprises ayant investi dans cette technologie. De plus, elle entraînerait un changement radical de modèle et ouvrirait la possibilité pour les entreprises d'inventer des services et de s'ouvrir à de nouvelles opportunités.\n\nD'après Le Figaro.\n\nSelon cet article, quelle est l'une des possibilités offertes par l'intelligence artificielle ?",
+      "image_url": null,
+      "options": {
+        "A": "Baisser les salaires",
+        "B": "Créer des emplois",
+        "C": "Diviser le travail",
+        "D": "Favoriser la recherche"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Job d'été, la première expérience\n\nQuand une entreprise fait appel pour la première fois à un Jeune, elle n'a pas d'attente vis-à-vis de ses compétences professionnelles, c'est donc sur son comportement que vont se porter ses critères d'évaluation. Même saisonnier, il faut montrer qu'on a vraiment envie de décrocher un job. Les jeunes sans expérience ont tout intérêt à parler de leur passion et à démontrer leur motivation. Pour un employeur, c'est ce qui reste souvent le critère le plus important.\n\nSelon l'article, que faut-il faire pour trouver un job d'été ?",
+      "image_url": null,
+      "options": {
+        "A": "Exposer l'ensemble de ses qualités professionnelles",
+        "B": "Faire la preuve de son désir de travailler",
+        "C": "Parler avec enthousiasme de ses projets de formations",
+        "D": "Parler des emplois qu'on a déjà occupés"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Parents mode d'emploi\nSérie télévisée\nDu lundi au vendredi à 20h40\n\nNous découvrons le quotidien de Gaby et Isa, les personnages principaux, quadragénaires d'aujourd'hui, qui cherchent un mode d'emploi pour être de bons parents ! Ils essaient de contrôler la situation et seraient même prêts à nous donner des conseils, mais comme tous les parents, ils font de grosses erreurs... ce qui nous amuse et nous fait rire, pour notre plus grand plaisir !\n\nQuel est l'objectif de cette série télévisée ?",
+      "image_url": null,
+      "options": {
+        "A": "Informer sur de nouvelles méthodes éducatives",
+        "B": "Montrer la vie de tous les jours d'un jeune couple",
+        "C": "Présenter les relations familiales avec humour",
+        "D": "Proposer des solutions à des situations de crise"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 19,
+      "question_text": "LA NÉO-RURALITÉ EST DEVENUE UN PHÉNOMÈNE DE SOCIÉTÉ:\n\nCette dénomination date des années 70: c'est « le retour à la terre ». Alors que la désertification des campagnes se poursuit, un mouvement de population inverse s'opère. Il concerne des personnes jeunes, sans enfant, portant les valeurs contestataires de mai 68. Issues de toutes les classes sociales, elles ne recherchent pas spécialement le confort. Elles veulent avant tout vivre une expérience, ce qui les différencie de la population locale et ne facilite pas leur intégration.\n\nQue veulent les néo-ruraux ?",
+      "image_url": null,
+      "options": {
+        "A": "Accéder à la propriété privée",
+        "B": "Avoir un mode de vie économique",
+        "C": "Participer à la vie associative",
+        "D": "Tenter une nouvelle aventure"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Pour lutter efficacement contre le changement climatique, il est essentiel de trouver des réponses technologiques à notre consommation d'énergie. Néanmoins, il est également nécessaire de concilier mesures environnementales et activités économiques. Si nous ne respectons pas ce point, nous n'atteindrons pas nos objectifs. Ainsi, le futur Plan Climat devra être mis en place en concertation avec les habitants mais également avec les entreprises implantées dans la région, afin que chacun ait un objectif à atteindre dans la lutte contre le changement climatique.\n\nQue faudrait-il faire pour lutter efficacement contre le changement climatique ?",
+      "image_url": null,
+      "options": {
+        "A": "Moderniser les installations anti-pollution",
+        "B": "Modifier les circuits de production",
+        "C": "Organiser des formations sur le sujet",
+        "D": "Responsabiliser les acteurs concernés"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 21,
+      "question_text": "Le CENTQUATRE a ouvert ses portes Samedi dernier, voisins et passants, artistes et curieux, professionnels et amateurs, ont été invités à pénétrer dans le nouvel établissement artistique de la ville de Paris : le CENTOUATRE. Ce lieu de résidence et de création artistiques, unique au monde, s'étend sur près de 40.000 m2 entre le 104 rue d'Aubervilliers et le 5, rue Curial à Paris (19°).\n\nD'après cette annonce, à quoi doit servir le « CENTQUATRE » ?",
+      "image_url": null,
+      "options": {
+        "A": "À accueillir des artistes ainsi que leurs œuvres",
+        "B": "À créer des ateliers d'arts pour les habitants du quartier",
+        "C": "À former une nouvelle génération d'artistes",
+        "D": "À transformer des ateliers d'artistes en logement"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 22,
+      "question_text": "Dans un monde rationnel, l'innovation technologique devrait découler d'un besoin et y apporter une solution. Depuis quelques décennies, nous observons l'inverse, aussi bien dans le monde professionnel que dans celui de la vie privée. On nous propose un nouveau type de produit à la technologie révolutionnaire, nous lui trouvons avec jubilation une place dans notre vie, puis nous en devenons souvent prisonniers. De cette manière, ce que nous appelons progrès devient incontrôlable et nous en devenons les suiveurs inconscients. Mon propos n'est certainement pas de condamner ni le progrès ni la consommation, mais de faire un plaidoyer pour que nous en soyons les maîtres et non les esclaves.\n\nQuelle est l'idée de ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "Le progrès passe par les nouvelles technologies",
+        "B": "L'attrait de la nouveauté est incontournable",
+        "C": "L'homme se laisse dominer par la technologie",
+        "D": "La technologie est le reflet de la modernité"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Madame,\n\nJe vous remercie pour les fiches de lecture que vous m'avez envoyées pour enrichir ma thèse. À première vue, elles viennent à point appuyer le concept de ma troisième partie. Cependant, des événements d'ordre privé ayant perturbé mon emploi du temps, je ne serai pas en mesure d'achever mes lectures avant notre prochain rendez-vous. Dans ces conditions, je pense qu'il est préférable de le reporter. Je vous demande de bien vouloir m'excuser pour ce contretemps. J'espère reprendre contact avec vous très prochainement pour enfin pouvoir échanger avec vous mes impressions sur ces lectures.\n\nCordialement,\n\nGéraldine Dupont\n\nQue communique Géraldine dans son message ?",
+      "image_url": null,
+      "options": {
+        "A": "L'envoi d'un bilan de ses lectures",
+        "B": "La fin des modifications sur sa thèse",
+        "C": "Le retard pris dans ses recherches",
+        "D": "La date de leur prochaine rencontre"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Il change le clavier de ses deux ordinateurs tous les six mois. Les touches cèdent sous ses mains qui, telles des araignées possédées, tissent roman après roman. En vingt ans, il a écrit près de mille cent titres. C'est un touche-à-tout : il pond aussi bien de la littérature pour herboristes que de la pharmacopée policière. Cet ancien chirurgien a abandonné le festin sanglant des blocs opératoires pour les joies de la graphomanie. « Je me suis lassé de la médecine. Mais j'écris mes romans avec toute la passion que j'avais pour la chirurgie », explique-t-il.\n\nQuelle est la particularité de cet écrivain ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a écrit une œuvre abondante et variée",
+        "B": "Il a toujours rêvé de devenir médecin",
+        "C": "Il est emballé par les histoires d'épouvante",
+        "D": "Il peine à écrire depuis quelques temps"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Le sport est avant tout un loisir et doit le rester. Pour chacun, quelle que soit sa pratique. Pour que celle-ci reste toujours agréable, une règle de base : se préparer. Avant tout, assurez-vous que vous êtes apte à faire du sport. Les contre-indications sont essentiellement liées à l'âge ou à des pathologies préexistantes. L'entraînement doit être régulier. Il faut progresser lentement, tant en durée qu'en intensité. C'est la meilleure garantie pour ne pas souffrir en faisant du sport, à condition aussi de savoir s'échauffer avant chaque séance. Il va sans dire que le matériel doit être bien adapté à votre taille et à votre niveau sportif.\n\nQuel titre convient le mieux à cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Les sports à risque",
+        "B": "Le sport sans douleur",
+        "C": "Les dangers du sport",
+        "D": "Les bienfaits du sport"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Journée « Portes Ouvertes » à Polytech Tours\nVenez rencontrer les étudiants, les enseignants et les associations de Polytech Tours\nLe samedi 12 février, De 9h à 16h sans interruption\n\nEspaces d'information présents sur les trois sites de l'école. Présentation des études et des métiers d'ingénieur par les responsables de chaque spécialité, sur chaque site. Visites guidées des salles de travaux pratiques, des centres de documentation, des laboratoires de recherche et de langues. Démonstration de projets réalisés dans nos cursus. Présentation des associations étudiantes.\n\nQuel est l'objectif de cette journée ?",
+      "image_url": null,
+      "options": {
+        "A": "Découvrir le travail de recherche en laboratoire",
+        "B": "Faire découvrir les formations pour devenir ingénieur",
+        "C": "Inaugurer l'ouverture d'un campus universitaire",
+        "D": "Obtenir des conseils afin de créer une association"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Une enquête réalisée auprès de professeurs révèle que le manuel scolaire numérique est préféré pour l'étude d'images, de photos, de cartes... Au contraire, le papier est privilégié pour la réalisation d'exercices, l'étude de textes et les évaluations. Les professeurs choisissent ainsi l'outil le mieux adapté à leurs besoins. Par ailleurs, les enseignants voient le manuel numérique comme un moyen de capter l'attention des élèves et d'améliorer la participation en classe.\n\nQuelle information donne cette enquête sur les pratiques des enseignants ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils alternent les supports selon le type d'activité",
+        "B": "Ils hésitent à utiliser les techniques informatiques",
+        "C": "Ils optent toujours pour des ouvrages imprimés",
+        "D": "Ils tiennent compte des progrès des apprenants"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 28,
+      "question_text": "À l'inverse de George Balanchine, maître du ballet russe qui gagna New York pour réviser ses classiques, William Forsythe quitta les États-Unis pour jouer les électrons libres de la scène chorégraphique européenne. À la tête du Ballet de Francfort, William Forsythe s'attache depuis quinze ans à déconstruire le ballet, ses codes et ses rites. Son écriture flirte avec le virtuel — le chorégraphe n'hésitant pas à utiliser des logiciels pour composer ses pièces de danse — autant qu'avec le théâtre, dont les textes répondent aux préoccupations des interprètes. Il nous revient avec un travail visionnaire autour du corps en mouvement, réinventant les pointes ou déconstruisant la ligne du buste. Il n'est jamais vraiment là où on l'attend. Paris, qui le suit depuis une décennie, lui passe beaucoup de choses, sauf une : son absence. Le voici donc sur scène.\n\nOù sont représentées les œuvres de cet auteur ?",
+      "image_url": null,
+      "options": {
+        "A": "En grande majorité New York",
+        "B": "Rarement ailleurs qu'à Francfort",
+        "C": "En Russie et aux États-Unis",
+        "D": "À Paris et partout en Europe"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Monsieur,\n\nNous avons bien reçu votre offre de collaboration. Nous allons l'étudier dans les prochains jours. Sans nouvelles de notre part d'ici trois semaines, vous pourrez considérer que votre candidature n'aura pas été retenue. Néanmoins, et sauf avis contraire de votre part, nous la conserverons au cas où de nouvelles opportunités se présentent. Nous tenons à vous remercier de l'intérêt que vous avez porté à notre société.\n\nSincères salutations.\n\nLe Service Recrutement\n\nQu'apprend le destinataire de ce courrier ?",
+      "image_url": null,
+      "options": {
+        "A": "Que sa candidature est sélectionnée",
+        "B": "Que sa proposition est acceptée",
+        "C": "Que son dossier est en cours d'examen",
+        "D": "Que son recrutement est retardé"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Les recherches actuelles sur la motivation indiquent que la confiance en ses capacités permet d'agir efficacement et joue un rôle crucial dans l'engagement et les performances d'un élève. Cette confiance peut varier d'un domaine à l'autre ainsi que d'une matière scolaire à l'autre. Tout comme on peut se sentir très à l'aise avec des instruments de musique, mais maladroit sur un terrain de basket, on peut se sentir très compétent en français, mais peu brillant en mathématiques. Les recherches ont montré que les élèves confiants en leurs capacités dans une matière choisissent de préférence des activités présentant pour eux un défi et leur donnant l'occasion de développer leurs habiletés. Inversement, ils ont tendance à se désintéresser des activités dans lesquelles ils se sentent peu efficaces.\n\nComment réagissent les élèves qui sont à l'aise dans certaines disciplines ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils finissent par maîtriser l'ensemble des matières",
+        "B": "Ils font des efforts dans les autres matières étudiées",
+        "C": "Ils négligent les matières trop faciles pour eux",
+        "D": "Ils se fixent des objectifs élevés dans ces matières"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Il ne viendrait à personne l'idée d'entrer dans un cinéma ou un théâtre sans payer sa place, ni à ces industries de ne pas rémunérer leurs auteurs. De nombreux festivals ou lieux dédiés à la photographie se targuent pourtant de la gratuité de leurs expositions. D'autant plus que dans la majorité des cas, il est admis qu'aucun budget ni aucun droit d'auteurs ne soient prévus pour le photographe. Même si le motif initial de rendre la photographie accessible à tous est plus que légitime, ce qui choquerait pour tout autre secteur ou corps de métier n'offusque personne dès lors qu'il s'agit du photographe, pourtant producteur de la matière première de ces activités.\n\nQue constate l'auteur de l'article ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est la photographie qui est la forme d'art la moins valorisée",
+        "B": "Il y a peu d'événements culturels consacrés à la photographie",
+        "C": "Les photographies sont commercialisées à bas prix",
+        "D": "N'importe qui peut s'improviser photographe"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Depuis un an, l'association du Théâtre de la Poudrerie, située à Sevran, à quelques kilomètres de Paris, organise des représentations gratuites à domicile d'une pièce inédite. Pour cela, l'association a invité une autrice professionnelle en résidence afin qu'elle l'écrive. Elle a recueilli les témoignages d'une trentaine d'habitantes sur le thème du pouvoir féminin, puis a rédigé son texte à partir de cette matière première. L'enjeu pour cette association est que les spectateurs s'approprient la pièce : lorsqu'il y a un phénomène d'identification, la parole se libère lors de la rencontre qui suit la représentation. Ce phénomène est amplifié par ce cadre intimiste, qui favorise le rapprochement entre les spectateurs et les comédiens.\n\nQuel objectif cette association cherche-t-elle à atteindre avec ce projet ?",
+      "image_url": null,
+      "options": {
+        "A": "Encourager le dialogue avec le public",
+        "B": "Former des acteurs en banlieue",
+        "C": "Réaliser une œuvre à plusieurs mains",
+        "D": "Sensibiliser à l'égalité des sexes"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Des taxes vertes, ou taxes carbone, sont envisagées pour faire face aux besoins de financement des énergies non polluantes. Les mécanismes prévus dans le protocole de Kyoto concernent notamment le crédit carbone, qui représente un volume d'émissions de gaz à effet de serre (GES) évité, ainsi que les permis d'émission négociables. Le crédit carbone possède une valeur marchande et peut être échangé entre pays industrialisés. Un pays ne parvenant pas à atteindre son objectif de réduction des GES pourrait acheter des crédits carbone à un autre pays ayant dépassé son objectif. Ce système a parfois été qualifié de « permis de polluer », car un pays riche pourrait ainsi « acheter » le droit de polluer à un autre ayant réellement réduit ses émissions.\n\nQuel est le paradoxe de la taxe carbone ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle concerne uniquement les économies fortes",
+        "B": "Elle freine l'utilisation de ressources renouvelables",
+        "C": "Elle permet le dépassement des normes édictées",
+        "D": "Elle ralentit le progrès dans les États émergents"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Quel visage Paris pourrait-il prendre en 2100? C'est ce que le collectif d'architectes « Et alors...» a imaginé au travers de vingt cartes postales géantes, exposées à Paris. Ce qui donne un résultat surprenant, parfois utopique, parfois réaliste. Ainsi l'idée d'une centrale hydrothermique pour chauffer et refroidir tout un quartier, projet de la Compagnie Parisienne du Chauffage Urbain. Des potagers « partagés » au pied des immeubles en plein centre ville, cela ressemble plus à un clin d'œil malicieux... Le vélo a également la part belle : les architectes imaginent des voies rapides sur les toits de Paris, au milieu de toitures végétalisées et de jardins.\n\nQuel projet est présenté comme réaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "L'extension d'un système de climatisation à tout un quartier",
+        "B": "L'installation de parcs sur les toits des bâtiments parisiens",
+        "C": "La construction de pistes cyclables au sommet des immeubles",
+        "D": "La création de jardins communs pour planter des légumes"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Bonjour,\n\nVous évoquez dans votre article le risque de coupure générale d'électricité pour la Bretagne en raison d'une surconsommation. Or, cette région ne dispose pas de source de production locale, ce qui la rend dépendante du réseau et des lignes à haute tension ! La pression est forte à chaque épisode de grand froid... Le risque est réel, cependant, les Bretons se serrent la ceinture. La Bretagne a toujours été en avance dans l'action, telle un village d'irréductibles Gaulois entouré par les Romains. Ce qui est agaçant, c'est que, pendant qu'on reproche aux particuliers, les médias ne dénoncent pas l'absence d'efforts du secteur industriel ! C'est même écœurant de le constater, car ils ne subissent aucune restriction à ce jour ! Qui consomme réellement plus ?\n\nAndré, fidèle lecteur\n\nQuelle est la réaction dont ce lecteur fait part ?",
+      "image_url": null,
+      "options": {
+        "A": "Il aimerait que sa région soit plus combative et engagée face aux problèmes locaux",
+        "B": "Il réclame de nouvelles dispositions tarifaires pour que les factures soient moins élevées",
+        "C": "Il s'indigne en estimant que les reproches faits aux consommateurs sont injustifiés",
+        "D": "Il trouve inquiétantes les conséquences de la mauvaise gestion des sources d'énergie"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Ceux qui l'ont vu cet été aux Francofolies n'en sont pas revenus. Trente ans après ses débuts, le chanteur Joseph Many a subjugué l'assistance. Il lui a fallu du temps pour se convaincre que monter sur scène pour y pousser la chansonnette était encore de son âge. Les ritournelles des années 1970 l'avaient propulsé à son époque sur le devant de la scène, avec l'image d'un artiste terriblement proche de la jeunesse d'alors. Puis sa brillante carrière d'écrivain l'avait convaincu de se consacrer à l'écriture.\n\nJusqu'à ce que l'inspiration musicale revienne. Preuve en est son nouvel album. Une ode à la vie, à l'amour, aux femmes. Les atmosphères sont délicieuses. Au fil des ballades, on redevient pour quelques minutes, adolescent.\n\nPourquoi Joseph Many a-t-il tardé à revenir sur scène ?",
+      "image_url": null,
+      "options": {
+        "A": "Il se sentait trop vieux pour les tournées",
+        "B": "Il voulait fuir son image d'idole des jeunes",
+        "C": "Le public préférait l'écrivain au chanteur",
+        "D": "Ses chansons étaient passées de mode"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 37,
+      "question_text": "La bioéthique fait l'objet d'une polémique qui confronte deux écoles\n\nPour la première, composée de chercheurs et de rationalistes, le progrès scientifique ne saurait être limité. La recherche entraînera l'éradication des maladies génétique et permettra même de les prévoir. On en viendra à un eugénisme contrôlé qui améliorera l'espèce humaine et les dépenses de santé publique seront allégées. La seconde école, des philosophes ou des ecclésiastiques, affirme ses craintes en ce qui concerne la pratique d'un eugénisme scientifique: il permettra la sélection efficace des embryons et ouvrira de plus en plus largement ses critères de choix à des exigences non pathologiques. Pour eux, il est impossible de déterminer les tares inconciliables avec l'humain, puisque certains individus en ont fait l'origine même de leur génie.\n\nSur quoi portent les réserves des partisans de la seconde école ?",
+      "image_url": null,
+      "options": {
+        "A": "Le coût social élevé de prise en charge des maladies génétiques",
+        "B": "Le développement de traitements curatifs de pathologies génétiques",
+        "C": "Le mode de financement de la recherche génétique fondamentale",
+        "D": "Les dérives induites par l'amélioration du patrimoine génétique"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Les tagueurs pourront en prendre de la graine. Ils n'ont rien inventé. Universelle, l'envie de laisser une trace de son passage ou d'apostropher l'autre à travers les siècles. Alix Barbet, fondatrice du Centre d'étude des peintures murales gallo-romaines, en apporte une preuve éclatante en explorant les tags d'il y a deux mille ans. Ces témoignages fragiles constituent, selon l'auteur, un matériau archéologique d'autant plus exceptionnel qu'ils sont « tout ce qui nous reste de l'humeur de l'écriture et du langage quotidien, des petites gens pour la plupart, et qui contrebalance la vision que l'on pourrait avoir de la culture gallo-romaine dans les provinces à travers les documents officiels qui nous sont parvenus.»\n\nDe quoi parle cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "La pratique de la peinture murale a pris naissance à l'ère gallo-romaine",
+        "B": "Les archéologues refusent de reconnaître la valeur des graffitis gallo-romains",
+        "C": "Les tagueurs d'aujourd'hui se sont inspirés des œuvres gallo-romaines",
+        "D": "L'expression picturale populaire existait durant l'époque gallo-romaine"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Depuis l'adolescence, je fréquente assidûment les dictionnaires:\n\nChaque fois que je bute sur un mot, que je suis dans le flou culturel, ils m'apportent la réponse et ouvrent de nouveaux horizons à ma curiosité en me renvoyant souvent à d'autres ouvrages. J'en possède une centaine et chacun est une bibliothèque à lui seul. Tous sont autant de béquilles de ma culture. Par exemple, quand vous cherchez le mot juste, rien de tel qu'un dictionnaire des synonymes ! On ouvre un dictionnaire pour se renseigner sur une question précise comme on lirait la notice d'un produit pharmaceutique destiné à soigner ceci ou cela. C'est le self-service de la pensée !\n\nJean-Claude Simeon, éditeur.\n\nPourquoi Jean-Claude Simeon aime-t-il les dictionnaires ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour découvrir de nouvelles références",
+        "B": "Pour posséder une bibliothèque fournie",
+        "C": "Pour s'évader vers des horizons lointains",
+        "D": "Pour trouver des remèdes à ses maux"
+      },
+      "correct_answer": "A"
+    }
+  ]
+}

@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE25",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Chère Mamie,\nCet été, j'ai pris le bateau pour l'île d'Arz, en Bretagne. J'y ai fait du camping, j'ai profité des belles plages et j'ai mangé de délicieuses crêpes bretonnes ! J'ai rencontré Benjamin et ses copains. Nous avons fait du vélo ensemble, c'était super !\nJe t'embrasse bien fort !\nLaura,\n\nPourquoi est-ce que Laura écrit ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour proposer une promenade en bateau",
+        "B": "Pour raconter son séjour en Bretagne",
+        "C": "Pour répondre à son cousin Benjamin",
+        "D": "Pour réserver une place dans un camping"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Chers parents,\nLes classes de notre école passeront la journée de vendredi à la mer. Le pique-nique de midi (sandwichs et boisson) sera fourni par la cantine. Il va faire très chaud, alors pensez aux casquettes, les manteaux et les pulls sont inutiles.\nLa directrice,\n\nQu'est-ce que les parents doivent donner aux enfants?",
+      "image_url": null,
+      "options": {
+        "A": "Quelque chose à boire",
+        "B": "Quelque chose à manger",
+        "C": "Quelque chose pour la pluie",
+        "D": "Quelque chose pour le soleil"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Restaurant La bonne fourchette\nFormule légère 9€ — Salade au choix\nFormule express 12,50€ — Plat du jour\nFormule déjeuner 16€ (1/2 eau minérale et café compris) — Entrée + plat du jour / Plat du jour + dessert\nFormule plaisir 20€ — Entrée + plat du jour + dessert\n\nCombien coûte la formule avec boisson ?",
+      "image_url": null,
+      "options": {
+        "A": "9 euros",
+        "B": "12,50 euros",
+        "C": "16 euros",
+        "D": "20 euros"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Vous souhaitez repeindre l'intérieur de votre appartement ? Suivez nos conseils pour réussir et avoir un résultat professionnel. Sur Créadéco.com, nous vous accompagnons aussi pour le choix de la couleur de la peinture de votre cuisine ou votre salon.\n\nQu'est-ce que ce site internet propose ?",
+      "image_url": null,
+      "options": {
+        "A": "Des adresses d'artisans",
+        "B": "Des idées de décoration",
+        "C": "Des leçons de bricolage",
+        "D": "Des modèles de meubles"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Salon gastronomique le 17 mars. Venez à la rencontre des agriculteurs producteurs et chefs de votre région ! Vous pourrez discuter avec eux et goûter leurs délicieux produits : pommes, fromages, beurre, miel, etc. ! Participez au concours de la meilleure recette !\n\nQu'est-ce qu'on peut faire dans ce salon ?",
+      "image_url": null,
+      "options": {
+        "A": "Découvrir la nourriture locale",
+        "B": "Gagner un repas traditionnel",
+        "C": "Prendre un cours de cuisine",
+        "D": "Visiter une ferme française"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Salut Éric !\nJ'ai fini les cours et je suis maintenant à Montpellier. Je suis serveuse dans un restaurant depuis une semaine. C'est fatigant, mais j'apprends beaucoup ! Je serai à Paris à la fin des vacances d'été pour te voir avec les copains.\nCamille,\n\nQu'est-ce que Camille explique ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est en voyage à Montpellier",
+        "B": "Elle rencontre des amis à Paris",
+        "C": "Elle suit des cours à l'université",
+        "D": "Elle travaille dans un restaurant"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Un cinéma historique en centre-ville, c'est exceptionnel ! La famille propriétaire de ce monument n'a pas changé depuis son ouverture en 1911. Dans ses sept salles, vous trouverez des films internationaux et des événements de qualité chaque semaine.\n\nQu'est-ce qu'on apprend sur ce cinéma ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est un bâtiment ancien",
+        "B": "Il se trouve en banlieue",
+        "C": "On peut y rencontrer des acteurs",
+        "D": "Ses films sont en noir et blanc"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Madame Chanmont,\nVous avez participé à notre concours et vous avez gagné un séjour d'une semaine tout compris pour deux personnes en Italie (transport, hébergement et restauration inclus). Veuillez prendre contact avec notre service clientèle par courriel afin d'obtenir toutes les informations nécessaires.\nLe service commercial,\n\nQue doit faire madame Chanmont ?",
+      "image_url": null,
+      "options": {
+        "A": "Écrire un message",
+        "B": "Prendre un billet d'avion",
+        "C": "Réserver un hôtel",
+        "D": "S'inscrire à un jeu"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Le soin d'origine naturelle «Nuit sommeil» est étudié pour les peaux fragiles. Il corrige les signes de fatigue et réveille votre visage. Votre peau est parfaite, même en plein hiver.\n\nComment peut-on définir « Nuit Sommeil »?",
+      "image_url": null,
+      "options": {
+        "A": "Un savon pour le corps",
+        "B": "Un shampoing aux herbes",
+        "C": "Une boisson pour dormir",
+        "D": "Une crème de beauté"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 10,
+      "question_text": "LE SAVIEZ-VOUS ?\nLes Galeries Lafayette sont aujourd'hui le site le plus visité à Paris après le Musée du Louvre ! Vous pouvez y trouver des vêtements à la mode, des objets pour la maison ou encore des articles de cuisine.\n\nQu'est-ce qu'on apprend sur ce grand magasin ?",
+      "image_url": null,
+      "options": {
+        "A": "Beaucoup de personnes le visitent",
+        "B": "Il vend des articles bon marché",
+        "C": "Il y a un célèbre musée à l'intérieur",
+        "D": "On y donne des cours de cuisine"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Marché facile est une application pour téléphone portable qui vous conseille les bons fruits et légumes de saison dans les supermarchés. Elle donne aussi des informations sur le fromage, la viande et le poisson.\n\nÀ quoi sert cette application?",
+      "image_url": null,
+      "options": {
+        "A": "À acheter sur internet",
+        "B": "À choisir ses produits",
+        "C": "À noter les magasins",
+        "D": "À trouver des recettes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Vous êtes une famille parisienne et vous voulez passer vos vacances au Canada ? Venez chez nous à Toronto en juillet et nous irons chez vous en France au même moment ! Notre maison est agréable. Il y a quatre chambres, un jardin et une piscine. Pour plus d'informations, contactez-nous à l'adresse : beaulieu.toronto@mail.ca.\n\nQue veut faire la famille Beaulieu de sa maison en juillet ?",
+      "image_url": null,
+      "options": {
+        "A": "L'agrandir",
+        "B": "L'échanger",
+        "C": "La louer",
+        "D": "La vendre"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Des chercheurs français viennent d'évaluer la capacité de certaines plantes d'intérieur à purifier l'air de la maison. Pour vérifier l'action « nettoyage de l'aire » de certaines plantes d'intérieur, des tests ont été menés dans le cadre d'un programme appelé Phytair. Lancé il y a quelques années, ce programme de recherche est destiné à en apprendre plus sur les différentes plantes connues pour leurs bénéfices sur l'air intérieur des bâtiments.\n\nQuel est le but de cette recherche sur les plantes d'intérieur ?",
+      "image_url": null,
+      "options": {
+        "A": "Analyser leurs effets",
+        "B": "Augmenter leur résistance",
+        "C": "Étudier leur développement",
+        "D": "Multiplier leurs variétés"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Lundi prochain, en France, les librairies organisent une soirée du livre de jeunesse. Au programme, des activités pour enfants et des dégustations de desserts. On pourra aussi voir sur grand écran les princes et princesses du cinéma.\n\nQue pourra-t-on faire aux soirées du livre ?",
+      "image_url": null,
+      "options": {
+        "A": "Écouter des chansons",
+        "B": "Gagner des cadeaux",
+        "C": "Goûter des recettes",
+        "D": "Jouer dans un film"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 15,
+      "question_text": "En Sardaigne (Italie), les piétons qui traversent tout en regardant leur téléphone peuvent recevoir une amende. Cette mesure fait suite à une augmentation du nombre d'accidents entre des véhicules et des piétons inattentifs. En effet, ces derniers ne font pas attention aux voitures parce qu'ils sont concentrés sur leur écran au lieu de regarder autour d'eux.\n\nDe quoi est ce qu'on parle dans cet article?",
+      "image_url": null,
+      "options": {
+        "A": "De l'utilisation du portable",
+        "B": "De la sécurité au volant",
+        "C": "Du bruit de la circulation",
+        "D": "Du vote d'une nouvelle loi"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Félicitations!\nVous avez gagné une carte cadeau de 50€. Vous pouvez l'utiliser pour acheter tous nos produits de beauté. Attention, vous ne pouvez pas l'échanger contre de l'argent ou la donner à une autre personne. Si vous la perdez, vous n'êtes pas remboursé.\n\nQu'est ce qu'on peut faire avec cette carte ?",
+      "image_url": null,
+      "options": {
+        "A": "Avoir des réductions sur certains articles",
+        "B": "Faire des courses dans un magasin",
+        "C": "Offrir une surprise pour un anniversaire",
+        "D": "Retirer de l'argent à un distributeur"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 17,
+      "question_text": "DU 4 AU 26 JUIN VENEZ VISITER LE SALON DE L'AGRICULTURE A STRASBOURG\n• Ateliers pour les adultes, balades avec des animaux pour les enfants.\n• Stands de nourriture et de boissons sur place.\n• Tarif spécial pour les groupes et les enfants de moins de 12 ans.\nInformations sur : www.salon.agriculture-strasbourg.fr\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "De découvrir un parc d'animation",
+        "B": "De gagner un séjour en famille",
+        "C": "De se promener dans une ferme",
+        "D": "De visiter une grande exposition"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 18,
+      "question_text": "« L'anniversaire » :\nPièce de théâtre de Harold Pinter. Meg et son mari tiennent un hôtel dont le seul client est Stanley. Deux nouveaux arrivants font irruption, et leur présence vient troubler l'équilibre fragile de Stanley. Tous les ingrédients sont réunis pour en faire un succès : une écriture subtile, d'excellents acteurs, une belle salle, une mise en scène originale. Une ombre au tableau : la langueur excessive de la pièce...\n\nSur quel point porte la critique négative de cette pièce de théâtre ?",
+      "image_url": null,
+      "options": {
+        "A": "L'interprétation des comédiens",
+        "B": "La durée de la représentation",
+        "C": "La qualité littéraire du texte",
+        "D": "Le lieu du spectacle"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Des études de marché récentes montrent que les frites signent leur grand retour. Leur cote de popularité ne se dément pas, mais elles doivent être préparées dans les règles de l'art pour des frites dorées, moelleuses dedans, croquantes dehors, il faut les cuire, puis les frire en deux temps. Si la Belgique et la France s'en disputent la paternité, on n'en a toujours pas trouvé l'origine. Avec le bond spectaculaire du burger dont elles sont l'accompagnement idéal, les frites sont fortement consommées au restaurant.\n\nQue révèle cet article sur les frites ?",
+      "image_url": null,
+      "options": {
+        "A": "L'origine historique de la recette",
+        "B": "Le secret d'une bonne préparation",
+        "C": "Les adresses où les consommer",
+        "D": "Les raisons de leur popularité"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Dora Bruder, publié en 1997, est considéré comme l'un des meilleurs romans de Patrick Modiano. L'écrivain aime fouiller dans l'histoire de la capitale et fréquente de nombreuses bibliothèques. Un jour, il tombe sur une annonce parue le 31 décembre 1941 dans Paris-Soir : « On recherche une jeune fille, Dora Bruder, 15 ans, 1m55, visage ovale, yeux gris-marron, manteau sport gris. Adressez toute indication à M. et Mme Bruder, 41, boulevard Ornano, Paris. » Modiano va alors s'attacher à lever le mystère de cette disparition en entraînant le lecteur dans les rues du 18e arrondissement.\n\nQue fait le journaliste dans cet extrait ?",
+      "image_url": null,
+      "options": {
+        "A": "Il cite un extrait d'une œuvre de Modiano",
+        "B": "Il explique l'idée de départ d'un livre de Modiano",
+        "C": "Il présente le métier de Modiano à ses débuts",
+        "D": "Il raconte la rencontre entre Modiano et sa femme"
+      },
+      "correct_answer": "B"
+    },
+        {
+      "question_number": 21,
+      "question_text": "Madame, Monsieur, Ce courrier fait suite à mon achat d'un téléphone le 5 mars dernier. Après réflexion, je souhaiterais le rendre, car j'ai finalement décidé d'acheter un appareil avec messagerie intégrée. Ainsi, je vous prie de bien vouloir me restituer la somme de 80 euros, correspondant à la somme versée le 5 mars par chèque.\nDans l'attente de votre réponse, je vous transmets, Madame, Monsieur, mes meilleures salutations.\nAndré Cellier,\n\nQuel est l'objet de la lettre de Monsieur Cellier ?",
+      "image_url": null,
+      "options": {
+        "A": "Le remboursement de son article",
+        "B": "L'échange de son téléphone",
+        "C": "L'envoi de son téléphone par la poste",
+        "D": "Une réclamation sur son achat"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 22,
+      "question_text": "En Belgique, un studio de technologie créative propose au public de se livrer à une expérience artistique d'un genre inédit : coiffés d'un casque spécial, les participants doivent se remémorer une histoire personnelle durant trente à soixante secondes. Des données ressortent alors sous forme d'algorithmes et sont analysées par un système de mesure émotionnelle, ce qui permet de leur donner forme et couleur. Ainsi, des peintures virtuelles sont créées à partir des émotions de chacun. Et comme chaque histoire est unique, chaque œuvre l'est aussi.\n\nQuel est le rôle des participants dans cette expérience ?",
+      "image_url": null,
+      "options": {
+        "A": "Effectuer un calcul",
+        "B": "Évoquer un fait divers",
+        "C": "Fournir un support",
+        "D": "Sélectionner un souvenir"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 23,
+      "question_text": "L'épisode meurtrier de canicule, qui a entraîné la mort d'un grand nombre de personnes âgées en Europe, a imposé un nouveau défi sanitaire. « Une seule solution, la climatisation », a-t-on entendu à cette occasion. La revue Durable, chantre du développement durable, s'insurge contre cette solution de facilité. « Le but n'est pas de condamner la climatisation par principe, notamment dans les hôpitaux et les foyers de personnes âgées, mais celle-ci crée des tensions sur le réseau électrique ; donc, avant de l'installer, il serait bon de considérer d'autres moyens efficaces, tels que les systèmes de circulation d'eau, l'appareillage sophistiqué de stores orientables jouant avec la brise et le rayonnement, etc. »\n\nQue reproche la revue Durable à la climatisation ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est simple à mettre en place, mais aussi très couteuse",
+        "B": "Elle est source d'infection pour des patients déjà fragiles",
+        "C": "Elle entraîne une trop grande consommation d'énergie",
+        "D": "Elle concurrence des modes naturels de rafraîchissement de l'air"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Localiser un boucher, trouver un hôtel, calculer son itinéraire, observer sa maison par satellite... Les cartes fleurissent sur le web et les internautes y sont accros. Plus de 13 millions de Français consultent régulièrement des sites de localisation sur internet. Sans oublier le succès phénoménal des photos-satellites mises en ligne. Ces services gratuits pour les internautes cachent un véritable business. De grandes sociétés rémunèrent les sites de localisation pour être bien placées sur les cartes. C'est d'autant plus efficace que les utilisateurs ne perçoivent pas immédiatement ces liens sponsorisés comme une publicité, mais comme un service.\n\nQu'apprend-on sur les services de localisation sur internet?",
+      "image_url": null,
+      "options": {
+        "A": "Ce sont des réseaux de commerçants qui les ont créés",
+        "B": "Ils sont financés discrètement par des entreprises",
+        "C": "Les prestations qu'ils proposent sont payantes",
+        "D": "Leur maintenance est assurée par des bénévoles"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 25,
+      "question_text": "La vision traditionnelle de l'entreprise implique d'avoir pour seule finalité le profit. Toutefois, le discours change. On parle désormais des trois P: performance du profit, des personnes et de la planète, ce qui constitue certes un progrès et signifie que l'entreprise doit être responsable socialement et environnementalement pour faire du profit. Néanmoins, la finalité reste toujours le profit. L'entreprise «humaniste» inverse ce discours en s'appuyant sur un regroupement de personnes au service du bien commun. Les bénéfices de l'entreprise qui demeurent nécessaires deviennent un moyen et l'objectif, c'est le bien commun. Pour l'atteindre, l'entreprise humaniste est construite sur des relations de confiance interpersonnelles, sur des produits et un service de qualité ainsi que sur un impact environnemental fiable, voire nul.\n\nComment les entreprises humanistes se distinguent-elles des autres ?",
+      "image_url": null,
+      "options": {
+        "A": "Par l'abolition des relations hiérarchiques classiques",
+        "B": "Par la mise en place d'une carte écologique commune",
+        "C": "Par la primauté de l'intérêt collectif sur bénéfices",
+        "D": "Par la répartition équitable des profits entre salariés"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Il veut réhabiliter la charcuterie :\nLe métier, bien sûr, mais aussi le produit. « On s'imagine un gros bonhomme avec un tablier taché de sang travaillant dans le froid, ironise Ludovic. C'est tout le contraire ! On s'éclate en cuisinant, on ne s'ennuie jamais. Quand elle est naturelle, la charcuterie est un : excellent aliment, les nutritionnistes devraient faire preuve de discernement. » Autre obsession de puriste la frontière des métiers. « Comment peut-on se prétendre à la fois boucher, charcutier et traiteur ? C'est un non-sens ! »\n\nQuel message cet homme veut-il transmettre?",
+      "image_url": null,
+      "options": {
+        "A": "L'avenir de son travail est menacé par l'industrie agroalimentaire",
+        "B": "La qualité des produits charcutiers est reconnue par les médecins",
+        "C": "Le passage d'un métier de bouche à un autre se fait facilement",
+        "D": "L'image attachée à sa profession est stéréotypée et peu valorisante"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Lettre à G, un documentaire passionnant :\nLes 4 jeunes réalisateurs de ce documentaire consacré au philosophe-journaliste André Gorz ont décidé de tourner ce film, après avoir découvert sa pensée presque par hasard. Ni pédagogique, ni austère, ni alarmiste, c'est une œuvre qui ouvre l'horizon et arrive à point nommé pour nous rappeler que l'écologie politique peut être une renaissance. Elle propose, en même temps qu'une découverte de cet auteur atypique, une lecture claire de son projet d'émancipation sociale à l'heure de l'urgence écologique. Car même si le contexte actuel est grave, la somme des connaissances psychologiques et scientifiques favorise, selon lui, «des possibilités d'émancipation, de développement et d'enrichissement de la vie qui n'ont jamais existé avant »\n\nDans cet article, qu'apprend-on sur André Gorz ?",
+      "image_url": null,
+      "options": {
+        "A": "Il dissocie l'environnement des questions sociales",
+        "B": "Il envisage avec optimisme les futurs possibles",
+        "C": "Il reste sceptique envers les scientifiques",
+        "D": "Il s'associe à l'écriture d'un documentaire"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Les distributeurs indépendants s'inquiètent de voir les salles de cinéma offrir de plus en plus de séances au spectacle vivant (opéras, ballets) ou au sport. Ces distributeurs sont le maillon le plus fragile du paysage cinématographique : ils prennent des risques sur la sortie des films et c'est à eux de financer la majeure partie de la numérisation des salles. Ils voient donc d'un mauvais œil que l'équipement numérique des grands complexes serve à passer autre chose que leurs films surtout quand les séances ont lieu le week-end, à l'heure où pour préserver la salle, le cinéma est interdit d'antenne à la télévision.\n\nQu'apprend-on sur les concours ?",
+      "image_url": null,
+      "options": {
+        "A": "À quel problème sont confrontés les distributeurs indépendants",
+        "B": "La forte concurrence des vidéos à la demande à la télévision",
+        "C": "Le désintérêt croissant du public pour les productions indépendantes",
+        "D": "Les nombreux échecs des projections proposées le weekend"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Soyez vous-même, ou sinon, devenez-le ! La rentrée de septembre voit s'afficher dans les couloirs du métro parisien et les vitrines des librairies les couvertures de livres de développement personnel et autres introductions à la méditation, destinés à faire passer la pilule du retour au bureau des vacanciers. Le nouveau film de Cédric Klapisch participe à sa manière à cette vague de bien-être sur fond de grisaille. Vous y verrez défiler votre vie monotone, heureusement suspendue à la promesse d'un grand bonheur croisé in extremis. La référence principale du film reste la psychanalyse. La sérénité est au bout du chemin, avec ce secret : apprendre à s'aimer pour pouvoir aimer quelqu'un d'autre.\n\nQuelle tendance est dans l'air du temps?",
+      "image_url": null,
+      "options": {
+        "A": "Commencer une thérapie",
+        "B": "Multiplier les passe-temps",
+        "C": "Rechercher l'âme sœur",
+        "D": "Travailler sur soi-même"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Parcourir les routes d'Europe l'été, beaucoup de touristes le font sans forcément connaître les règles en vigueur dans chacun des pays. Ce qu'il faut savoir, c'est qu'il existe des différences qui peuvent être notables selon les législations. Alors que la vitesse maximale sur autoroute est de 130 km/h en France, elle n'est que de 120 km/h en Belgique, en Espagne ou au Portugal. Quant au taux d'alcoolémie toléré, il varie de 0.8 g/l en Irlande à zéro en République tchèque.\n\nQue fait l'auteur de cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Il commente une loi",
+        "B": "Il donne un conseil",
+        "C": "Il formule une plainte",
+        "D": "Il raconte une anecdote"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 31,
+      "question_text": "L'association Bois & Cie est pensée au départ comme un atelier de partage de savoir-faire autour du bois. Pendant plus d'une décennie, des passionnés se réunissaient pour fabriquer meubles et autres objets en réutilisant des rebuts de bois. Il y a quelques années, l'association a pris un tournant en créant des habitats démontables en bois pour des publics précaires. En effet, Bois & Cie accueille des salariés en contrat d'insertion, et les problématiques liées à l'emploi et au logement sont étroitement liées. L'association a donc choisi de faire de la construction d'habitations le cœur de son activité et a lancé le projet Toits & Cie.\n\nQuelle a été la décision prise par cette association ?",
+      "image_url": null,
+      "options": {
+        "A": "Abandonner le travail du bois",
+        "B": "Aider les plus démunis à se loger",
+        "C": "Bâtir des locaux commerciaux",
+        "D": "Développer l'activité de recyclage"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Les néo-nomades ont souvent moins de 30 ans et vivent dans leur camion ou d'anciens cars scolaires transformés en caravanes ou camping-cars. Ces nouveaux voyageurs intermittents vont d'un lieu à l'autre, au gré des impératifs de leur travail, souvent saisonnier, et forment une population hétérogène. Ils résolvent la difficulté d'accéder à un logement sans travail permanent en s'installant en marge de notre paysage contemporain : aux abords des routes secondaires, dans la périphérie des villes, le long des rails, sur des friches ou des terrains privés. Les néo-nomades forment de fait une entité structurée au cœur de notre société individualiste.\n\nSelon le journaliste, quelle est l'origine du néo-nomadisme?",
+      "image_url": null,
+      "options": {
+        "A": "L'attirance pour les espaces naturels",
+        "B": "L'insécurité des zones urbaines",
+        "C": "La précarité du monde professionnel",
+        "D": "Le désir de vivre en communauté"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Dans les écoles, le mode d'évaluation classique est en passe d'être remplacé par une évaluation comportant des dizaines d'items, considérés comme « acquis », « non acquis » ou « en cours d'acquisition » par l'enseignant. Cependant, certains items manquent de précision. Certains estiment qu'il est très difficile d'évaluer des compétences liées au savoir-être et que cela n'a aucun intérêt. En outre, le système demande trois fois plus de temps en correction. D'autres professeurs constatent que certains élèves se sentent plus encouragés et valorisés. Ils progressent, car ils savent, après chaque évaluation, quelle est la compétence à retravailler, ce qui est plus précis qu'une note. La suppression du mode traditionnel d'évaluation suscite des réactions fortes, aussi bien chez les parents et les enseignants que chez les simples citoyens, des réactions qui traduisent à la fois le sentiment de ne plus comprendre les objectifs de l'école, et de ne plus maîtriser les attentes de l'institution envers les enfants.\n\nEn quoi ce nouveau système d'évaluation peut-il être déstabilisant ?",
+      "image_url": null,
+      "options": {
+        "A": "Il est imposé sans explications aux enseignants",
+        "B": "Il manque de finesse dans l'analyse des résultats",
+        "C": "Il propose des questions inadaptées aux enfants",
+        "D": "Il remet en question des traditions profondément ancrées"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Un nouveau mot se banalise sur les campus américains : « microagression ». Qualifiant les blessures subtiles qui affectent les individus exposés à une forme de dévalorisation par le langage, il alimente le débat sur la liberté d'expression. Forgé dans les années 1970, le terme a été développé à partir de 2007 par Derald Wing Sue, qui le définit ainsi : des insultes ou attitudes, intentionnelles ou non, qui communiquent des messages hostiles ou méprisants envers des personnes sur la seule base de leur appartenance à un groupe marginalisé. Des universités ont mis en place des mécanismes de prévention et de dénonciation de ces microagressions, mais certains redoutent que l'excès de précaution ne vienne tuer le débat d'idées.\n\nQu'apprend-on sur les microagressions?",
+      "image_url": null,
+      "options": {
+        "A": "Ce sont des blessures corporelles superficielles",
+        "B": "Elles sont commises par des groupes minoritaires",
+        "C": "Les autorités universitaires s'en préoccupent peu",
+        "D": "Lutter contre elle peut nuire à certaines libertés"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Le discours écologique actuel est très factuel, « pratico-pratique », comme si l'on n'osait pas parler de cette beauté dont nous avons pourtant besoin pour nous épanouir. C'est peut-être l'une des raisons pour lesquelles l'écologie politique ne rallie pas tant que ça. Si l'on n'est pas sensible à la terre, aux végétaux, on devient un technicien de l'écologie, on emploie un langage neutre et rassurant, fait d'environnement et de développement durable. Mais il faut pouvoir parler de la beauté spécifique de la nature, celle qui nous enchante, qui nous fait vibrer. Nous avons besoin de nous nourrir de sa splendeur, de son mystère, et pas seulement de ses aspects matériels, pratiques, biologiques.\n\nSelon l'intervenant, qu'est-ce que qui caractérise le discours écologique ?",
+      "image_url": null,
+      "options": {
+        "A": "Il apaise les tensions de la société",
+        "B": "Il insiste sur le point de vue matériel",
+        "C": "Il propose des programmes utopiques",
+        "D": "Il traite les problèmes liés aux sols"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Il est rare que les journalistes de notre mensuel ou moi-même rentrions de reportage en renonçant à rédiger un article. La plupart du temps, les découvertes que nous faisons sont comme de grandes bulles d'air : elles annihilent tout défaitisme, font disparaître la fatalité ambiante et ouvrent de nouveaux horizons. Nous rencontrons des hommes et des femmes qui nous parlent de leurs envies, de leurs rêves, de leur utopie, et de la manière dont ils s'y prennent pour, à leur échelle, faire évoluer le monde. C'est simple, c'est lent, c'est « proprement humain ». Il est tellement jouissif de pouvoir se dire que nous allons pouvoir partager tous ces « petits riens » avec nos abonnés !\n\nQuel est le parti pris de ces journalistes ?",
+      "image_url": null,
+      "options": {
+        "A": "Être au plus près de l'actualité",
+        "B": "Présenter des histoires positives",
+        "C": "Proposer des anecdotes amusantes",
+        "D": "Recenser des dérives de la société"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Défenseur·e·s et détracteur·e·s de l'écriture inclusive, qui consiste à féminiser les mots en plaçant entre des points la terminaison du féminin, s'écharpent sur cet épineux sujet. Pour Éliane Viennot, il est important de défendre l'écriture inclusive qui, en remaniant l'orthographe, vise à combattre les stéréotypes sexistes. Selon elle, la langue structure notre représentation du monde. Apprendre aux plus jeunes que le masculin l'emporte sur le féminin ne peut guère contribuer à forger des consciences égalitaristes. Elle rappelle de surcroît que la langue française a longtemps été plus égalitaire qu'elle ne l'est aujourd'hui : il y a eu une masculinisation délibérée du langage à partir du XVIIe siècle. Ceux qui se piquaient alors de définir le bon usage en ont profité pour renforcer l'ordre masculin.\n\nQue pense Eliane Viennot de l'écriture inclusive ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle favorise l'évolution des mentalités",
+        "B": "Elle incarne une première historique",
+        "C": "Elle permet de moderniser le lexique",
+        "D": "Elle reflète les clivages de la société"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Le recul est considérable : les accidents de travail ont diminué de plus de 7% cette année. Cette chute est due en partie aux campagnes médicales menées auprès du public. Mais elle révèle aussi une situation économique, avec la baisse d'activité, notamment dans les secteurs industriels - bâtiment et travaux publics. Mais si les accidents sont moins nombreux, les maladies professionnelles, elles, ne cessent de progresser, avec une hausse de 5% en 2009. Et les troubles des muscles et des os sont particulièrement concernés : leur fréquence a ainsi augmenté de plus de 7 % en un an. En cause, le stress, mais aussi les activités physiques à répétition.\n\nQu'apprend-on sur les accidents du travail ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils ont une influence très préoccupante sur l'économie",
+        "B": "Ils se produisent dans les entreprises industrielles",
+        "C": "Ils sont remplacés par des pathologies professionnelles",
+        "D": "Ils sont source de traumatismes musculaires"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Peu à peu, les robots entrent dans notre vie quotidienne, que ce soit sous forme de jouets pour enfants, d'appareils ménagers, de compagnons pour les personnes souffrant d'isolement ou encore d'outils pour combattre certaines pathologies. Cette problématique a interpellé des scientifiques, qui se sont interrogés sur la perception que nous avons des robots. Peut-on s'y attacher et les considérer comme des compagnons ? Ou les voyons-nous comme de simples objets ? Leur étude, plaçant d'abord des robots puis des humains en difficulté, montre que ces machines ne nous laissent pas indifférents, mais l'émotion semble malgré tout plus intense lorsqu'un humain rencontre un obstacle.\n\nQue cherchent à faire ces scientifiques ?",
+      "image_url": null,
+      "options": {
+        "A": "À établir un lien entre robotique et individualisme",
+        "B": "À évaluer l'action des robots dans la lutte contre la solitude",
+        "C": "À répéter les dérivés issus de la robotique dans le quotidien",
+        "D": "À vérifier l'empathie ressentie envers les robots"
+      },
+      "correct_answer": "D"
+    }
+  ]
+}

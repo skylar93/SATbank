@@ -29,7 +29,6 @@ pg_dump \
   --dbname="$DB_NAME" \
   --no-password \
   --verbose \
-  --clean \
   --no-owner \
   --no-privileges \
   --schema=public \

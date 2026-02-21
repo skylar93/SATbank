@@ -102,3 +102,6 @@ Thumbs.db
 
 # TypeScript
 *.tsbuildinfo
+
+# Claude worktrees
+.claude/worktrees/

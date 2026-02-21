@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE9",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "500 euros/mois : Location deux pièces, cuisine, vue sur mer.\n\nQue propose cette Annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Un appartement",
+        "B": "Un restaurant",
+        "C": "Un voyage",
+        "D": "Une voiture"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 2,
+      "question_text": "ÉTUDIANTS INTERNATIONAUX : Ne RESTEZ PAS SEULS!\n\nInscrivez-vous dans l'association de l'Université pour : discuter avec des étudiants français, participer à des groupes de conversation, faire des activités ensemble: sport, shopping, visites, sorties...\n\nET TOUT EST GRATUIT !\n\nQue propose cette association ?",
+      "image_url": null,
+      "options": {
+        "A": "Des cours particuliers",
+        "B": "Des jobs pendant le week-end",
+        "C": "Des rencontres entre jeunes",
+        "D": "Des voyages à l'étranger"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Nous informons notre aimable clientèle que nous sommes actuellement en vacances jusqu'au dimanche 1er septembre. Nous aurons le plaisir de vous retrouver à partir du 2 septembre. Le magasin ouvrira, comme tous les lundis, à 11h.\n\nBonnes vacances à tous !\n\nQu'apprend-on sur le magasin ?",
+      "image_url": null,
+      "options": {
+        "A": "il va avoir de nouveaux horaires",
+        "B": "Il va changer de propriétaire",
+        "C": "Il va déménager en septembre",
+        "D": "Il va fermer pendant l'été"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Louisa est arrivée avec un peu d'avance le 14 mars, pour le plus grand bonheur de sa famille.\n\nVous pouvez venir lui dire bonjour au 3, rue des Bleuets à Laval chez Agnès et Éric Tournier\n\nQu'est ce que ce message annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Une naissance",
+        "B": "Une exposition",
+        "C": "Un anniversaire",
+        "D": "Un mariage"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Salut Paul,\n\nJe t'écris du Canada. J'ai rencontré un étudiant mexicain. Je suis contente de parler ma langue avec lui, car l'Espagne me manque beaucoup ! En juin, nous allons suivre une formation ensemble en Italie. Je l'appelle bientôt.\n\nBises,\nElsa,\n\nQuelle est la nationalité d'Elsa ?",
+      "image_url": null,
+      "options": {
+        "A": "Canadienne",
+        "B": "Espagnole",
+        "C": "Italienne",
+        "D": "Mexicaine"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Nouveau !\n\nLe centre culturel met à la disposition de ses élèves un service de petites annonces pour trouver un travail temporaire (garde d'enfants, cours de langue....)\n\nÀ qui ce service est-il utile ?",
+      "image_url": null,
+      "options": {
+        "A": "Au personnel",
+        "B": "Aux étudiants",
+        "C": "Aux parents",
+        "D": "Aux professeurs"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Jardin de la fontaine\n\nOuverture - Fermeture\n\nDu 1er septembre au 31 mars : 7h30 - 18h30\nDu 1er avril au 30 juin : 7h30 - 20h30\nDu 1er juillet au 31 août : 7h00 - 22h30\n\nQuand peut-on se promener dans le parc après 18h30 ?",
+      "image_url": null,
+      "options": {
+        "A": "En décembre",
+        "B": "En février",
+        "C": "En mai",
+        "D": "En mars"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Tarif exceptionnel réservé aux lecteurs de DirectMontpeiller\n\nWeekend du goût !\n\nOffrez-vous une nuit avec diner + petit-déjeuner pour 70 €\n\nImportant: lors de votre réservation, utilisez le code de promotion « DIRECT » pour bénéficier de cette offre.\n\nQue propose cette publicité ?",
+      "image_url": null,
+      "options": {
+        "A": "Un court séjour touristique",
+        "B": "Une leçon de cuisine",
+        "C": "Une participation à un concours",
+        "D": "Une réduction pour le train"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Que puis-je dire de ce documentaire, moi qui pleure depuis tant d'années sur le manque de saveur de ce que-je mange? Je me rappelle du bon goût des pêches et des abricots ! Je comprends mieux la majorité des agriculteurs : ils ne mangeraient pas ce qu'ils vendent, c'est fou ! J'ai apprécié d'avoir le point de vue des différentes personnes concernées : agriculteurs, consommateurs, enseignants, cuisiniers.\n\nQuel est le thème du documentaire ?",
+      "image_url": null,
+      "options": {
+        "A": "L'alimentation",
+        "B": "L'éducation",
+        "C": "La cuisine",
+        "D": "Le commerce"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Lundi 20 juin\n\nMme Rico sera absente de son bureau exceptionnellement aujourd'hui, lundi. Pour avoir un rendez-vous, vous pourrez la contacter demain à partir de 14 heures.\n\nMerci de votre compréhension\n\nQuand Madame Rico sera-t-elle disponible ?",
+      "image_url": null,
+      "options": {
+        "A": "Dans la journée",
+        "B": "Le lendemain",
+        "C": "Le soir-même",
+        "D": "Vendredi matin"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Vous pratiquez un instrument de musique ? Vous avez entre 17 et 25 ans ?\n\nVenez jouer ensemble à la Maison de la Jeunesse et de la Culture ! Rendez-vous tous les mercredis, entre 15h et 19h.\n\nEncadrement par nos animateurs\n\nQue peuvent faire les jeunes dans ce centre culturel ?",
+      "image_url": null,
+      "options": {
+        "A": "Apprendre à jouer d'un instrument de musique",
+        "B": "Faire de la musique avec d'autres personnes",
+        "C": "Organiser des concerts de musique gratuits",
+        "D": "Rencontrer des professionnels de la musique"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Selon les résultats d'un sondage, 7 Français sur 10 déclarent acheter régulièrement des produits bio, avec, par ordre de préférence : les fruits et légumes, le lait et les produits laitiers, les œufs, l'épicerie, puis la viande. Pour les deux tiers des personnes interrogées, la santé est le principal argument, devant les considérations écologiques.\n\nCette hausse des ventes de produits bio s'explique en grande partie par l'intérêt des grandes surfaces pour ce marché, à la fois rentable, et par le développement des enseignes spécialisées. Cet engouement des Français a de quoi rassurer ceux qui pouvaient s'inquiéter des débouchés de la filière bio, à la suite des nombreuses reconversions agricoles.\n\nD'après ce texte, pourquoi les Français consomment-ils des produits bio ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour éviter de tomber malades",
+        "B": "Pour profiter de tarifs avantageux",
+        "C": "Pour protéger l'environnement",
+        "D": "Pour soutenir les paysans locaux"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Je ne suis pas journaliste, mais quand on aime quelque chose, on veut le faire découvrir aux autres. Mon émission consacrée au Jazz et au blues existe depuis sept ans! C'est avant tout une façon d'amener les gens sur son terrain, sur les choses qu'on aime et de leur faire comprendre pourquoi on les aime, leur donner envie d'en savoir plus. Et voilà, j'ai trouvé la radio comme vecteur et j'aime ça, mais je ne suis qu'un simple musicien-animateur.\n\nPour quelle raison cet homme fait-il de la radio ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est son mode de communication favori",
+        "B": "Il a entamé une formation de journaliste",
+        "C": "Il peut partager sa passion avec un public",
+        "D": "Pour répondre aux attentes de son public"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Pousser la porte de la Maison de l'adoption, c'est déjà franchir une étape. On se retrouve au milieu d'autres candidats à l'adoption. Et là, on comprend qu'au-delà de notre propre désir d'enfant, l'intérêt de l'enfant prime. « Moi, en tant que représentante de la protection de l'enfance, dit la directrice, je ne suis pas là pour vous trouver un enfant coûte que coûte mais pour trouver des parents à tous les enfants orphelins ou abandonnés »\n\nQuel est l'objectif de cet établissement ?",
+      "image_url": null,
+      "options": {
+        "A": "Aider les couples en mal d'enfant",
+        "B": "Défendre les droits des enfants",
+        "C": "Donner une famille aux enfants",
+        "D": "Fournir un hébergement aux enfants"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Les Français aiment lire mais restent encore très attachés au papier. C'est pourquoi, afin de faire connaître les nouveaux supports de lecture, 1100 liseuses sont disponibles dans les bibliothèques de Paris, et des tablettes sont aussi proposées en libre accès. Elles sont réparties dans l'ensemble des bibliothèques de prêt de la ville: de 2 à 50 selon la fréquentation de l'établissement.\n\nQu'apprend-on dans ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "La mairie de Paris va essayer de s'opposer aux livres électroniques",
+        "B": "Les bibliothèques risquent de fermer à cause des livres électroniques",
+        "C": "Les Français préfèrent les livres électroniques aux livres traditionnels",
+        "D": "Les Parisiens peuvent accéder facilement à des livres électroniques"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Historien de formation, gros consommateur de littérature et de bandes dessinées depuis l'adolescence, j'ai traversé une drôle de crise vers l'âge de quarante ans. Durant plus de cinq ans, je me suis mis à lire des livres de grammaire de langues étrangères et j'ai cessé de lire autre chose.\n\nAujourd'hui, la crise est un peu passée, mais je continue à consommer beaucoup plus de grammaires de langues rares et lointaines que de romans.\n\nQue nous apprend l'auteur de ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a appris plusieurs langues avec des manuels",
+        "B": "Il a enseigné les langues anciennes au lycée",
+        "C": "Il est passionné d'ouvrages sur les langues",
+        "D": "Il va publier dans une revue sur les langues"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Expéditeur: Philippe Tassi\nDestinataire: Maud Lenay\nObjet: Inscription en master.\nPièce jointe : Dossier d'inscription.pdf\n\nMademoiselle Lenay,\nSuite à votre appel téléphonique concernant le master en communication, je vous informe que les prochaines inscriptions auront lieu du 25 mai au 30 juin. Vous trouverez en pièce jointe le dossier d'inscription à nous retourner avec : la photocopie de votre dernier diplôme, un C.V, et une lettre de motivation. N'oubliez pas d'indiquer une adresse électronique : la réponse vous sera communiquée uniquement par courriel. Consultez le site internet www.univ.fr pour toute autre information.\n\nCordialement,\nPhilippe Tassi\n\nQue devra faire Mademoiselle Lenay pour savoir si sa candidature est retenue ?",
+      "image_url": null,
+      "options": {
+        "A": "Consulter sa boite de réception de courriels",
+        "B": "Écrire au responsable de la formation choisie",
+        "C": "S'informer sur le site Internet www.univ.fr",
+        "D": "Téléphoner au département Communication"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Notre association peut aider les étudiants qui vivent seuls et les personnes à revenu modeste à payer leur loyer. Cette aide peut couvrir jusqu'à 75 % de votre loyer et vous permet de bénéficier d'une réduction sur les frais d'électricité et de gaz.\n\nPour savoir si vous pouvez recevoir cette aide, plusieurs solutions s'offrent à vous : 1. Vous prenez rendez-vous avec l'un des conseillers de notre association qui ouvrira un dossier de demande avec vous. 2. Vous remplissez le questionnaire d'allocation logement sur notre site Internet.\n\nÀ qui s'adresse ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Aux familles qui ont des factures élevées",
+        "B": "Aux jeunes qui veulent vivre en colocation",
+        "C": "Aux locataires qui ont de faibles revenus",
+        "D": "Aux personnes qui achètent un logement"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Dora Bruder, publié en 1997, est considéré comme l'un des meilleurs romans de Patrick Modiano. L'écrivain aime fouiller l'histoire de la capitale et fréquente de nombreuses bibliothèques. Un jour, il tombe sur une annonce parue le 31 décembre 1941 dans Paris-soir :\n\n« On recherche une jeune fille. Dora Bruder, 15 ans, 1m55, Visage ovale, yeux gris marron, manteau sport gris. Adresser toute indication à M. et Mme Bruder, 41, boulevard Ornano, Paris. »\n\nModiano va alors s'attacher à lever le mystère de cette disparition en entrainant le lecteur dans les rues du 18° arrondissement.\n\nQue fait le journaliste dans cet extrait ?",
+      "image_url": null,
+      "options": {
+        "A": "Il cite un extrait d'une œuvre de Modiano",
+        "B": "Il explique l'idée de départ d'un livre de Modiano",
+        "C": "Il présente le métier de Modiano à ses débuts",
+        "D": "Il raconte la rencontre entre Modiano et sa femme"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Ralentissement du traitement de l'information, baisse de l'attention et de notre mémorisation à court terme... Avec l'âge, le vieillissement du cerveau semble inévitable. Pourtant, notre santé cognitive dépend aussi de notre mode de vie. Il est ainsi primordial, après la soixantaine, de conserver une vie active, physiquement par une pratique sportive régulière et aussi intellectuellement en sollicitant nos fonctions mentales par un apprentissage permanent. Pour cela, il est essentiel de garder une vie sociale riche d'interactions avec les autres et également de cultiver des activités associatives ou sportives par exemple.\n\nQuel est l'objectif des conseils donnés dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Améliorer les capacités physiques",
+        "B": "Découvrir de nouveaux types de sports",
+        "C": "Développer le cercle de ses relations sociales",
+        "D": "Maintenir les performances de la mémoire"
+      },
+      "correct_answer": "D"
+    },
+     {
+      "question_number": 21,
+      "question_text": "Madame Bertrand,\n\nJe vous écris suite à votre message électronique du 13 avril dernier au sujet de l'offre d'emploi n°23. Votre formation universitaire et votre expérience semblent particulièrement intéressantes. M. Martin, attaché culturel de l'ambassade de France, accepte de vous recevoir pour un entretien au consulat de New York pour discuter avec vous des possibilités d'emploi. Je suis votre disposition pour envisager ensemble quelques dates.\n\nLaetitia Xavel\nSecrétariat du service.\n\nQuel est le but de ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Annoncer la signature d'un accord de coopération",
+        "B": "Communiquer une offre de stage de fin d'études",
+        "C": "Faire part de la réponse d'un responsable",
+        "D": "Informer sur le profil d'un poste disponible"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 22,
+      "question_text": "La voie est libre pour la maire de Paris, mais pas sans embûches. Décidée déployer 700 km de nouvelles pistes cyclables à Paris d'ici 2020, elle n'entend pas laisser le préfet de police lui mettre des bâtons dans les roues. Or, le préfet tire la sonnette d'alarme, car le projet municipal met en péril la capacité d'intervention de ses services en cas de crise majeure dans certains secteurs de la capitale. Sans nier l'intérêt certain d'une piste cyclable, il estime que restreindre la circulation automobile à une seule file au lieu de deux dans certaines rues aboutira « à des phénomènes de congestion inquiétants en cas d'urgence. »\n\nQue reproche le préfet de police au projet de la maire de Paris ?",
+      "image_url": null,
+      "options": {
+        "A": "Il néglige les commerces dans les rues piétonnes",
+        "B": "Il rend difficile l'accès aux secteurs touristiques",
+        "C": "Il répond peu aux besoins en pistes cyclables des habitants",
+        "D": "Il risque d'entraver la circulation des véhicules de secours"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Le smartphone participe à l'entretien d'un lien pathologique de plus en plus répandu, le désir de mainmise des parents sur les adolescents. La crise d'adolescence confronte les parents au désir d'autonomie de l'adolescent, et les oblige à faire le deuil de leur position de parent. Cela suppose qu'ils lâchent prise et fassent confiance à leur enfant. Mais de plus en plus de parents souhaitent que leur ado reste à la maison. Le smartphone, qui permet de rester en lien avec ses copains, arrange donc les parents.\n\nQuel constat fait l'auteur à propos des smartphones ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils éloignent les jeunes du monde des adultes",
+        "B": "Ils entrainent des comportements de type addictif",
+        "C": "Ils ont tendance à couper les adolescents du réel",
+        "D": "Ils peuvent être utilisés comme outils de contrôle"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Dans le monde de l'éducation, la mode est au « ludique »\n\nPas une description d'un nouveau matériel informatique sans l'utilisation de cet adjectif miraculeux. N'ayant rien de mieux à offrir, les publicitaires insistent sur le côté « ludique » et neutre de leur matériel, sous-entendant ainsi que les difficultés des enfants sont liées uniquement au côté poussiéreux de la présentation d'exercices et à l'ennui qu'ils suscitent. En changeant l'apparence, on suscitera l'intérêt et la réussite sera assurée. La rééducation risque d'être perçue comme la modernisation de la pédagogie sans autre questionnement sur l'échec de la pédagogie traditionnelle.\n\nQue reproche l'auteur du texte à la mode du ludique ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle demande des connaissances techniques poussée",
+        "B": "Elle empêche les jeunes utilisateurs de se concentrer",
+        "C": "Elle masque les problèmes pédagogiques essentiels",
+        "D": "Elle sert sans succès d'argument commercial"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Suite au peu d'intérêt porté à la formation professionnelle à Montréal, cinq comités scolaires ont décidé de lancer un projet pour encourager les élèves à choisir cette voie plutôt que celle des études longues. Ils ont ainsi créé un Guide organisationnel et pédagogique régional, un outil qui servira aux enseignants à faire connaitre aux élèves les différentes possibilités de carrière dans la formation apprentissage. « D'ici dix ans. 30 % des besoins de main-d'œuvre vont exiger des compétences professionnelles. Pas des diplômes universitaires » a rappelé Antonio Bernardelli, l'un des principaux créateurs du projet.\n\nQuel est l'objectif de ce guide ?",
+      "image_url": null,
+      "options": {
+        "A": "Faire la promotion de l'apprentissage d'un métier auprès des jeunes",
+        "B": "Former les professeurs à de nouvelles méthodes d'enseignement",
+        "C": "Présenter les opportunités de stage en entreprise dans la région",
+        "D": "Proposer aux étudiants des stratégies de recherche d'emploi"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Longtemps délaissées, les algues semblent peu à peu séduire les consommateurs\n\nEn raison de leur confusion avec les algues vertes qui polluent le littoral, ces légumes de mer sont parfois mal considérés. Pourtant, si les algues ne font pas encore partie de notre univers culturel alimentaire, leur consommation est en progression. « Les Occidentaux sont-ils prêts à en faire un produit courant? », questionne le docteur Arnaud Cocaul. Pas sûr. « Malgré leurs bienfaits nutritionnels, leur consommation restera sans doute limitée », estime ce nutritionniste.\n\nQuelle place occupent les algues en France ?",
+      "image_url": null,
+      "options": {
+        "A": "Elles font partie de la gastronomie régionale",
+        "B": "Les gens en mangent plus que par le passé",
+        "C": "Les médecins conseillent leur usage en cuisine",
+        "D": "Leur culture augmente rapidement sur les côtes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Renaissance un mot porteur de sens á de nombreux égards.\n\nHistoriquement, elle symbolise le passage vers une ère nouvelle, créatrice, Effervescente. Un retour aux sources et des artistes humanistes nourris par l'idée de temps nouveaux faits d'espoir et de confiance en l'homme. Ces multiples lectures ont été source d'inspiration pour la nouvelle collection. C'est aussi l'énergie nouvelle, un regain de vitalité. Avec une ligne plus urbaine, hommes et femmes trouveront dans des coupes près du corps aux couleurs toniques des tenues à leurs mesures pour affronter l'hiver avec sourire et imagination.\n\nD'où est tiré ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "D'un catalogue de styliste",
+        "B": "D'un dictionnaire philosophique",
+        "C": "D'un manuel d'histoire de l'art",
+        "D": "D'une présentation de musée"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Avez-vous déjà observé des familles en train de remplir des sachets de bonbons sur un stand de confiserie ? Un chercheur américain, a montré qu'elles en achètent plus quand les bonbons sont de couleurs différentes.\n\nDe nombreuses observations similaires prouvent que les entreprises agroalimentaires connaissent nos comportements et la manière dont nous prenons certaines de nos décisions. Par exemple, elles exploitent notre préférence innée pour le sucre, à tous les âges. Elles savent que l'éducation nutritionnelle des enfants et des jeunes est défaillante dans certaines familles et en profitent.\n\nQue dénonce l'auteur de cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "La manipulation des clients par les industriels",
+        "B": "L'attitude imprévisible des consommateurs",
+        "C": "L'uniformisation des saveurs et des goûts",
+        "D": "L'utilisation abusive des produits de synthèse"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 29,
+      "question_text": "L'abandon de l'énergie nucléaire ne peut être envisagé sur la seule base de motivations idéologiques et politiques. La question du remplacement des sources d'énergie doit être posée en amont, en particulier en ce qui concerne la filière bois. Cette dernière, à condition d'une préparation adéquate, semble disposer des moyens nécessaires pour assurer une part significative de la transition énergétique lors de l'arrêt progressif des centrales nucléaires. À défaut, la sortie du nucléaire pourrait, contrairement à l'idée communément admise, s'apparenter à un mal pour un mal.\n\nQuelle est l'idée développée par l'auteur ?",
+      "image_url": null,
+      "options": {
+        "A": "Le recours à l'énergie nucléaire sera toujours indispensable",
+        "B": "Le développement d'autres énergies que le nucléaire est superflu",
+        "C": "Le renoncement au nucléaire doit être mûrement planifié",
+        "D": "L'exploitation des forêts peut pallier entièrement le nucléaire"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Ils sont dix et ils sont \"dys\". Comme dyslexiques, dysphasiques... Âgés de 11 à 13 ans, ces enfants souffrant de troubles du langage sont accueillis depuis la rentrée au collège Petite-Lande dans une classe intégrée, entourés d'une équipe de professionnels « Les enfants ne suivent pas une formation classique mais, durant quatre ans, ils vont donc acquérir les bases scolaires, de l'autonomie au quotidien, et choisir une orientation professionnelle grâce à des stages en entreprise » Au sein du collège, ils peuvent fréquenter des jeunes de leur âge, participer à certaines activités et projets en commun (cours de sport, sorties...)\n\nQue peuvent faire ces jeunes grâce à ce projet ?",
+      "image_url": null,
+      "options": {
+        "A": "Guérir de leurs troubles du langage",
+        "B": "Intégrer une classe traditionnelle",
+        "C": "Préparer leur entrée au collège",
+        "D": "Profiter d'un encadrement spécifique"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Paul Bocuse n'était pas le plus créatif, ni le meilleur technicien de cette génération de chefs d'exception qui a vu éclore des cuisiniers de renommée internationale. Mais il avait une vision, du culot et un véritable talent de meneur. Histoire de donner une stature plus imposante aux cuisiniers, il a lancé la mode de la fameuse veste blanche \"grand chef\", avec le nom brodé sur la poitrine et le port de la toque démesurée qui évoque la coiffe des pharaons. Dès ses débuts, sa personnalité et son sens de la formule ont fait mouche auprès de la presse, qui a publié de nombreux portraits flatteurs, faisant affluer les clients dans son restaurant.\n\nD'après ce journaliste, quelle a été la clé du succès de Paul Bocuse ?",
+      "image_url": null,
+      "options": {
+        "A": "Sa connaissance des médias",
+        "B": "Ses méthodes ancestrales",
+        "C": "Ses recettes originales",
+        "D": "Son charisme incroyable"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Au début de l'adolescence, vers 11-12 ans ; les enfants aspirent à l'autonomie. C'est à cette période que les écrans jouent un rôle important au niveau de leur intégration sociale mais aussi que les risques d'excès se profilent. « Les parents doivent abandonner leur position de prescription et passer à une position d'accompagnement », Le docteur Huerre leur recommande donc d'explorer avec leur enfant les jeux qui l'intéressent et la manière qu'il a de circuler sur la toile, afin de faciliter les échanges. « Au lieu d'avoir peur des jeux vidéo, demandez-lui de vous les montrer et n'hésitez pas à jouer avec lui. Certains procurent un réel plaisir visuel et esthétique » conseille-t-il.\n\nQue préconise le médecin aux parents ?",
+      "image_url": null,
+      "options": {
+        "A": "De participer à l'exploration du monde numérique",
+        "B": "De restreindre le temps consacré aux jeux vidéo",
+        "C": "De sélectionner des contenus adaptés aux enfants",
+        "D": "De surveiller la navigation des jeunes sur la toile"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 33,
+      "question_text": "C'est un joli coup de peinture... avant fermeture !\n\nLe vieil hôpital psychiatrique du Mans, construit en 1828 et classé aux Monuments historiques depuis 2004, a vu l'arrivée de drôles de troupes. Promis à la destruction et à la rénovation, le bâtiment a été investi par des artistes. L'occasion était belle pour le collectif associatif « espace provisoire » d'envahir les salles et de leur redonner une seconde vie. Plus de 1000 m2 ont été occupés par une soixantaine d'artistes musiciens, peintres, sculpteurs, photographes... tous prêts à accueillir des visiteurs, des curieux. L'objectif, non avoué, est de prouver que la culture est à sa place partout.\n\nQue cherche à faire le collectif « Espace provisoire » ?",
+      "image_url": null,
+      "options": {
+        "A": "Convertir les lieux en maison de la culture",
+        "B": "Diffuser l'art dans des endroits inattendus",
+        "C": "Ouvrir un centre de formation artistique",
+        "D": "Rénover les anciens locaux en les décorant"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Je ne connais pas son prénom, mais il y a, dans les Alpes, une personne à la verve savoureuse. Elle émaille la visite des gravures rupestres — dont les plus anciennes remontent au Néolithique — de mises en perspective sur les prémices préhistoriques du capitalisme et de la domination masculine. Elle chantera peut-être, à condition que vous ne l'applaudissiez pas, afin de vous permettre de ressentir l'acoustique d'un cirque rocheux. Elle vous proposera aussi de vous allonger et de fermer les yeux pour percevoir les vibrations du sol, riche en uranium. Bref, elle guidera les êtres minuscules que vous êtes à travers les plis grandioses de l'écorce terrestre.\n\nOù exerce la personne décrite ?",
+      "image_url": null,
+      "options": {
+        "A": "Dans un centre de relaxation",
+        "B": "Dans un laboratoire",
+        "C": "Dans un musée archéologique",
+        "D": "Dans un parc naturel"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Le discours écologique actuel est très factuel, « pratico-pratique », comme si l'on n'osait pas parler de cette beauté dont nous avons pourtant besoin pour nous épanouir. C'est peut-être l'une des raisons pour lesquelles l'écologie politique ne rallie pas tant que ça. Si l'on n'est pas sensible à la terre, aux végétaux, on devient un technicien de l'écologie, on emploie un langage neutre et rassurant, fait « d'environnement » et de « développement durable ». Mais il faut pouvoir parler de la beauté spécifique de la nature qui nous enchante, qui nous fait vibrer. Nous avons besoin de nous nourrir de sa splendeur, de son mystère, et pas seulement de ses aspects matériels, pratiques, biologiques.\n\nSelon l'intervenant, qu'est-ce qui caractérise le discours écologique actuel ?",
+      "image_url": null,
+      "options": {
+        "A": "Il apaise les tensions de la société",
+        "B": "Il insiste sur le point de vue matériel",
+        "C": "Il propose des programmes utopiques",
+        "D": "Il traite les problèmes liés aux sols"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 36,
+      "question_text": "On connait Cézanne surtout pour ses paysages, mais le Musée d'Orsay montre, pour la première fois, une partie méconnue de l'œuvre de l'artiste. On y croisera ainsi le visage de son épouse, seul motif autant étudié par le peintre que la montagne Sainte-Victoire. Au fil des versions, Hortense Fiquet devient l'objet d'une recherche plastique, de mise en scène et de géométrisation des formes. Mais Cézanne peut aussi avoir le pinceau cruel. Dès ses débuts, les figures de son père et de sa mère sont tourmentées. Lui-même se représente à 27 ans, patibulaire et le regard injecté de sang. À la fin de sa vie, Cézanne choisit des anonymes du monde rural. Ses tableaux ne sont alors qu'une autre forme de paysage.\n\nQue souligne cette exposition sur Paul Cézanne ?",
+      "image_url": null,
+      "options": {
+        "A": "L'influence de ses contemporains",
+        "B": "La singularité de ses portraits",
+        "C": "Son engouement pour la nature",
+        "D": "Son travail post impressionniste"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Suite à un accident chimique sur un site minier, les pouvoirs publics ont décidé d'obliger les sociétés minières à financer des programmes de recherche et à replanter les surfaces exploitées. Et de fait, les compagnies minières jouent bien le jeu. Cependant, il serait bien naïf de penser que leurs dirigeants soient devenus tout à coup philanthropes ; il faut chercher la raison de cet intérêt ailleurs. Il se trouve qu'un scientifique, Anthony Van der Hent, a prouvé que des « super-plantes » avaient la faculté d'extraire du sol des métaux économiquement exploitables. C'est donc la possibilité d'allier la régénération des sites industriels à des perspectives de gains financiers supplémentaires qui motive tant les industriels.\n\nSur quel point porte le scepticisme du journaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "La capacité des plantes à nettoyer les sols",
+        "B": "La rentabilité d'un nouveau système d'extraction",
+        "C": "Le résultat des recherches de M. Van der Hent",
+        "D": "Les préoccupations écologistes des industriels"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Une époque inimaginable pour un enfant d'aujourd'hui, ce temps où les parents n'avaient pas Internet et leur progéniture, pas de portable. Les parents les plus informés s'informaient sur le monde une, voire deux fois par jour. Aujourd'hui, nous savons qu'il va mal tout le temps. Chaque seconde, une mauvaise nouvelle tombe de l'autre bout du globe sur notre smartphone. En quelques années, nous avons basculé dans un nouveau monde. Plus grand, immense même, tissé de rencontres improbables et d'opportunités fabuleuses, mais aussi surpeuplé de contrées hostiles et de tribus numériques agressives. Notre nouvelle vie est absolument excitante, vertigineuse même. Mais justement, il nous appartient de dompter ce vertige.\n\nQue constate ce journaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "La dégradation des relations sociales à cause d'internet",
+        "B": "La multiplication des sources d'information",
+        "C": "La nocivité des écrans sur le développement des enfants",
+        "D": "La recrudescence d'informations mensongères"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Treize jeunes cinéastes, achevant leur formation dans les plus prestigieuses écoles d'animation, ont planché sur quelques vers de Paul Éluard, livrant leur vision originale de son univers poétique. S'inscrivant dans la suite des programmes de courts-métrages dédiés à Prévert et Apollinaire, ce nouveau florilège de la série En sortant de l'école met en lumière l'œuvre d'un « apparenté surréaliste » dont la notoriété se résume souvent, hélas, à l'incontournable poème Liberté... sa délicatesse constituant pourtant un combustible merveilleux pour de jeunes cinéastes.\n\nSelon cette critique, quel est l'apport de cet ensemble de courts-métrages ?",
+      "image_url": null,
+      "options": {
+        "A": "Il constitue une création artistique novatrice",
+        "B": "Il établit des ponts avec d'autres auteurs",
+        "C": "Il fait connaitre les travaux d'un écrivain",
+        "D": "Il ouvre la voie à de prochaines réalisations"
+      },
+      "correct_answer": "C"
+    }
+  ]
+}

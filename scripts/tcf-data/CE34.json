@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE34",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Pour l'été, voici quelques gestes simples s'il fait très chaud :\n• Boire un litre et demi d'eau par jour.\n• Limiter les efforts physiques.\n• Manger des fruits et des légumes\n• Garder sa maison au frais.\n\nQuel est le but de cette annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Donner des conseils",
+        "B": "Informer sur la météo",
+        "C": "Présenter des activités",
+        "D": "Proposer un menu"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Chers parents,\nLes inscriptions à l'école et au centre de loisirs pour la rentrée prochaine sont ouvertes. Remplissez le dossier sur le site de la ville www.ville-de-vernon.fr ou retirez-le à la mairie et renvoyez-le avec toutes les informations avant le 17 mars.\n\nQu'est-ce que les parents doivent faire ?",
+      "image_url": null,
+      "options": {
+        "A": "Compléter des documents",
+        "B": "Demander un programme",
+        "C": "Prendre un rendez-vous",
+        "D": "Visiter un établissement"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 3,
+      "question_text": "À Chamonix, à 10 minutes à pied des pistes de ski, grand 3 pièces de 65 m2, tout équipé, confortable et calme. Proche de nombreux commerces et d'une garderie.\n620 € la semaine en été.\n1050 € en hiver.\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "Des ateliers pour enfants",
+        "B": "Du matériel de sport",
+        "C": "Un emploi à la montagne",
+        "D": "Une location de vacances"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 4,
+      "question_text": "L'Association « Bon appétit! » vous propose de mieux manger. Elle vient chez vous avec des bons petits plats tous les jours de la semaine. Tous nos menus sont préparés avec des légumes de saison !\nChoisissez votre menu sur notre site :\nwww.bonappetit.fr\n\nQu'est-ce que cette association propose ?",
+      "image_url": null,
+      "options": {
+        "A": "Des achats de produits frais",
+        "B": "Des conseils pour maigrir",
+        "C": "Des recettes de cuisine",
+        "D": "Des repas livrés à domicile"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Salut Claire,\nJe t'écris du Canada. J'ai rencontré un étudiant mexicain. Je suis contente de parler ma langue avec lui, car l'Espagne me manque beaucoup ! En juin, nous suivrons ensemble une formation en Italie.\nJe t'appelle bientôt,\nBises,\nElsa,\n\nQuelle est la nationalité d'Elsa ?",
+      "image_url": null,
+      "options": {
+        "A": "Canadienne",
+        "B": "Espagnole",
+        "C": "Italienne",
+        "D": "Mexicaine"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 6,
+      "question_text": "De: cannelle@lilo.com\nÀ: Elke@mail.com\n\nSalut Elke,\nC'est bientôt la fête de nos 20 ans de mariage ! Beaucoup d'invités viendront avec leurs enfants. Comme tu adores les petits, pourrais-tu t'occuper d'eux en journée ? Quand ils seront couchés, nous pourrons danser tous ensemble !\nMerci, bisous\n\nQue demande Cannelle à son amie ?",
+      "image_url": null,
+      "options": {
+        "A": "D'écrire aux invités",
+        "B": "D'organiser la fête",
+        "C": "De garder des enfants",
+        "D": "De préparer des danses"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Bonjour,\nvotre colis vous attend dans votre magasin pendant sept jours. Allez à l'accueil où vous présenterez ce courriel. Si vous n'avez pas le temps de passer, vous pouvez demander un envoi à domicile sur www.envoyez-moi.com.\nMerci pour votre confiance.\n\nQuelle information donne ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "La boutique est fermée",
+        "B": "La commande est arrivée",
+        "C": "La facture est disponible",
+        "D": "La livraison est en retard"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Salut Lucie,\nJe t'écris de l'île d'Yeu où je passe une semaine formidable : plage, mer, soleil et surtout beaucoup de calme et de repos. J'espère que tu vas bien, à bientôt.\nJe t'embrasse,\nAgathe,\n\nPourquoi Agathe écrit-elle ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour annoncer son déménagement",
+        "B": "Pour donner de ses nouvelles",
+        "C": "Pour inviter Lucie en vacances",
+        "D": "Pour remercier son amie"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Monsieur Giannorsi,\nNous vous informons que votre commande est arrivée à La Poste. Vous pouvez venir la retirer du lundi au vendredi de 8h à 18h. N'oubliez pas de prendre votre pièce d'identité.\nNous vous remercions pour votre commande chez Culture et Compagnie !\n\nQu'est-ce que M. Giannorsi doit faire ?",
+      "image_url": null,
+      "options": {
+        "A": "Aller chercher un colis",
+        "B": "Échanger son achat",
+        "C": "Envoyer une lettre",
+        "D": "Réserver son article"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 10,
+      "question_text": "La commune de Saint-Brieuc participe au concours Europa sur le thème « De la gare à la mer ». De jeunes architectes ont imaginé la ville de demain, avec de nouveaux espaces publics, un meilleur partage de l'espace entre piétons, vélos et véhicules. Les gagnants présenteront leur projet aux habitants qui choisiront le plus intéressant.\n\nQuel est le but du concours Europa ?",
+      "image_url": null,
+      "options": {
+        "A": "Dessiner des bâtiments publics originaux",
+        "B": "Donner le goût du voyage aux habitants",
+        "C": "Inventer une ville facile à vivre pour tous",
+        "D": "Prévoir de nouveaux moyens de transport"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Ne jetez plus vos bouteilles en plastique à la poubelle, donnez-les à votre ville et elle va en faire des bicyclettes ! Avec dix millions de bouteilles, on peut faire 1 bicyclette ! Renseignez-vous sur le site internet de votre mairie !\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "De changer les poubelles",
+        "B": "De collecter du plastique",
+        "C": "De gagner une bicyclette",
+        "D": "De travailler pour la mairie"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "CHERS CLIENTS, Votre supermarché vous accueille depuis 60 ans. Le propriétaire et son équipe vous invitent à une semaine de festivités.\nÀ partir du 10 août, plus de 1000 OFFRES EXCEPTIONNELLES et des réductions JUSQU'À 50% sur les articles vous attendent.\n\nQu'est-ce qu'on fête ?",
+      "image_url": null,
+      "options": {
+        "A": "L'anniversaire d'un magasin",
+        "B": "L'augmentation des ventes",
+        "C": "L'ouverture d'un commerce",
+        "D": "Le début des soldes d'été"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Vous faites partie des heureux élus qui ont réussi à obtenir une entrevue avec un employeur. Vous avez les diplômes et l'expérience, et il est temps à présent de vous mettre en valeur, de prouver que vous êtes le bon candidat ! En effet, ce n'est pas parce que votre curriculum vitae (CV) a été retenu que tout est gagné. Avant de vous y rendre, il est nécessaire de bien réfléchir à ce que vous allez dire pour ne pas être pris au dépourvu, le moment venu. Vous devez avoir anticipé toutes les questions qu'on pourrait vous poser sur vous-même et sur votre parcours.\n\nQuel conseil donne ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "De parler de ses qualités personnelles",
+        "B": "De préparer un entretien d'embauche",
+        "C": "D'élaborer un curriculum vitae original",
+        "D": "D'insister sur sa formation universitaire"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 14,
+      "question_text": "La nouvelle carte Scène+\nAprès les cartes de cinéma illimitées, la carte Scène+! Paris est la première ville à tester cette formule des places à tarifs réduits à utiliser quand on veut dans quarante théâtres environ, pour aller voir plus de 150 pièces. On achète la carte, valable un mois ou un semestre et on peut aller dans les petites scènes de théâtre parisiennes qui accueillent surtout des comédies populaires plutôt que des pièces classiques.\n\nQue peut-on faire avec la carte Scène+ ?",
+      "image_url": null,
+      "options": {
+        "A": "Assister à des spectacles",
+        "B": "Obtenir de meilleures places",
+        "C": "Rencontrer des comédiens",
+        "D": "Suivre des visites guidées"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 15,
+      "question_text": "En Sardaigne (Italie), les piétons qui traversent tout en regardant leur téléphone peuvent recevoir une amende. Cette mesure fait suite à une augmentation du nombre d'accidents entre des véhicules et des piétons inattentifs. En effet, ils n'entendent pas les voitures parce qu'ils sont concentrés sur leur écran au lieu de regarder autour d'eux.\n\nDe quoi parle cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "De l'utilisation du portable",
+        "B": "De la sécurité au volant",
+        "C": "Du bruit de la circulation",
+        "D": "Du vote d'une nouvelle loi"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 16,
+      "question_text": "« L'art et ses modes de production contribuent à sensibiliser les gens au développement durable », commente Elise Morin, créatrice de l'œuvre Waste Landscape composé de vieux CD.\n« Le recyclage ça ne se passe pas que dans la poubelle », intervient le photographe Joachim Romain, dont le travail est centré sur les affiches promotionnelles. « Les déchets sont partout, on ne peut pas y échapper, on est envahi. Alors pourquoi ne pas m'en servir pour aller plus loin ? Pour montrer aux gens qu'à un moment, ces questions sur l'environnement vont arriver chez eux ».\n\nQue proposent ces artistes ?",
+      "image_url": null,
+      "options": {
+        "A": "De diffuser de la musique",
+        "B": "De réutiliser des objets",
+        "C": "De s'engager en politique",
+        "D": "De tourner des publicités"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Chère Lucie,\nJe t'écris de chez ma tante où je passe quelques jours. Elle est britannique mais vit à Toulon depuis dix ans. Comme ça, je peux parler anglais avec elle. Tout va bien. Je fais des balades au soleil.\nÀ bientôt,\nHélène,\n\nQu'est ce qu'on apprend sur Hélène ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle apprend le français",
+        "B": "Elle est avec sa famille",
+        "C": "Elle prépare un long voyage",
+        "D": "Elle visite le Royaume-Uni"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 18,
+      "question_text": "PÉDAGOGIE\nTwitter dès l'école primaire, pour donner le goût d'écrire, de lire et de l'orthographe. Un instituteur raconte : « J'utilise Twitter dans ma classe depuis un an. Les productions des élèves sont de plus en plus intéressantes. Grâce à Twitter, je peux approfondir les notions de façon concrète. Les activités scolaires paraissent artificielles, hors contexte, voire dénuées de sens. »\nPourquoi essayer de maîtriser l'écriture ? Les enfants n'y songent même pas, car leurs travaux sont cantonnés à des cahiers, eux-mêmes enfermés dans des casiers ou des cartables. Ils n'ont pas l'occasion de partager leurs productions, de les confronter, d'argumenter leurs choix.\n\nD'après cet article, qu'apporte l'utilisation de Twitter aux élèves ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils apprennent à se servir correctement des réseaux sociaux",
+        "B": "Ils communiquent plus facilement avec l'instituteur",
+        "C": "Ils comprennent mieux l'intérêt des apprentissages proposés",
+        "D": "Ils sont plus attentifs après un moment de détente"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Depuis 1997, des passionnés construisent un château fort en utilisant exclusivement les techniques du Moyen Age. Devenu célèbre, le chantier de Guéderon accueille 30.000 visiteurs annuels. Qui sont les bâtisseurs de ce monument sorti du passé ? Hajer Mohammad, qui les a rencontrés pour France Inter, interroge ces artisans. Dans son reportage, la star n'est pas le château mais ceux qui le construisent et qui racontent leur envie d'exercer un métier manuel. Beaucoup de bénévoles parisiens se joignent pour quelques jours à cette entreprise où tout prend plus de temps que dans la vie moderne.\n\nQuel point clé du chantier Hajer Mohammad a-t-elle souligné ?",
+      "image_url": null,
+      "options": {
+        "A": "Le rôle joué par les historiens",
+        "B": "Le rythme de son avancement",
+        "C": "Le succès auprès du public",
+        "D": "Les personnes qui y travaillent"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 20,
+      "question_text": "À l'ère des réseaux sociaux, il n'y a pas une table où les convives ne dégainent leur smartphone pour « poster » immédiatement leur assiette. Peu importe qu'elle refroidisse, que ce soit bon ou non. Sur la toile, la cuisine est devenue l'univers le plus plébiscité avec le voyage. Et même si la vue des mets est un avant-goût du plaisir, réduire la cuisine à une galerie de natures mortes, aussi belles soient-elles, n'est pas sans susciter des interrogations. « Pour moi, la bonne cuisine, c'est quand on soulève le couvercle, que ça fume, que ça sent bon et qu'on peut se resservir », disait le grand cuisinier Paul Bocuse. Pour les réseaux sociaux, c'est un plat qui en met plein la vue et qu'on vous sert sur écran plat.\n\nQu'apprend-on dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "La réputation de restaurants touristiques est menacée par Internet",
+        "B": "La technologie modifie la relation à la gastronomie",
+        "C": "Les grands chefs livrent leurs secrets sur des sites",
+        "D": "Les traditions culinaires peuvent se perpétuer grâce au numérique"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 21,
+      "question_text": "C'est une tendance qui a envahi Lyon ces derniers mois. Dorénavant les végétariens (voire végétaliens) peuvent sortir dans des restaurants et commander des plats originaux et goûteux. Terminé le remplacement des viandes par une poêlée de légumes sans âme. « Maintenant un végétarien peut vraiment manger à Lyon qui a longtemps été une ville viandante ! Il existe de véritables alternatives aux plats carnés » assure Stéphanie Laguna, spécialiste des tendances en matière de nourriture à Lyon.\nLe point d'orgue de cette évolution réside probablement dans le succès du restaurant Culina Hortus, qui a ouvert il y a un peu plus d'un an. Ce restaurant gastronomique végétarien pourrait concourir à l'obtention d'une étoile sans rougir. Un grand pas dans une ville qui ne jure historiquement que par la cochonnaille.\n\nQue constate l'auteur concernant la nouvelle tendance de la restauration lyonnaise ?",
+      "image_url": null,
+      "options": {
+        "A": "L'adaptation de l'offre culinaire à la mode actuelle",
+        "B": "La baisse de la qualité des établissements",
+        "C": "La disparition graduelle de la cuisine traditionnelle",
+        "D": "L'hostilité des critiques spécialisés locaux"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 22,
+      "question_text": "En Belgique, un studio de technologie créative propose au public de se livrer à une expérience artistique d'un genre inédit : coiffés d'un casque spécial, les participants doivent se remémorer une histoire personnelle durant trente à soixante secondes. Des données ressortent alors sous forme d'algorithmes et sont analysées par un système de mesure émotionnelle, ce qui permet de leur donner forme et couleur. Ainsi, des peintures virtuelles sont créées à partir des émotions de chacun. Et comme chaque histoire est unique, chaque œuvre l'est aussi !\n\nQuel est le rôle des participants à cette expérience ?",
+      "image_url": null,
+      "options": {
+        "A": "Effectuer un calcul",
+        "B": "Évoquer un fait divers",
+        "C": "Fournir un support",
+        "D": "Sélectionner un souvenir"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Clémence et son mari ont commencé par créer une société de design industriel pour donner un nouvel aspect à des objets du quotidien. Mais, peu à peu, les industriels se sont désintéressés du design et, en hommes d'affaires, se sont davantage préoccupés de la rentabilité que de l'inventivité. Le couple s'est alors lancé dans une nouvelle aventure en fondant une galerie, une sorte de laboratoire d'expérimentation où ils ont donné carte blanche à des designers libres d'exprimer leurs élans artistiques. Aujourd'hui, leur galerie compte 12 salariés et affiche un chiffre d'affaires en progression.\n\nQu'apprend-on au sujet de cette galerie ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle attire beaucoup d'investisseurs",
+        "B": "Elle enregistre des ventes record",
+        "C": "Elle recherche une clientèle aisée",
+        "D": "Elle soutient l'esprit de création"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Lors de l'inscription à la faculté de médecine de Boston, les professeurs privilégient les candidats ayant déjà connu des échecs, considèrent en effet que ces erreurs d'orientation permettent de grandir plus vite, de se rapprocher plus rapidement de sa vocation, bref, de mieux se connaître. Plus simplement, ils réduisent aussi le risque de recruter des élèves qui vont se rendre compte au bout de quelques mois qu'ils ne veulent plus devenir médecins : ils ont déjà changé de voie une fois, il est moins probable qu'ils en changent une seconde fois.\n\nPourquoi les candidats qui se réorientent sont-ils privilégiés dans cette faculté ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils ont plus de facilités d'apprentissage",
+        "B": "Ils ont une idée claire de leur futur métier",
+        "C": "Ils sont déterminés à travailler beaucoup",
+        "D": "Ils sont plus sûrs de leur nouveau choix"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Dans cette belle institution qu'est l'Éducation Nationale, ce sont les profs qui font tourner la boutique. Ce sont eux qui, chaque jour, nourrissent intellectuellement ceux qui feront la France de demain. Sans eux et leur amour du métier, l'école française se serait effondrée depuis belle lurette et ferait encore moins bien que ses résultats actuels. Notre journal veut donc leur dire merci en publiant quelques portraits et en vous demandant de nous signaler d'autres « héros de l'école ».\nENVOYEZ-NOUS VOS MESSAGES, NOUS LES PUBLIERONS.\n\nD'après ce texte, quel rôle jouent les enseignants dans l'institution scolaire ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils influencent les élèves au-delà de la classe",
+        "B": "Ils instillent le goût du travail en équipe",
+        "C": "Ils permettent au système de se maintenir",
+        "D": "Ils suscitent de nombreuses vocations"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 26,
+      "question_text": "La revue Science et Avenir cite une étude de l'université de Cambridge dans laquelle des chercheurs en psychologie et en éducation rapportaient les attitudes des écoliers à l'égard des mathématiques. Les scientifiques décrivent chez les petits Britanniques un sentiment de dégoût, de frustration ou de peur. Des observations qui reflètent exactement ce qui se passe en France. De nombreux enfants sont confrontés à un véritable blocage en manifestant tous les signes du stress, ce qui entraîne des effets négatifs sur les fonctions cognitives. Selon certains professeurs, les mathématiques apparaissent beaucoup trop techniques et déconnectées du monde qui nous entoure, alors que pour réconcilier les écoliers avec les maths, il faudrait les enseigner comme un outil de réflexion ancré dans le quotidien.\n\nQu'explique ce texte à propos de l'enseignement des mathématiques ?",
+      "image_url": null,
+      "options": {
+        "A": "De nouvelles pédagogies semblent nécessaires",
+        "B": "Il conviendrait d'améliorer les résultats des élèves",
+        "C": "L'Europe doit engager une réforme des programmes",
+        "D": "Un soutien scolaire journalier serait bénéfique"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Prenant acte des bilans économiques moroses qui se succèdent, et plus particulièrement d'un résultat catastrophique pour le chiffre d'affaires des libraires l'an dernier – au point que l'on a même entendu un éditeur suggérer de mettre fin à cette authentique institution qu'est la rentrée littéraire en France –, l'édition a décidé, cette année, d'opter pour la sobriété : 524 nouveaux romans paraîtront entre la mi-août et octobre, parmi lesquels 336 romans français et 188 romans traduits. On est, certes, encore loin de la diète, et même de la simple frugalité, mais il s'agit tout de même de la rentrée française la plus modeste en nombre de titres depuis vingt ans.\n\nQuelle est la particularité de la nouvelle rentrée littéraire ?",
+      "image_url": null,
+      "options": {
+        "A": "Des libraires menacent de fermer boutique",
+        "B": "La qualité des livres publiés est catastrophique",
+        "C": "Le nombre d'ouvrages à paraître a diminué",
+        "D": "Un éditeur refuse de participer à cette tradition"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Supprimer les concours des grandes écoles ? Changera-t-on nos élites ? Le débat a ouvert grand la porte aux envies de bousculer la formation de la jeunesse.\nPendant longtemps, on a cru que les concours étaient d'indépassables garants de l'idéal républicain d'égalité. On a mis beaucoup de temps à se rendre compte qu'ils pouvaient entretenir la reproduction des élites ou écarter insidieusement une partie des jeunes, en fonction de leur origine sociale, voire ethnique.\nDe ce constat, certains déduisent qu'il faut introduire des discriminations positives au sein des concours existants. Mais il existe une alternative pour répondre rapidement à cette nécessité de démocratisation : reconnaître d'autres compétences dans les processus de sélection, comme l'esprit d'entraide, de solidarité et de coopération.\n\nQu'apprend-on sur les concours ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils perpétuent une forme d'exclusion",
+        "B": "Le nombre de candidats s'amenuise",
+        "C": "Leur niveau d'exigence diminue",
+        "D": "On les réforme régulièrement"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Les montres connectées ont longtemps été boudées par le public, du fait de leur utilité limitée. Les nouvelles générations de ces produits offrent donc des services de plus en plus variés, comme payer ses achats ou passer des appels. Mais aujourd'hui, la motivation première des consommateurs pour acquérir ce type de produit réside dans toutes les fonctionnalités ayant trait au sport, au bien-être et à la santé. Les constructeurs en sont conscients et multiplient les arguments sur ce thème. Un fabricant français, qui a lancé sa nouvelle montre, la décrit comme « le partenaire idéal de tous les sportifs » et « l'allié du sommeil réparateur ». Un concurrent américain affirme avoir entièrement repensé son produit pour aider le consommateur à être plus actif et en meilleure santé.\n\nQu'est-ce qui fait le succès des montres connectées aujourd'hui ?",
+      "image_url": null,
+      "options": {
+        "A": "Elles contribuent à une bonne hygiène de vie",
+        "B": "Elles facilitent les transactions sur Internet",
+        "C": "Elles permettent de communiquer à moindre frais",
+        "D": "Elles sont recommandées par le corps médical"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Deux mondes s'affrontent : celui de l'ancienne agriculture et celui de la nouvelle. Le productivisme, soutenu par la chimie, a fait progresser comme jamais les rendements agricoles, nourri la planète et abaissé le prix des denrées. Mais il a fait son temps. Les tenants du passé, dont on peut comprendre les motivations — tant les agriculteurs travaillent sous la pression éreintante de la compétitivité — soutiennent qu'il n'existe pas d'autre solution. Notre enquête montre le contraire : l'alliance de la technologie et de l'écologie, pour remplacer des substances nocives par une panoplie de techniques inédites, offre une alternative originale, crédible et soutenable à la dispersion incontrôlée de composants chimiques nuisibles à tous. C'est la voie de la sagesse autant que de la modernité.\n\nQue défend le journaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "L'accès universel à des aliments bon marché",
+        "B": "L'innovation des procédés de production",
+        "C": "Le développement du commerce équitable",
+        "D": "Le partage d'expériences traditionnelles"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Deux petites saisons et puis s'en vont. Sur les plates-formes de streaming vidéo par abonnement, les séries ont beau être reines, elles n'en sont pas moins soumises à rude concurrence. Et leur durée de vie peut se révéler bien plus courte que sur les chaînes traditionnelles. Cette stratégie ne doit rien au hasard. Dans leur objectif de conquête de nouveaux abonnés, les plates-formes accordent en effet plus de vertus à la nouveauté qu'à la longévité. Quitte à décevoir certains fans qui payent un service de streaming spécialisé dont le baromètre de satisfaction devrait en théorie être plus important que celui de l'audimat.\n\nD'après l'article, que privilégient les plates-formes de streaming ?",
+      "image_url": null,
+      "options": {
+        "A": "La longévité des programmes",
+        "B": "La qualité des services offerts",
+        "C": "Le changement régulier des séries",
+        "D": "Le contentement de leurs abonnés"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Les néo-nomades ont souvent moins de 30 ans et vivent dans leur camion ou d'anciens cars scolaires transformés en caravane ou en camping-car. Ces nouveaux voyageurs intermittents vont d'un lieu à l'autre, au gré des impératifs de leur travail, souvent saisonnier, et forment une population hétérogène. Ils résolvent la difficulté d'accéder à un logement lorsqu'on n'a pas de travail permanent en s'installant en marge de notre paysage contemporain : aux abords des routes secondaires, dans la périphérie des villes, le long des rails, sur des friches ou des terrains privés. Les néo-nomades forment, de fait, une entité structurée au cœur de notre société individualiste.\n\nSelon le journaliste, quelle est l'origine du néo-nomadisme ?",
+      "image_url": null,
+      "options": {
+        "A": "L'attirance pour les espaces naturels",
+        "B": "L'insécurité des zones urbaines",
+        "C": "La précarité du monde professionnel",
+        "D": "Le désir de vivre en communauté"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 33,
+      "question_text": "La Chine est championne du monde des transactions par mobile. Désormais, les Chinois privilégient le paiement par mobile pour la moindre course « même pour acheter une bouteille d'eau minérale » comme l'explique une kiosquière à Pékin.\nLe paiement mobile s'est invité partout dans l'économie, même dans les coutumes les plus ancrées. Aux anniversaires ou lors des festivités du nouvel an, on s'envoie des enveloppes remplies de pièces rouges dématérialisées, traditionnellement remplies de pièces ou de billets de banque. Mais l'utilisation du liquide perdure, notamment par les plus âgés, ce qui alimente le débat sur les laissés-pour-compte des avancées technologiques. Au Parc Zhongshan l'entrée de 3 yuans se fait uniquement en espèces. Une bonne nouvelle pour les nombreuses personnes âgées qui fréquentent le jardin.\n\nQu'apprend-on sur les nouveaux moyens de paiement en Chine ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils créent un climat de méfiance envers la technologie",
+        "B": "Ils entraînent la disparition de pratiques traditionnelles",
+        "C": "Ils facilitent la vie quotidienne des personnes âgées",
+        "D": "Ils sont à l'origine de l'expansion économique du pays"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Monsieur et Madame Martin n'ont pas un emploi du temps également captivant. Quand Monsieur se rend au travail, Madame manie l'aspirateur. Quand il est au bureau, elle achète des surgelés au supermarché. Quand il se cale devant la télé, l'épouse modèle se colle aux fourneaux. Une illustration exhumée d'un manuel des années 1950 ? Non, les images d'un exercice pour une classe de CP afin de comprendre la simultanéité en étudiant les moments de la journée d'une famille. Quand Virginie Sassoon est tombée sur ce document ultra-stéréotypé dans le classeur de sa fille, elle est tombée des nues. « Cette fiche révèle une forme de violence symbolique qui persiste dans notre société et qui, selon moi, relève de la responsabilité collective. »\n\nQu'est-ce qui choque Virginie Sassoon dans les exercices donnés à sa fille en classe ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils correspondent à des programmes scolaires obsolètes",
+        "B": "Ils méconnaissent l'existence des familles recomposées",
+        "C": "Ils présentent un partage sexiste des tâches dans le couple",
+        "D": "Ils se moquent du quotidien des personnes sans emploi"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 35,
+      "question_text": "« Un produit qui ne s'userait pas serait une tragédie pour les affaires », lisait-on dans une ancienne revue américaine. Des années plus tard, le concept d'obsolescence programmée n'a pas pris une ride ! Il s'agit, pour les fabricants, de réduire volontairement la durée de vie ou d'emploi d'un produit afin d'en augmenter le taux de remplacement. Ici se cache le cœur de la course à la consommation. Le bilan écologique est également sans appel : les matières que contiennent nos appareils finissent en grande partie comme déchets incinérés ou enfouis. L'exemple du téléphone portable en dit long : dans un rapport, une sénatrice souligne que la conception des téléphones est délibérément défavorable au réemploi et au recyclage.\n\nQue constate ce journaliste à propos des articles proposés par les fabricants ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils se détériorent après un certain temps",
+        "B": "Ils sont dangereux pour la santé",
+        "C": "Ils sont nuisibles pour l'environnement",
+        "D": "Ils sont vendus à des prix élevés"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Il est rare que les journalistes de notre mensuel ou moi-même rentrions et de reportage en renonçant à rédiger un article. La plupart du temps, les découvertes que nous faisons sont comme de grands bols d'air : elles annihilent tout défaitisme, font disparaître la fatalité ambiante et ouvrent de nouveaux horizons. Nous rencontrons des hommes et des femmes qui nous expliquent leurs envies, leurs rêves, leur utopie, et a comment ils s'y prennent pour, à leur échelle, faire évoluer le monde. C'est simple, c'est lent, c'est « proprement humain ». Il est tellement jouissif de pouvoir se dire que nous allons pouvoir partager tous ces petits riens » avec nos abonnés !\n\nQuel est le parti pris de ces journalistes ?",
+      "image_url": null,
+      "options": {
+        "A": "Être au plus près de l'actualité",
+        "B": "Présenter des histoires positives",
+        "C": "Proposer des anecdotes amusantes",
+        "D": "Recenser les dérives de la société"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 37,
+      "question_text": "La bataille de Bouvines, remportée le 27 juillet 1214 par le roi de France Philippe Auguste contre un empereur allemand, est l'un des actes fondateurs de la dynastie capétienne et l'un des épisodes les plus célèbres du « roman national » français. Du XIIIe siècle à nos jours, elle a donné naissance à de nombreuses légendes que le spécialiste du monde médiéval, Dominique Barthélemy, confronte à la réalité des faits. À l'issue d'une enquête approfondie, il décrit un affrontement plus modeste et moins épique que celui construit et enrichi au gré des nécessités politiques. Ainsi, il nous invite à poursuivre la réflexion sur l'idée que les Français se font d'eux-mêmes.\n\nSelon l'article, que fait Dominique Barthélemy ?",
+      "image_url": null,
+      "options": {
+        "A": "Il analyse l'établissement d'une dynastie royale",
+        "B": "Il explique l'origine d'une légende médiévale",
+        "C": "Il explore la construction identitaire des Français",
+        "D": "Il renforce le mythe de la bataille de Bouvines"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 38,
+      "question_text": "En imposant de nouveaux comportements, la société civile a en partie réorganisé la distribution et amorcé une transition vers des modes de vie plus économiques et plus écologiques. Les classes moyennes des pays industrialisés ont largement adopté la « consommation collaborative », qui consiste à acheter moins, mais mieux, et entre soi : on achète d'occasion, on partage, on loue, on troque, on répare au sein d'ateliers participatifs, on échange des services sans argent. On se tourne aussi vers le local et le bio, pour connaître l'origine de ce que l'on mange et soutenir les petits producteurs.\n\nSur quoi s'appuie ce mode de consommation ?",
+      "image_url": null,
+      "options": {
+        "A": "Des associations de consommateurs",
+        "B": "Des techniques de production nouvelles",
+        "C": "Des valeurs et des intentions claires",
+        "D": "Une population citadine et fortunée"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 39,
+      "question_text": "VENT DE CONTROVERSE SUR LES ÉOLIENNES\nD'après un article récent, l'argument écologique serait le principal prétexte à la construction de parcs éoliens. Cependant, leur installation supposerait le bétonnage des sols, la construction de routes ainsi que de centrales destinées à compenser la production d'électricité en cas d'absence de vent. De plus, les éoliennes seraient à l'origine de nuisances esthétiques, sonores et constitueraient un danger pour la faune. Pourtant, les projets éoliens se multiplient. L'intérêt serait avant tout financier, puisque les producteurs d'énergies éoliennes ne rechercheraient pas forcément des zones très ventées, mais plutôt des terrains peu coûteux dans des communes désireuses d'augmenter leurs revenus.\n\nComment l'auteur de l'article explique-t-il l'augmentation du nombre de parcs éoliens ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils augmentent les ressources des municipalités",
+        "B": "Ils contribuent à la protection de l'environnement",
+        "C": "Ils garantissent la fourniture continue d'énergie",
+        "D": "Ils participent à l'élimination des animaux nuisibles"
+      },
+      "correct_answer": "A"
+    }
+  ]
+}

@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE14",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Heures d'ouverture du service consulaire :\n\nLe service consulaire est ouvert au public les lundis, mercredis et jeudis de 8h30 à 14h et les mardis et vendredi de 14h30 à 18h.\n\nQuand le service est-il fermé au public ?",
+      "image_url": null,
+      "options": {
+        "A": "Le lundi matin",
+        "B": "Le mardi matin",
+        "C": "Le mercredi matin",
+        "D": "Le jeudi matin"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Urgent!\n\nJe cherche une maison à louer pour les vacances d'été, idéalement située en centre-ville.\n\nContact : Laetitia\n+1 708 099 0808\n\nQu'est-ce que Laetitia veut faire ?",
+      "image_url": null,
+      "options": {
+        "A": "Habiter à la campagne",
+        "B": "Réserver un hôtel",
+        "C": "Trouver un logement",
+        "D": "Vendre un appartement"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "De: Société Baly Informatique\nÀ: Monsieur Lefort\nObjet: Printemps des conférences - Lyon\n\nMonsieur,\n\nUne voiture de notre société va vous attendre à votre arrivée à l'aéroport (porte F) pour vous conduire au palais des Congrès.\n\nCordialement,\nMme Deor\n\nComment M. Lefort va-t-il aller au Palais des Congrès ?",
+      "image_url": null,
+      "options": {
+        "A": "Avec Mme Deor",
+        "B": "Avec un chauffeur",
+        "C": "En autobus",
+        "D": "En taxi"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Prière de ne pas toucher à la photocopieuse, le réparateur arrive demain à la première heure.\n\nEn attendant, donnez vos documents à ma secrétaire qui les photocopiera au bureau de la comptable.\n\nMerci,\nLe directeur,\n\nQui va faire les photocopies pendant que la photocopieuse est en réparation ?",
+      "image_url": null,
+      "options": {
+        "A": "La comptable",
+        "B": "La secrétaire",
+        "C": "Le directeur",
+        "D": "Le réparateur"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Fête de la musique à Paris le 21 juin:\n\nBillet unique, 2.50 €, utilisable sans limite du 21 juin à 20 heures au 22 juin à 07 heures.\n\nQuelle est la durée de validité de ce billet ?",
+      "image_url": null,
+      "options": {
+        "A": "Une journée",
+        "B": "Une semaine",
+        "C": "Une nuit",
+        "D": "Un mois"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Fred,\n\nJe ne pourrai pas venir comme prévu, mais ce sera pour une prochaine fois. J'ai beaucoup de travail en ce moment. Peut-être dans quinze jours ? J'aurai un peu de temps libre !\n\nÀ bientôt !\nPaul,\n\nQu'apprend-t-on sur Paul?",
+      "image_url": null,
+      "options": {
+        "A": "Il est très occupé",
+        "B": "Il part en vacances",
+        "C": "Il travaille avec Fred",
+        "D": "Il veut venir plus tôt"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Chers tous,\n\nDemain, c'est la journée sans voiture. Faites un geste pour la nature : venez au bureau à pied, à vélo, en rollers, en bus, en tram... voire à cheval !\n\nPaul, Services généraux\n\nÀ qui s'adresse Paul ?",
+      "image_url": null,
+      "options": {
+        "A": "À ses amis",
+        "B": "À ses collègues",
+        "C": "À ses enfants",
+        "D": "À ses voisins"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 8,
+      "question_text": "France 2 - Soirée\n- 20.00: Journal télévisé\n- 20.40: Météo\n- 20.55: Mission estivale\n\nJeu : Première émission de l'été, avec un coureur automobile, un pilote moto, un animateur de télévision. L'équipe jouera au profit d'une association qui aide au développement des villages fleuris historiques.\n\n- 22.35 : Plus d'humour\nCe magazine divertissant rend compte de la création humoristique actuelle, passée et future, dans tous les domaines (cinéma, télévision, publicité, édition, etc.)\n\n- 00.40: journal de la nuit\n\nÀ quelle heure passent les informations, d'après le programme télé ?",
+      "image_url": null,
+      "options": {
+        "A": "En cours de soirée",
+        "B": "En début et en fin de soirée",
+        "C": "Entre chaque émission",
+        "D": "Quatre fois dans la soirée"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Rendez-vous samedi pour un repas de quartier devant notre immeuble. Apportez vos chaises (des tables seront mises à disposition), ainsi que des boissons et un plat salé ou sucré. Mireille et Pierre (3ème étage à gauche) organisent l'événement et peuvent répondre à VOS questions.\n\nQu'est-ce qui est organisé ?",
+      "image_url": null,
+      "options": {
+        "A": "Un atelier de cuisine",
+        "B": "Un déménagement",
+        "C": "Une fête entre voisins",
+        "D": "Une visite d'appartement"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Information importante à cause de l'augmentation du nombre de vols de téléphones portables, vous ne pouvez plus les utiliser à l'intérieur du lycée.\n\nMerci de votre compréhension.\nLe directeur de l'établissement\n\nQue dit ce texte sur l'utilisation des téléphones portables ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est autorisée",
+        "B": "Elle est dangereuse",
+        "C": "Elle est interdite",
+        "D": "Elle est limitée"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Le Centre de Relations Clients, c'est un numéro de téléphone pour parler avec des conseillers du lundi au vendredi de 8h à 22h, le samedi de 8h à 18h, et aussi pour accéder à un serveur vocal 7 jours sur 7 et 24 heures sur 24.\n\nQue faut-il faire pour joindre un conseiller ?",
+      "image_url": null,
+      "options": {
+        "A": "Consulter le serveur vocal",
+        "B": "Prendre rendez-vous par téléphone",
+        "C": "Téléphoner aux horaires indiqués",
+        "D": "Demander le service de relation avec la clientèle"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Chère Marie,\n\nJe t'écris rapidement ce mot pour te prévenir que je ne pourrai, hélas, pas être parmi vous pour l'anniversaire de Théo. Je suis vraiment déçu ! Je pars pour des raisons professionnelles au Japon, à des milliers de kilomètres de toi ! Je serai de retour dans trois semaines et j'espère sincèrement que l'on pourra se voir alors, avec Théo. Nous pourrions également inviter Fred. Tu me manques.\n\nJe t'embrasse,\nPierre,\n\nQu'est-ce que Pierre envoie à Marie ?",
+      "image_url": null,
+      "options": {
+        "A": "Un message d'excuse",
+        "B": "Une déclaration d'amour",
+        "C": "Une invitation à une fête",
+        "D": "Une lettre de vacances"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Entretien de vos locaux\n\nMonsieur le Directeur,\n\nConformément au devis (en pièce jointe) qui a reçu votre accord, notre équipe interviendra le 20 juin prochain pour effectuer les opérations nécessaires dans l'aile droite du bâtiment principal de votre société. Le chantier nécessite l'utilisation de produits à risque et d'un appareillage bruyant. Pour la sécurité et le confort de votre personnel, il serait préférable que les services du bâtiment concerné soient suspendus le 20.\n\nMerci par avance de me faire part de votre avis sur ce point.\n\nCordialement,\nJacques Legendre,\n\nQue demande Jacques Legendre au directeur ?",
+      "image_url": null,
+      "options": {
+        "A": "D'envoyer très rapidement le devis",
+        "B": "D'interdire l'emploi de produits toxiques",
+        "C": "De libérer les lieux pendant les travaux",
+        "D": "De préciser la nature de l'intervention"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Le Festival Sourd Métrage est accessible à tous : traduction en langue des signes et films sous-titrés. Ce festival de courts métrages présente des réalisateurs sourds. Tous les regards sont permis: fictions, documentaires, films d'animation... Tous les publics sont accueillis. Pendant trois jours, un espace « rencontre » est créé entre des écoles européennes accueillant de jeunes sourds, entre un public sourd et non-sourd ainsi qu'entre le regard du jeune sourd derrière la caméra et des professionnels de l'image.\n\nQuelle est la particularité de ce festival de cinéma ?",
+      "image_url": null,
+      "options": {
+        "A": "Il montre des documentaires sur les conditions de vie des sourds",
+        "B": "Il organise des conférences sur la langue utilisée par les sourds",
+        "C": "Il présente des films réalisés par des personnes sourdes",
+        "D": "Il programme des spectacles destinés à un jeune public sourd"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Cher Paul,\n\nJe suis désolé de t'avoir laissé sans nouvelles. Je pensais t'écrire de Fès, mais notre séjour ne s'est pas déroulé comme nous l'espérions. Nous avons passé trois nuits supplémentaires à Tanger à cause d'un problème technique sur une de nos lignes touristiques. Nous avons aussi annulé le rendez-vous prévu aujourd'hui avec notre client de Casablanca, car nous avons dû nous rendre à Marrakech pour régler les frais occasionnés par cet incident. Nous rentrons demain à Paris.\n\nÀ très bientôt,\nMathilde,\n\nDans quelle ville se trouve Mathilde d'après cette lettre ?",
+      "image_url": null,
+      "options": {
+        "A": "Casablanca",
+        "B": "Fès",
+        "C": "Marrakech",
+        "D": "Tanger"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Chère Andréa,\n\nHier, j'ai déjeuné avec des célibataires de mon quartier. C'était à 12h30 au restaurant corse près de l'église. Nous étions 7 : on a bien mangé et bien ri. C'est vraiment une bonne idée pour se faire des amis : tu t'inscris sur le site MIAMI et tu consultes les propositions de rendez-vous dans ton quartier. Tu devrais essayer, c'est génial.\n\nLéa,\n\nQu'est-ce que Léa souhaite faire découvrir à son amie ?",
+      "image_url": null,
+      "options": {
+        "A": "Un restaurant qui sert des spécialités de sa région",
+        "B": "Un service municipal d'aide sociale aux jeunes célibataires",
+        "C": "Une manière originale de rencontrer des gens près de chez elle",
+        "D": "Un centre de loisirs pour les habitants de son quartier"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Draisienne du XXI siècle\n\nÀ 88 ans, Jacques Blosseville est le participant le plus âgé de la 110° édition du concours Lépine, qui récompense les inventeurs. Il a choisi de transformer la draisienne, un vélo sans pédale pour enfant inventé au début du XIX siècle. « Il y a trois ans, j'ai commencé à me déplacer avec peine. On m'a proposé une canne, puis un fauteuil roulant, mais ça ne me convenait pas... La draisienne vous permet de ne pas avoir à supporter votre poids », explique le concurrent.\n\nDans quel but Jacques Blosseville a-t-il modernisé la draisienne ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour éviter de conduire",
+        "B": "Pour faire rêver les enfants",
+        "C": "Pour marcher sans souffrir",
+        "D": "Pour porter des objets lourds"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 18,
+      "question_text": "On demande rarement aux enfants ce qu'ils préfèrent manger:\n\n« Beaucoup d'aliments pour enfants sont testés par des adultes », explique le délégué régional du projet « DisMoiGoût », Leur avis intéresse pourtant ceux qui cherchent à développer des gammes de produits dédiés aux petits. L'école agroalimentaire nantaise a ainsi entrepris de sonder les goûts des bambins et leur perception des aliments. Objectif cerner plus subtilement leur profil alimentaire. Les résultats de cette étude devraient permettre, à terme, d'élaborer des produits bons pour leur santé, c'est-à-dire conformes aux recommandations du Programme national de nutrition, mais aussi bons pour leur goût.\n\nQuelle est la vocation du projet « DisMoiGoût » ?",
+      "image_url": null,
+      "options": {
+        "A": "Corriger les mauvaises habitudes alimentaires des enfants",
+        "B": "Faire respecter la législation sur l'alimentation des enfants",
+        "C": "Mieux comprendre les préférences alimentaires des enfants",
+        "D": "Permettre aux enfants de découvrir de nouveaux aliments"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 19,
+      "question_text": "L'action du film se situe en Nouvelle-Angleterre, à la fin du XVIII° siècle. Un jeune inspecteur de police ne jure que par la science et la logique et ne rate jamais une occasion de le faire savoir. Pour le mettre à l'épreuve, ses supérieurs l'envoient dans un petit village de fermiers d'origine hollandaise, théâtre de plusieurs meurtres étranges.\n\nQuel est le sujet du film présenté ?",
+      "image_url": null,
+      "options": {
+        "A": "L'arrivée d'une troupe de comédiens à la campagne",
+        "B": "L'enquête policière d'une personne très rationnelle",
+        "C": "La vie des paysans néerlandais au XVIII° siècle",
+        "D": "Les expériences originales d'un scientifique anglais"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Le jour viendra où un fonds de pension ou un groupe alimentaire mondial investira dans l'entreprise d'un cuisinier reconnu pour orchestrer son développement international. Bien sûr, on ne peut qu'éprouver de la nostalgie pour les temps héroïques où une bande de copains inventait les codes de la nouvelle cuisine. Aujourd'hui, n'importe quel jeune cuisinier est prêt à payer très cher pour le privilège d'un stage de six mois chez un « grand chef ». Il rentabilisera vite cet investissement en s'autoproclamant « élève de... », car les marques des grands chefs ne cessent de prendre de la valeur.\n\nQu'apprend-on sur les grands chefs?",
+      "image_url": null,
+      "options": {
+        "A": "Leur conception de la cuisine est passé de mode",
+        "B": "Leur créativité leur assure une célébrité mondiale",
+        "C": "Leur nom s'est transformé en label de prestige",
+        "D": "Leurs établissements sont cotés en bourse"
+      },
+      "correct_answer": "C"
+    },
+        {
+      "question_number": 21,
+      "question_text": "Paris, le 13 mars.\n\nMadame, Monsieur,\n\nCe courrier fait suite à mon achat d'un téléphone le 5 mars dernier. Après réflexion, je souhaiterais le rendre car j'ai finalement décidé d'acheter un appareil avec messagerie intégrée.\n\nAinsi, je vous prie de bien vouloir me restituer la somme de 80 euros, correspondant à la somme versée le 5 mars par chèque. Dans l'attente de votre réponse, je vous transmets, Madame, Monsieur, mes meilleures salutations.\n\nQuel est l'objet de la lettre de monsieur Cellier ?",
+      "image_url": null,
+      "options": {
+        "A": "L'échange de son téléphone",
+        "B": "Le remboursement de son article",
+        "C": "L'envoi de son téléphone par la poste",
+        "D": "Une réclamation sur son achat"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 22,
+      "question_text": "L'enfant fréquente le musée par obligation, avec ses parents ou son instituteur. L'adulte le vit par plaisir. Entre les deux, rien. Chez l'ado, la perspective de franchir ses portes, même gratuitement, provoque la nausée. Il préfère le spectacle d'une toile de cinéma ou le plongeon dans la toile du cyberespace. Les jeunes deviennent aujourd'hui pour les musées une cible prioritaire. Mais les inciter à venir n'est pas facile. La culture Internet a bouleversé leur relation au savoir. Les musées ne peuvent plus s'accrocher aux réseaux traditionnels de la transmission des connaissances. Le temps est venu de réfléchir à de nouvelles approches adaptées à ce public.\n\nQue suggère l'auteur pour attirer le jeune public au musée ?",
+      "image_url": null,
+      "options": {
+        "A": "D'analyser les moyens de séduire les jeunes",
+        "B": "De moderniser le contenu des expositions",
+        "C": "De s'inspirer des approches pédagogiques scolaires",
+        "D": "De systématiser l'accès gratuit pour les adolescents"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Réparer un véhicule endommagé avec des pièces d'occasion recyclées, c'est désormais possible. Depuis le printemps dernier, l'expert d'une compagnie d'assurances peut, en effet, proposer à un assuré des pièces de réemploi. Ces pièces, issues de véhicules hors d'usage, accidentés ou arrivés en fin de vie, sont démontées, contrôlées et revendues à des réparateurs par des recycleurs agréés. Cette disposition est une alternative au neuf et répond à de nouvelles attentes. La récupération de pièces valides permet ainsi de prolonger leur longévité ainsi que celle d'autres véhicules, avec un bénéfice économique, environnemental et social.\n\nD'après cet article, quel avantage présente l'utilisation de pièces recyclées ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle donne l'assurance d'un dépannage rapide",
+        "B": "Elle donne lieu à une réduction sur l'assurance",
+        "C": "Elle offre la possibilité d'une garantie de qualité",
+        "D": "Elle permet de dépenser moins d'argent"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 24,
+      "question_text": "La maison de campagne :\n\nCe restaurant offre à sa clientèle un bel espace articulé en trois salles : cuisine, salle à manger et salon, décorées dans un joli style provençal. On choisit même sa bouteille de vin à la cave, comme à la maison ! malheureusement, bien que les plats proposés soient élaborés à partir de produits frais sélectionnés au marché, la cuisine reste une cuisine vue et revue, tellement prévisible qu'il vaudra mieux choisir un restaurant en ville plutôt que se perdre dans cette campagne-là.\n\nSur quel point porte la critique négative faite à ce restaurant ?",
+      "image_url": null,
+      "options": {
+        "A": "L'originalité des plats",
+        "B": "La qualité des produits",
+        "C": "Le cadre du restaurant",
+        "D": "Le prix des menus"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Monsieur,\n\nLe règlement de votre facture du mois dernier ne nous est pas encore parvenu. Peut-être avez-vous effectué ce paiement très récemment ? Dans ce cas, nous vous en remercions et nous vous prions de ne pas tenir compte de ce courrier. S'il s'agit d'un simple oubli, adressez-nous votre règlement à l'aide du coupon-réponse. Pour toute autre raison, contactez rapidement votre conseiller clientèle. Il vous renseignera sur votre facture ainsi que sur les moyens de paiement.\n\nNous vous prions d'agréer, Monsieur, nos sincères salutations.\nLe responsable clientèle.\n\nQue contient ce courrier ?",
+      "image_url": null,
+      "options": {
+        "A": "Un rappel d'un impayé en cours",
+        "B": "Une facture à payer rapidement",
+        "C": "Une proposition de paiement différé",
+        "D": "Une erreur de règlement"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 26,
+      "question_text": "L'éthique, nouveau critère d'attractivité:\n\nDiversité, handicap, éthique, développement durable... Autant de grands enjeux sociétaux englobés sous le terme de « responsabilité sociale de l'entreprise » (RSE). Suivant sa définition, la « RSE » repose sur trois piliers : les problématiques sociales, environnementales et économiques. En amont du marché du travail, les écoles n'échappent pas à ces obligations. La RSE couvre les actions en faveur des lycéens issus de zones défavorisées, grâce à un tutorat proposé en classe de première et de terminale. Elle couvre aussi le champ humanitaire. Ses enjeux sont finalement proches des questions chères à la jeunesse. On comprend pourquoi les écoles, bien conscientes de l'attractivité exercée par la RSE, multiplient les initiatives dans le domaine.\n\nComment le texte justifie-t-il l'attrait qu'exerce la RSE auprès des écoles ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle favorise l'orientation des élèves après l'obtention du baccalauréat",
+        "B": "Elle permet de renforcer les liens éducatifs entre adultes et élèves",
+        "C": "Elle répond de manière pertinente aux difficultés et aux aspirations des élèves",
+        "D": "Elle veille à la concrétisation des projets professionnels des élèves"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 27,
+      "question_text": "L'espoir des enfants\n\nMarguerite Barankitse est un exemple pour toutes les Burundaises. Pour sauver les enfants de la guerre, elle se bat chaque jour. Ses actions ont d'abord été financées par des organismes allemands. Puis, la renommée mondiale de la fondatrice est devenue le carburant de l'association. Aujourd'hui, elle voyage à travers le monde pour parler de son pays et de ses enfants, dans l'espoir d'obtenir des subventions. Désormais, l'aide extérieure soutient la plupart des projets. Elle a ainsi ouvert deux centres pour enfants et un hôpital. Le travail de cette humanitaire débordante d'énergie a été couronné par de nombreux prix.\n\nQuel est le but des déplacements à l'étranger de M. Barankitse ?",
+      "image_url": null,
+      "options": {
+        "A": "Obtenir de l'argent pour développer des centres d'accueil",
+        "B": "Convaincre les entreprises étrangères d'investir au Burundi",
+        "C": "Soutenir les étudiants burundais expatriés pour leurs études",
+        "D": "Trouver des bénévoles pour s'occuper des enfants à l'hôpital"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Écologiques par nature, les solutions que nous proposons représentent un atout certain pour lutter contre les émissions de gaz à effet de serre. Audioconférence, visioconférence et messagerie vous évitent des déplacements inutiles, tout en vous permettant de contribuer à la préservation de la planète. En effet, une étude environnementale a calculé qu'en remplaçant 20% des voyages d'affaires par des visioconférences, on économiserait 22 millions de tonnes de CO2 par an. Ensemble, agissons pour un monde plus vert!\n\nQue propose cette entreprise ?",
+      "image_url": null,
+      "options": {
+        "A": "Des outils de communication",
+        "B": "Des voyages organisés",
+        "C": "Une formation à l'écologie",
+        "D": "Un système d'information"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Aux débuts d'Internet, je me souviens avoir lu, éberluée, dans un magazine féminin : « Mon mari était absent, il passait tout son temps sur le chat », et j'en étais à tenter de visualiser ce triste état de fait lorsque je compris ma méprise : j'avais confondu le chat, le félidé, avec le chat, la discussion sur Internet. Depuis ce jour, aucun progrès sur cette équivoque terrible de la langue, alors que l'usage informatique du mot souris démultiplie les sources de confusion. Le bon sens voudrait que la phonétique l'emporte et que l'on écrive « tchat ». Au lieu de cette solution évidente, le Petit Larousse a laissé entrer, en 2004, dans le dictionnaire, le monstrueux mot-valise « clavardage ».\n\nQu'est-ce qui dérange l'auteur de ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "L'abus d'anglicismes en langage informatique",
+        "B": "L'ambiguïté du néologisme « chat » à l'écrit",
+        "C": "Le laxisme orthographique dans les forums",
+        "D": "Le manque d'imagination des lexicologues"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Ils sont dix et ils sont \"dys\". Comme dyslexiques, dysphasiques... Agés de 11 à 13 ans, ces enfants souffrant de troubles du langage sont accueillis depuis la rentrée au collège Petite-Lande dans une classe intégrée, entourés d'une équipe de professionnels. « Les enfants ne suivent pas une formation classique mais, durant quatre ans, ils vont donc acquérir les bases scolaires, de l'autonomie au quotidien, et choisir une orientation professionnelle grâce à des stages en entreprise ». Au sein du collège, ils peuvent fréquenter des jeunes de leur âge, participer à certaines activités et projets en commun (cours de sport, sorties...).\n\nQue peuvent faire ces jeunes grâce à ce projet ?",
+      "image_url": null,
+      "options": {
+        "A": "Guérir de leurs troubles du langage",
+        "B": "Intégrer une classe traditionnelle",
+        "C": "Préparer leur entrée au collège",
+        "D": "Profiter d'un encadrement spécifique"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Il faut te le dire en quelle langue ?\n\nCette question, que des milliers de mères posent à leur enfant lorsqu'elles veulent se faire écouter, est en fait très sensée (comme tout ce que disent les mères). Des travaux scientifiques récents ont en effet démontré une réalité étonnante : nous réfléchissons et prenons des décisions différemment lorsque nous traitons l'information dans une autre langue que notre langue maternelle. Nous comprenons tout aussi bien l'idée ou le problème mais, lorsque nous utilisons une autre langue, le résultat est plus réfléchi, moins dicté par les émotions, plus orienté vers l'utilité.\n\nQue permet l'utilisation d'une langue autre que la langue maternelle ?",
+      "image_url": null,
+      "options": {
+        "A": "D'attirer l'attention de l'interlocuteur",
+        "B": "D'imaginer des solutions originales",
+        "C": "De solliciter davantage la raison",
+        "D": "De trouver des réponses rapides"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Les additifs et conservateurs, ces poudres de perlimpinpin, rendent appétissant un produit médiocre afin de mieux le vendre. C'est le cas des colorants si la préparation est terne, des exhausteurs de goût de type glutamate si elle est fade, des agents de texture si elle est sans consistance, ou des arômes si elle est insipide ou a carrément mauvais goût. On vous dit que les conservateurs ou antioxydants (sorbates, nitrites, sulfites...) servent à vous protéger de possibles intoxications bactériennes, mais ils servent surtout à prolonger les dates limites de consommation, afin de laisser plus de temps aux industriels et aux supermarchés pour commercialiser leur marchandise.\n\nQue critique cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Le dosage des produits chimiques dans les aliments",
+        "B": "Le manque de lisibilité des étiquettes",
+        "C": "Les arguments hypocrites avancés par les fabricants",
+        "D": "Les conséquences sanitaires des ajouts"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 33,
+      "question_text": "En France, entre 200 000 et 500 000 cas de troubles psychiques sont liés au monde du travail. L'apparition de nouvelles méthodes de travail, plus intenses et contraignantes, serait à l'origine de l'augmentation des cas de syndrome d'épuisement professionnel : c'est le mal du siècle et pourtant, il n'est pas encore reconnu. Les salariés, prisonniers de l'idéologie ambiante, s'imaginent trop souvent, quand ils craquent, qu'un collègue plus solide qu'eux aurait été capable de résister. Mais cela s'avère faux la plupart du temps. Une reconnaissance de la maladie obligerait les entreprises à réfléchir à leur fonctionnement et représenterait une réelle mesure d'utilité publique.\n\nQuel constat est dressé à propos de ce syndrome?",
+      "image_url": null,
+      "options": {
+        "A": "Il inquiète les patrons de sociétés",
+        "B": "Il touche les employés les plus faibles",
+        "C": "Son existence doit être officialisée",
+        "D": "Son traitement est peu efficace"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Des chercheurs mettent en doute l'idée répandue que la langue que nous parlons influence notre façon de penser. Ils présentent une recherche sur l'ordre des mots dans la phrase: Sujet, Verbe, Objet pour certaines langues : Sujet, Objet, Verbe pour d'autres. Leurs 40 sujets, locuteurs d'anglais, d'espagnol, de mandarin, de turc, ont décrit des séquences vidéo dans leur langue d'abord, puis en utilisant des gestes. Si les descriptions verbales différaient dans l'ordre des mots selon les langues, les descriptions faites avec les mains reprenaient toutes le même ordre (sujet, objet, verbe), suivant celui des langues des signes inventées par des locuteurs sourds.\n\nQuel est le résultat de l'expérience présentée dans cet article?",
+      "image_url": null,
+      "options": {
+        "A": "Les gestes révèleraient systématiquement la langue maternelle des locuteurs",
+        "B": "Il existerait un ordre universel de la pensée, indépendant de l'ordre linguistique",
+        "C": "Il y aurait autant de façons de penser que de structures de langue différentes",
+        "D": "Les structures des langues seraient dépendantes de notre expérience du monde"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Si la télévision est souvent critiquée pour sa diffusion d'informations un peu floues, elle est aussi un remarquable éveilleur d'intérêt, quand, en plus d'un embryon de connaissances, elle donne le goût de les développer. Il en est ainsi, par exemple, de la lecture, dont elle est la plupart du temps un incomparable promoteur. Contrairement à trop d'idées reçues, la concurrence est très rare entre le petit écran et le livre, ne serait-ce que parce que leurs clientèles respectives sont différentes. Ceux qui aiment lire ne sacrifient pas ce vice impuni à l'uniformité des habituels spectacles télévisés. Au contraire, après chaque émission littéraire, les chiffres de vente des livres évoqués ou ayant inspiré le spectacle comblent toujours d'aise les éditeurs.\n\nQue soutient l'auteur de ce texte concernant la télévision ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est un vecteur de diffusion des œuvres littéraires",
+        "B": "C'est une source de connaissances sûre et fiable",
+        "C": "L'audience des émissions culturelles est en hausse",
+        "D": "La concurrence qu'elle mène à la lecture est acharnée"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Sexistes, les jeux vidéo ? Peut-être bien que oui, peut-être bien que non. En tout cas, à parcourir les allées de la Paris Games Week, l'œil avisé aura lui-même bien du mal à trouver un personnage principal féminin dans un jeu vidéo. Il y a bien la célébrissime Lara Croft du jeu Tomb Raider, avec des attributs particulièrement imposants, conçus presque sur mesure pour plaire à un certain public masculin. Pour le reste, circulez, il n'y a — presque — rien d'autre à voir : au mieux, des princesses à sauver, au pire, des call-girls de mafieux. Pourtant, l'industrie du jeu vidéo a pris conscience, ces dernières années, du potentiel du marché des joueuses.\n\nQuel constat est dressé sur les jeux vidéo ?",
+      "image_url": null,
+      "options": {
+        "A": "La quasi absence d'héroïnes",
+        "B": "L'appel constant à la violence",
+        "C": "L'atténuation des clichés",
+        "D": "L'uniformité des scénarios"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Suite à un accident chimique sur un site minier, les pouvoirs publics ont décidé d'obliger les sociétés minières à financer des programmes de recherche et à replanter les surfaces exploitées. Et de fait, les compagnies minières jouent très bien le jeu. Comme il serait bien naïf de penser que leurs dirigeants soient tout à coup devenus philanthropes, il faut chercher la raison de cet intérêt ailleurs. Il se trouve qu'un scientifique, Anthony Van der Hent, a prouvé que des « super-plantes » avaient la faculté d'extraire du sol des métaux économiquement exploitables. C'est donc la possibilité d'allier la régénération de sites industriels à des assurances de gains financiers supplémentaires qui motive tant les industriels.\n\nSur quel point porte le scepticisme du journaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "La capacité des plantes à nettoyer les sols",
+        "B": "La rentabilité d'un nouveau système d'extraction",
+        "C": "Le résultat des recherches de M. Van der Hent",
+        "D": "Les préoccupations écologistes des industriels"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Travailler avec son mari ou son petit ami, sa sœur ou sa mère n'est pas une punition pour tout le monde ! Pour certains, c'est même la condition du bien-être professionnel. Si cette idée évoquait jadis une petite entreprise conservatrice, transmise « de père en fils », aujourd'hui, travailler en famille relève de réalités très différentes. Critères retenus : confiance, valeurs et goûts communs ; et surtout, besoin de réaliser ses propres projets plutôt que ceux des autres. Depuis toujours, la majorité des entreprises en France, toutes tailles confondues, sont familiales ; et de plus en plus de créations sont le fait de femmes. Ce sont d'ailleurs des entreprises où l'on vit mieux et qui durent plus longtemps que les autres. Aujourd'hui, la création d'une entreprise est plus souvent motivée par le désir d'assurer un travail à ses enfants ou d'échapper à des structures jugées déshumanisantes.\n\nQue permet la structure d'entreprise présentée ?",
+      "image_url": null,
+      "options": {
+        "A": "De concrétiser des objectifs personnels",
+        "B": "De fonctionner dans un cadre innovant",
+        "C": "De limiter la répartition des gains",
+        "D": "De renforcer les liens entre les générations"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Panache et arrogance, élégance et futilité, galanterie et gauloiserie : s'il existe — et à condition que cette notion ait encore un sens à l'ère de la mondialisation —, l'esprit français tire son essence particulière du fragile équilibre entre ces oppositions. Amateur de grands principes, de coups de sang et de bons mots, tel est l'esprit français. Quoi que nous en disions, il nous obsède. Que nous exaltions le génie national ou l'exception culturelle, les racines ou l'universel, le particularisme local ou l'intérêt général, il ne s'agit toujours, au fond, que de lui. La mondialisation va-t-elle le dissoudre, et nous renvoyer au triste rang de pays ordinaire ?\n\nSelon l'auteur, qu'est-ce que l'esprit français ?",
+      "image_url": null,
+      "options": {
+        "A": "Un égocentrisme désuet au temps de la mondialisation",
+        "B": "Un ensemble de valeurs partagées par une élite",
+        "C": "Une aptitude à l'ouverture qui tend à disparaître",
+        "D": "Des attitudes contradictoires forgeant une identité"
+      },
+      "correct_answer": "D"
+    }
+  ]
+}

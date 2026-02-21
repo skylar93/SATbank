@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE28",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Bonjour Madame Grange,\n\nJe vous confirme notre rendez-vous de demain. Je viendrai vous chercher à l'aéroport. Nous irons ensuite manger au restaurant. Enfin, nous rencontrerons les responsables de l'entreprise à 14h pour signer le contrat.\n\nÀ demain,\nMadame Louise,\n\nPourquoi Madame Louise écrit-elle à Madame Grange ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour lui annoncer un projet",
+        "B": "Pour lui présenter un nouveau produit",
+        "C": "Pour organiser leur journée de travail",
+        "D": "Pour préparer son voyage"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 2,
+      "question_text": "L'exposition des sculptures de César s'est terminée hier. Pour la première fois, les visiteurs ont pu voir une centaine d'œuvres de l'artiste, exposées pendant 3 semaines dans un large espace, au dernier étage du Centre Pompidou.\n\nQu'est-ce qu'on apprend sur cette exposition ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est un succès",
+        "B": "Elle changera de lieu",
+        "C": "Elle est déjà finie",
+        "D": "L'entrée est gratuite"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Production franco-canadienne.\nComédie.\nDurée : 1h 56 min.\nAnnée de production : 2004.\nSortie : mercredi 6 juillet.\nPublic : à partir de 8 ans.\n\nRésumé : Que peut-on offrir à un ami qui a tout ? Rien ! C'est l'histoire d'une amitié extraordinaire entre deux garçons : l'un, très pauvre, et l'autre, très riche. Une amitié racontée avec tendresse, humour, et un brin de philosophie.\n\nQue décrit-on dans ce document ?",
+      "image_url": null,
+      "options": {
+        "A": "Un concert",
+        "B": "Une exposition",
+        "C": "Un film",
+        "D": "Un livre"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 4,
+      "question_text": "ASSOCIATION «En route pour l'école»\n\nPour 92 euros, aidez des enfants à aller à l'école. Pour beaucoup d'entre eux, le collège est très loin : ils se lèvent très tôt et rentrent tard. Avec une bicyclette, ils pourraient y aller plus facilement. Faites un don à notre association pour leur offrir une bicyclette !\n\nQuel est le but de cette association ?",
+      "image_url": null,
+      "options": {
+        "A": "Aider des familles en difficulté",
+        "B": "Donner un vélo à des élèves",
+        "C": "Ouvrir de nouveaux collèges",
+        "D": "Réparer de vieilles bicyclettes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Les silences du Général\n\nDécouvrez les secrets de la vie du général de Gaulle sur Politike, la chaine de la vie politique française, vendredi à 20 h. Un documentaire étonnant, suivi de la diffusion du film L'armée des ombres réalisé par Jean-Pierre Melville.\n\nQuel média va donner des informations sur le général de Gaulle ?",
+      "image_url": null,
+      "options": {
+        "A": "L'internet",
+        "B": "La presse",
+        "C": "La radio",
+        "D": "La télévision"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 6,
+      "question_text": "LE SAVIEZ-VOUS ?\n\nLes Galeries Lafayette sont aujourd'hui le site le plus visité à Paris après le Musée du Louvre ! Vous pouvez y trouver des vêtements à la mode, des objets pour la maison ou encore des articles de cuisine.\n\nQu'est-ce qu'on apprend sur ce grand magasin ?",
+      "image_url": null,
+      "options": {
+        "A": "Beaucoup de personnes le visitent",
+        "B": "Il vend des articles bon marché",
+        "C": "Il y a un célèbre musée à l'intérieur",
+        "D": "On y donne des cours de cuisine"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Martine,\n\nJe ne connaissais pas le site www.lamode.com, mais j'ai lu des avis positifs à son sujet sur un forum. Alors, je suis allée y faire un tour et j'y ai trouvé une jolie robe, vraiment pas chère. Je l'ai commandée et je la portais cinq jours plus tard. J'en suis ravie !\n\nQu'explique cette personne ?",
+      "image_url": null,
+      "options": {
+        "A": "Comment elle a acheté un article en ligne",
+        "B": "Où elle a cherché un cadeau bon marché",
+        "C": "Lorsqu'elle a navigué sur le web à la recherche d'un cadeau",
+        "D": "Quand elle a échangé un vêtement soldé"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Ne dites plus dépendance, dites autonomie\n\nLes mots changent, le problème demeure. Ce problème est celui d'une population qui vit de plus en plus longtemps, grâce aux progrès de la médecine, mais qui nécessitent très souvent, les dernières années, une assistance à domicile ou un hébergement en maison de retraite médicalisée.\n\nSelon ce texte, quelle difficulté rencontrent les personnes âgées ?",
+      "image_url": null,
+      "options": {
+        "A": "Elles ont besoin d'accompagnement",
+        "B": "Elles ont peur de quitter leur logement",
+        "C": "Elles souffrent de grande solitude",
+        "D": "Elles suivent des traitements coûteux"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Chère Mamie,\n\nCet été, j'ai pris le bateau pour l'île d'Arz, en Bretagne. J'y ai fait du camping, j'ai profité des belles plages et j'ai mangé de délicieuses crêpes bretonnes ! J'ai rencontré Benjamin et ses copains. Nous avons fait du vélo ensemble : c'était super !\n\nJe t'embrasse !\nLaura,\n\nPourquoi Laura a-t-elle écrit cette lettre ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour proposer une promenade en bateau",
+        "B": "Pour raconter son séjour en Bretagne",
+        "C": "Pour répondre à son cousin Benjamin",
+        "D": "Pour réserver une place dans un camping"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 10,
+      "question_text": "SAMEDI 29 JUIN,\n\nVENEZ COURIR 10 KM POUR SOUTENIR L'ASSOCIATION « TOUS ENSEMBLE 10 POUR LA PAIX ».\nRENDEZ-VOUS À 10H AU PARC DE VINCENNES.\nAMBIANCE CONVIVIALE ET REPAS OFFERT POUR LES PARTICIPANTS.\n\nVENEZ NOMBREUX !\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "D'aider à organiser un réunion",
+        "B": "Devenir membre d'une association",
+        "C": "Distribuer des repas gratuits",
+        "D": "De participer à un événement sportif"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Dimanche 21 mai,\n\nVenez faire connaissance avec les habitants du quartier ! L'association « Immeubles en fête » vous donne rendez-vous vers midi. Apportez un plat et une boisson, et partageons-les ensemble ! Animation : Tennis de table à 15 h, Place de la Victoire.\n\nQu'est-ce que l'association « Immeubles en fête » propose ?",
+      "image_url": null,
+      "options": {
+        "A": "De cuisiner tous ensemble",
+        "B": "De faire un repas entre voisins",
+        "C": "De s'inscrire à des activités",
+        "D": "De visiter de nouveaux logements"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "FÉLICITATIONS!\n\nVous avez gagné une carte cadeau de 50€. Vous pouvez l'utiliser pour acheter tous nos produits de beauté. Attention, vous ne pouvez pas l'échanger contre de l'argent ou la donner à une autre personne. Si vous la perdez, vous n'êtes pas remboursé.\n\nQu'est-ce qu'on peut faire avec cette carte ?",
+      "image_url": null,
+      "options": {
+        "A": "Avoir des réductions sur certains articles",
+        "B": "Faire des courses dans un magasin",
+        "C": "Offrir une surprise pour un anniversaire",
+        "D": "Retirer de l'argent à un distributeur"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Connaître deux langues présentes des avantages!\n\nLa gymnastique mentale du passage d'une langue à une autre est aussi une gymnastique des émotions et du comportement : changer de langue, c'est aussi changer de culture. Quand une personne bilingue utilise une langue, l'autre est également activée dans le cerveau, comme lors d'une traduction. Cette activité mentale est bénéfique pour le cerveau : elle aide à lutter contre certaines maladies.\n\nSelon cet article, qu'apporte la pratique de deux langues ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est bonne pour la santé",
+        "B": "Elle facilite la socialisation",
+        "C": "Elle développe la mémoire",
+        "D": "Elle enrichit la personnalité"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 14,
+      "question_text": "PENDANT TOUTES LES VACANCES, VOTRE PISCINE RESTE OUVERTE.\nRETROUVEZ-VOUS EN FAMILLE À LA PISCINE DE TALENCE.\nPOUR DIX ENTRÉES ACHETÉES, UN BONNET DE BAIN EST OFFERT.\nPENSEZ À APPORTER VOTRE MAILLOT DE BAIN ET VOTRE SERVIETTE\n\nQuelle information a été communiquée ?",
+      "image_url": null,
+      "options": {
+        "A": "L'offre spéciale de l'été",
+        "B": "La date des vacances",
+        "C": "Le prix de l'entrée",
+        "D": "Les heures d'ouverture"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 15,
+      "question_text": "FAITES VOS COURSES SUR MONMAGASIN.COM ET GAGNEZ DU TEMPS POUR VOS LOISIRS.\n\nMODE D'EMPLOI :\n- Connectez-vous sur www.monmagasin.com\n- Faites votre choix parmi les 5000 références proposées sur le site du magasin.\n- Réglez votre commande en ligne et cumulez des points sur tous vos achats.\n\nCHOISISSEZ VOTRE MODE DE RETRAIT :\n- Livraison à domicile le lendemain (frais de livraison offerts avec la carte fidélité).\n- Retrait en magasin (choisissez votre horaire sur les plannings proposés et récupérez vos courses en toute simplicité).\n\nQuel est l'intérêt de ce service ?",
+      "image_url": null,
+      "options": {
+        "A": "Avoir des réductions sur certains produits",
+        "B": "Bénéficier de facilités de paiement",
+        "C": "Faire ses courses plus rapidement",
+        "D": "Recevoir sans frais des produits d'essai"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Vous souhaitez vivre une expérience qui sort de l'ordinaire ? Réservez une nuit dans l'une de nos maisons dans les arbres ! Intérieur confortable, sensation d'aventure, réveil aux bruits de la nature, tout est prévu pour un séjour inoubliable.\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "De dormir au milieu de la nature",
+        "B": "De faire un parcours dans les arbres",
+        "C": "De participer à une aventure sportive",
+        "D": "De passer une nuit sous la tente"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Il nous est à tous arrivé de parler à voix haute alors que nous étions seuls. Mais pourquoi nous mettons-nous à nous exprimer ainsi, au lieu de simplement penser en silence dans notre tête ? À l'oral, tout ne peut pas être dit en même temps, contrairement à ce qui se passe dans notre esprit, où les pensées surgissent simultanément et peuvent s'exclure mutuellement. À l'oral, il faut choisir les mots, énoncer les choses dans un certain ordre, les poser clairement pour organiser notre réflexion, comme l'explique le psychologue Sébastien Dupont.\n\nSelon ce psychologue, pourquoi avons-nous tendance à nous parler à voix haute ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour clarifier ses idées",
+        "B": "Pour combler la solitude",
+        "C": "Pour exercer la mémoire",
+        "D": "Pour prendre des décisions"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Parcourir les routes d'Europe l'été, beaucoup de touristes le font sans forcément connaître les règles en vigueur dans chacun des pays. Ce qu'il faut savoir, c'est qu'il existe des différences qui peuvent être notables selon les législations. Alors que la vitesse maximale sur autoroute est de 130 km/h en France, elle n'est que de 120 km/h en Belgique, en Espagne ou au Portugal. Quant au taux d'alcoolémie toléré, il varie de 0,8 g/l en Irlande à zéro en République tchèque.\n\nQue fait l'auteur de cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Il commente une loi",
+        "B": "Il formule une plainte",
+        "C": "Il donne un conseil",
+        "D": "Il raconte une anecdote"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Que pensent les Français de la mobilité territoriale ?\n\nSi la mobilité n'est ni bonne ni mauvaise en soi, elle peut être perçue de manière radicalement différente en fonction des circonstances dans lesquelles elle se réalise, et surtout selon qu'elle est choisie ou non. Des mobilités personnelles, professionnelles et spatiales, voulues et recherchées, peuvent être un facteur d'épanouissement individuel et professionnel pour certains groupes favorisés, alors qu'elles peuvent constituer un facteur de précarité pour les groupes défavorisés, notamment lorsqu'elles sont subies.\n\nDans quelles conditions une mobilité territoriale est-elle bien vécue ?",
+      "image_url": null,
+      "options": {
+        "A": "Si c'est une occasion d'élargir son réseau social",
+        "B": "Si c'est une opportunité de changer de mode de vie",
+        "C": "Si c'est la possibilité de trouver un emploi",
+        "D": "Si c'est le fruit d'une décision personnelle"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Ralentissement du traitement de l'information, baisse de l'attention et de notre mémorisation à court terme.... Avec l'âge, le vieillissement du cerveau semble inévitable. Pourtant, notre santé cognitive dépend aussi de notre mode de vie. Il est ainsi primordial, après la soixantaine, de conserver une vie active, physiquement par une pratique sportive régulière et aussi intellectuellement en sollicitant nos fonctions mentales par un apprentissage permanent. Pour cela, il est essentiel de garder une vie sociale riche d'interactions avec les autres et également de cultiver des activités, associatives ou sportives, par exemple.\n\nQuel est l'objectif des conseils donnés dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Améliorer les capacités physiques",
+        "B": "Découvrir de nouveaux types de sports",
+        "C": "Développer le cercle de ses relations sociales",
+        "D": "Maintenir les performances de la mémoire"
+      },
+      "correct_answer": "D"
+    },
+        {
+      "question_number": 21,
+      "question_text": "Si des animes japonais étaient diffusés avant Dragon Ball, c'est cette saga qui a popularisé le manga en France. Le personnage principal, Goku, est d'abord un enfant simple et très joyeux. Avec l'âge et l'expérience, il mûrit et assume les responsabilités liées au développement de ses super-pouvoirs. Cette évolution du protagoniste, parallèle à celle de ses lecteurs, leur a permis de s'identifier à lui. Ce procédé narratif, qui consiste à faire grandir le personnage au fil du temps, était sans précédent et surtout en opposition claire avec les comics américains, dont les personnages ne vieillissent jamais.\n\nD'après cet article, qu'est-ce qui explique le succès de ce manga ?",
+      "image_url": null,
+      "options": {
+        "A": "Le dessinateur utilise une technique inédite",
+        "B": "Le public se reconnaît à travers le héros",
+        "C": "Le scénario repose sur une intrigue excitante",
+        "D": "Les adolescents adorent l'univers imaginé"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 22,
+      "question_text": "Avec la technologie actuelle, il faut six à neuf mois pour un vol de la Terre à Mars. Pour connaître les effets de l'isolement spatial de longue durée, six volontaires ont joué les astronautes dans un dôme de 90 m² installé sur un volcan à Hawaï, qui faisait office de base martienne. Ils en sont ressortis dimanche, épuisés, mais heureux de respirer l'air frais et de converser avec d'autres humains. Pendant un an, ils sont restés ensemble en milieu fermé (avec quelques rares sorties en combinaison spatiale), ont mangé une nourriture déshydratée et effectué des expériences pour améliorer les systèmes autonomes.\n\nDans quel projet ces six personnes ont-elles été impliquées ?",
+      "image_url": null,
+      "options": {
+        "A": "À un vol interstellaire vers une planète lointaine",
+        "B": "À une expérience d'autosuffisance alimentaire",
+        "C": "À une exploration de cratères de volcans",
+        "D": "À une simulation de mission spatiale"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 23,
+      "question_text": "L'alliance française de Bordeaux recherche : un(e) professeur(e) de français langue étrangère. Vous assurerez les cours de français pour tous niveaux. Le public se compose d'élèves de tous âges. Les cours ont lieu de 15h00 à 21h00 (du lundi au jeudi). Matinées et vendredis libres. Possibilités d'heures supplémentaires en cours particuliers.\nRémunération : à débattre, en fonction de l'expérience.\nProfil : titulaire d'un diplôme d'enseignement du français langue étrangère, dynamique et motivé(e). Capacité à travailler en équipe. Une expérience auprès d'enfants serait un plus.\n\nQuelles sont les conditions d'embauche ?",
+      "image_url": null,
+      "options": {
+        "A": "Avoir une expérience dans l'enseignement",
+        "B": "Être impérativement disponible le matin",
+        "C": "Être titulaire d'une formation reconnue",
+        "D": "Pouvoir travailler en totale autonomie"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 24,
+      "question_text": "En France, ce sont majoritairement les enfants des classes sociales favorisées qui accèdent aux études supérieures, tandis que ceux des classes moyennes et modestes en sont largement écartés, diminuant ainsi leurs chances d'accéder aux postes à responsabilités et aux salaires qui en découlent. Si l'école ne peut être tenue pour seule responsable de cette situation, il n'en demeure pas moins qu'elle ne permet pas aux élèves issus de milieux modestes de compenser les faiblesses de l'environnement social et familial, dont on connaît l'impact majeur sur la réussite scolaire. C'est pourquoi nous devons examiner comment l'école peut devenir sa propre ressource afin de garantir une véritable démocratisation de la réussite scolaire, aujourd'hui de fait réservée à quelques-uns.\n\nSelon l'auteur, que devrait faire l'école ?",
+      "image_url": null,
+      "options": {
+        "A": "Allouer une bourse aux plus modestes",
+        "B": "Épauler les familles en difficulté",
+        "C": "Favoriser l'égalité des chances",
+        "D": "Garantir une pédagogie différenciée"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Dans une société qui ne tolère plus l'attente, est-il possible d'éviter la frustration lorsqu'on patiente à la caisse d'un supermarché ? La question préoccupe les grandes chaînes commerciales. Il existe plusieurs systèmes pour optimiser l'organisation des files d'attente et, pour les départager, il faut faire appel à la stratégie. Si une seule file très longue peut être décourageante, proposer plusieurs files plus courtes présente un autre inconvénient : celui de devoir en choisir une. Or, se trouver en situation de devoir faire un choix peut générer de l'incertitude, du stress et de la colère.\n\nQu'apprend-on sur les files d'attente ?",
+      "image_url": null,
+      "options": {
+        "A": "Chaque magasin met en place son propre système",
+        "B": "Elles diminuent avec l'automatisation des caisses",
+        "C": "L'optimisation de leur gestion est en cours d'étude",
+        "D": "Leur multiplication réduit le stress des consommateurs"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Ces dernières années, les nouvelles versions de films à succès se sont multipliées, et ce mouvement ne semble pas près de s'arrêter, comme si l'industrie cinématographique ne parvenait plus à inventer de nouvelles histoires, de nouveaux concepts susceptibles d'éveiller la curiosité d'un large public. Pourtant, des idées neuves, de nouvelles sensibilités, il en existera toujours — encore faut-il qu'elles trouvent un relais financier pour voir le jour. Or, l'industrie cinématographique hésite à investir dans la nouveauté ; elle se tourne donc vers les valeurs sûres des succès passés.\n\nQuelle constatation ce journaliste fait-il sur le cinéma contemporain ?",
+      "image_url": null,
+      "options": {
+        "A": "Les producteurs évitent de prendre des risques",
+        "B": "Les réalisateurs sont à la recherche d'idées neuves",
+        "C": "Les scénaristes font preuve d'une imagination limitée",
+        "D": "Les spectateurs privilégient les créations classiques"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Avec une histoire de plus de deux millénaires et une économie prospère, Aix-en-Provence rompt avec l'image de cité endormie que pourrait suggérer son labyrinthe de ruelles colorées. L'activité des commerçants, galeristes, aubergistes et autres passants insuffle un rythme singulier aux journées provençales, témoignant de l'énergie créative de sa population cosmopolite. En plus d'un patrimoine remarquable, la ville accueille l'élite de la danse contemporaine, 70 000 étudiants fréquentent ses trois universités, et des centaines d'entreprises occupent son pôle d'activité. Ce dynamisme n'a rien à envier à Marseille, située à quelques kilomètres, et promet de belles heures à Aix.\n\nSelon ce texte, quelle est la particularité d'Aix-en-Provence ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle abrite une vie animée",
+        "B": "Elle perpétue des traditions",
+        "C": "Elle se préserve du tourisme",
+        "D": "Elle tente d'imiter sa voisine"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 28,
+      "question_text": "La mairie de Paris appelle les Parisiens à prendre part au budget participatif. 5% du budget de la Ville est ainsi dédié à la réalisation de vœux émanant directement des habitants. D'abord, ces derniers font des propositions d'aménagements ou d'événements. Ensuite, les projets sont soumis au vote via Internet. Ceux qui obtiendront le plus de suffrages seront inscrits au budget de la Ville et verront le jour dans les mois suivants. L'objectif de cette initiative est d'assurer plus de transparence dans la gestion des finances et de valoriser l'expertise et la créativité des Parisiens concernant leur environnement immédiat.\n\nGrâce à cette initiative, que peuvent faire les Parisiens ?",
+      "image_url": null,
+      "options": {
+        "A": "Aider à la préservation de leur quartier",
+        "B": "Choisir des actions pour leur commune",
+        "C": "Contrôler les dépenses privées des élus",
+        "D": "Opposer un veto à certaines décisions"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 29,
+      "question_text": "L'individualisme a souvent mauvaise presse dans les discours actuels. On a tendance à lui imputer tous les maux de nos sociétés : égoïsme, compétition, exclusion, communautarisme, voire déliquescence morale... Erreur, explique le sociologue François de Singly dans un petit essai percutant. On assimile l'individualisme à ces réactions adolescentes du type « J'ai bien le droit de faire ce que je veux », alors qu'il est tout le contraire. Fruit d'une pensée élaborée depuis la Renaissance, l'individualisme est un projet de société dans lequel chacun devrait trouver les meilleures conditions pour son épanouissement.\n\nQu'explique François de Singly à propos de l'individualisme ?",
+      "image_url": null,
+      "options": {
+        "A": "Il appartient à une réflexion philosophique",
+        "B": "Il fait souvent la une des journaux",
+        "C": "Il résulte des modes de vie contemporains",
+        "D": "Il véhicule des valeurs obsolètes"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Selon la conception de Descartes, le corps est perçu comme séparé de l'esprit à éduquer. Cette idée, selon laquelle le corps ne serait que naturel et biologique, a été déconstruite par le sociologue Marcel Mauss en 1934. Dans ses travaux, il montre que le corps est le résultat d'une construction sociale, un matériau dans lequel s'impriment les marques d'une culture donnée dans une société donnée. Il n'existerait pas de manière « naturelle » de se développer, de bouger, de se comporter pour le corps humain. La marche ou la nage, qui paraissent ordinaires ou allant de soi, sont en réalité le reflet d'une éducation qui institue les manières dont les êtres humains apprennent à se servir de leur corps.\n\nQue montrent les travaux de Marcel Mauss sur la façon de se mouvoir ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle représenterait l'influence de l'inconscient",
+        "B": "Elle résulterait de l'observation de normes",
+        "C": "Elle serait issue du patrimoine génétique",
+        "D": "Elle résulterait la part de l'acquis due au groupe"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Lors des premiers pas de l'art urbain (connu aussi sous le nom de street art), il y a plus de cinquante ans, personne ne portait vraiment intérêt à cette expression artistique éphémère. Les tags étaient destinés à disparaître, mais avec le temps, cela a changé : désormais on va jusqu'à découper les murs pour les vendre aux enchères et en garder une trace, car la conservation des œuvres d'art urbain dans l'espace public pose de sérieux défis. Il faut les protéger des agressions du temps, de la température, des dégradations humaines. On peut mettre une protection en plexiglas, mais un jour le mur finira aussi peut-être par tomber.\n\nQu'explique l'auteur à propos des œuvres d'art urbain ?",
+      "image_url": null,
+      "options": {
+        "A": "Des musées sont prêts à les accueillir",
+        "B": "Le marché voit leur cote grimper",
+        "C": "Leurs auteurs sont devenus célèbres",
+        "D": "On veut les préserver durablement"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Selon plusieurs scientifiques, les nouvelles solutions « écologiques », telles que la voiture électrique, tendent en réalité à stimuler l'activité économique et ne permettront pas de préserver notre modèle de développement. Au-delà du double écueil de la fabrication des voitures électriques, qui est énergivore et génère de nombreux déchets, le problème des technologies dites « vertes » réside principalement dans l'effet rebond, c'est-à-dire l'augmentation de l'activité globale qu'entraîne toute découverte ou amélioration technologique. Ainsi, une véritable approche écologique devrait impérativement inclure une part de sobriété, permettant au progrès technique de favoriser une réduction de la consommation.\n\nQue pense l'auteur des nouvelles solutions écologiques ?",
+      "image_url": null,
+      "options": {
+        "A": "Il déconseille au grand public de les adopter",
+        "B": "Il estime qu'elles sont insuffisamment promues",
+        "C": "Il remet en question leurs retombées positives",
+        "D": "Il révèle qu'elles contribuent au déclin industriel"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Un nouveau mot se banalise sur les campus américains: \"microagression\". Qualifiant les blessures subtiles qui affectent les individus exposés à une forme de dévalorisation par le langage, il alimente le débat sur la liberté d'expression. Forgé dans les années 1970, le terme a été développé à partir de 2007 par Derald Wing Sue qui le définit ainsi : des insultes ou attitudes intentionnelles ou non qui communiquent des messages hostiles ou méprisants envers des personnes sur la seule base de leur appartenance à un groupe marginalisé. Des universités ont mis en place des mécanismes de prévention et de dénonciation de ces microagressions, mais certains redoutent que l'excès de précaution ne vienne tuer le débat d'idées.\n\nQu'apprend-on sur les microagressions ?",
+      "image_url": null,
+      "options": {
+        "A": "Ce sont des blessures corporelles superficielles",
+        "B": "Elles sont commises par des groupes minoritaires",
+        "C": "Les autorités universitaires s'en préoccupent peu",
+        "D": "Lutter contre elles peut nuire à certaines libertés"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Théâtre\n\nJoël Pommerat nous offre un très court spectacle, dont à la fois la pureté formelle et le sens nous ont conquis. Le matériau en est constitué par une série de rencontres auxquelles lui-même et son équipe ont assisté, entre des travailleurs sociaux et des femmes d'origine modeste, vivant en cité et en proie à des problèmes familiaux. De ces confidences, relatives aux tensions qu'elles connaissent dans leurs rapports, soit avec leurs parents, soit avec leurs enfants, Pommerat a tiré une suite de brèves séquences qui composent une tragédie intense de la souffrance familiale, et particulièrement de la souffrance des femmes. Son regard sur la détresse humaine est d'une bienveillance et d'une tendresse infinies. Il ne nous livre aucun message moral, et à peine un message social ; il fait simplement appel à notre sensibilité.\n\nDans quel objectif Joël Pommerat a-t-il créé son spectacle ?",
+      "image_url": null,
+      "options": {
+        "A": "Aider les femmes à se battre pour améliorer leur situation familiale",
+        "B": "Amener les spectateurs à s'émouvoir d'un quotidien douloureux",
+        "C": "Démontrer que la condition de la femme dans les cités est désastreuse",
+        "D": "Informer des difficultés que peuvent rencontrer les enfants des cités"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 35,
+      "question_text": "La question environnementale est au cœur des débats contemporains ; elle doit donc, à ce titre, trouver dans l'école un écho à la mesure de son importance. Il faut toutefois adapter la question à l'espace scolaire. La première condition pour un transfert réussi, utile et pédagogique, est d'ordre terminologique : il faudrait reformuler la problématique dans des mots ordinaires. Pourquoi, en effet, ne pas parler directement de l'environnement et du rapport que les hommes entretiennent avec lui, de la variété précieuse des êtres vivants qui le composent, de sa protection en vue de sa conservation ? Nous nous placerions ainsi dans un registre linguistique moins abstrait que celui de la transition écologique par exemple.\n\nD'après l'auteur, que faut-il faire pour sensibiliser les élèves aux questions environnementales ?",
+      "image_url": null,
+      "options": {
+        "A": "Améliorer la formation des enseignants",
+        "B": "Instaurer des discussions en classe",
+        "C": "Programmer des sorties dans la nature",
+        "D": "Simplifier le vocabulaire employé"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Les chutes d'attention et le relâchement musculaire signalent un besoin des plus naturels : dormir. Interrompre sa journée pour ce moment réparateur, c'est compenser les nuits trop courtes et éviter que ce manque de sommeil ne grignote la santé physique et mentale. Mais pourquoi ce remède ancestral est-il à ce point sous-estimé ? En fait, la sieste n'est pas tant incomprise que redoutée. En effet, travailler exige de répondre à des impératifs extérieurs, parfois au détriment des besoins intérieurs ou physiologiques, et faire la sieste devient une transgression. Rituel de l'été, le petit somme reste inacceptable au travail, où le maître mot est la productivité. Et pourtant, en aidant à rétablir l'équilibre physique, ne pourrait-il pas y contribuer ?\n\nQue suggère l'auteur au sujet de la sieste ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle devrait être réservée aux périodes de congés",
+        "B": "Elle est préconisée par la médecine",
+        "C": "Elle peine à se répandre en milieu professionnel",
+        "D": "Elle serait néfaste pour le rendement"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Jadis pourchassées pour hérésie ou cantonnées aux seconds rôles dans les contes de fées, les sorcières, ces figures de pouvoir et de liberté, reprennent du service, notamment dans les fictions, essais et ouvrages historiques. Après le best-seller de Mona Chollet, Sorcières, la puissance invaincue des femmes, écoulé à plus de 136 000 exemplaires depuis sa sortie en 2018, les éditeurs ont su s'emparer du filon. Si ce succès est indéniablement lié au féminisme, le déclencheur vient d'abord d'un petit sorcier : Harry Potter. Il a marqué le retour en grâce de la magie, estime Mickaël Palvin, directeur marketing d'Albin Michel. Pendant des années, on a cantonné la sorcellerie au rayon ésotérisme. Mais depuis quelques mois, on assiste à sa consécration dans la littérature que les éditeurs mettent en avant lors de la rentrée littéraire.\n\nQu'explique ce journaliste sur les sorcières dans la littérature ?",
+      "image_url": null,
+      "options": {
+        "A": "Elles bénéficient d'un effet de mode",
+        "B": "Elles inquiètent les jeunes enfants",
+        "C": "Elles relèvent d'un genre spécifique",
+        "D": "Elles symbolisent la peur de l'inconnu"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Quand j'ai ouvert ce blog il y a bientôt trois ans, je lisais partout sur Internet que le journalisme professionnel était mort, dès lors que chacun pouvait devenir journaliste, au sens de diffuseur d'informations. Ce point de vue, à mon sens erroné, tend à disparaître. Il disparaît à mesure que se dessine sur Internet la différence entre faits et opinions, entre travail professionnel et amateur, entre capacité à aller chercher l'information et simple possibilité technique de la diffuser. Tout le monde n'est pas devenu journaliste avec Internet ; en revanche, nous sommes de plus en plus nombreux à accéder au statut de membres actifs du système médiatique.\n\nQuelle est l'opinion de cette personne sur l'évolution du métier de journaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "La formation au métier de journaliste est devenue tout à fait inutile",
+        "B": "Une frontière est apparue entre les journalistes confirmés et les autres",
+        "C": "L'évolution d'internet a affaibli le respect porté au statut de journaliste",
+        "D": "Des internautes publiant sur le net se prennent pour des journalistes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Le tourisme en France a longtemps été perçu comme une manne, mais il pourrait à l'avenir se transformer en calamité : celle du « surtourisme ». Ce phénomène résulte d'une mauvaise gestion de foules toujours plus nombreuses, qui pourraient bientôt affecter la France, où de nombreux sites emblématiques sont inadaptés à une affluence en forte croissance, le Louvre et la tour Eiffel, à Paris, en tête. « L'objectif de 100 millions de touristes par an pourrait bien être atteint, précise un directeur d'agence organisant des séjours en France. Mais, en l'absence de tout aménagement, et alors que 20 % du pays accueillent 80 % des touristes, cela pourrait devenir un danger. »\n\nQu'apprend-on au sujet du « surtourisme » ?",
+      "image_url": null,
+      "options": {
+        "A": "Il est à l'origine d'une politique de diminution des flux",
+        "B": "Il nécessite une réorganisation des lieux les plus visités",
+        "C": "Il permet de répartir les voyageurs sur tout le territoire",
+        "D": "Il suscite l'engouement des professionnels du secteur"
+      },
+      "correct_answer": "B"
+    }
+  ]
+}

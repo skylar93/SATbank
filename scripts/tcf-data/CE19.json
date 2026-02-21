@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE19",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Le musée propose une visite guidée à 14h30. Les participants doivent se présenter à l'accueil avant 14h15.\n\nQuelle information est communiquée aux participants ?",
+      "image_url": null,
+      "options": {
+        "A": "Une exposition",
+        "B": "Une date",
+        "C": "Un horaire",
+        "D": "Un tarif"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 2,
+      "question_text": "La société \"HealthyFit\" propose des séances d'entraînement en groupe tous les mercredis à 18h30.\n\nApelez le 06 12 34 56 78 ou visitez www.healthyfit.com.\n\nQue propose la société \"HealthyFit\" ?",
+      "image_url": null,
+      "options": {
+        "A": "Un régime alimentaire",
+        "B": "Un service de massage",
+        "C": "Des sessions d'exercices",
+        "D": "Des cours de yoga"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Je suis enfin arrivée à bon port. Demain, on pourra aller visiter le château que je t'ai mentionné.\n\nÀ demain !\n\nAmicalement,\nMarie,\n\nOù se trouve Marie actuellement ?",
+      "image_url": null,
+      "options": {
+        "A": "Dans un parc",
+        "B": "Chez elle",
+        "C": "Dans un musée",
+        "D": "Au travail"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Lors de la fête d'anniversaire, Tim et ses amis ont beaucoup de bonbons à disposition. Tim mange quelques bonbons et met le reste dans une boîte pour en profiter plus tard.\n\nQue fait Tim avec les bonbons restants ?",
+      "image_url": null,
+      "options": {
+        "A": "Il les partage",
+        "B": "Il les jette",
+        "C": "Il les conserve",
+        "D": "Il les offre"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 5,
+      "question_text": "OUVERTURE DU MUSÉE\nDu mardi au dimanche de 10h à 18h\n\nQuelle est l'information affichée sur ce panneau ?",
+      "image_url": null,
+      "options": {
+        "A": "Une tarification",
+        "B": "Une fréquence",
+        "C": "Une localisation",
+        "D": "Une disponibilité"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Thomas,\n\nJe suis chez ma copine Léa, on va faire du shopping. Je rentre vers 18h, ne t'inquiète pas. Il y a du poulet au frigo, tu peux le réchauffer.\n\nJulie,\n\nQue va faire Julie jusqu'à 18h ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle va manger du poulet",
+        "B": "Elle va voir un film",
+        "C": "Elle va acheter des vêtements",
+        "D": "Elle va faire ses devoirs"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 7,
+      "question_text": "C'est la rentrée !\n\nProfitez de nos offres exceptionnelles sur les fournitures scolaires\n\nJusqu'à -50% sur une sélection d'articles\n\nDépêchez-vous, il n'y en aura pas pour tout le monde !\n\nVotre libraire Paul\n\nQue fait Paul dans cette annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Il annonce une ouverture",
+        "B": "Il propose une réduction",
+        "C": "Il demande un avis",
+        "D": "Il organise un concours"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Monsieur Dupont,\n\nNous vous informons que votre demande d'emploi a été acceptée et nous vous convions à une réunion d'orientation qui se tiendra à l'adresse, date et heure mentionnées ci-dessous.\n\nVeuillez vous munir de cette convocation ainsi que de votre CV et de vos diplômes pour la vérification.\n\nEntreprise LTR, 15, Rue des Entrepreneurs, 75 000 Paris.\nRéunion d'orientation professionnelle, Salle de conférence\nVendredi 10 septembre à 9h00\nDurée 2 heures\nM. Martinet, Directeur des Ressources Humaines\n\nPourquoi Monsieur Dupont est-il convoqué ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour passer un entretien d'embauche",
+        "B": "Pour recevoir une promotion",
+        "C": "Pour participer à une formation",
+        "D": "Pour signer un contrat"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 9,
+      "question_text": "La recette de mamie !\n\nSur la pâte, mettre des pommes coupées en morceaux avec du sucre. Ajouter un peu de beurre. Faire cuire au four 30 minutes. La tarte est prête !\n\nQu'est-ce qu'on fait avec cette recette ?",
+      "image_url": null,
+      "options": {
+        "A": "Un dessert",
+        "B": "Une entrée",
+        "C": "Une salade",
+        "D": "Une soupe"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 10,
+      "question_text": "La comédienne franco-suisse Pascale Rocard part tourner un film à Paris. Actrice et réalisatrice à succès, elle est également peintre et photographe. Mère de deux enfants, elle vit en Suisse.\n\nQue va faire Pascale Rocard ?",
+      "image_url": null,
+      "options": {
+        "A": "Avoir un bébé",
+        "B": "Déménager en France",
+        "C": "Jouer au cinéma",
+        "D": "Organiser une exposition"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Nouveau message\n\nMadame,\n\nPour rencontrer la directrice de l'école, il faut prendre rendez-vous avec son secrétariat (02 86 25 89 47). Sans rendez-vous, vous ne pourrez pas la voir.\n\nCordialement,\nMartine Garno,\nResponsable des professeurs\nÉcole Printanier\n\nQui faut-il appeler pour rencontrer la directrice de l'école ?",
+      "image_url": null,
+      "options": {
+        "A": "La secrétaire",
+        "B": "Le directeur",
+        "C": "Madame Garno",
+        "D": "Un professeur"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Grande marche pour défendre nos emplois\n\nMardi 12 juin\n\nVenez nombreux\n\nDépart Place des nations devant le centre des congrès à 10h. Arrivée prévue vers midi devant la maison des entreprises. Boulevard des platanes\n\nQu'annonce cette affiche ?",
+      "image_url": null,
+      "options": {
+        "A": "Un salon des entrepreneurs",
+        "B": "Une compétition sportive",
+        "C": "Une conférence sur le chômage",
+        "D": "Une manifestation sociale"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Vous voulez rire ?\n\nDécouvrez Mimiquette et Théophilou, des personnages de bande dessinée que tous les petits adorent parce qu'ils sont gais, aiment inventer des jeux et mettent souvent leurs parents en colère : comme tous les enfants!\n\nComment sont les personnages de Mimiquette et Théophilou ?",
+      "image_url": null,
+      "options": {
+        "A": "Beaux",
+        "B": "Calmes",
+        "C": "Courageux",
+        "D": "Joyeux"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Grand jeu JARDIMARCHÉ\n\nVous pensez avoir le plus beau jardin ? Envoyez une photo à grandjeu@jardimarche.com. Trois gagnants recevront un chèque de 500 euros valable dans tous nos magasins.\n\nQue propose Jardimarché ?",
+      "image_url": null,
+      "options": {
+        "A": "D'acheter des plantes à bon prix",
+        "B": "De faire des courses en ligne",
+        "C": "De participer à un concours",
+        "D": "De recevoir des outils gratuits"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Vous avez entre 16 et 25 ans et vous souhaitez travailler rapidement ?\n\nVenez rencontrer des chefs d'entreprise et connaître les formations existantes au Salon de l'entreprise, du 3 au 9 avril prochain.\n\nQu'est-ce qu'on peut faire dans ce salon ?",
+      "image_url": null,
+      "options": {
+        "A": "Participer à un stage de plusieurs jours",
+        "B": "S'informer sur le monde professionnel",
+        "C": "S'inscrire à un cours réservé aux jeunes",
+        "D": "Trouver de l'aide pour écrire un C.V"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 16,
+      "question_text": "À l'attention de tous les services : Nous préparons une commande pour tous les bureaux. Merci de nous faire une liste : crayons, stylos, gommes, etc. Attention ! La commande d'encre et de papier d'imprimante est terminée.\n\nQue doivent faire les employés du service ?",
+      "image_url": null,
+      "options": {
+        "A": "Acheter des articles de bureau",
+        "B": "Commander une imprimante",
+        "C": "Demander de l'encre et du papier",
+        "D": "Lister leurs besoins de matériel"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Plus d'essence à la station-service : un exemple de ce que peuvent créer les réseaux sociaux. Samedi soir, dans une station-service de Pontivy, le prix de l'essence a chuté à la pompe, passant de 1,267€ à 1€. Cette baisse de prix était due à un problème informatique survenu au moment de la fermeture, lorsque les pompes sont devenues automatisées. Les clients se sont passé le mot via le bouche-à-oreille, les SMS et l'utilisation de Facebook. Pendant la nuit, une file d'attente s'est constituée devant la pompe. Au matin, le réservoir de la station était vide.\n\nQue s'est passé pour les habitants de Pontivy ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils ont été invités à une fête en ville",
+        "B": "Ils ont eu une coupure d'Internet",
+        "C": "Ils ont fait le plein à très bas prix",
+        "D": "Ils ont pu téléphoner gratuitement"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Selon les résultats d'un sondage, 7 Français sur 10 déclarent acheter régulièrement des produits bio. Avec, par ordre de préférence, les fruits et légumes, le lait et les produits laitiers, les œufs, l'épicerie puis la viande. Pour les deux tiers des personnes interrogées, la santé est l'argument prioritaire, devant les considérations écologiques. Ce bond de la vente des produits bio doit beaucoup à l'intérêt des grandes surfaces pour ce marché qui rapporte, mais aussi au développement des enseignes spécialisées. Cet appétit des Français a de quoi rassurer tous ceux qui pouvaient s'inquiéter des débouchés de la filière bio, suite aux nombreuses reconversions agricoles.\n\nD'après ce texte, pourquoi les Français consomment-ils des produits bio ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour éviter de tomber malades",
+        "B": "Pour profiter de tarifs avantageux",
+        "C": "Pour protéger l'environnement",
+        "D": "Pour soutenir les paysans locaux"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 19,
+      "question_text": "À l'attention de M. Deulyer,\n\nNous avons bien reçu votre CV pour un poste de professeur de mathématiques dans notre école et nous vous en remercions. C'est avec intérêt que nous avons étudié votre dossier. Malheureusement, aucun poste n'est disponible pour le moment. Nous ne pourrons répondre favorablement à votre demande. Nous vous proposons de garder votre CV afin de vous recontacter dès qu'un poste correspondant à votre profil sera disponible.\n\nQue reçoit M. Deulyer ?",
+      "image_url": null,
+      "options": {
+        "A": "Un rejet de candidature",
+        "B": "Une lettre de motivation",
+        "C": "Une proposition de travail",
+        "D": "Une réponse à une annonce"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 20,
+      "question_text": "La ville de Paris lance un concours mondial de créations urbaines innovantes. Ouvert à tous, professionnel ou citoyen, du moment qu'un architecte est associé au projet, le concours a pour objectif d'imaginer le Paris de demain en innovant. « Faire autrement, explique l'adjoint en charge de l'urbanisme, c'est utiliser la matière de manière responsable pour consommer moins de matières premières, choisir de bons matériaux, tendre vers le zéro déchet, produire en co-construction la ville avec les citoyens en s'inspirant des idées qu'ils proposent »\n\nQue propose la mairie de Paris au public ?",
+      "image_url": null,
+      "options": {
+        "A": "De développer des projets collectifs pour la ville",
+        "B": "De donner un avis sur les nouveaux bâtiments",
+        "C": "De participer à des débats sur l'environnement",
+        "D": "De visiter des expositions dans des lieux insolites"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 21,
+      "question_text": "Les termes « intelligence artificielle » entrainent généralement des inquiétudes. Pourtant, une étude menée auprès de 14.078 salariés, dans onze pays différents et dans plusieurs secteur d'activités (santé, transports, énergie ...), tente de prouver que l'intelligence artificielle pourrait augmenter de 10%, en moyenne, les effectifs des entreprises ayant investi dans cette technologie. De plus, elle donnerait lieu à un changement radical de modèle et ouvrirait la possibilité pour les entreprises d'inventer des services et de s'ouvrir à de nouvelles opportunités.\n\nSelon cet article, quelle est l'une des possibilités offertes par l'intelligence artificielle ?",
+      "image_url": null,
+      "options": {
+        "A": "Baisser les salaires",
+        "B": "Créer des emplois",
+        "C": "Diviser le travail",
+        "D": "Favoriser la recherche"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 22,
+      "question_text": "Il faut savoir ce que l'on veut... On sait que les humains ont la mémoire courte, que les biais cognitifs ont bon dos, et que les changements prennent du temps. Mais quand même, parfois, on hallucine devant tant d'incohérences ! L'agriculture bio a fait ses preuves : 30 % de biodiversité en plus sur les fermes bio, une eau et des sols de meilleure qualité, moins de rejets polluants et de gaz à effet de serre, plus de carbone stocké dans les sols, davantage d'emplois et, en prime, une alimentation de qualité... Le tout, preuves à l'appui. Alors stop au déni : la bio doit rebondir, en mettant en avant ses externalités positives.\n\nDe quoi parle cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Des avantages de l'agriculture biologique",
+        "B": "Des inconvénients de l'agriculture conventionnelle",
+        "C": "Des difficultés de la transition écologique",
+        "D": "Des conséquences du changement climatique"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 23,
+      "question_text": "La gestion du mobilier urbain est une pratique traditionnellement très codifiée à la Ville de Paris qui a en charge sa sélection et le choix des lieux d'implantation. Le service technique concerné est la Direction de la voirie et des déplacements (DVD). Les critères de standardisation qu'elle applique touchent essentiellement à des dimensions techniques et patrimoniales. Cela se traduit par des formes de réglementation qu'il s'agit de faire respecter. Les agents de la Direction qui font le choix des types de bancs, de potelets ou encore de lampadaires, travaillent ainsi dans un cadre d'action précis, renforcé par des éléments concrets du territoire qui peuvent aussi contraindre certains choix (présence de réseaux souterrains par exemple).\n\nQuel est le rôle de la Direction de la voirie et des déplacements (DVD) selon le texte ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle conçoit et fabrique le mobilier urbain",
+        "B": "Elle détermine et installe le mobilier urbain",
+        "C": "Elle entretient et répare le mobilier urbain",
+        "D": "Elle contrôle et sanctionne le mobilier urbain"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Changer de métier : évitez les aléas !\n\nChanger de métier ne doit pas être une décision prise à la légère. Il est important de prendre le temps de déterminer avec précision les raisons qui vous poussent à vouloir faire ce choix. Il est essentiel de bien s'orienter pour la recherche d'un nouveau travail, surtout si vous êtes dans le flou par rapport à vos envies. Faire le point sur vos compétences vous permettra de déterminer vers quels secteurs vous pouvez vous diriger. Avoir confiance en vos compétences sera également un atout au moment de vous vendre à un employeur potentiel.\n\nQue conseille l'article à ceux qui désirent changer de métier ?",
+      "image_url": null,
+      "options": {
+        "A": "D'élargir leurs perspectives professionnelles",
+        "B": "D'évaluer les possibilités d'évolution de leur carrière",
+        "C": "De faire un bilan de leurs aptitudes",
+        "D": "De privilégier leur épanouissement personnel"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Les villes se montrent soucieuses d'améliorer leur qualité de l'air. Une solution : la plantation d'arbres. En effet, les arbres filtrent les particules contenues dans l'atmosphère. Mais la plantation d'arbres doit être réfléchie. Il est pertinent de mettre des arbres le long des axes de circulation pour protéger les habitations des polluants, mais aussi dans les zones piétonnes. Le choix des arbres a aussi son importance. Les espèces d'arbres plantées il y a 50 ans ne répondent pas aux besoins d'aujourd'hui car elles forment un couvercle retenant au sol la pollution. En revanche, les arbres aux feuilles poilues sont, eux, efficaces.\n\nÀ quelle condition les arbres peuvent-ils aider à combattre la pollution urbaine ?",
+      "image_url": null,
+      "options": {
+        "A": "S'ils appartiennent à une espèce adéquate",
+        "B": "S'ils ont des feuilles persistantes en hiver",
+        "C": "S'ils ont été plantés il y a longtemps",
+        "D": "S'ils se trouvent loin des zones de logement"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 26,
+      "question_text": "La prévision intéresse les démographes depuis longtemps, mais reste un art difficile. Un progrès très important a consisté, à partir des années 1960, à utiliser la méthode « des composantes » dans laquelle la population projetée résulte des niveaux de fécondité, de mortalité et de migrations choisis, la projection d'une année à l'autre se faisant âge par âge et pour chaque sexe séparément. Cette méthode est beaucoup plus fiable qu'une simple extrapolation de la population totale ou de son taux d'accroissement parce qu'elle met en œuvre explicitement les trois facteurs déterminants dans l'évolution d'une population : les tendances de la mortalité, de la fécondité et des migrations, avec pour chacune des taux par sexe et âge pouvant évoluer au cours de la projection. L'art (ou la difficulté) de la projection consiste alors à faire des choix pour ces tendances, mais on peut aussi relier celles-ci à l'évolution prévue d'autres facteurs, comme les pratiques contraceptives ou les progrès en matière de santé, et envisager divers scénarios.\n\nQuelle est la méthode « des composantes » utilisée par les démographes selon le texte ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle consiste à extrapoler la population totale ou son taux d'accroissement",
+        "B": "Elle consiste à projeter la population en fonction des niveaux de fécondité, de mortalité et de migrations",
+        "C": "Elle associe la population à l'évolution de facteurs tels que la contraception et la santé",
+        "D": "Elle anticipe l'évolution démographique selon la natalité, la mortalité et les migrations"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Le rêve des astronautes\n\nThomas Pesquet est un exemple pour tous les français. Pour réaliser son rêve de devenir astronaute, il a suivi un parcours d'excellence. Ses compétences ont d'abord été reconnues par l'Agence spatiale européenne. Puis, la sélection rigoureuse de la NASA est devenue le défi de sa carrière. Aujourd'hui, il séjourne à bord de la Station spatiale internationale pour mener des expériences scientifiques. Dans son temps libre, il partage ses photos et ses impressions sur les réseaux sociaux, dans l'espoir de faire découvrir l'espace au grand public. Désormais, son aventure fascine la plupart des médias. Il a ainsi donné plusieurs interviews et conférences depuis l'orbite. Le parcours de cet astronaute passionné d'aviation a été salué par de nombreux hommages.\n\nQuel est le but des publications sur les réseaux sociaux de T. Pesquet ?",
+      "image_url": null,
+      "options": {
+        "A": "Faire la promotion des agences spatiales qui l'emploient",
+        "B": "Faire participer les internautes à ses expériences",
+        "C": "Faire connaître la vie et le travail des astronautes",
+        "D": "Faire rire ses collègues et ses amis avec son humour"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Le mystère de la lumière céleste\n\nUn soir d'été, les habitants d'un petit village ont été surpris par un phénomène étrange. Une lumière bleue et brillante est apparue dans le ciel, au-dessus des montagnes. Elle a duré quelques secondes, puis a disparu sans laisser de trace. Les témoins étaient perplexes et curieux. Certains ont pensé à une étoile filante, d'autres à un ovni, d'autres encore à un feu d'artifice. Mais personne n'avait d'explication rationnelle. Le lendemain, ils ont appris la vérité dans le journal : Il s'agit d'une décharge électrique qui se produit dans l'atmosphère, à haute altitude, lors d'un orage. Les scientifiques ont pu l'observer grâce à des caméras spéciales. Le mystère de la lumière céleste était résolu.\n\nQuelle est l'origine de cette lumière ?",
+      "image_url": null,
+      "options": {
+        "A": "Une étoile filante",
+        "B": "Un ovni spatial",
+        "C": "Un feu d'artifice",
+        "D": "Une étincelle orageuse"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 29,
+      "question_text": "L'association « Savoir-faire et expérience » à huit ans :\n\nSa philosophie : une personne handicapée n'est pas forcément une personne en fauteuil roulant. Et, de la même manière qu'il existe de nombreuses formes de handicap, il existe également une multitude de métiers et de postes qui peuvent leur correspondre. C'est pourquoi cette association souhaite faire évoluer la vision commune du handicap et encourager les entreprises à s'engager dans cette démarche. C'est dans cet objectif qu'elle œuvre pour une ouverture aussi large que possible des dispositifs de formation professionnelle aux personnes en situation de handicap. Pour qu'enfin, on regarde le savoir-faire et l'expérience avant le handicap.\n\nQuelle est la mission de l'association « Savoir-faire et expérience » ?",
+      "image_url": null,
+      "options": {
+        "A": "Faire évoluer les mentalités au sujet du handicap au travail",
+        "B": "Permettre de modifier la législation sur le handicap au travail",
+        "C": "Recenser les discriminations dont sont victimes les handicapés",
+        "D": "Subventionner les entreprises qui recrutent des handicapés"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Les organisateurs du festival Rock Werchter envisagent de le déplacer dans la région de Limbourg. Cette perspective inquiète le maire de la ville de Rotselaar, où le festival se tient depuis 1975. « la question d'un déménagement pèse sur la plaine du festival, comme un nuage sombre, a affirmé le maire. Toutes les personnes impliquées dans le festival s'interrogent sur leur avenir. C'est très ennuyeux pour les professionnels du spectacle de la région qui s'investissent depuis des années et qui risquent d'être renvoyés. J'espère que la clarté sera faite rapidement. Moi-même, je ne vois pas pourquoi le festival devrait déménager, cela se passe très bien ici. Il est même prévu de réviser le plan d'aménagement du territoire pour permettre d'accueillir plus de podiums et plus de monde. »\n\nQu'est-ce qui inquiète le maire dans le projet d'évolution du festival ?",
+      "image_url": null,
+      "options": {
+        "A": "La multiplication des nuisances sonores sur la commune",
+        "B": "L'accroissement du taux de chômage de ses administrés",
+        "C": "L'agrandissement de l'espace consacré aux spectacles",
+        "D": "L'augmentation du prix des entrées pour les spectateurs"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 31,
+      "question_text": "L'apprentissage en Europe :\n\nÀ l'heure actuelle, l'utilisation des nouvelles technologies de l'information et de la communication (TIC) dans les salles de classe est rare. Les établissements travaillent encore selon un modèle ancien de l'éducation. Cela signifie que les établissements n'ont pas pu se détacher d'une structure trop rigide : ils fondent leurs ressources d'enseignement sur des manuels, ont peu recours aux connaissances mises à leur portée grâce à la mondialisation et travaillent au sein d'espaces d'apprentissage très spécifiques. Les établissements appliquent toujours une philosophie plus caractéristique du XIXe siècle (industriel) que du XXIe siècle (informationnel). L'enseignement se caractérise actuellement par des établissements du XIXe siècle dans lesquels des enseignants du XXe siècle travaillent auprès d'étudiants du XXIe siècle.\n\nQue présente l'auteur de l'article ?",
+      "image_url": null,
+      "options": {
+        "A": "Des méthodes innovantes sur l'usage des TIC",
+        "B": "Des pistes de recherche sur l'apprentissage",
+        "C": "Un état des lieux des ressources pédagogiques",
+        "D": "Une analyse du contexte socio-éducatif actuel"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Côté (BD)\n\nAdaptée d'un polar de Pierre Siniac, la bande dessinée « Le secret de l'étrangleur » de Jacques Tardi est un succès : sa version en feuilleton, cet été, sous la forme de cinq journaux, tirés de 50.000 exemplaires chacun, avait intrigué les premiers lecteurs, âgés de 15 à 35 ans. L'album, déjà vendu à 130.000 exemplaires, est remarquable par son originalité. En effet, il faut découper les dernières pages du livre pour en connaître la fin sachant que plusieurs dénouements sont possibles.\n\nQuelle est la particularité de cette BD ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle a été adaptée pour la télévision",
+        "B": "Elle s'inspire de la vie des jeunes",
+        "C": "La clé de l'énigme sera éditée plus tard",
+        "D": "L'auteur a imaginé différents scénarios"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 33,
+      "question_text": "On sait depuis longtemps que la musique a des effets bénéfiques sur le cerveau et le corps. Mais les recherches récentes ont permis de mieux comprendre ces mécanismes et de les exploiter à des fins thérapeutiques. La musicothérapie est une discipline qui utilise la musique comme outil de soin, de prévention ou de rééducation. Elle s'adresse à des personnes souffrant de troubles physiques, psychiques ou sociaux. Par exemple, la musique peut aider à soulager la douleur, à stimuler la mémoire, à réduire le stress ou à favoriser la communication. D'ailleurs, de nombreux hôpitaux, maisons de retraite ou centres spécialisés proposent des séances de musicothérapie à leurs patients. La musique est donc bien plus qu'un divertissement : c'est un véritable médicament.\n\nQuel objectif poursuit la musicothérapie ?",
+      "image_url": null,
+      "options": {
+        "A": "Former les personnes à la pratique musicale",
+        "B": "Améliorer la qualité de vie des personnes",
+        "C": "Développer le goût artistique des personnes",
+        "D": "Analyser les émotions suscitées par la musique"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 34,
+      "question_text": "\"Saccage du patrimoine italien\", \"Barbie\" des temps modernes. Depuis le lancement de la campagne publicitaire du ministère italien du Tourisme destinée à attirer les touristes étrangers le 20 avril dernier, de nombreux commentaires acerbes pullulent pour dénoncer le choix d'un des symboles du patrimoine transalpin : la Vénus de Sandro Botticelli transformée en influenceuse, indique le Daily Mail.\n\nQuelle est la critique principale faite à la campagne publicitaire du ministère italien du Tourisme ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle utilise une image de la Vénus de Botticelli qui n'est pas fidèle à l'original",
+        "B": "Elle fait d'une icône de l'art italien une vedette des réseaux sociaux",
+        "C": "Elle ignore le contexte historique et culturel de la Vénus de Botticelli",
+        "D": "Elle ne montre pas assez la diversité des paysages et des monuments italiens"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 35,
+      "question_text": "LE CERCLE DES ILLUSIONNISTES\nD'Alexis Michalik\nCompagnie du Théâtre du Roi\n\nPlongez dans l'univers fascinant de la magie et du cinéma à travers les destins croisés de trois personnages : Jean-Eugène Robert-Houdin, horloger et prestidigitateur du XIXe siècle, Georges Méliès, pionnier du cinématographe, et Décembre, un jeune homme passionné par l'illusion. Leur point commun : une quête incessante de l'émerveillement et de la poésie. Avec une mise en scène inventive et rythmée, le metteur en scène Alexis Michalik nous fait voyager dans le temps et l'espace, mêlant humour, émotion et suspense. Le Cercle des illusionnistes est une pièce qui célèbre l'art de raconter des histoires et de faire rêver les spectateurs.\n\nD'après le texte, quel est le thème principal de la pièce ?",
+      "image_url": null,
+      "options": {
+        "A": "L'histoire de la magie et du cinéma",
+        "B": "La relation entre les trois personnages",
+        "C": "L'envie de susciter l'admiration et l'imaginaire",
+        "D": "Le voyage dans le temps et l'espace"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Fille ou garçon ? L'attribution d'un genre à la naissance est ancrée dans le quotidien des maternités. Or, 1,7 % des nouveau-nés ne possèdent pas les caractéristiques sexuelles qui correspondent aux définitions classiques du « masculin » ou du « féminin » (anatomiques, génitales ou chromosomiques). À l'âge de 9 mois, en moyenne, on opère l'enfant pour le faire entrer dans la norme. Une pratique de plus en plus contestée. En Albanie, le ministère de la Santé a approuvé, le 26 juin, un protocole interdisant les interventions chirurgicales sur ces enfants nés intersexes sauf si l'opération est nécessaire pour des raisons médicales. Si le médecin refuse, il peut alors être radié et devoir rendre des comptes au pénal. L'Albanie devient ainsi le troisième pays européen à instaurer la mesure, après Malte et le Portugal.\n\nQuelle est la position de l'Albanie par rapport aux autres pays européens sur les droits des enfants intersexes ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est en avance sur la protection de leurs droits",
+        "B": "Elle est en retard sur la prise en charge de leur santé",
+        "C": "Elle est en accord avec la majorité des pratiques médicales",
+        "D": "Elle est en conflit avec les recommandations internationales"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Le redémarrage de l'économie passera-t-il par l'hydrogène vert ? C'est ce que réclame l'Association française pour l'hydrogène et les piles à combustible (Afhypac), dans un courrier adressé au Premier ministre, cosigné par Air Liquide, EDF, Engie, Faurecia, Michelin, Plastic Omnium, Total, Vinci... Tous demandent que l'État investisse massivement jusqu'en 2023 « afin de donner à la France une position industrielle stratégique dans l'économie bas carbone de demain ». Mais, alors que la Commission européenne publie sa stratégie hydrogène aujourd'hui, celle de la France se fait attendre. L'Allemagne, elle, fonce : 9 des 130 milliards d'euros de son plan de relance annoncé en juin y seront consacrés. Les véhicules routiers et le train en absorberont une bonne part. Logique : l'hydrogène y trouve ses meilleures applications. Utilisé comme réactif dans une pile à combustible (PAC), il offre une autonomie deux fois supérieure à celle des batteries. Même si son rendement global est moins bon (du fait de l'énergie nécessaire à la production de l'hydrogène lui-même), c'est un avantage décisif sur les batteries dès qu'il s'agit de transporter marchandises ou passagers.\n\nQuel est le principal argument en faveur de l'hydrogène \"vert\" selon le texte ?",
+      "image_url": null,
+      "options": {
+        "A": "Il permet de réduire les émissions de carbone",
+        "B": "Il offre une meilleure autonomie que les batteries",
+        "C": "Il crée des emplois dans l'industrie",
+        "D": "Il profite du soutien de l'Europe"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 38,
+      "question_text": "La biodiversité est souvent considérée comme un simple indicateur de la richesse du vivant. C'est méconnaître la complexité des interactions entre les espèces, les écosystèmes et les sociétés humaines. Si la biodiversité a une valeur intrinsèque, elle a aussi une valeur fonctionnelle, économique, sociale et culturelle. Aujourd'hui, on prend conscience de ces multiples dimensions et services. La préservation de la biodiversité est un enjeu majeur pour le développement durable et la lutte contre le changement climatique. Elle contribue à la régulation des cycles biogéochimiques, à la production de ressources naturelles, à la protection contre les risques naturels, à la santé humaine et animale, à la diversité culturelle et au bien-être des populations. Avec le temps, les logiques sectorielles ont cédé la place à des approches intégrées. Le dialogue entre les acteurs de la biodiversité et ceux des autres domaines devient un outil essentiel de la transition écologique.\n\nQu'affirme cet article au sujet de la biodiversité ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle représente seulement la diversité du vivant",
+        "B": "Elle dépend entièrement des activités humaines",
+        "C": "Elle fournit de nombreux bénéfices aux sociétés",
+        "D": "Elle s'oppose aux autres objectifs du développement"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Ça pourrait être une tragédie, avec les meilleurs ingrédients du genre : rencontres hasardeuses de personnages abîmés par un lourd passé, malheurs successifs et révélations inattendues... sauf qu'entre le jeune pompier Roméo et l'infirmière Juliette, victime de la cruauté de son compagnon, le chemin tracé par Agnès Ledig dans son roman Parle avec lui est plein de pudeur, riche de personnages ordinaires mais surprenants, vrais mais imprévisibles, dans une France provinciale qu'on décrit trop peu. Il y a chez eux une envie de dire, d'avouer ce qui fut trop longtemps caché. Ainsi, l'histoire se fait-elle peu à peu libération et rédemption. Avec un art direct et familier de conteuse, l'auteure offre à ses personnages un espoir, un bonheur encore possible.\n\nD'après la critique, quel est l'atout principal du roman d'Agnès Ledig ?",
+      "image_url": null,
+      "options": {
+        "A": "L'alternance entre le comique et le drame",
+        "B": "L'atmosphère énigmatique et inquiétante",
+        "C": "La présentation des particularités régionales",
+        "D": "L'émancipation des héros au cours du récit"
+      },
+      "correct_answer": "D"
+    }
+  ]
+}

@@ -1,0 +1,331 @@
+{
+  "exam_title": "TCF CE17",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Rencontres Interculturelles\nAssociation deux rives\n\n27-28 novembre\nFaites connaissances des gens du monde entier et découvrez d'autres cultures!\nAu programme: musique, repas, expositions ...\n15 € / 10 € [moins de 25 ans]\nInscrivez-vous avant le 15 novembre\n\nVenez nombreux !\n\nQue propose cette association ?",
+      "image_url": null,
+      "options": {
+        "A": "D'apprendre une nouvelle langue",
+        "B": "De participer à un concours",
+        "C": "De prendre des cours de cuisine",
+        "D": "De rencontrer des étrangers"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Mathilde,\n\nJ'attends devant l'entrée du stade rue Victor Hugo. Fais vite, le match va commencer !\n\nLaura,\n\nPourquoi est-ce que Laura attend Mathilde ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour aller visiter un musée",
+        "B": "Pour participer à un concours",
+        "C": "Pour prendre un café ensemble",
+        "D": "Pour voir un événement sportif"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Objet : Sortie scolaire – Visite du château de Versailles\n\nMadame, Monsieur,\n\nUne sortie scolaire au château de Versailles est prévue pour lundi prochain. Merci de bien vouloir fournir une autorisation écrite à votre enfant pour y participer.\n\nCordialement,\nL'équipe enseignante\n\nQu'est-ce que les enfants doivent apporter pour cette activité ?",
+      "image_url": null,
+      "options": {
+        "A": "Un pique-nique",
+        "B": "Un appareil photo",
+        "C": "Une permission signée",
+        "D": "Deux tickets de métro"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Salut,\n\nJe ne pourrai pas aller au cinéma avec toi demain, désolé. Mon patron m'a demandé de rester plus tard au travail, et je suis vraiment fatigué. Viens prendre un café chez moi samedi si tu peux. J'ai un projet important dont je voudrais te parler, j'aimerais avoir ton avis.\n\nAmitiés,\nLéa,\n\nQu'est-ce que Léa propose à son ami ?",
+      "image_url": null,
+      "options": {
+        "A": "D'aller au cinéma",
+        "B": "De participer à un projet",
+        "C": "De prendre une boisson",
+        "D": "De changer de patron"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Bonjour Sophie,\n\nJe ne pourrai pas venir à notre soirée cinéma. Ma fille est malade, je dois rester à la maison. Si tu veux, Kevin est disponible. Je peux lui donner ma place.\n\nMartine,\n\nPourquoi Martine envoie-t-elle un message à Sophie ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour annuler sa sortie",
+        "B": "Pour expliquer un problème",
+        "C": "Pour l'inviter chez elle",
+        "D": "Pour lui proposer de sortir"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Madame, Monsieur Moreau,\n\nMonsieur l'Ambassadeur de France a le plaisir de vous inviter au dîner qu'il donnera en sa résidence, le jeudi 14 juillet à 20h00, à l'occasion de la fête nationale.\n\nTenue de soirée exigée.\n\nRéponse : secretariat.amb.France@gmail.com\n\nÀ quoi sont invités Madame et monsieur Moreau ?",
+      "image_url": null,
+      "options": {
+        "A": "À un repas officiel",
+        "B": "À un spectacle musical",
+        "C": "À une fête de fin d'année",
+        "D": "À une soirée dansante"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Nouveau message\n\nAdèle,\n\nN'oublie pas l'anniversaire de Raphaël, on pourrait partir vers 19h00 et aller ensemble chez lui. Où est-ce qu'on se retrouve ? Si tu ne peux pas venir finalement, appelle-moi.\n\nBonne journée,\nCamille,\n\nPourquoi Camille écrit-elle ce message à Adèle ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour acheter un cadeau avec elle",
+        "B": "Pour annuler sa venue à une fête",
+        "C": "Pour décider d'un rendez-vous",
+        "D": "Pour inviter son ami à dîner"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 8,
+      "question_text": "\"La passion de Gauguin\" est le titre d'un documentaire sur le peintre français. Vous pourrez le regarder demain soir à la télévision. Pour les vrais passionnés, l'exposition Gauguin en Océanie commencera lundi prochain au musée d'Art Moderne.\n\nDe quoi parle cette annonce?",
+      "image_url": null,
+      "options": {
+        "A": "De l'ouverture d'un musée parisien",
+        "B": "De voyages en Océanie",
+        "C": "Des derniers jours d'une exposition",
+        "D": "D'une émission de télévision"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Madame,\n\nNous avons bien reçu votre demande de remboursement pour un billet de train, voyage professionnel. Vous nous avez envoyé le ticket de carte bancaire, mais nous avons également besoin d'une attestation de votre employeur. Nous vous remercions de bien vouloir nous l'envoyer par courrier postal ou sous format électronique.\n\nCordialement,\nLe service financier,\n\nQuels documents doit fournir la femme ?",
+      "image_url": null,
+      "options": {
+        "A": "Un document professionnel",
+        "B": "Un titre de transport",
+        "C": "Une enveloppe timbrée",
+        "D": "Une somme d'argent"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Rendez-vous samedi pour un repas de quartier devant notre immeuble. Apportez vos chaises (des tables seront sur place), à boire et un plat salé ou sucré. Miriel et Pierre, 3e étage à gauche, organisent l'événement et peuvent répondre à vos questions.\n\nQu'est-ce qui est organisé ?",
+      "image_url": null,
+      "options": {
+        "A": "Un atelier de cuisine",
+        "B": "Un déménagement",
+        "C": "Une fête entre voisins",
+        "D": "Une visite d'appartement"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Chez Doris\n\nAu restaurant Chez Doris, si vous prenez un menu complet avec une entrée, un plat et un dessert, le café est offert gratuitement.\n\nseulement entre 12h00 et 14h00 du lundi au vendredi.\n\nQu'est-ce que ce restaurant propose ?",
+      "image_url": null,
+      "options": {
+        "A": "Des cours de cuisine",
+        "B": "Des plats à emporter",
+        "C": "Un repas bon marché",
+        "D": "Une boisson gratuite"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Fini les souvenirs de voyage trop flous. Pour s'entraîner, direction Lyon pour un week-end. Sur place, une jeune agence spécialisée vous propose un stage pour découvrir la ville autrement. L'objectif : sur une journée, travailler la photographie et découvrir en même temps avec un guide les monuments historiques de la ville. Vous profitez toute la journée des conseils d'un professionnel qui vous montre les endroits secrets de Lyon. Il vous explique comment utiliser la lumière naturelle.\n\nQue propose cette agence?",
+      "image_url": null,
+      "options": {
+        "A": "D'apprendre à s'orienter dans la ville",
+        "B": "De se former au métier de guide",
+        "C": "De visiter des expositions photos",
+        "D": "De voir Lyon d'une façon différente"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 13,
+      "question_text": "On savait déjà que le chocolat était bon pour la tension. Les scientifiques affirment maintenant qu'une consommation de chocolat pourrait être une stratégie efficace de protection contre les rayons du soleil. Pour cela, il n'est pas nécessaire de recouvrir son corps de cacao : d'après les chercheurs, il suffirait de consommer 3 carrés par jour pour bénéficier des bienfaits du chocolat. Cela n'empêche pas de se protéger avec de la crème solaire et d'avoir une bonne alimentation.\n\nQue conseillent ces chercheurs pour se protéger du soleil ?",
+      "image_url": null,
+      "options": {
+        "A": "D'utiliser des crèmes solaires à base de chocolat",
+        "B": "De diminuer sa consommation de chocolat",
+        "C": "De manger quotidiennement du chocolat",
+        "D": "De suivre un traitement de pilule au chocolat"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Le 21e festival du film vient de se terminer à l'Alpe d'Huez, le seul endroit en France où l'on peut voir gratuitement, et avant tout le monde, les meilleures comédies de l'année et skier avec les vedettes du grand écran. Pour cette 21e édition, Franck Dubosc a présenté son premier film en tant que réalisateur. Le lendemain, comme toujours, tout le monde s'est retrouvé sur les pistes ou aux terrasses des cafés, dans une ambiance sportive et décontractée.\n\nQu'est-ce que ce festival permet de faire ?",
+      "image_url": null,
+      "options": {
+        "A": "Découvrir de jeunes acteurs",
+        "B": "Participer à des tournages",
+        "C": "Rencontrer des stars du cinéma",
+        "D": "Revoir de grands classiques"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 15,
+      "question_text": "\"Le guichet du savoir\" De la bibliothèque municipale de Lyon est un service gratuit en ligne. Il permet de poster toute demande de type documentaire. Les bibliothécaires répondent dans un délai de 72H max\n\nQue font les bibliothécaires sur ce site internet?",
+      "image_url": null,
+      "options": {
+        "A": "Ils annoncent des événements culturels lyonnais",
+        "B": "Ils donnent des informations sur leur métier",
+        "C": "Ils proposent de nouveaux livres aux lecteurs",
+        "D": "Ils répondent aux questions des internautes"
+      },
+      "correct_answer": "D"
+    },
+        {
+      "question_number": 28,
+      "question_text": "La désillusion de la jeunesse française d'aujourd'hui est un fait préoccupant. Elle est surtout due à la crise internationale, qui réduit les offres d'emploi, fait pression sur les salaires et raréfie les possibilités de promotion. Mais on peut également l'attribuer à un conflit de générations larvé: il oppose la classe d'âge des « baby-boomers », devenus aujourd'hui « papy boomers » triomphants tout au long de leurs parcours, à celle de leurs enfants et maintenant de leurs petits-enfants.\n\nD'où vient la désillusion des jeunes en France ?",
+      "image_url": null,
+      "options": {
+        "A": "De la concurrence des autres générations",
+        "B": "De la course à la compétitivité",
+        "C": "De la situation économique tendue",
+        "D": "Des critiques émanant de leurs parents"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Les implants médicaux (prothèses mammaires, de hanche, etc.) sont censés vous améliorer la vie. Mais des lacunes dans leur contrôle seraient à l'origine d'incidents en nombre croissant. C'est ce que révèle la dernière enquête du Consortium international des journalistes d'investigation. On y apprend que, en France, le nombre d'incidents lié à ces implants aurait doublé en dix ans. Le problème, souligne l'enquête, c'est que les informations sur les patients restent globalement très incomplètes et leurs données sont souvent confidentielles. Il est donc difficile de dénombrer avec précision les incidents, de connaître la marque et le modèle des implants posés, et de retrouver les patients en cas de problème.\n\nQuel problème révèle cet article à propos des implants médicaux ?",
+      "image_url": null,
+      "options": {
+        "A": "Les données des malades sont transmises aux fabricants",
+        "B": "Les incidents dus aux erreurs de diagnostic augmentent",
+        "C": "Les patients se méfient des innovations technologiques",
+        "D": "Les recherches sont limitées par le manque d'informations"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Quarante terrains de football. C'est la superficie que les forêts perdent chaque minute à travers le monde. La destruction de la forêt tropicale provoque chaque année plus de rejet dans l'atmosphère que l'ensemble du secteur des transports. L'imaginaire collectif rendrait volontiers le commerce du bois principal responsable de la déforestation, alors qu'il n'en est rien. L'acteur majeur de ce phénomène est l'agriculture, responsable à 80% des déboisements dans les zones tropicales. Le marché illégal du bois a aussi sa part de responsabilité. Il est un facteur déclenchant, et s'alimente des autres activités. Quelque 1,6 milliard d'habitants dépendent directement des forêts, et contribuent pourtant à sa raréfaction, voire à sa disparition.\n\nSelon cet article, sur quoi la déforestation a-t-elle un impact?",
+      "image_url": null,
+      "options": {
+        "A": "Sur l'industrie des bois rares",
+        "B": "Sur la démographie dans ces zones",
+        "C": "Sur la pollution atmosphérique",
+        "D": "Sur la progression des cultures tropicales"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Salé, sucré, acide, amer : quatre termes qui, tels des points cardinaux, définissent le territoire d'expression du goût. Nous serions en droit de penser que c'est un peu court pour dépeindre toutes les nuances de la palette aromatique et les émotions qu'elle suscite. Les Japonais y ont d'ailleurs ajouté la notion d'umami, cette saveur qui signifie littéralement « goût délicieux », enrobante, qui tapisse le palais et qui est très addictive. Dans l'imaginaire collectif, le sucré évoque douceur, gourmandise, réconfort. Cependant, on peut imaginer une douceur à la lecture moins immédiate que celle apportée par le sucré, une douceur qui soit synonyme de complexité aromatique, jouant sur des notes amères, piquantes ou acidulées.\n\nQuel problème soulève cet article?",
+      "image_url": null,
+      "options": {
+        "A": "L'addiction liée à certains aliments",
+        "B": "L'inévitable uniformisation du goût",
+        "C": "La difficulté à décrire les saveurs",
+        "D": "La multiplication des termes culinaires"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Dans le monde de l'entreprise, les jeunes et les seniors éprouvent des sentiments analogues d'éviction et de dévalorisation. Pourtant, des actions de mentorat, menées par des seniors pour guider les jeunes sur le marché du travail ou lors de la création de leur entreprise, existent depuis de nombreuses années. Plus étonnant, est apparu récemment le mentorat renversé, où les jeunes habitués aux outils numériques initient les seniors à leur usage. Les seniors y gagnent de nouvelles compétences, et les jeunes élargissent leur réseau. En période de crise, cette coopération peut constituer un moyen de désamorcer les tensions sociales. Favoriser les échanges intergénérationnels, c'est contribuer à établir des relations où chacun prend conscience qu'il peut apporter quelque chose à l'autre.\n\nQuel est l'intérêt des mentorats décrits ?",
+      "image_url": null,
+      "options": {
+        "A": "Créer de nouvelles sources d'emploi",
+        "B": "Éviter la solitude des personnes âgées",
+        "C": "Instaurer des rapports de réciprocité",
+        "D": "Répondre à l'allongement de la durée de vie"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Plancher sur la réforme des rythmes scolaires, comme le fera la « conférence » installée aujourd'hui par le ministre de l'Éducation, revient à prendre en compte toute une série de paramètres qui ont peu, voire rien à voir avec l'école primaire. C'est s'intéresser aux évolutions de la cellule familiale et à la multiplication des horaires de travail dits « atypiques ». C'est examiner, du point de vue des collectivités locales, les conséquences financières et pratiques (transports scolaires, cantines, centres de loisirs) de toute modification éventuelle dans l'organisation de la semaine. C'est encore recueillir l'avis des experts en circulation routière et entendre les préoccupations des professionnels du tourisme... Autant dire que l'intérêt de l'enfant se retrouve plus ou moins sacrifié sur l'autel du compromis.\n\nQuel constat dresse le journaliste à propos de la réforme des rythmes scolaires ?",
+      "image_url": null,
+      "options": {
+        "A": "Les familles sont opposées à toute modification",
+        "B": "Les impacts financiers demeurent insurmontables",
+        "C": "Les intérêts en jeu sont difficilement compatibles",
+        "D": "Les opinions des experts sont en total désaccord"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Une exposition de l'institut d'Art Contemporain de Villeurbanne est consacrée à l'Américain Jimmie Durham et à la Brésilienne Maria Thereza Alves. Depuis vingt ans, ils parcourent le territoire méditerranéen au fil de leurs déplacements et sont réunis dans cette exposition à la forme inédite. Le parcours se veut éloigné de tout didactisme, laissant assez d'espace au spectateur pour construire son propre récit autour d'une mer connue pour être le berceau fertile des civilisations. Dans un jeu de matières, de couleurs et d'objets, tous tangibles, Durham et Alves tentent de décrypter une certaine pensée historique et mythologique, notamment en déjouant les codes classiques utilisés dans les musées.\n\nQu'est-ce qui fait la singularité de cette exposition?",
+      "image_url": null,
+      "options": {
+        "A": "La liberté accordée aux visiteurs",
+        "B": "La simplicité des moyens artistiques",
+        "C": "Le classicisme de sa présentation",
+        "D": "Le discours politique des plasticiens"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Je suis persuadée que tous les enfants possèdent en eux la volonté de mettre en route leur imaginaire qui les pousse naturellement vers la littérature. Mais si elle n'est pas stimulée, cette force peut s'éteindre. C'est la mission de l'école que de sensibiliser les élèves aux grands textes classiques. Malheureusement, elle y a renoncé. Trop souvent, les enseignants ont tendance à penser qu'ils sont réservés à l'élite. Alors qu'au contraire, l'école devrait donner un accès à la haute culture aux élèves qui arrivent avec un bagage moins fourni que les autres.\n\nSelon l'auteur de ce texte, quelle ambition les enseignants devraient-ils avoir?",
+      "image_url": null,
+      "options": {
+        "A": "Aborder des œuvres réputées difficiles avec leurs élèves",
+        "B": "Encourager leurs élèves à écrire des textes littéraires",
+        "C": "Inviter régulièrement des écrivains célèbres dans leur classe",
+        "D": "Monter des pièces de théâtre d'auteurs classiques"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Sexistes, les jeux vidéo ? Peut-être que oui, peut-être que non. En tout cas, à parcourir les allées de la Paris Games Week, l'œil avisé aura lui-même bien du mal à trouver un personnage principal féminin dans un jeu vidéo. Il y a bien la célébrissime Lara Croft du jeu Tomb Raider, aux attributs particulièrement imposants, conçue presque sur mesure pour plaire à un certain nombre de joueurs masculins. Pour le reste, circulez, il n'y a presque rien d'autre à voir, si l'on balaye d'un coup de manette de jeu, au mieux, les princesses à sauver, au pire, les call-girls de mafieux. Pourtant, l'industrie du jeu vidéo a pris conscience ces dernières années du potentiel du marché des joueuses.\n\nQuel constat est dressé sur les jeux vidéo ?",
+      "image_url": null,
+      "options": {
+        "A": "La quasi-absence d'héroïnes",
+        "B": "L'appel constant à la violence",
+        "C": "L'atténuation des clichés",
+        "D": "L'uniformité des scénarios"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Défenseur.e.s et détracteur.e.s de l'écriture inclusive, qui consiste à féminiser les mots en plaçant entre des points la terminaison du féminin, s'écharpent sur cet épineux sujet. Pour Éliane Viennot, il est important de défendre l'écriture inclusive qui, en remaniant l'orthographe, vise à combattre les stéréotypes sexistes. Selon elle, la langue structure notre représentation du monde. Apprendre aux plus jeunes que le masculin l'emporte sur le féminin ne peut guère contribuer à forger des consciences égalitaristes. Elle rappelle de surcroit que la langue française a longtemps été plus égalitaire qu'elle ne l'est aujourd'hui : il y a eu une masculinisation délibérée du langage à partir du XVIIe siècle. Ceux qui se piquaient alors de définir le bon usage en ont profité pour renforcer l'ordre masculin.\n\nQue pense Eliane Viennot de l'écriture inclusive ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle incarne une première historique",
+        "B": "Elle favorise l'évolution des mentalités",
+        "C": "Elle permet de moderniser le lexique",
+        "D": "Elle reflète les clivages de la société"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Non, tous les salariés ne sont pas faits pour télétravailler\n\nLe rapport Obergo le prouve à travers soixante-quinze entretiens approfondis avec des télétravailleurs. Les auteurs tordent le cou à une idée reçue : le télétravail serait l'organisation de demain car il est bon pour la productivité des entreprises et la qualité de vie des salariés. En effet, tous les métiers et toutes les personnalités ne sont pas adaptés au télétravail.\n\nLa réussite du télétravail exige des profils de salariés très spécifiques. Parmi les conditions sine qua non : vouloir et aimer travailler seul, disposer d'une grande autonomie et posséder un logement pouvant accueillir un bureau isolé. « Autant de conditions difficiles à rassembler », constate Jean-Paul Boucher, commanditaire du rapport.\n\nQu'est-ce qui ressort du rapport Obergo concernant le télétravail ?",
+      "image_url": null,
+      "options": {
+        "A": "Il donne satisfaction aux employés interrogés",
+        "B": "Il est délicat à mettre en œuvre",
+        "C": "Il impose une restructuration des services",
+        "D": "Il nuit à la performance des cadres"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Mara Maudet, à son arrivée en France, constate que la politique d'insertion des foyers démunis et celle dédiée à la petite enfance sont déconnectées l'une de l'autre. Pour cette Brésilienne « un parent sans emploi doit être prioritaire pour obtenir une place en crèche. » Tout le contraire des critères actuels. Elle crée alors l'IEPC (Institut d'éducation et des pratiques citoyennes) et constitue un réseau de crèches associatives dont le principe est qu'en échange d'une place pour son enfant sur une plage horaire de 13 heures, le parent célibataire - le plus souvent des mères s'engage à trouver un emploi dans les mois suivants. Il bénéficie alors, dans les locaux de la crèche, d'un accompagnement professionnel personnalisé.\n\nQuel est l'objectif de l'EPC ?",
+      "image_url": null,
+      "options": {
+        "A": "Embaucher des parents défavorisés",
+        "B": "Faciliter l'intégration professionnelle",
+        "C": "Proposer des tarifs préférentiels en crèche",
+        "D": "Trouver un accueil provisoire pour les enfants"
+      },
+      "correct_answer": "B"
+    }
+  ]
+}

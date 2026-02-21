@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE15",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Je suis dans le métro, j'arrive dans 20 minutes au bureau. Commencez la réunion de travail sans moi.\n\nÀ qui est destiné ce message de Jean ?",
+      "image_url": null,
+      "options": {
+        "A": "Ses amis",
+        "B": "Ses collègues",
+        "C": "Ses enfants",
+        "D": "Ses voisins"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Evangélina:\n- Choux\n- Paris-brest\n- Eclairs au café\n- Tartes aux pommes\n\nSurplace ou à emporter. Faites votre choix !\n\nQue peut-on acheter à Evangelina ?",
+      "image_url": null,
+      "options": {
+        "A": "Des billets de train",
+        "B": "Des légumes",
+        "C": "Des pâtisseries",
+        "D": "Des vêtements"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "De : Satol@courriel.fr\nÀ : Clients\nObjet : Nouvelles coordonnées\n\nMadame, monsieur\nVoici les nouvelles coordonnées de l'entreprise SATO.\nMerci d'écrire maintenant au :\n10, rue Lalou\n34110 Frontignan\n\nEntreprise SATO\nwww.sato.fr\ntél: 0143826742\n\nQuelle information a changé ?",
+      "image_url": null,
+      "options": {
+        "A": "L'adresse postale",
+        "B": "Le courrier électronique",
+        "C": "Le numéro de téléphone",
+        "D": "Le site internet"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Visite du château\nGratuit pour les moins de 12 ans\n\nQuelle est l'information affichée sur ce panneau ?",
+      "image_url": null,
+      "options": {
+        "A": "Une adresse",
+        "B": "Une date",
+        "C": "Un horaire",
+        "D": "Un tarif"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Examen Biologie... juin à 15h30 en salle 454\n\nQuelle information manque au sujet de cet examen ?",
+      "image_url": null,
+      "options": {
+        "A": "La date",
+        "B": "La matière",
+        "C": "Le lieu",
+        "D": "L'heure"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Le restaurant « L'Esquinade » a réussi son pari : introduire l'atmosphère espagnole dans ses plats. Si vous voulez goûter à l'Espagne contemporaine le temps d'une pause déjeuner, cet endroit est fait pour vous ! Tapas, cœurs de canard, jambon serrano et foie gras s'y rencontrent dans une ambiance chaleureuse, nous faisant voyager entre le Sud-Ouest de la France et l'Espagne.\n\nQue propose ce restaurant ?",
+      "image_url": null,
+      "options": {
+        "A": "D'apprendre à cuisiner des plats étrangers",
+        "B": "D'organiser des repas-spectacles à thèmes",
+        "C": "De gagner un voyage à la fin du repas",
+        "D": "De goûter des spécialités franco-espagnoles"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Jardin de la fontaine\nOuverture - fermeture\n\nDu 1er septembre au 31 mars : 7h30-18h30\nDu 1er avril au 30 juin : 7h30-20h30\nDu 1er juillet au 31 août : 7h00-22h30\n\nQuand peut-on se promener dans le parc après 18h30 ?",
+      "image_url": null,
+      "options": {
+        "A": "En Décembre",
+        "B": "En Février",
+        "C": "En Mai",
+        "D": "En Mars"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Pour fêter la retraite de Jean-Louis après 15 ans dans l'entreprise, nous vous proposons de nous retrouver autour d'un verre à 18 heures en salle 6.\n\nQue célèbre-t-on ?",
+      "image_url": null,
+      "options": {
+        "A": "Le début des vacances",
+        "B": "Le déménagement de l'entreprise",
+        "C": "Le départ d'un collègue",
+        "D": "Les résultats de l'équipe"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Studio Céline\n\nL'école de danse « Studio Céline » ouvre ses portes au public le 16 septembre.\n\nC'EST GRATUIT : venez essayer nos cours toute la journée. Au programme salsa, tango, danse moderne et un goûter (boissons et gâteaux)!\n\nQu'est-ce que cette école de danse propose?",
+      "image_url": null,
+      "options": {
+        "A": "De participer à un concours",
+        "B": "De s'inscrire à un stage",
+        "C": "De tester des activités",
+        "D": "De voir un spectacle"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Chers amis,\n\nNous aimerions vous avoir à notre soirée pour fêter la nouvelle année. Soyez là pour 21h00 en tenue décontractée, nous sommes entre amis.\n\nCéline et Redha\n\nPourquoi Céline et Redha invitent-ils des amis ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour un anniversaire",
+        "B": "Pour un mariage",
+        "C": "Pour un réveillon",
+        "D": "Pour un spectacle"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Marché facile est une application pour téléphone portable qui vous conseille les bons fruits et légumes de saison dans les supermarchés. Elle donne aussi des informations sur le fromage, et le poisson.\n\nÀ quoi sert cette application?",
+      "image_url": null,
+      "options": {
+        "A": "À acheter sur Internet",
+        "B": "À choisir ses produits",
+        "C": "À noter les magasins",
+        "D": "À trouver des recettes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "La compagnie du transport urbain recrute des héros comme vous et moi!\n\nVous pourrez protéger, assister, sécuriser les voyageurs et les agents de l'entreprise et intervenir en cas de besoin. Votre sens de l'observation et vos qualités relationnelles sont vos meilleurs atouts pour réussir dans votre mission. Âgé de 21 à 35 ans, vous mesurez au moins 1m75 pour les hommes et 1m65 pour les femmes, vous êtes en excellente condition physique. Vous remplissez les conditions d'obtention d'un port d'armes. Salaire mensuel : 1650 € brut, en poste après formation.\n\nQuel type de métier est proposé ?",
+      "image_url": null,
+      "options": {
+        "A": "Agent secouriste",
+        "B": "Agent commercial",
+        "C": "Agent de sécurité",
+        "D": "Agent de circulation"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Vous mangez italien, dansez le flamenco ou apprenez le suédois ? Partagez vos images qui montrent que l'Europe fait partie de votre vie. Participez au concours « fenêtre sur l'Europe ».\n\nÀ gagner: Un séjour à Bruxelles ou un atelier cuisine\n\nQue propose ce concours ?",
+      "image_url": null,
+      "options": {
+        "A": "De découvrir une langue",
+        "B": "De faire un spectacle",
+        "C": "D'envoyer des photos",
+        "D": "D'inventer une recette"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Adoptées séparément à la naissance, des jumelles indonésiennes se sont retrouvés 29 ans plus tard en Suède. Elles habitaient à 40 km l'une de l'autre mais ne le savaient pas. Leurs parents adoptifs avaient été informés de leur lien de parenté mais avaient arrêté leurs recherches. C'est un message posté sur Meta par l'une des jumelles qui a permis leur rencontre. Elles sont l'une et l'autre enseignante !\n\nQu'ont ces jumelles en commun ?",
+      "image_url": null,
+      "options": {
+        "A": "Elles adorent utiliser Meta",
+        "B": "Elles enseignent dans la même école",
+        "C": "Elles habitent dans le même pays",
+        "D": "Elles ont la même famille adoptive"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 15,
+      "question_text": "« Avec un master commerce en poche, je ne pense pas qu'il serait à ce point difficile de trouver mon premier emploi. Et pourtant... Quel chemin semé d'embûches ! Tout le monde me disait ne t'inquiète pas, dans deux ou trois mois tu auras trouvé ! 7 mois plus tard toujours rien en vue. À 26 ans, je me retrouve sans emploi, toujours chez mes parents. L'avenir ? Je le vois ailleurs, je prépare activement mon départ pour l'Angleterre »\nAmandine n'est pas une exception chez les jeunes. Les diplômes ne suffisent plus à assurer une situation stable en France et beaucoup de jeunes décident de partir à l'étranger pour obtenir un emploi.\n\nDe quoi parle cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "La difficulté de trouver un stage à l'étranger",
+        "B": "La nécessité de s'exiler pour pouvoir travailler",
+        "C": "Le manque de formation des jeunes diplômés",
+        "D": "Le niveau trop faible de salaire proposés"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 16,
+      "question_text": "En hiver et à l'extérieur, pour piloter n'importe quel appareil à écran tactile, il faut enlever ses gants, au risque d'attraper des engelures par temps de grand froid. Plus de risque de se geler les mains désormais avec ce modèle de gants en chevreau doublé de soie. Les perforations au niveau de l'index permettent un meilleur contact avec l'écran tactile. On pourra être à la pointe de la technologie et de la mode. Mais être à la page a un prix : la paire de gants est plus chère que l'appareil à écran tactile, soit 370 €.\n\nQuelle est la particularité de ses gants?",
+      "image_url": null,
+      "options": {
+        "A": "Ils évitent de rayer les appareils à écran tactile",
+        "B": "Ils permettent un contact direct avec un écran tactile",
+        "C": "Ils sont équipés de capteurs reliés à un écran tactile",
+        "D": "Ils sont offerts lors de l'achat d'un écran tactile"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Coup de cœur\n\nLE DIRIGEABLE : La carte varie mais la qualité et le raffinement des plats se maintiennent. Les sauces sont merveilleusement travaillées, les produits de qualité, et les nappes toujours impeccablement blanche. C'est très étonnant de trouver une table si délicieuse dans un quartier aussi éloigné du centre-ville; malgré cela, la réservation pour le soir est à conseiller. Y aller y retourner, même en jeans et baskets.\n\nQuelle est la nature de la critique présentée par ce guide ?",
+      "image_url": null,
+      "options": {
+        "A": "Défavorable pour le restaurant",
+        "B": "Nuancée pour le restaurant",
+        "C": "Enthousiaste pour le restaurant",
+        "D": "Objective pour le restaurant"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Partez à la découverte d'un Paris méconnu, celui des passages secrets, des curiosités historiques, des panoramas étonnants, et même des beautés naturelles en pleine ville. Redressez le dos, levez la tête, admirez le ciel, l'étoile et l'horizon! Petits et grands, femmes et hommes, sportifs et paresseux, bébés en poussette, handicapés en fauteuil... Venez nous rejoindre ! Vous êtes tous invités ce dimanche à une matinée en famille, entre amis, ou même seuls aux côtés d'inconnus qui nous demandent qu'à faire connaissance.\nRendez-vous place de la Bastille à 7h30\n\nQuel événement est annoncé ?",
+      "image_url": null,
+      "options": {
+        "A": "Une compétition sportive",
+        "B": "Une visite guidée originale",
+        "C": "Une séance de gymnastique",
+        "D": "Une fête familiale en plein air"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Dora Bruder, publié en 1997, est considéré comme l'un des meilleurs romans de Patrick Modiano. L'écrivain aime fouiller l'histoire de la capitale et fréquente de nombreuses bibliothèques. Un jour, il tombe sur une annonce parue le 31 décembre 1941 dans Paris-Soir : « On recherche une jeune fille, Dora Bruder, 15 ans, 1m55, visage ovale, yeux gris marron, manteau sport gris. Adresser toute indication à Madame et Monsieur Bruder, 41, boulevard Ornano, Paris. » Modiano va alors s'attacher à lever le mystère de cette disparition en entraînant le lecteur dans les rues du 18e arrondissement.\n\nQue fait le journaliste dans cet extrait ?",
+      "image_url": null,
+      "options": {
+        "A": "Il cite un extrait d'une œuvre de Modiano",
+        "B": "Il explique l'idée de départ d'un livre de Modiano",
+        "C": "Il décrit le métier que Modiano exerçait à ses débuts",
+        "D": "Il raconte la rencontre entre Modiano et sa femme"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Mathieu Lagouanère et Élodie Calas, deux journalistes, ont fait un tour du monde avec une idée originale : provoquer des rencontres en faisant goûter le roquefort, un fromage traditionnel fabriqué dans leur région. Le roquefort était simplement un moyen d'entrer en contact avec les habitants. « Ses principales caractéristiques, les taches de moisissures et l'odeur, peuvent faire réagir », explique Mathieu. La société Roquefort leur a fourni les fromages. Ils ont raconté leurs aventures dans un blog de voyage.\n\nQuel était l'objectif de Mathieu et Élodie?",
+      "image_url": null,
+      "options": {
+        "A": "Découvrir des recettes locales",
+        "B": "Entrer en contact avec les gens",
+        "C": "Réaliser une opération publicitaire",
+        "D": "Vendre des spécialités françaises"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 21,
+      "question_text": "Vous cherchez un contrat à durée indéterminée avec un salaire motivant et fixe ? Dans le cadre du lancement d'une cellule de télévente, la société Adem recrute 12 télévendeurs confirmés. Si vous êtes un commercial, si vous êtes dynamique et motivé,\n\ncontactez-nous : Job@adem.fr\n\nQuelle est la particularité du télévendeur recherché par la société Adem ?",
+      "image_url": null,
+      "options": {
+        "A": "Qui débutent dans le métier de la télévente",
+        "B": "Qui ont de l'expérience dans la télévente",
+        "C": "Qui sont intéressés par un salaire modulable",
+        "D": "Qui recherche un contrat de courte durée"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 22,
+      "question_text": "Près de 500 écrans alignés sur deux étages et 1200 m².\n\nLa plus grande salle de jeux vidéo en réseau d'Europe a ouvert ses portes au public à Paris. Baignée dans une ambiance bleu métal et noire, cette salle de jeux a l'ambition de devenir à la fois un « stade numérique » où professionnels et amateurs de jeux vidéo pourront s'affronter lors de joutes virtuelles, et une « école de jeux » pour les débutants. Une quinzaine d'animateurs sont constamment présents dans la salle pour guider et initier les joueurs ainsi que pour animer des tournois.\n\nEn quoi cette salle de jeux constitue-t-elle un événement ?",
+      "image_url": null,
+      "options": {
+        "A": "Du fait de sa taille",
+        "B": "Du fait de sa localisation",
+        "C": "Du fait de sa décoration",
+        "D": "Du fait de son personnel"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Il est désormais possible de modifier la couleur des yeux. Une technique laser, expérimenté en laboratoire, détruit à vie les pigments de l'iris pour l'éclaircir. La séance se déroule dans le cabinet du spécialiste et en 20 secondes, les yeux du patient passent d'une couleur à l'autre. Mais, comme le laser décolore l'iris, seuls les yeux marron peuvent espérer passer à une couleur plus claire.\n\nQu'apprend-t-on sur cette technique laser ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est en cours de test",
+        "B": "Le changement est définitif",
+        "C": "Tout le monde peut en bénéficier",
+        "D": "Une hospitalisation est nécessaire"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 24,
+      "question_text": "La population d'insectes volants, essentiels aux écosystèmes, a diminué de plus de 75 % en près de 30 ans en Allemagne, sans que les scientifiques ne parviennent à en déterminer la cause avec certitude. Les chercheurs, qui ont mené leur étude dans des zones protégées en Allemagne depuis 1989, suspectent les pesticides agricoles d'être responsables de ce phénomène préoccupant. Selon leurs conclusions publiées dans la revue PLOS ONE, ce fort déclin a été observé quels que soient les changements météorologiques, le type d'exploitation des sols ou les caractéristiques de l'habitat.\n\nÀ quoi serait due la baisse du nombre d'insectes ?",
+      "image_url": null,
+      "options": {
+        "A": "L'urbanisation galopante des campagnes",
+        "B": "La faible étendue des réserves écologiques",
+        "C": "Le dérèglement climatique de la planète",
+        "D": "Les produits utilisés dans les cultures"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Au cœur de l'histoire\n\nRevisiter l'histoire de France à la lumière de la société contemporaine, c'est le concept du nouveau magazine proposé par la chaîne de télévision France 5. Les citoyens sont invités à interagir avec la présentatrice et ses invités en communiquant leurs propres témoignages et documents. L'émission se décline en deux temps, avec un documentaire suivi d'un débat en public entre témoins anonymes et acteurs de l'Histoire. Ce débat est construit en amont grâce à des récits d'internautes sur le site de l'émission. Tous ceux qui le souhaitent peuvent poster sur la toile vidéo, photos et anecdotes personnelles afin de croiser la petite et la grande Histoire.\n\nDe quelle façon peut-on contribuer à cette nouvelle émission ?",
+      "image_url": null,
+      "options": {
+        "A": "En envoyant des courriels sur la plateforme de l'émission",
+        "B": "En étant sélectionné pour être convié sur le plateau",
+        "C": "En joignant le standard de la chaîne pendant le direct",
+        "D": "On participe à distance au moyen d'une cybercaméra"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Il veut réhabiliter la charcuterie\n\nLe métier, bien sûr, mais aussi le produit. « On s'imagine un gros bonhomme avec un tablier taché de sang travaillant dans le froid, ironise Ludovic. C'est tout le contraire ! On travaille avec des matières nobles, dans des labos modernes. On s'éclate en cuisinant, on ne s'ennuie jamais. Quand elle est naturelle, la charcuterie est un excellent aliment, les nutritionnistes devraient faire preuve de discernement » autre obsession de ce puriste: La frontière des métiers. Comment peut-on se prétendre à la fois boucher, charcutier et traiteur ? C'est un non-sens !\"\n\nQuel message cet homme veut-il transmettre ?",
+      "image_url": null,
+      "options": {
+        "A": "L'avenir de son travail est menacé par l'industrie agroalimentaire",
+        "B": "La qualité des produits charcutiers est reconnue par les médecins",
+        "C": "Le passage d'un métier de boucher à un autre se fait facilement",
+        "D": "L'image attachée à sa profession est stéréotypée et peu valorisante"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Renaissance : un mot porteur de sens à de nombreux égards. Historiquement, elle symbolise le passage vers une ère nouvelle, créatrice, effervescente. Un retour aux sources et des artistes humanistes nourris par l'idée de temps nouveaux faits d'espoir et de confiance en l'homme. Ces multiples lectures ont été source d'inspiration pour la nouvelle collection. C'est aussi une énergie nouvelle, un regain de vitalité. Avec une ligne plus urbaine, hommes et femmes trouveront, dans des coupes près du corps aux couleurs toniques, des tenues à leur mesure pour affronter l'hiver avec sourire et imagination.\n\nD'où est tiré ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "Un catalogue de styliste",
+        "B": "Un dictionnaire philosophique",
+        "C": "Un manuel d'histoire de l'art",
+        "D": "Une présentation de musée"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 28,
+      "question_text": "L'huile de palme est l'huile la plus produite au monde. Un tiers de nos produits de consommation courante en contiennent. Or, on lui reproche beaucoup de choses. Elle serait responsable du cholestérol. Autre problème, environnemental cette fois la culture du palmier à huile étant très rentable, les surfaces de plantation ne cessent d'augmenter, souvent en lieu et place des forêts. Il existe pourtant d'autres huiles qui peuvent la remplacer mais c'est une solution plus onéreuse pour les industriels du secteur agro-alimentaire.\n\nPourquoi l'huile de palme est-elle produite massivement ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est un produit recherché par les consommateurs",
+        "B": "Elle valorise des méthodes agricoles traditionnelles",
+        "C": "Ses qualités nutritionnelles sont reconnues",
+        "D": "Son exploitation génère des revenus élevés"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Deux mondes s'affrontent : ceux de l'ancienne agriculture et de la nouvelle. Le productivisme soutenu par la chimie a fait progresser comme jamais les rendements agricoles, nourri la planète et abaissé le prix des denrées, dont on peut comprendre les motivations, tant les agriculteurs travaillent sous la pression éreintante de la compétitivité, soutiennent qu'il n'existe pas d'autres solution. Notre enquête montre le contraire l'alliance de la technologie et de l'écologie pour remplacer des substances nocives par une panoplie de techniques inédites offre une alternative originale, crédible et soutenable à la dispersion incontrôlée de composants chimiques nuisibles à tous. C'est la voie de la sagesse autant que de la modernité.\n\nQue défend le journaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "L'accès universel à des aliments bon marché",
+        "B": "L'innovation des procédés de production",
+        "C": "Le développement du commerce équitable",
+        "D": "Le partage d'expériences traditionnelles"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 30,
+      "question_text": "L'amour à la retraite\nAu théâtre du Splendid\n\nClaire Nadeau, très drôle, et Gérard Rinaldi, très inattendu dans le rôle d'un petit retraité maltraité par sa femme, jouent « Après l'amour ». Cette comédie, créée il y a dix ans, est reprise au Splendid. L'auteur met en scène un couple de petites gens qui sont passés à côté de belles choses. Leur amour est à la retraite. Le paradoxe, c'est qu'on rit beaucoup des mésaventures de Jeanne et Henri dans cette comédie grinçante.\n\nQuel est le sujet de la pièce ?",
+      "image_url": null,
+      "options": {
+        "A": "Une histoire d'amour splendide",
+        "B": "Un amour entre deux retraités",
+        "C": "Un homme mal aimé par sa femme",
+        "D": "Un couple qui ne s'aime plus"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 31,
+      "question_text": "La langue française n'a pas besoin de se défendre. Elle a surtout besoin de se détendre. Aimons-la et laissons-la flâner, adopter des mots d'argot ou étrangers. Laissons-la respirer et s'inspirer comme elle le souhaite. Avec elle, essayons simplement d'être cool ! En utilisant ce mot, j'imagine déjà l'indignation de ceux qui considèrent l'anglais comme un adversaire. Pour nous, la langue anglaise est peut-être une rivale, mais sûrement pas une ennemie. Elle nous a emprunté nos rendez-vous, notre savoir-faire, notre déshabillé, bureau de change, maître d'hôtel.\n\nIl n'y a aucune contradiction entre, d'une part, encourager la pratique de l'anglais et, d'autre part, adopter une stratégie volontariste en faveur de la francophonie.\n\nSelon ce journaliste, comment la langue française pourrait-elle évoluer ?",
+      "image_url": null,
+      "options": {
+        "A": "En diversifiant sa politique linguistique",
+        "B": "En modernisant son enseignement",
+        "C": "En s'enrichissant de tous types d'apports",
+        "D": "En valorisant les particularités régionales"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Meta et X sont omniprésents au collège.\n\nNous pourrions détourner les yeux en prétendant qu'ils n'ont rien à voir avec les compétences et savoirs acquis à l'école. Mais, ces messageries instantanées doivent être prises au sérieux par les enseignants, au sens où elles ne sont pas une mode mais un mode de communication qui conditionne les relations sociales. Les réseaux sociaux appartiennent déjà à la cité et seront partie prenante de notre vie demain. Ainsi, des pétitions se signent sur Internet, les renseignements sur autrui se prennent aussi sur la Toile. Il s'agit alors pour l'enseignant d'apprendre aux jeunes des comportements responsables dans l'usage des modes de communication tels que Meta et autres X.\n\nQue pense l'auteur des réseaux sociaux ?",
+      "image_url": null,
+      "options": {
+        "A": "Il est indispensable de savoir s'en servir correctement",
+        "B": "Il faut éviter de les utiliser dans le cadre scolaire",
+        "C": "Ils représentent un danger pour les libertés individuelles",
+        "D": "Ils sont incontournables en tant qu'outils d'enseignement"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Les anomalies ne doivent pas masquer le degré de cohérence qui fonde le code graphique. S'il existe plusieurs graphies pour un même son, leur distribution n'est pas aléatoire : le choix est souvent corrélé à des critères de position ou à des correspondances morphologiques. Les lettres muettes, à l'occasion, soulignent les flexions ou les dérivations. Certaines consonnes doubles sont clairement interprétables. De plus, certaines graphies étymologiques ne sont pas dépourvues de signification. Bien d'autres observations iraient dans le même sens. Dès lors, pourquoi renoncer à enseigner ce noyau intelligible de notre écriture ? L'orthographe, dans ses fondements, peut faire l'objet d'un apprentissage raisonné. Une pédagogie fondée sur la réflexion est plus valorisante qu'une acquisition basée sur le « par cœur » et la répétition, tout en assurant des connaissances plus solides. En outre, elle permet de mieux cerner, par contraste, les zones d'ombre et les bizarreries : la perception des exceptions sera d'autant plus aisée qu'on aura pris conscience des régularités.\n\nQue pense l'auteur de l'orthographe française ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle devrait être réformée de fond en comble",
+        "B": "Elle est parsemée de prescriptions irrationnelles",
+        "C": "Elle répond à certaines règles compréhensibles",
+        "D": "Elle se maitrise par des exercices de mémorisation"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 34,
+      "question_text": "« Le fait du roi »,\nun roman d'A. Thonon.\n\nC'est l'histoire d'un homme qui prend l'identité d'un autre, mort, en se glissant dans sa peau, dans sa vie, dans sa maison. Rien ne sert de raconter l'intrigue de ce roman tant elle est simple et sans surprise. L'écriture de l'auteur reste cependant toujours aussi piquante et agréable à lire. Le héros principal, quant à lui, est dépeint avec une certaine profondeur.\n\nSur quel point porte la critique négative faite à ce livre ?",
+      "image_url": null,
+      "options": {
+        "A": "La description du personnage",
+        "B": "La longueur du texte",
+        "C": "La qualité de l'écriture",
+        "D": "Le déroulement des évènements"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Très controversée, la semaine de quatre jours à l'école est dénoncée dans un rapport parlementaire. Les députés proposent de revenir à la semaine de quatre journées et demie et de réduire la période des vacances estivales. La mission parlementaire livre des conclusions sévères à l'encontre du rythme scolaire actuel, qui serait « aberrant » et « délirant » pour les écoliers. Selon un député, on peut dire, a posteriori, que c'est une erreur : « on a privilégié le rythme des parents et des enseignants au détriment de celui des enfants », dit-il. En France, la scolarisation annuelle est de 144 jours, contre une moyenne de 180 dans les pays développés. « Il faut allonger le temps scolaire », estime une experte.\n\nQue reprochent les députés à la semaine de quatre jours ?",
+      "image_url": null,
+      "options": {
+        "A": "De laisser trop de temps à l'oisiveté",
+        "B": "De s'écarter du modèle éducatif légal",
+        "C": "De satisfaire avant tout les adultes",
+        "D": "D'être à l'origine de l'échec scolaire"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Un vingt-sixième album de Françoise Hardy, La pluie sans parapluie, est forcément un événement. On sait que le public qui achète encore des disques passe volontiers à la caisse, pour montrer sa fidélité ou simplement son envie de vibrer avec cette voix unique et si familière, avec laquelle elle semble plus en confiance que jamais. Elle module, appuie, interprète, joue avec souplesse de son phrasé, alors que les aficionados se contenteraient simplement de ce grain unique et révéré. C'est un album pour ceux qui ont le temps, qui ne consomment pas la musique comme une simple application sonore de la vie actuelle. Il faut se retrancher pour en saisir la saveur et la goûter. Un disque comme autrefois, avec un son soigné et de l'émotion. Mais surtout, une élégance comme on n'en fait plus.\n\nSelon le journaliste, quel type de public pourrait s'intéresser au dernier album de F. Hardy?",
+      "image_url": null,
+      "options": {
+        "A": "Les acheteurs opposés au téléchargement illégal",
+        "B": "Les amateurs de subtilité et de raffinement musical",
+        "C": "Les admirateurs inconditionnels de l'interprète",
+        "D": "Les curieux en mal de musique expérimentale"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 37,
+      "question_text": "L'avenir réside dans la formation de la jeunesse, dans l'innovation et dans la recherche. Pour assumer pleinement ses responsabilités, l'Université de Nantes propose un nouveau modèle universitaire en France : décloisonné, il rassemble les acteurs de l'enseignement supérieur et de la recherche (grandes écoles, organismes de recherche, centres hospitaliers universitaires...).\n\nCe nouveau modèle remet au cœur des préoccupations la question de l'accès à un enseignement supérieur de qualité pour le plus grand nombre. Il ambitionne de créer les conditions de la réussite et de l'épanouissement de tous ses étudiants, tout en favorisant des innovations majeures.\n\nÀ travers ce projet de nouvelle université, le président et son équipe défendent une vision innovante et proposent un modèle inédit qui conjugue exigence et bienveillance, excellence et lien social.\n\nQuel est l'objectif de cette université ?",
+      "image_url": null,
+      "options": {
+        "A": "Attirer davantage d'étudiants brillants",
+        "B": "Être à la pointe de la technologie",
+        "C": "Ouvrir ses cours à un public élargi",
+        "D": "Proposer des disciplines inédites"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Mara Maudet, à son arrivée en France, constate que la politique d'insertion des foyers démunis et celle dédiée à la petite enfance sont déconnectées l'une de l'autre. Pour cette Brésilienne « un parent sans emploi doit être prioritaire pour obtenir une place de crèche. » Tout le contraire des critères actuels. Elle crée alors l'IRPC (Institut d'éducation et des pratiques citoyennes) et constitue un réseau de crèches associatives dont le principe est qu'en échange d'une place pour son enfant sur une plage de 13 heures, le parent célibataire - le plus souvent des mères s'engage à trouver un emploi dans les mois suivants. Il bénéficie alors, dans les locaux de la crèche, d'un accompagnement professionnel personnalisé.\n\nQuel est l'objectif de l'IEPC?",
+      "image_url": null,
+      "options": {
+        "A": "Embaucher des parents défavorisés",
+        "B": "Faciliter l'intégration professionnelle",
+        "C": "Proposer des tarifs préférentiels en crèche",
+        "D": "Trouver un accueil provisoire pour les enfants"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Treize jeunes cinéastes, achevant leur formation dans les plus prestigieuses écoles d'animation, ont planché sur quelques vers de Paul Éluard, livrant leur vision originale de son univers poétique. S'inscrivant dans la suite des programmes de courts-métrages dédiés à Prévert et Apollinaire, ce nouveau florilège de la série En sortant de l'école met en lumière l'œuvre d'un « apparenté surréaliste » dont la notoriété est souvent, hélas, réduite au seul et incontournable poème Liberté... Sa délicatesse, en amour comme en fantaisie, s'avère un combustible merveilleux pour de jeunes cinéastes.\n\nSelon cette critique, quel est l'apport de ce dernier ensemble de courts-métrages?",
+      "image_url": null,
+      "options": {
+        "A": "Il constitue une création artistique novatrice",
+        "B": "Il établit des ponts avec d'autres auteurs",
+        "C": "Il fait connaître les travaux d'un écrivain",
+        "D": "Il ouvre la voie à de prochaines réalisations"
+      },
+      "correct_answer": "C"
+    }
+  ]
+}

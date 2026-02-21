@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE31",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "RENCONTRES INTERCULTURELLES\nASSOCIATION DEUX RIVES\n27-28 novembre\n\nFaites connaissance avec des gens du monde entier et découvrez d'autres cultures ! Au programme : musique, repas, expositions...\n\n15 € / 10 € (moins de 25 ans)\nInscrivez-vous avant le 15 novembre\nVenez nombreux !\n\nQue propose cette association ?",
+      "image_url": null,
+      "options": {
+        "A": "D'apprendre une nouvelle langue",
+        "B": "De participer à un concours",
+        "C": "De prendre des cours de cuisine",
+        "D": "De rencontrer des étrangers"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Apprenez une langue étrangère sans aller en classe !\n\nL'école Lingua Mobile vous offre plusieurs solutions modernes : vous pouvez suivre vos cours par internet, depuis chez vous ou de votre bureau.\n\nQuelle est la spécialité de Lingua Mobile ?",
+      "image_url": null,
+      "options": {
+        "A": "Ses leçons à distance",
+        "B": "Ses professeurs expérimentés",
+        "C": "Ses salles neuves connectées",
+        "D": "Ses tarifs bon marché"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Nouveau message\n\nMonsieur,\nLe docteur Perez vous attend jeudi à 9h. Merci d'arriver 15 minutes à l'avance, avec la liste des médicaments que vous prenez. Si vous ne pouvez pas venir, merci de prendre contact avec nous.\n\nLe secrétariat médical.\n\nQuel est le but de ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Demander de téléphoner",
+        "B": "Prendre des nouvelles",
+        "C": "Présenter des produits",
+        "D": "Rappeler un rendez-vous"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Bonjour Sophie,\n\nJe ne pourrai pas venir à notre soirée cinéma. Ma fille est malade, je dois rester à la maison. Si tu veux, Kevin est disponible. Je peux lui donner ma place.\n\nMartine,\n\nPourquoi Martine envoie-t-elle ce message à Sophie ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour annuler un dîner",
+        "B": "Pour expliquer un problème",
+        "C": "Pour l'inviter chez elle",
+        "D": "Pour lui proposer de sortir"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Sophie et ses parents sont très heureux de vous annoncer la naissance d'Adrien, le 7 mai dernier.\n\nQui écrit ce message ?",
+      "image_url": null,
+      "options": {
+        "A": "Les amis d'Adrien",
+        "B": "La famille d'Adrien",
+        "C": "Les médecins d'Adrien",
+        "D": "Les voisins d'Adrien"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Couleurs d'automne !\n\nVous avez des idées pour proposer des plats originaux en choisissant des produits de saison, une décoration et des couleurs qui rappellent l'automne ? Inscrivez-vous au Parcours des chefs en remplissant le formulaire joint.\n\nQu'est-ce qui est organisé ?",
+      "image_url": null,
+      "options": {
+        "A": "Un atelier de peinture",
+        "B": "Un concours de cuisine",
+        "C": "Un salon des plantes",
+        "D": "Une course en forêt"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Avez-vous peur en avion ?\n\nVous n'êtes pas le seul ! Les statistiques montrent qu'un quart des passagers sont inquiets quand ils prennent l'avion. L'avion n'est pas un jeu ! Des stages peuvent vous aider à monter dans un avion sans avoir peur.\n\nPour en savoir plus, contactez Airplus au 09 48 36 22 11.\n\nQue propose la société Airplus ?",
+      "image_url": null,
+      "options": {
+        "A": "Des avions",
+        "B": "Des yeux",
+        "C": "Des stages",
+        "D": "Des statistiques"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Martine,\n\nJe ne connaissais pas www.lamode.com, mais sur un forum, j'ai lu des avis positifs. Alors, je suis allée sur le site internet et j'ai trouvé une jolie robe, pas chère du tout. Je l'ai commandée et je l'ai portée cinq jours plus tard. Je suis ravie !\n\nQu'explique cette personne ?",
+      "image_url": null,
+      "options": {
+        "A": "Comment elle a acheté un article en ligne",
+        "B": "Où elle a cherché un cadeau bon marché",
+        "C": "Pourquoi elle a eu un chèque de réduction",
+        "D": "Quand elle a échangé un vêtement solde"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Noel approche !\n\nPour que vos colis arrivent avant les fêtes, nous vous proposons de les transporter en mode express. Renseignez-vous auprès de nos conseillers ou rendez-vous directement au guichet.\n\nÀ quoi sert ce service ?",
+      "image_url": null,
+      "options": {
+        "A": "À acheter des cadeaux",
+        "B": "À envoyer des paquets",
+        "C": "À louer des camions",
+        "D": "À réserver des billets"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 10,
+      "question_text": "L'Union européenne va offrir une « Carte Jeunes » aux étudiants du continent qui ont vingt ans cette année. Pendant un mois maximum, les jeunes pourront prendre le bus gratuitement pour visiter plus de quinze pays.\n\nQu'est-ce qui est proposé aux jeunes Européens ?",
+      "image_url": null,
+      "options": {
+        "A": "Des visites de musées",
+        "B": "Des voyages en Europe",
+        "C": "Un mois de vacances",
+        "D": "Un semestre d'études"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Daniel,\n\nMonsieur Dubois a appelé pendant votre déjeuner. Il ne peut pas venir au rendez-vous vendredi. Il préfère vous voir la semaine prochaine pour discuter du dossier. Vous devez lui envoyer un courriel demain avant 17h00 pour confirmer.\n\nSarah,\n\nQue doit faire Daniel demain ?",
+      "image_url": null,
+      "options": {
+        "A": "Aller déjeuner avec monsieur Dubois",
+        "B": "Écrire un message à monsieur Dubois",
+        "C": "Envoyer un dossier à monsieur Dubois",
+        "D": "Rendre visite à monsieur Dubois"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Un salon automobile est un lieu de rêve mais pas le salon de cette année-là. Voici mon classement des modèles les plus laids :\n\n1. La V210 : un aspirateur sur quatre roues.\n2. La Tata Aria : pas chère mais pas belle non plus.\n3. Le cabriolet Aurus : plus large que haut.\n\nVivement l'année prochaine !\n\nQuel est le problème de ces voitures ?",
+      "image_url": null,
+      "options": {
+        "A": "Leur couleur",
+        "B": "Leur forme",
+        "C": "Leur prix",
+        "D": "Leur taille"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Qu'ils soient étudiants ou salariés, de nombreux jeunes sont confrontés à des problèmes de logement. Pendant ce temps, des retraités vivent dans une maison devenue trop grande pour eux, souvent seuls. Faire rencontrer ces générations, c'est l'objectif de l'association « Lien » qui recherche des retraités qui ont chez eux une chambre pour accueillir un jeune entre 18 et 25 ans. En contrepartie, le jeune peut effectuer des tâches ménagères ou tenir compagnie à la personne âgée quelques heures par semaine.\n\nQuel est l'objectif de l'association Lien ?",
+      "image_url": null,
+      "options": {
+        "A": "Centraliser les demandes de location des retraités",
+        "B": "Favoriser la cohabitation entre les générations",
+        "C": "Loger des jeunes en difficulté dans un studio",
+        "D": "Offrir une assistance médicale aux personnes âgées"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Plusieurs types de cours de natation proposés dans les piscines de la ville pour enfants et adultes toute l'année sauf pendant les vacances scolaires. Il n'y a pas besoin de réserver. Les tarifs dépendent des activités mais ils comprennent systématiquement le coût de l'entrée à la piscine et au sauna. Après les cours, vous pourrez nager librement.\n\nQu'est-ce qu'on apprend sur les cours de natation proposés ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils doivent être réservés à l'avance",
+        "B": "Ils donnent accès au sauna",
+        "C": "Ils ont lieu pendant les vacances",
+        "D": "Ils sont gratuits pour les enfants"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Parce que c'est important de rendre curieux et de faire rire, le théâtre Aktéon met en place toute l'année des séances scolaires sur demande. Au jour et à l'heure que vous souhaitez, vous pouvez assister avec votre classe à un spectacle privé dans votre établissement ! De nombreux collégiens et lycéens en ont profité l'an dernier. Après le spectacle, l'équipe artistique propose d'échanger sur la pièce avec les élèves. Des rencontres toujours... drôles !\n\nQue propose cette annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Accueillir le théâtre à l'école",
+        "B": "Apprendre l'histoire du théâtre",
+        "C": "Connaître les métiers du théâtre",
+        "D": "Suivre des cours de théâtre"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Chère Sarah,\n\nJe suis de retour à la montagne. Les vacances étaient géniales cette année, nous avons pris le train jusqu'à La Rochelle, puis nous avons pris un bateau jusqu'à l'île de Ré. Nous y avons passé toute la semaine. On s'est déplacé à vélo, et on a pêché et ramassé des coquillages. C'était magnifique.\nJe t'embrasse.\n\nPamela,\n\nOù est-ce que Pamela a passé ses vacances ?",
+      "image_url": null,
+      "options": {
+        "A": "À la montagne",
+        "B": "À La Rochelle",
+        "C": "Sur un bateau",
+        "D": "Sur une île"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Internet est entré dans les habitudes de consommation, et aucun secteur ne semble pouvoir échapper à cette pratique sauf peut-être le milieu pharmaceutique. Aujourd'hui, les trois quarts des Français déclarent ne pas être prêts à acheter un médicament sur Internet. Car le médicament n'est pas une simple marchandise, et la personne qui entre dans une pharmacie n'y cherche pas seulement un remède, mais un accompagnement et une assurance à la fois de sécurité et de santé.\n\nQu'apprend-on sur l'achat des médicaments en ligne ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est une pratique courante",
+        "B": "Les pharmaciens s'y opposent",
+        "C": "Leur paiement est sécurisé",
+        "D": "On s'en méfie en France"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 18,
+      "question_text": "L'expérience « cours le matin, sport l'après-midi », qui a commencé à la rentrée, concerne 7000 élèves, dans 120 lycées. Les parents affirment que « la santé de leur enfant a peu varié par rapport à l'an dernier ». Ils semblent avoir un meilleur appétit et « ils parlent plus de leurs activités avec leurs parents ». Il n'y a pas « d'influence sur la concentration ou les résultats scolaire ».\n\nQuels sont les effets de cette expérience ?",
+      "image_url": null,
+      "options": {
+        "A": "Les échanges en famille s'améliorent",
+        "B": "L'attention en classe est en hausse",
+        "C": "Les adolescents sont plus en forme",
+        "D": "La réussite aux examens augmente"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Recherche de partenaire pour un projet collaboratif par internet\n\nPour inscrire votre classe à ce projet, communiquez directement avec la personne responsable ou suivez la consigne indiquée, selon le cas.\nComparaison des constellations entre les hémisphères nord et sud – Sandrine Grun – sandrine.grun@collegerenoir.fr\n\nAstronomie / Sciences de l'espace\n\nUn groupe d'élèves participant à un atelier d'astronomie avec leur professeur de sciences physiques souhaiterait comparer les constellations des hémisphères nord et sud et étudier leur histoire. Ces élèves recherchent un groupe d'élèves situé dans l'hémisphère sud, francophone. Ils aimeraient commencer le projet entre élèves à la rentrée de septembre, mais la collaboration entre professeurs pourrait débuter avant.\n\nEn quoi consiste le projet décrit dans cette annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Participer à un concours international d'astronomie",
+        "B": "Réaliser une étude d'observation des astres",
+        "C": "Se joindre à une formation d'enseignants en sciences",
+        "D": "Suivre un cours de rattrapage en sciences physiques"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Situé au cœur d'un jardin tropical et en bordure d'une grande plage de sable fin, le Coralia est un hôtel-club de dernière génération, à la fois confortable et convivial. Complet et bien équipé, il saura satisfaire aussi bien les familles que les sportifs. Vous pourrez y pratiquer tous les sports nautiques et vous détendre dans nos salles de musculation et de fitness. Son magnifique restaurant vous accueillera jusqu'à très tard dans la nuit. L'un des rares hôtels de la région à proposer une animation 100 % francophone.\n\nQue propose cet hôtel ?",
+      "image_url": null,
+      "options": {
+        "A": "Un club pour les jeunes enfants",
+        "B": "Un espace de remise en forme",
+        "C": "Une formule en pension complète",
+        "D": "Une offre de restauration vannée"
+      },
+      "correct_answer": "B"
+    },
+        {
+      "question_number": 21,
+      "question_text": "Ralentissement du traitement de l'information, baisse de l'attention et de notre capacité de mémorisation à court terme... Avec l'âge, le vieillissement du cerveau semble inévitable. Pourtant, notre santé cognitive dépend aussi de notre mode de vie. Il est ainsi primordial, après soixante ans, de conserver une vie active, physiquement grâce à une pratique sportive régulière, et aussi intellectuellement en sollicitant nos fonctions mentales par un apprentissage permanent. Pour cela, il est essentiel de maintenir une vie sociale riche en interactions avec les autres et également de cultiver des activités associatives ou sportives, par exemple.\n\nQuel est l'objectif des conseils donnés dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Améliorer les capacités physiques",
+        "B": "Découvrir de nouveaux types de sports",
+        "C": "Développer le cercle de ses relations sociales",
+        "D": "Maintenir les performances de la mémoire"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 22,
+      "question_text": "En Belgique, un studio de technologie créative propose au public de se livrer à une expérience artistique d'un genre inédit : coiffés d'un casque spécial, les participants doivent se remémorer une histoire personnelle durant trente à soixante secondes. Des données ressortent alors sous forme d'algorithmes et sont analysées par un système de mesure émotionnelle, ce qui permet de leur donner forme et couleur. Ainsi, des peintures virtuelles sont créées à partir des émotions de chacun. Et comme chaque histoire est unique, chaque œuvre l'est aussi !\n\nQuel est le rôle des participants à cette expérience ?",
+      "image_url": null,
+      "options": {
+        "A": "Effectuer un calcul",
+        "B": "Évoquer un fait divers",
+        "C": "Fournir un support",
+        "D": "Sélectionner un souvenir"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Hier soir, lors du dernier concert du festival de jazz organisé par la ville de Nancy, une chanteuse lorraine, Mell, a enthousiasmé le public pendant la première partie. À tel point que le groupe prévu ensuite a dû décaler son horaire. En effet, lorsque la chanteuse a quitté la scène, la salle, noire de monde, s'est mise à hurler pour l'empêcher de partir.\n\nComment le public a-t-il réagi lors du concert de Mell ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a acclamé de toutes ses forces la chanteuse",
+        "B": "Il a demandé l'annulation du concert",
+        "C": "Il a invité le groupe suivant à partir",
+        "D": "Il l'a retenue prisonnière toute la nuit"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 24,
+      "question_text": "La crèche Tanger a rouvert ses portes\n\nAprès un an de travaux, la crèche municipale Tanger accueille de nouveau, depuis le mois de mai dernier, des enfants de 3 mois à 3 ans. Elle a été complètement réaménagée et sa capacité d'accueil a été augmentée. Elle reçoit désormais 52 enfants. Un passage permet aux « grands » d'accéder directement au jardin, dont le revêtement au sol a été remplacé. Les enfants ont à leur disposition un nouveau toboggan et un double banc en forme de crocodile.\n\nPourquoi la crèche était-elle en travaux ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour accueillir des enfants plus âgés",
+        "B": "Pour améliorer la sécurité du bâtiment",
+        "C": "Pour multiplier les activités artistiques",
+        "D": "Pour proposer davantage de places"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Le problème des grandes associations caritatives, c'est qu'elles n'ont pas de relation de proximité avec le public. Le Comité de la charte rétablit ce lien et redonne confiance aux donateurs grâce à une charte de déontologie et à la nomination d'un censeur auprès de chaque organisation membre. Le système fonctionne comme un label : il faut se soumettre à ses contraintes. Pour donner confiance, il faut effectuer un travail pédagogique pour les donateurs et leur fournir des informations sur les moyens dont disposent les associations. Elles fonctionnent, bien entendu, avec des bénévoles, mais également avec des salariés, et ceux-ci doivent être correctement rémunérés pour fournir un travail de qualité.\n\nQuel est l'objectif du Comité de la Charte ?",
+      "image_url": null,
+      "options": {
+        "A": "Rationaliser la gestion des associations",
+        "B": "Élargir le recrutement à de nouveaux bénévoles",
+        "C": "Former les responsables des associations",
+        "D": "Mieux communiquer sur l'utilisation des fonds"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 26,
+      "question_text": "Dans les familles, il y a des conflits entre les parents, tout simplement parce que chacun a son style éducatif, ses valeurs, son expérience et sa culture familiale. Chacun a ses idées sur le rôle d'un père, d'une mère, la place d'un enfant. Et quand chacun veut les mettre en application, il se heurte à celles de l'autre et ça crée des disputes dans le couple. C'est inévitable, tout à fait normal et il n'y a pas à s'en inquiéter. On peut parfaitement éduquer son enfant sans être d'accord sur tout, à une condition : que les parents s'entendent sur les valeurs fondamentales qu'ils veulent lui donner et qu'ils respectent les méthodes éducatives de l'autre même s'ils ne les approuvent pas.\n\nSelon cet article, que doivent faire les parents en matière d'éducation ?",
+      "image_url": null,
+      "options": {
+        "A": "Dialoguer avec leurs enfants",
+        "B": "Prendre appui sur leur expérience",
+        "C": "S'affranchir de leur héritage familial",
+        "D": "Trouver des valeurs communes"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 27,
+      "question_text": "La ville de Montreuil impose de nouvelles règles aux projets immobiliers du centre-ville pour promouvoir l'installation de commerces et d'ateliers d'artistes sur les axes centraux de la ville. Cette solution favorise la mixité des usages. En effet, la construction de logements est plus rentable que celle de locaux commerciaux ou artistiques, ce qui incite les promoteurs à ne construire que ce type de biens. Refusant de devenir une ville-dortoir et déterminée à préserver son identité artistique, la municipalité entend soutenir l'installation de ces activités en rez-de-chaussée.\n\nQuel est l'objectif de la politique urbaine de Montreuil ?",
+      "image_url": null,
+      "options": {
+        "A": "Développer la mixité sociale dans les quartiers",
+        "B": "Diversifier les activités en centre-ville",
+        "C": "Encourager la croissance du secteur immobilier",
+        "D": "Stabiliser le nombre de logements"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 28,
+      "question_text": "La désillusion de la jeunesse française d'aujourd'hui est un fait préoccupant. Elle est surtout due à la crise à internationale, qui réduit les offres d'emploi, fait pression sur les salaires et raréfie les possibilités de promotion. Mais on peut également l'attribuer à un conflit de générations larvées : il oppose la classe d'âge des « baby-boomers », devenus aujourd'hui « papy boomers » triomphants tout au long de leurs parcours, à celle de leurs enfants et maintenant de leurs petits-enfants.\n\nD'où provient la désillusion des jeunes en France ?",
+      "image_url": null,
+      "options": {
+        "A": "De la concurrence des autres générations",
+        "B": "De la course à la compétitivité",
+        "C": "De la situation économique tendue",
+        "D": "Des critiques émanant de leurs parents"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Deux mondes s'affrontent : ceux de l'ancienne agriculture et de la nouvelle. Le productivisme soutenu par la chimie a fait progresser comme jamais les rendements agricoles, nourri la planète et abaissé le prix des denrées. Mais il a fait son temps. Les tenants du passé, dont on peut comprendre les motivations, tant les agriculteurs travaillent sous la pression éreintante de la compétitivité, soutiennent qu'il n'existe pas d'autre solution. Notre enquête montre le contraire : l'alliance de la technologie et de l'écologie pour remplacer des substances nocives par une panoplie de techniques inédites offre une alternative originale, crédible et soutenable à la dispersion incontrôlée de composants chimiques nuisibles à tous. C'est la voie de la sagesse autant que de la modernité.\n\nQue défend le journaliste ?",
+      "image_url": null,
+      "options": {
+        "A": "L'accès universel à des aliments bon marché",
+        "B": "L'innovation des procédés de production",
+        "C": "Le développement du commerce équitable",
+        "D": "Le partage d'expériences traditionnelles"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Chaque année, le 10 août, les habitants de l'île de la Guadeloupe se retrouvent à Pointe-à-Pitre pour célébrer Saint Laurent, leur saint patron. Après une grande messe donnée à l'église Saint-Laurent, une procession de cuisinières vêtues de leurs plus beaux madras sillonne la ville avant de convier la population à un grand festin composé des meilleurs plats créoles. Située dans le village du Gosier, à proximité de Pointe-à-Pitre, l'Auberge de la Vieille Tour, construite autour d'un moulin à vent du XVIIIe siècle, sera un lieu de séjour idéal pour assister à cette manifestation haute en couleur et pour goûter au vrai parfum des Antilles.\n\nQuel est le sens de la célébration de la Saint-Laurent à Pointe-à-Pitre ?",
+      "image_url": null,
+      "options": {
+        "A": "Consiste en un grand évènement religieux",
+        "B": "Permet de découvrir les saveurs antillaises",
+        "C": "Se réduit à une manifestation pour touristes",
+        "D": "Se déroule dans un ancien monument restauré"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Il ne viendrait à personne l'idée d'entrer dans un cinéma ou un théâtre sans payer sa place, ni à ces industries de ne pas rémunérer leurs auteurs. De nombreux festivals ou lieux dédiés à la photographie se targuent pourtant de la gratuité de leurs expositions. D'autant plus que, dans la majorité des cas, il est admis qu'aucun budget ni aucun droit d'auteur ne soient prévus pour le photographe. Même si le motif initial de rendre la photographie accessible à tous est plus que légitime, ce qui choquerait pour tout autre secteur ou corps de métier n'offusque personne dès lors qu'il s'agit du photographe, pourtant producteur de la matière première de ces activités.\n\nQue constate l'auteur de l'article ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est la photographie qui est la forme d'art la moins valorisée",
+        "B": "Il y a peu d'événements culturels consacrés à la photographie",
+        "C": "Les photographies sont commercialisées à bas prix",
+        "D": "N'importe qui peut s'improviser photographe"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Le numérique bouleverse profondément l'enseignement, mais, selon le philosophe Marcel Gauchet, nous aurons plus que jamais besoin de professeurs et d'écoles. Excellent moyen de stimuler la curiosité, le numérique incite à chercher, à approfondir encore. Surtout, il enseigne une chose essentielle : personne ne sait tout et il n'existe nulle part de détenteur ultime du savoir. Ainsi, les élèves sont de plus en plus en contact avec des sources variées, ce qui constitue un changement majeur sur le plan pédagogique. L'enseignant devient alors celui qui explique qu'il existe plusieurs versions d'une même réalité et que savoir, c'est se confronter à l'incertitude plutôt que de réciter mécaniquement des connaissances.\n\nSelon Marcel Gauchet, quel va être le rôle de l'enseignant auprès des élèves ?",
+      "image_url": null,
+      "options": {
+        "A": "Développer leur esprit critique",
+        "B": "Encourager les débats entre eux",
+        "C": "Enrichir leur capacité mémorielle",
+        "D": "Évaluer régulièrement leurs acquis"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 33,
+      "question_text": "En France, entre 200.000 et 500.000 cas de troubles psychiques sont liés au monde du travail. L'apparition de nouvelles méthodes de travail, plus intenses et contraignantes, serait à l'origine de l'augmentation des cas de syndrome d'épuisement professionnel : c'est le mal du siècle et pourtant, il n'est pas encore reconnu. Les salariés, prisonniers de l'idéologie ambiante, s'imaginent trop souvent, quand ils craquent, qu'un collègue plus solide qu'eux aurait été capable de résister. Mais cela s'avère faux la plupart du temps. Une reconnaissance de la maladie obligerait les entreprises à réfléchir à leur fonctionnement et représenterait une réelle mesure d'utilité publique.\n\nQuel constat est dressé à propos de ce syndrome ?",
+      "image_url": null,
+      "options": {
+        "A": "Il inquiète les patrons de sociétés",
+        "B": "Il touche les employés les plus faibles",
+        "C": "Son existence doit être officialisée",
+        "D": "Son traitement est peu efficace"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Je ne connais pas son prénom, mais il y a, dans les Alpes, une personne à la verve savoureuse. Elle émaille la visite des gravures rupestres — dont les plus anciennes datent du Néolithique — de remises en perspective sur les prémices préhistoriques du capitalisme et de la domination masculine. Elle chantera peut-être, à condition que vous ne l'applaudissiez pas, pour vous permettre de ressentir l'acoustique d'un cirque rocheux. Elle vous proposera aussi de vous allonger et de fermer les yeux pour percevoir les vibrations du sol, riche en uranium. Bref, elle guidera les êtres minuscules que vous êtes à travers les plis grandioses de l'écorce terrestre.\n\nOù se trouve la personne décrite ?",
+      "image_url": null,
+      "options": {
+        "A": "Dans un centre de relaxation",
+        "B": "Dans un laboratoire",
+        "C": "Dans un musée archéologique",
+        "D": "Dans un parc naturel"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Un cabinet de conseil en énergie annonce que des coupures de courant sont à prévoir cet hiver dans l'Hexagone. En effet, l'Allemagne, qui approvisionne la France en électricité, ne sera plus capable de faire face à la demande en raison de la fermeture de certains de ses réacteurs nucléaires. Le gouvernement pourrait appeler au civisme des Français, leur demandant de modérer la consommation électrique des foyers, qui atteint des pics quotidiens autour de 19h. Pourtant, la France possède l'un des plus grands parcs nucléaires du monde, mais elle exporte la quasi-totalité de l'énergie produite.\n\nPourquoi y a-t-il des risques de coupures de courant ?",
+      "image_url": null,
+      "options": {
+        "A": "Parce que des tests sur les réacteurs nucléaires sont en cours",
+        "B": "Parce que l'approvisionnement en électricité est compromis",
+        "C": "Parce que la production française couvre à peine les besoins nationaux",
+        "D": "Parce que la régulation de la consommation d'énergie est inefficace"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Dans l'intérêt de leurs peuples, les gouvernements doivent répondre à la fois à des enjeux de court terme et de long terme. Cet exercice est si difficile qu'on peut comprendre qu'une certaine cacophonie règne au niveau politique. Pourtant, face aux périls, le mot « ensemble » est une arme souvent victorieuse. Les stratégies de développement durable ont ainsi plus de chances de succès si elles sont harmonisées. Pour commencer, cherchons à nous rapprocher, en tant qu'Européens, afin de mener de front la transition économique et la transition environnementale, dans le but d'atténuer le dérèglement climatique et la perte de biodiversité.\n\nQuel point de vue défend l'auteur ?",
+      "image_url": null,
+      "options": {
+        "A": "L'écologie est avant tout une affaire d'État",
+        "B": "La concertation est la clé d'une action réussie",
+        "C": "Les mesures protectionnistes sont dépassées",
+        "D": "L'influence des lobbies est à prendre en compte"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 37,
+      "question_text": "Maintenant, elles étaient là. Non plus en éveil, en méfiance, et rassemblées sous l'influence de la crainte en troupes, hardes, files et bandes, selon la race, la tribu, la famille, mais confondues et mêlées au sein d'une sécurité ineffable, dans la trêve de l'eau, en paix avec la brousse, elles-mêmes et l'aurore. À la distance où je me trouvais, il n'était pas possible de distinguer l'inflexion des mouvements ou l'harmonie des couleurs, mais cette distance ne m'empêchait pas de voir que les bêtes se comptaient par centaines et centaines, que toutes les espèces voisinaient, et que cet instant de leur vie ne connaissait ni peur ni hâte. Gazelles, antilopes, girafes, gnous, zèbres, rhinocéros, buffles, éléphants... les animaux s'arrêtaient ou se déplaçaient au pas du loisir, au gré de la soif, au goût du hasard.\n\nQuelle phrase résume exactement cet extrait de roman ?",
+      "image_url": null,
+      "options": {
+        "A": "Je ressentais pleinement l'anxiété des bêtes",
+        "B": "Je percevais parfaitement la quiétude de cet instant",
+        "C": "Je découvrais inopinément un spectacle effrayant et inquiétant",
+        "D": "J'éprouvais un sentiment de crainte face à ces troupeaux d'animaux sauvages"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 38,
+      "question_text": "À Julien, qui nous interroge sur l'emploi du franglais dans notre magazine, nous pouvons assurer que nous faisons de notre mieux pour éviter les anglicismes, bien qu'il soit difficile de les éradiquer complètement. Les réactions de nos lecteurs confirment notre vigilance à ce sujet, mais nous estimons également qu'il est important de s'exprimer dans un langage commun. Or, dans ce langage commun, des mots étrangers ont trouvé leur place. Pour être compris de tous, il est parfois plus logique de parler de check-list que de liste d'actions à cocher... Et, comparé à bien d'autres publications, la présence de si peu d'anglicismes dans nos colonnes devrait vous réjouir.\n\nQuel est le point de vue de l'équipe de rédaction du magazine ?",
+      "image_url": null,
+      "options": {
+        "A": "Il faut accepter l'évolution d'une langue",
+        "B": "Il faut bannir les termes anglais",
+        "C": "Il faut plaire à l'ensemble des lecteurs",
+        "D": "Il faut utiliser des mots basiques"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Aujourd'hui, de nombreux enfants cumulent les activités en dehors des cours. Selon une étude, l'origine de cette tendance serait liée aux mutations sociales contemporaines. Ainsi, recourir à de telles activités serait un moyen pour les parents de pallier l'absence des mères – de plus en plus souvent actives – et de développer les compétences des enfants pour les armer face à la compétitivité du marché du travail. Cependant, coûteuses en temps et en énergie, ces activités empiètent sur le quotidien de la maison et épuisent les enfants. Elles n'en apparaissent pas moins aux parents comme des marqueurs de leur bonne parentalité. Un phénomène qui s'entretient par l'expansion constante de l'offre ainsi que par la surenchère qui s'instaure entre les foyers.\n\nQue veulent faire les parents ?",
+      "image_url": null,
+      "options": {
+        "A": "Améliorer les résultats scolaires",
+        "B": "Avoir plus de temps pour eux",
+        "C": "Resserrer les liens familiaux",
+        "D": "Se donner bonne conscience"
+      },
+      "correct_answer": "D"
+    }
+  ]
+}

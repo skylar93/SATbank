@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE32",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Chère Mamie,\n\nCet été, j'ai pris le bateau pour l'île d'Arz, en Bretagne. J'y ai fait du camping, j'ai profité des belles plages et j'ai mangé des crêpes bretonnes délicieuses ! J'ai rencontré Benjamin et ses copains. Nous avons fait du vélo ensemble, c'était super ! Je t'embrasse !\n\nLaura,\n\nPourquoi Laura a-t-elle écrit cette lettre ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour proposer une promenade en bateau",
+        "B": "Pour raconter son séjour en Bretagne",
+        "C": "Pour répondre à son cousin Benjamin",
+        "D": "Pour réserver une place dans un camping"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Restaurant La bonne fourchette\n\nFormule légère\nSalade au choix : 9€\n\nFormule express\nPlat du jour : 12,50€\n\nFormule déjeuner\n(1/2 eau minérale et café compris) : 16€\nEntrée + Plat du jour + dessert\n\nFormule plaisir\nEntrée + plat du jour + dessert 20€\n\nCombien coûte la formule avec boisson ?",
+      "image_url": null,
+      "options": {
+        "A": "9 euros",
+        "B": "12,50 euros",
+        "C": "16 euros",
+        "D": "20 euros"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Lyon, le 22 juin 2011\n\nMadame,\n\nSuite à votre courrier du 17 juin dernier, je vous envoie le catalogue de nos produits.\n\nTrès cordialement,\n\nSophie Leloux,\nService clientèle\n\nPourquoi Sophie Leloux a-t-elle écrit cette lettre ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle cherche une vendeuse",
+        "B": "Elle demande un renseignement",
+        "C": "Elle informe une cliente",
+        "D": "Elle prend un rendez-vous"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Les silences du Général,\n\nDécouvrez les secrets de la vie du général de Gaulle sur Politike, la chaîne de la vie politique française, vendredi à 20 h. Un documentaire étonnant, suivi de la diffusion du film : L'armée des ombres, réalisé par Jean-Pierre Melville.\n\nQuel média va donner des informations sur le général de Gaulle ?",
+      "image_url": null,
+      "options": {
+        "A": "L'internet",
+        "B": "La presse",
+        "C": "La radio",
+        "D": "La télévision"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 5,
+      "question_text": "SAMEDI 29 JUIN, VENEZ COURIR 10 KM POUR AIDER L'ASSOCIATION « TOUS ENSEMBLE POUR LA PAIX »\n\nRENDEZ-VOUS A 10H, AU PARC DE VINCENNES. AMBIANCE SYMPATHIQUE ET REPAS OFFERT POUR LES SPORTIFS, VENEZ NOMBREX !\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "D'aider à organiser une fête",
+        "B": "De devenir membre d'une association",
+        "C": "De distribuer des repas gratuits",
+        "D": "De participer à un événement sportif"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 6,
+      "question_text": "ASSOCIATION « En route pour l'école »\n\nPour 92 euros, aidez des enfants à aller à l'école ! Pour beaucoup d'entre eux le collège est très loin : ils se lèvent très tôt et rentrent tard. Avec une bicyclette, ils pourraient y aller plus facilement. Faites un don à notre association pour leur offrir une bicyclette\n\nQu'est-ce que cette association voudrait faire ?",
+      "image_url": null,
+      "options": {
+        "A": "Aider des familles en difficulté",
+        "B": "Donner un vélo à des élèves",
+        "C": "Ouvrir de nouveaux collèges",
+        "D": "Réparer de vieilles bicyclettes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Dimanche 21 mai, venez faire connaissance avec Les HABITANTS DU QUARTIER !\n\nL'association « Immeubles en fête » vous donne rendez-vous vers midi. Apportez un plat et une boisson et partageons-les ensemble.\n\nANIMATION : Tennis de TABLE, 15H, Place De La VICTOIRE\n\nQu'est-ce que l'association « Immeubles en fête » propose ?",
+      "image_url": null,
+      "options": {
+        "A": "De cuisiner tous ensemble",
+        "B": "De faire un repas entre voisins",
+        "C": "De s'inscrire à des activités",
+        "D": "De visiter de nouveaux logements"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 8,
+      "question_text": "La France est le pays d'Europe où il y a le plus d'animaux par habitant. Chien, chat, poisson, cheval ou même serpent, les français adorent s'occuper d'eux, les nourrir, les sortir et vivre à leurs côtés.\n\nQu'apprend-on sur les Français et les animaux ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils aiment en voir dans la nature",
+        "B": "Ils les regardent à la télévision",
+        "C": "Ils sont nombreux à en avoir",
+        "D": "Ils vont les voir dans les zoos"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 9,
+      "question_text": "Bonjour Madame Grange,\n\nJe vous confirme notre rendez-vous de demain. Je viendrai vous chercher à l'aéroport. Nous irons ensuite manger au restaurant. Enfin, nous rencontrerons les responsables de l'entreprise à 14h pour signer le contrat.\n\nÀ demain,\n\nMadame Dire,\n\nPourquoi est-ce que Madame Dire écrit à Madame Grange ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour lui annoncer un projet",
+        "B": "Pour lui présenter un nouveau produit",
+        "C": "Pour organiser leur journée de travail",
+        "D": "Pour préparer son voyage"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 10,
+      "question_text": "LE SAVIEZ-VOUS ?\n\nLes Galeries Lafayette sont aujourd'hui le site le plus visité à Paris après le musée du Louvre ! Vous pouvez y trouver des vêtements à la mode, des objets pour la maison ou encore des articles de cuisine\n\nQu'est-ce qu'on apprend sur ce grand magasin ?",
+      "image_url": null,
+      "options": {
+        "A": "Beaucoup de personnes le visitent",
+        "B": "Il vend des articles bon marché",
+        "C": "Il y a un célèbre musée à l'intérieur",
+        "D": "On y donne des cours de cuisine"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Vous souhaitez vivre une expérience qui sort de l'ordinaire ? Réservez une nuit dans l'une de nos maisons dans les arbres ! Intérieur confortable, sensation d'aventure, réveil aux bruits de la nature, tout est prévu pour un séjour inoubliable !\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "De dormir au milieu de la nature",
+        "B": "De faire un parcours dans les arbres",
+        "C": "De participer à une aventure sportive",
+        "D": "De passer une nuit sous la tente"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Connaître deux langues présente des avantages !\n\nLa gymnastique mentale du passage d'une langue à une autre est aussi une gymnastique des émotions et du comportement : quand on change de langue, on change de culture. Quand le bilingue utilise une langue, la deuxième est aussi activée dans le cerveau, comme pour une traduction. Cette activité mentale est bénéfique pour le cerveau : elle aide à lutter contre certaines maladies.\n\nSelon cet article, qu'apporte la pratique de deux langues ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est bonne pour la santé",
+        "B": "Elle facilite la socialisation",
+        "C": "Elle développe la mémoire",
+        "D": "Elle enrichit la personnalité"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 13,
+      "question_text": "FAITES VOS COURSES SUR : MONMAGASIN.COM ET GAGNEZ DU TEMPS POUR VOS LOISIRS.\n\nMODE D'EMPLOI :\nConnectez-vous sur : www.monmagasin.com\nFaites votre choix parmi les 5000 références proposées sur le site du magasin. Réglez votre commande en ligne et cumulez des points sur tous vos achats.\n\nCHOISSISSEZ VOTRE MODE DE RETRAIT :\n-Livraison à domicile le lendemain (frais de livraison offerts avec la carte fidélité),\n-Retrait en magasin (choisissez votre horaire sur les plannings proposés et récupérez vos courses en toute simplicité).\n\nQuel est l'intérêt de ce service ?",
+      "image_url": null,
+      "options": {
+        "A": "Avoir des réductions sur certains produits",
+        "B": "Bénéficier de facilités de paiement",
+        "C": "Faire ses courses plus rapidement",
+        "D": "Recevoir sans frais des produits d'essai"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Ne dites plus dépendance, dites autonomie\n\nLes mots changent, le problème demeure. Ce problème est celui d'une population qui vit de plus en plus longtemps grâce aux progrès de la médecine, mais dont les dernières années nécessitent très souvent une assistance à domicile ou un hébergement en maison de retraite médicalisée.\n\nSelon ce texte, quelle difficulté rencontrent les personnes âgées ?",
+      "image_url": null,
+      "options": {
+        "A": "Elles ont besoin d'accompagnement",
+        "B": "Elles ont peur de quitter leur logement",
+        "C": "Elles souffrent de grande solitude",
+        "D": "Elles suivent des traitements coûteux"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Lundi prochain, en France, les librairies organisent une soirée du livre de jeunesse. Au programme, des activités pour enfants et des dégustations de desserts. On pourra aussi voir sur grand écran les princes et princesses du cinéma.\n\nQue pourra-t-on faire aux soirées du livre de jeunesse ?",
+      "image_url": null,
+      "options": {
+        "A": "Écouter des chansons",
+        "B": "Gagner des cadeaux",
+        "C": "Goûter des recettes",
+        "D": "Jouer dans un film"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 16,
+      "question_text": "FELICITATIONS !\n\nVous avez gagné une carte cadeau de 50€. Vous pouvez l'utiliser pour acheter tous nos produits de beauté. Attention, vous ne pouvez pas l'échanger contre de l'argent ou la donner à une autre personne. Si vous la perdez, vous n'êtes pas remboursé\n\nQu'est-ce qu'on peut faire avec cette carte ?",
+      "image_url": null,
+      "options": {
+        "A": "Avoir des réductions sur certains articles",
+        "B": "Faire des courses dans un magasin",
+        "C": "Offrir une surprise pour un anniversaire",
+        "D": "Retirer de l'argent à un distributeur"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Avec une histoire de plus de deux millénaires et une économie prospère, Aix-en-Provence rompt avec l'image de cité endormie que donne son labyrinthe de ruelles colorées. L'activité des commerçants, galeristes, aubergistes et autres passants offre un rythme singulier aux journées provençales, démontrant l'énergie créative de sa population cosmopolite. En plus d'un patrimoine important, la ville accueille l'élite de la danse contemporaine, 70.000 étudiants fréquentent les trois universités de la ville et des centaines d'entreprises occupent le pôle d'activité. Ce dynamisme n'a rien à envier à celui de Marseille, située à quelques kilomètres, et promet des heures heureuses à Aix\n\nSelon ce texte, quelle est la particularité d'Aix-en-Provence ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle abrite une vie animée",
+        "B": "Elle perpétue des traditions",
+        "C": "Elle se préserve du tourisme",
+        "D": "Elle tente d'imiter sa voisine"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Ces dernières années, les nouvelles versions de films à succès se sont multipliées et ce mouvement ne semble pas prêt de s'arrêter, comme si l'industrie cinématographique ne parvenait plus à inventer de nouvelles histoires, de nouveaux concepts qui pourraient éveiller la curiosité d'un large public. Pourtant, de nouvelles idées, de nouvelles sensibilités, il y en aura toujours, encore faut-il qu'elles trouvent un relais financier pour voir le jour. Et l'industrie cinématographique hésite à investir dans du « neuf », alors elle se tourne vers les valeurs sûres des succès passés.\n\nQuelle constatation ce journaliste fait-il sur le cinéma contemporain ?",
+      "image_url": null,
+      "options": {
+        "A": "Les producteurs évitent de prendre des risques",
+        "B": "Les réalisateurs sont à la recherche d'idées neuves",
+        "C": "Les scénaristes font preuve d'une imagination limitée",
+        "D": "Les spectateurs privilégient les créations classiques"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Le Diamant d'Espelette\n\nLe piment d'Espelette, qui célèbre actuellement sa fête, est probablement aujourd'hui le produit le plus emblématique du Pays basque. Il a pourtant failli devenir un produit banal, c'est-à-dire le contraire absolu de ce qu'il est vraiment. Au début des années 90, on trouvait en effet et on produisait du piment, dit d'Espelette, en Afrique du Nord, en Corse, en Espagne... Bref, partout où l'on aime ce goût peu piquant qui fait sa légitime réputation. Or, les Basques n'aiment pas se faire voler leurs traditions. Ils ont donc obtenu en juin 2000 l'appellation d'origine contrôlée (AOC), interdisant tout plagiat. Aujourd'hui, le diamant rouge d'Espelette est particulièrement apprécié de certains grands chefs, qui l'utilisent pour faire « explorer » les saveurs.\n\nQue permet l'appellation d'origine contrôlée accordée au piment d'Espelette aux Basques ?",
+      "image_url": null,
+      "options": {
+        "A": "De lutter contre les imitations",
+        "B": "D'en accroître la production",
+        "C": "De développer sa saveur",
+        "D": "De le faire davantage connaître"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 20,
+      "question_text": "L'anglais est arrivé, au vingtième siècle, à la première place du palmarès des langues internationales. Près de la moitié de l'humanité est concernée par cette langue, car elle est quasi obligatoire dans de nombreux secteurs d'activité. Pourtant, cette situation a ses limites, et l'anglais devra faire face à la progression d'autres langues dans les années à venir. Les raisons en sont la montée en puissance économique et industrielle de grands pays émergents, ainsi que le développement des échanges régionaux et de ceux entre pays voisins.\n\nQue dit-on de la langue anglaise dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle doit devenir la langue de l'administration publique",
+        "B": "Elle peut perdre son statut de langue dominante",
+        "C": "Elle restera la langue privilégiée dans le commerce",
+        "D": "Elle va provoquer la disparition de langues minoritaires"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 21,
+      "question_text": "La ligue de football professionnel vient d'annoncer que l'assistance vidéo sera prochainement introduite en première ligue. Mais la polémique demeure sur sa nécessité. « Quand il y aura un but dans un stade, les gens devront attendre », s'inquiète un ancien défenseur de première ligue. Pour lui, « on oublie l'essence même du football, qui est la joie, la folie. On ne va même plus profiter des buts ». Généralement, un arrêt de jeu ne doit pas dépasser 30 secondes, or « actuellement on est souvent à 50 secondes parce que le système n'est pas encore tout à fait performant ».\n\nQuelle est la conséquence de l'assistance vidéo pour le football ?",
+      "image_url": null,
+      "options": {
+        "A": "Un manque d'intérêt du grand public",
+        "B": "Un risque de déconcentration des joueurs",
+        "C": "Une moindre crédibilité des arbitres",
+        "D": "Une perte de spontanéité des matchs"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 22,
+      "question_text": "LA NEO-RURALITE EST DEVENUE UN PHÉNOMÈNE DE SOCIÉTÉ.\n\nCette dénomination date des années 70 c'est « le retour à la terre ». Alors que la désertification des campagnes se poursuit, un mouvement de population inverse s'opère. Il concerne des personnes jeunes, sans enfant, portant les valeurs contestataires de mai 68. Issues de toutes les classes sociales, elles ne recherchent pas spécialement le confort. Elles veulent avant tout vivre une expérience, ce qui les différencie de la population locale et ne facilite pas leur intégration.\n\nQue veulent les néo-ruraux ?",
+      "image_url": null,
+      "options": {
+        "A": "Accéder à la propriété privée",
+        "B": "Avoir un mode de vie économique",
+        "C": "Participer à la vie associative",
+        "D": "Tenter une nouvelle aventure"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Le « moustique urbain » — c'est son nom — qui hibernait depuis octobre, s'est réveillé plus tôt que prévu. Et une fois d'attaque, les mâles sont immédiatement allés féconder les femelles, qui se sont mises à pondre frénétiquement. Là où l'on ne rit plus, c'est quand on sait que les larves se nourrissent de matières organiques contenues dans les eaux stagnantes et usées qui leur servent de nurseries, et que, plus il fait chaud, plus elles en profitent, ce qui donne des moustiques de taille XXL qui, sans que les scientifiques sachent pourquoi, délaissent les oiseaux pour s'attaquer de préférence aux humains. Il ne nous reste plus qu'à courir acheter du répulsif !\n\nPourquoi les moustiques sont-ils plus gros que d'habitude ?",
+      "image_url": null,
+      "options": {
+        "A": "Parce qu'il y a eu des pluies importantes",
+        "B": "Parce que les femelles ont moins pondu",
+        "C": "Parce que les larves ont beaucoup mangé",
+        "D": "Parce qu'ils ont hiberné plus longtemps"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 24,
+      "question_text": "Les économistes ne sont pas tous d'accord sur les effets du vieillissement de la population sur la consommation. Certains annoncent, une chute possible, dans les années à venir, de la consommation des baby-boomers (la génération de ceux qui sont nés dans les années 50 et 60). Cette réflexion s'appuie sur le fait que les baby-boomers n'ont pas assez épargné pour leur retraite. Par ailleurs, des baisses significatives des pensions de retraite sont probables d'ici quelques années puisque les pays industrialisés sont en train de réformer leurs systèmes de retraite. S'ils prennent conscience de l'ampleur des effets de ces réformes sur leur futur niveau de vie, les baby-boomers pourraient limiter leur consommation pour se constituer une épargne pour leurs vieux jours.\n\nQu'explique l'auteur sur les baby-boomers ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils font preuve de solidarité économique avec les autres générations",
+        "B": "Ils sont à l'origine d'une part significative de l'épargne des banques",
+        "C": "La réforme des retraites influencera leurs comportements",
+        "D": "Leur pouvoir d'achat est garanti dans les pays industrialisés"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Avec la technologie actuelle, il faut six à neuf mois pour un vol de la terre à Mars. Pour connaître les effets de l'isolement spatial de longue durée, six volontaires ont joué les astronautes dans un dôme de 90 m2 installé sur un volcan à Hawaï et qui faisait office de base martienne. Ils en sont ressortis dimanche, épuisés, mais heureux de respirer l'air frais et de converser avec d'autres humains. Pendant un an, ils sont restés ensemble en milieu fermé (avec quelques rares sorties en combinaison spatiale), ont mangé une nourriture déshydratée et effectué des expériences pour améliorer les systèmes autonomes.\n\nÀ quoi ont participé ces six personnes ?",
+      "image_url": null,
+      "options": {
+        "A": "À un vol interstellaire vers une planète lointaine",
+        "B": "À une expérience d'autosuffisance alimentaire",
+        "C": "À une exploration de cratères de volcans",
+        "D": "À une simulation de mission spatiale"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 26,
+      "question_text": "M. Khalifa, responsable du patrimoine, a accidentellement découvert une douzaine de sculptures, certaines endommagées par l'érosion ou des actes de vandalisme, qui dateraient d'environ 2000 ans. « En me rendant sur la zone, j'ai en fait découvert, que des chameaux étaient sculptés dans les affleurements de la montagne. C'est vraiment unique », raconte-t-il. Le mystère reste entier sur les sculptures et les outils utilisés. Pour trouver des réponses à toutes les questions concernant les sculptures de chameaux, un important travail de terrain est encore nécessaire.\n\nQu'apprend-on sur ces sculptures ?",
+      "image_url": null,
+      "options": {
+        "A": "Ce sont des reproductions de qualité",
+        "B": "Elles sont parfaitement conservées",
+        "C": "Leur transfert dans un musée est en cours",
+        "D": "On ignore comment elles ont été réalisées"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Dans l'ensemble des espaces verts de la ville de Toulouse, les pelouses tondues régulièrement laissent place à 150 hectares de prairies urbaines, plus sauvages. « En coupant l'herbe, on stoppe le cycle des végétaux. Or si on ne la coupe qu'une fois par an, c'est bon pour l'écosystème et ça permet l'intégration de nouvelles espèces », explique la conseillère municipale en charge des espaces verts. Seul inconvénient, le résultat est nettement moins esthétique. Au début, c'était mal compris, car les gens pensaient que c'était sale, reconnait l'élue. Mais aujourd'hui on voit des petites fleurs réapparaitre et je ne reçois plus de courriers.\n\nQuel est l'intérêt principal de limiter la tonte de l'herbe à une seule fois par an ?",
+      "image_url": null,
+      "options": {
+        "A": "Cela réduit les coûts d'entretien des espaces verts",
+        "B": "Cela préserve les habitats naturels",
+        "C": "C'est plus esthétique pour les visiteurs",
+        "D": "Cela évite le bruit constant des tondeuses dans la ville"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 28,
+      "question_text": "C'est vrai qu'une forme d'intensité a marqué ma filmographie. Je suis assez épuisée par le fait de jouer des drames. Cela traverse le corps, le champ émotionnel, ça abîme... C'est pour ça que j'essaie de ne pas faire plus d'un ou deux films par an. Cette intensité est projetée sur moi, mais moi, j'aime aussi l'oisiveté, parfois la futilité et, avant tout, que ce soit vivant. J'aime ce qui est fou. Il y a une idée trop sage de ce que doit être une actrice, qui circule et qui rend les actrices moins libres dans leur jeu que les acteurs.\n\nQu'est-ce qui est difficile pour cette comédienne ?",
+      "image_url": null,
+      "options": {
+        "A": "Choisir les bons scénarios",
+        "B": "Interpréter certains rôles",
+        "C": "Obéir aux directives du réalisateur",
+        "D": "Respecter les textes au mot près"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Initiée dans les années 1960, la bataille contre les mauvaises herbes n'a jamais cessé. Depuis, les sols, en plus d'être labourés à outrance, sont aspergés de pesticides qui se propagent sur les terres et dans les eaux voisines. Claude Bourguignon, ingénieur agronome, milite depuis plus de vingt ans pour tenter de convaincre les agriculteurs que le labourage intensif et les pesticides causent la perte de la matière organique terrestre. Présente dans la couche supérieure du sol, celle-ci est composée de microbes, d'insectes et de champignons, et elle fournit des nutriments essentiels aux sols.\n\nQuel est l'objectif de Claude Bourguignon ?",
+      "image_url": null,
+      "options": {
+        "A": "Démontrer les dégâts des méthodes de culture intensive",
+        "B": "Prouver l'efficacité des insectes contre les parasites",
+        "C": "Recommander des procédés de gestion durable de l'eau",
+        "D": "Vulgariser des techniques de rendement des terres"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Les gens empilaient les objets dans les chariots en métal, avec frénésie. Ils avaient des visages sérieux, contractés, et leurs paupières battaient de façon anormalement lente. Les femmes tendaient les mains vers les étals. On aurait dit que les gens ne savaient plus ce qu'ils faisaient. Comment l'auraient-ils su ? Ce n'étaient pas eux qui saisissaient la marchandise. C'était la marchandise qui se collait d'elle-même à leurs mains, elle entrait directement dans les caddies. La nourriture n'était plus que des formes, et des couleurs : rouge, blanc, vert, orange. Les yeux avaient faim de sphères et de pyramides, faim de plastiques lisses et de capsules en fer-blanc.\n\nDans cet extrait, qu'apprend-on sur les acheteurs ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils donnent l'impression de vénérer les produits",
+        "B": "Ils ont l'air éblouis par le gigantisme des magasins",
+        "C": "Ils paraissent manipulés par une force supérieure",
+        "D": "Ils semblent perdus dans le labyrinthe des rayons"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Là où leurs prédécesseurs rêvaient d'un contrat à durée indéterminée, les Milléniaux (génération née entre 1980 et 2000) sont en quête d'expériences diversifiées. Beaucoup ont déjà connu le chômage et ont conscience de l'obsolescence de leurs compétences et de leur diplôme, d'où leur sentiment de n'avoir rien à perdre. L'heure n'est plus à la relation de subordination, mais à la coopération. Au quotidien, il y a de quoi déconcentrer les managers... Un Millénial accepte qu'on lui explique le sens du travail, mais pas la manière de le faire. Face à ces collaborateurs qui font rimer le bien-être professionnel avec connexion, confiance, autonomie et flexibilité. Il faut en finir avec le syndrome de la hiérarchie pyramidale.\n\nQu'apprend-on sur les Milléniaux dans le monde du travail ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils bouleversent les rapports d'autorité",
+        "B": "Ils évitent les postes à responsabilité",
+        "C": "Ils sont moins motivés que leurs aînés",
+        "D": "Ils tiennent à la stabilité de l'emploi"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Depuis un an, l'association du « Théâtre de la Poudrerie », située à quelques kilomètres de Paris, organise des représentations gratuites à domicile d'une pièce inédite. Pour cela, l'association a invité une auteure professionnelle en résidence afin d'écrire cette pièce. Elle a recueilli les témoignages d'une trentaine d'habitantes sur le thème du pouvoir féminin, puis a rédigé son texte à partir de cette matière première. L'enjeu pour cette association est que les spectateurs s'approprient la pièce : lorsqu'il y a un phénomène d'identification, la parole se libère lors de la rencontre qui suit la représentation. Ce phénomène est amplifié par ce cadre intimiste, qui favorise le rapprochement entre les spectateurs et les comédiens.\n\nQuel objectif poursuit cette association avec ce projet ?",
+      "image_url": null,
+      "options": {
+        "A": "Encourager le dialogue avec le public",
+        "B": "Former des acteurs en banlieue",
+        "C": "Réaliser une œuvre à plusieurs mains",
+        "D": "Sensibiliser à l'égalité des sexes"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 33,
+      "question_text": "C'est un étonnant phénomène, appelé couronne de timidité : le feuillage de certains arbres n'entre jamais en contact avec celui des autres, créant des frontières entre les feuilles, des chemins de lumière. Dans certaines forêts, en observant les cimes des arbres, un labyrinthe de lumière se dessine entre les feuillages, comme si les arbres laissaient volontairement une barrière polie d'une trentaine de centimètres pour éviter d'entrer en contact. Cet espace laisserait filtrer la lumière, essentielle à la photosynthèse et à la survie des sous-bois, et permettrait également d'éviter des contagions, qu'il s'agisse de maladies ou d'insectes non volants. Une même espèce d'arbres s'entendrait donc pour créer un environnement propice à la survie du groupe dans son ensemble.\n\nQue constate l'auteur du texte à propos des arbres ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils sont aptes à coloniser un territoire vierge",
+        "B": "Ils sont capables de communiquer entre eux",
+        "C": "Ils sont en compétition pour leur croissance",
+        "D": "Ils sont susceptibles de ressentir des émotions"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 34,
+      "question_text": "SUR LE CHEMIN DE LA BIO-CONSTRUCTION\n\nDepuis quelque temps, la conscience écologique s'est considérablement aiguisée. Les particuliers ont même une idée précise de ce qu'ils veulent comme habitat. En conséquence, les projets de logement 100% écologiques deviennent l'obsession de tous les cabinets d'architectes : construction basse consommation, rénovation énergétique, maison passive... Il s'agit maintenant d'adapter l'offre du marché et d'élargir les domaines de compétences des professionnels notamment au sein des entreprises de construction. D'autant plus que, selon de nombreux spécialistes, la construction écologique, lorsqu'elle est mise en œuvre, représente un gain pour tous, aussi bien pour le promoteur que pour l'acheteur.\n\nSelon l'auteur, quel est le défi de la bioconstruction ?",
+      "image_url": null,
+      "options": {
+        "A": "Convaincre la clientèle ciblée",
+        "B": "Former les spécialistes du secteur",
+        "C": "Rentabiliser les projets à venir",
+        "D": "Restaurer d'anciens bâtiments"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Que pensent les Français de la mobilité territoriale ?\n\nSi la mobilité n'est ni bonne, ni mauvaise en soit, elle peut être perçue de manière radicalement différente en fonction des circonstances dans lesquelles elle se réalise et surtout du fait d'être choisie ou non. Des mobilités personnelles, professionnelles et spatiales, voulues et recherchées, peuvent être un facteur d'épanouissement individuel et professionnel pour certains groupes favorisés. Alors qu'elles peuvent être un facteur de précarité pour les groupes défavorisés, notamment si elles sont subies.\n\nQuand une mobilité territoriale est-elle bien vécue ?",
+      "image_url": null,
+      "options": {
+        "A": "Si c'est une occasion d'élargir son réseau social",
+        "B": "Si c'est une opportunité de changer de mode de vie",
+        "C": "Si c'est une possibilité de trouver un emploi",
+        "D": "Si c'est le fruit d'une décision personnelle"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 36,
+      "question_text": "Les champs de mise en œuvre des robots sont légion : production, services, gestion des données, vie urbaine, sécurité, loisirs, domotique... Leur arrivée donne lieu à des transformations inédites et à des problématiques nouvelles, souvent mythifiées. Un univers professionnel où tout serait régi par des robots ? Voilà qui est encore loin de la réalité. Si l'automatisation a fait disparaître des emplois, elle en a aussi créé d'autres. Surtout, elle a bouleversé le fonctionnement de l'entreprise, faisant peser une forte pression sur les salariés, tenus de maintenir la continuité de la production dans des processus toujours plus complexes.\n\nQuelle est la conséquence de la robotisation dans le monde professionnel ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle a accru la compétitivité industrielle",
+        "B": "Elle a amélioré les conditions de travail",
+        "C": "Elle a enrayé la hausse du chômage",
+        "D": "Elle a modifié l'organisation du travail"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 37,
+      "question_text": "La bataille de Bouvines, remportée le 27 juillet 1214 par le roi de France Philippe Auguste sur l'empereur germanique, est l'un des actes fondateurs de la dynastie capétienne et l'un des épisodes les plus célèbres du « Roman national » français. Du XIIIe siècle à nos jours, elle a donné naissance à de multiples légendes que le spécialiste du monde médiéval, Dominique Barthélemy, confronte à la réalité des faits. À l'issue d'une enquête approfondie, il décrit un affrontement plus modeste et moins épique que celui construit et enrichi au gré des nécessités politiques. Ainsi, il nous invite à poursuivre la réflexion sur l'idée que les Français se font d'eux-mêmes.\n\nSelon l'article, que fait Dominique Barthélemy ?",
+      "image_url": null,
+      "options": {
+        "A": "Il analyse l'établissement d'une dynastie royale",
+        "B": "Il explique l'origine d'une légende médiévale",
+        "C": "Il explore la construction identitaire des Français",
+        "D": "Il renforce le mythe de la bataille de Bouvines"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Ça pourrait être une tragédie, avec les meilleurs ingrédients du genre : rencontres hasardeuses de personnages abîmés par un lourd passé, malheurs successifs et révélations inattendues... Sauf qu'entre le jeune pompier Roméo et l'infirmière Juliette, victime de la cruauté de son compagnon, le chemin tracé par Agnès Ledig dans son roman Pars avec lui est plein de pudeur, riche de personnages ordinaires mais surprenants, vrais, imprévisibles, dans une France provinciale qu'on décrit trop peu. Il y a chez eux une envie de dire, d'avouer ce qui fut trop longtemps caché. Ainsi, l'histoire se fait-elle peu à peu libération et rédemption. Avec un art direct et familier de conteuse, l'auteure offre à ses personnages un espoir, un bonheur encore possible.\n\nD'après la critique, quel est l'atout principal du roman d'Agnès Ledig ?",
+      "image_url": null,
+      "options": {
+        "A": "L'alternance entre le comique et le drame",
+        "B": "L'atmosphère énigmatique et inquiétante",
+        "C": "La présentation de particularités régionales",
+        "D": "L'émancipation des héros au cours du récit"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 39,
+      "question_text": "L'expression « management des savoirs » peut paraître paradoxale. Tout d'abord, les savoirs, comparativement aux ressources matérielles, semblent moins contrôlables parce que plus évanescents. Comment, en effet, parvenir à gérer une chose aussi insaisissable que le savoir ? Ensuite, le management évoque des règles et des procédés organisationnels, alors que les savoirs sont plutôt en position de force et, en tout état de cause, refusent d'être dirigés et contraints par des règles standardisées. Pourtant, il est de plus en plus communément admis que les savoirs doivent être gérés comme les ressources matérielles : c'est même là que réside désormais la clé de la compétitivité des entreprises.\n\nQuelle est la particularité de l'expression « management des savoirs » ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle évoque la facilité de contrôle des savoirs comparativement aux ressources matérielles",
+        "B": "Elle suggère que les savoirs peuvent être facilement dirigés et contraints dans des règles standard",
+        "C": "Elle souligne la difficulté de gérer le savoir, tout en reconnaissant son rôle clé dans la compétitivité des entreprises",
+        "D": "Elle affirme que les ressources matérielles comptent plus que les savoirs pour la compétitivité des entreprises"
+      },
+      "correct_answer": "C"
+    }
+  ]
+}

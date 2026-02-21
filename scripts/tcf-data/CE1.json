@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE01",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Bonjour Anna,\n\nEst-ce que tu pourrais t'occuper de Jérôme après l'école vendredi ? Pour le repas, tout est prêt : j'ai déjà fait les courses et un gâteau. Il doit se coucher avant 21h, je rentrerai vers 23h.\n\nMerci beaucoup !\n\nQue demande Agnès à Anna ?",
+      "image_url": null,
+      "options": {
+        "A": "D'aller au supermarché",
+        "B": "De garder son fils",
+        "C": "De préparer un dessert",
+        "D": "De rester dormir"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Restaurant La bonne fourchette\n\nFormule légère 9€ : Salade aux choix\nFormule express 12,50€ : Plat du jour\nFormule Déjeuner 16€ : (1/2 eau minéral et café express) Entrée + plat du jour / Plat du jour + désert\nFormule plaisir 20€ : Entrée + plat du jour + désert\n\nCombien coûte la formule avec boisson ?",
+      "image_url": null,
+      "options": {
+        "A": "9 euros",
+        "B": "12.50 euros",
+        "C": "16 euros",
+        "D": "20 euros"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Vous souhaitez améliorer votre niveau en langue étrangère ?\n\nLe Conseil de l'Europe offre à ses salariés des formations dans les langues des pays de l'Union européenne. Inscrivez-vous dès maintenant pour les cours d'italien et d'allemand.\n\nQu'est-ce que le Conseil de l'Europe propose à ses employés ?",
+      "image_url": null,
+      "options": {
+        "A": "Des cours gratuits",
+        "B": "Des postes à l'étranger",
+        "C": "Des stages en Italie",
+        "D": "Des voyages en Europe"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 4,
+      "question_text": "La comédienne franco-suisse Pascale Rocard part tourner un film à Paris. Actrice et réalisatrice à succès, elle est également peintre et photographe. Mère de deux enfants, elle vit à Verbier, en Suisse.\n\nQue va faire Pascale Rocard ?",
+      "image_url": null,
+      "options": {
+        "A": "Avoir un bébé",
+        "B": "Déménager en France",
+        "C": "Jouer au cinéma",
+        "D": "Organiser une exposition"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Une société de production recherche pour faire de la figuration dans un film sur le thème parent/enfants, de jeunes mères confrontées à l'éducation de leurs enfants.\n\nQue recherche la société de production ?",
+      "image_url": null,
+      "options": {
+        "A": "De jeunes enfants",
+        "B": "Des femmes et des enfants",
+        "C": "De jeunes mamans",
+        "D": "Des parents avec leurs enfants"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 6,
+      "question_text": "1 PLACE\nFILM : LES 3 FRÈRES\nSÉANCE : 20h30\nTARIF ÉTUDIANT\n6.00€\n\nOù peut-on vous donner ce ticket ?",
+      "image_url": null,
+      "options": {
+        "A": "À la caisse d'un cinéma",
+        "B": "À l'accueil d'un opéra",
+        "C": "À l'entrée d'un musée",
+        "D": "Au guichet d'un théâtre"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 7,
+      "question_text": "Chers parents,\n\nLes élèves de l'école du Centre sont heureux de vous inviter à voir la pièce « Vive les vacances » qu'ils ont écrite et qu'ils joueront pour vous le vendredi 9 mars à 19 heures.\n\nQu'est-ce qu'on propose aux parents ?",
+      "image_url": null,
+      "options": {
+        "A": "De préparer un voyage",
+        "B": "De regarder un spectacle",
+        "C": "De venir à une réunion",
+        "D": "De visiter une classe"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Chers professeurs,\nCher étudiants,\n\nVenez rencontrer les nouveaux étudiants de la semaine ! Ce mardi, de 8h30 à 10h30. Rendez-vous salle : « Les Mimosas »\n\nJ. Lebon, directrice\nÉcole de langues ABC.\n\nPourquoi Madame Lebon écrit-elle cette annonce ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour changer un horaire",
+        "B": "Pour organiser une fête",
+        "C": "Pour présenter des élèves",
+        "D": "Pour proposer une sortie"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 9,
+      "question_text": "La cuisine de Jean-Émile\n\nJean-Émile Nodier, chef depuis 10 ans. Propose DES COURS DE CUISINE À DOMICILE pour une à quatre personnes. Apprenez à cuisiner des recettes de qualité.\nPour plus de renseignements : www.lacuisinedejeanemile.fr\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "D'apprendre à préparer des plats chez soi",
+        "B": "De devenir un chef cuisinier professionnel",
+        "C": "De réaliser des repas pour de grands groupes",
+        "D": "De trouver de bonnes recettes sur internet"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Madame, monsieur,\n\nEn raison de travaux rue Paul Vaillant, l'accès à la piscine municipale se fera côté boulevard Camélines, du 15 au 25 mars inclus. Veuillez nous excuser pour la gêne occasionnée.\n\nLe service municipal.\n\nQuelle information est donnée au sujet de la piscine ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle sera fermée au mois de mars",
+        "B": "Il y aura des travaux à l'intérieur",
+        "C": "L'entrée se fera par une autre porte",
+        "D": "Le service municipal réparera les lieux"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 11,
+      "question_text": "Cher Jacques,\n\nCe petit mot pour vous dire que Natacha et moi-même allons être dans la région de Toulouse au mois de juillet. Nous voudrions vous rendre visite à cette occasion. Merci de nous dire si cela est possible.\n\nTrès sincèrement,\nAhmed\n\nPourquoi Ahmed écrit-il à Jacques ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour lui communiquer la date de ses fiançailles",
+        "B": "Pour lui proposer de passer le voir avec son amie",
+        "C": "Pour lui annoncer son déménagement à Toulouse",
+        "D": "Pour lui demander de l'accompagner en voyage"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "La semaine dernière, les écoles de commerce ont organisé leur traditionnel rendez-vous « Avenir jeunesse ». Comme tous les ans, son objectif a été de favoriser la rencontre entre les entreprises qui recrutent et les élèves. Ces derniers ont pu se renseigner sur les différents secteurs d'activité et déposer leur candidature pour les postes qui les intéressent. Des ateliers conseil étaient animés par des professionnels.\n\nQuel était le but de l'événement « Avenir jeunesse » ?",
+      "image_url": null,
+      "options": {
+        "A": "Accueillir les étudiants étrangers",
+        "B": "Faciliter la recherche d'emploi",
+        "C": "Préparer la rentrée universitaire",
+        "D": "Présenter de nouvelles formations"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Plusieurs types de cours de natation sont proposés dans les piscines de la ville pour enfants et adultes toute l'année sauf pendant les vacances scolaires. Il n'y a pas besoin de réserver. Les tarifs dépendent des activités mais ils comprennent systématiquement le coût de l'entrée à la piscine et au sauna. Après les cours, vous pourrez nager librement.\n\nQu'apprend-on sur les cours de natation proposés ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils doivent être réservés à l'avance",
+        "B": "Ils donnent accès au sauna",
+        "C": "Ils ont lieu pendant les vacances",
+        "D": "Ils sont gratuits pour les enfants"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Monsieur Lejeune,\n\nJe n'ai pas pu dormir de la nuit à cause de la fête que vous avez organisée dans votre appartement. Pour le confort de tous, je vous serais reconnaissante d'être plus discret à partir d'une certaine heure.\n\nMme Quincampoix,\nLa concierge\n\nQue doit faire M. Lejeune pour sa prochaine fête ?",
+      "image_url": null,
+      "options": {
+        "A": "Faire plus attention au bruit",
+        "B": "Informer Mme Quincampoix",
+        "C": "Inviter les voisins de l'étage",
+        "D": "Recevoir ses invités plus tôt"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Amélie,\n\nPour le concert ce soir, on se retrouve à 19h30 devant le bar rue Daunou. Il y a un grand restaurant à côté, tout près du théâtre de l'Odéon. Le concert commence à 20h30.\n\nSarah\n\nQue vont faire les deux femmes ce soir ?",
+      "image_url": null,
+      "options": {
+        "A": "Aller dans un bar",
+        "B": "Assister à un spectacle",
+        "C": "Dîner au restaurant",
+        "D": "Voir une pièce de théâtre"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Pendant tout l'été, votre supermarché organise un concours gratuit pour gagner des milliers d'artistes livres, places de spectacles pour enfant, diners au restaurant, entrées pour activités en plein air. Complétez votre bulletin et envoyez-le à : special.etc@monsupermarche.com\n\nQu'est-ce que ce supermarché propose à ses clients ?",
+      "image_url": null,
+      "options": {
+        "A": "Des promotions",
+        "B": "Des vacances",
+        "C": "Un jeu",
+        "D": "Une fête"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Face à la crise qui touche le secteur automobile depuis plus de deux ans, nous ne pourrons malheureusement pas continuer à employer l'ensemble des techniciens. La direction a décidé de renouveler seulement 80% des contrats. Pour les techniciens licenciés, la procédure débutera le 1er juin prochain et se poursuivra sur l'ensemble de l'année en cours. Les personnels concernés seront informés individuellement par courrier recommandé.\n\nQu'annonce cette lettre d'information ?",
+      "image_url": null,
+      "options": {
+        "A": "La délocalisation de l'entreprise",
+        "B": "La réduction des effectifs de l'entreprise",
+        "C": "La restructuration des postes de direction",
+        "D": "La suspension des contrats à durée déterminée"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Pipelettes, soyez fières de l'être !\n\nD'après les psychologues, ce charmant défaut n'en est finalement pas un. S'il irrite parfois notre conjoint, le bavardage peut libérer les tensions et s'avérer aussi efficace qu'une thérapie. Papoter avec sa voisine de table, la gardienne de l'immeuble ou sa coiffeuse, parler de tout et de rien, du beau temps qui s'en va et des vacances qui sont loin, ou encore des dernières tendances de la mode, cela n'a l'air de rien, mais c'est essentiel ! Ces bavardages nous permettent de nous évader du quotidien et d'établir le contact avec les autres. D'autre part, quand les confidences se font plus sérieuses, formuler nos soucis ou nos contrariétés nous aide à les relativiser : cela soulage.\n\nD'après ce texte, dans quelle mesure le bavardage est-il positif ?",
+      "image_url": null,
+      "options": {
+        "A": "Il encourage les initiatives",
+        "B": "Il favorise le rendement au travail",
+        "C": "Il permet d'être plus détendu",
+        "D": "Il rend les gens plus cultivés"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 19,
+      "question_text": "Plus de peur que de mal pour ce petit garçon, près de Lorient, qui, dimanche soir mangeait une part de fromage. « Papa, le fromage, il est dur !!!... ». Dimanche, Youenn, 4ans, mange une portion individuelle de fromage dans la maison familiale. Ses parents, occupés dans la pièce d'à côté. L'entendent tousser. « Comme s'il voulait vomir », raconte Yann, son père. En fait, l'enfant est en train de recracher... un bout de plastique qui aurait pu l'étouffer.\n\nQu'est-il arrivé à Youenn ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a avalé un mauvais morceau de fromage",
+        "B": "Il a trouvé quelque chose dans son fromage",
+        "C": "Il est tombé malade en mangeant du fromage",
+        "D": "Il s'est fait mal aux dents avec le fromage"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 20,
+      "question_text": "Laissez la voiture au garage !\n\nQue vous soyez un abonné ou non au transport public, un particulier, une entreprise, un cycliste régulier ou occasionnel..., la municipalité met à votre disposition tous les moyens de profiter de la ville à vélo. Les vélos en libre-service, la location longue durée, les vélos-parcs sécurisés ou la location touristique, ces services s'intègrent à l'offre Transroch. Ils sont un des modes de transport qui facilitent vos déplacements... Trente stations dans le centre de la ville et bientôt cinquante ! Renseignez-vous auprès de l'Espace Accueil pour savoir quelle offre vous correspond.\n\nQuel est le but de l'offre Transroch ?",
+      "image_url": null,
+      "options": {
+        "A": "Découvrir les sites touristiques hors des sentiers battus",
+        "B": "Diversifier l'offre d'abonnement aux transports en commun",
+        "C": "Favoriser la mobilité urbaine grâce aux cycles non motorisés",
+        "D": "Promouvoir les énergies propres respectant l'environnement"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 21,
+      "question_text": "Tony Schlink, l'homme qui aime la laine ! L'histoire ne sera sans doute jamais si ce généticien, enfant, a été traumatisé par le port de vêtements trop petits. Tristement rétrécis après un lavage. Devenu depuis chercheur, il vient d'identifier un gène du mouton responsable de la modification des fibres de laine. C'est une caractéristique qui peut être modifiée en sélectionnant les animaux lors de la reproduction, permettant ainsi aux éleveurs d'identifier, puis de sélectionner les moutons qui produisent naturellement une laine enfin susceptible de supporter le lavage en machine.\n\nAprès quelle découverte le chercheur Tony Schlink est-il devenu célèbre ?",
+      "image_url": null,
+      "options": {
+        "A": "Il a découvert une nouvelle race de mouton",
+        "B": "Il a perfectionné une machine à laver la laine",
+        "C": "Il a trouvé les causes du rétrécissement de la laine",
+        "D": "Il a identifié une nouvelle façon de produire de la laine"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 22,
+      "question_text": "On dit souvent que, pour avoir un bon moral et résister au stress, il faut une bonne condition physique, c'est encore plus vrai en période d'examen où il faut s'astreindre à quelques règles d'hygiène simples pour une bonne concentration. Le cerveau a besoin plus que jamais d'aliments et de nutriments variés pour être le plus efficace. Personnellement, j'ai arrêté les sandwiches et le café, et privilégié les œufs (vitamine B9), les céréales (vitamine B1), les viandes riches en Fer. L'iode avec les poissons et les Légumes verts.\n\nQuelle conduite alimentaire a tenu cette étudiante pendant ses examens ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle a consommé des sucres lents",
+        "B": "Elle a diversifié son alimentation",
+        "C": "Elle a préféré sauter certains repas",
+        "D": "Elle a privilégié les repas rapides"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 23,
+      "question_text": "ERASMUS\n\nLe programme d'échange d'étudiants entre les universités européennes a du plomb dans l'aile. Au point qu'en France près de quatre mille bourses n'ont pas trouvé preneur. Ce phénomène n'est pas spécifique à la France puisqu'une baisse de 10% aurait été enregistrée dans une dizaine de pays. Toutes les études traduisent une absence de désir de mobilité chez les jeunes. Parmi les explications avancées : le coût, mais surtout une préférence marquée pour les stages en entreprise. Voilà le grand concurrent d'Erasmus depuis quelques années, l'attention portée à l'insertion professionnelle.\n\nQu'explique le texte au sujet du programme Erasmus ?",
+      "image_url": null,
+      "options": {
+        "A": "Il est financé par des universités publiques",
+        "B": "Il est remplacé par un autre programme",
+        "C": "Il facilite l'accès au monde de l'entreprise",
+        "D": "Son succès auprès des étudiants se dégrade"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 24,
+      "question_text": "« Le Capacabana »\nRestaurant brésilien.\n\nC'est un grand espace bien insonorisé qui offre l'ambiance et les spécialités gastronomiques du brésil à des prix abordables. La décoration baroque est un des éléments qui permet de créer cette ambiance exotique et originale. Les musiciens, qui viennent directement du Brésil, se produisent ici devant un public toujours aussi nombreux et fidèle. Aussi faut-il réserver une table à l'avance pour éviter la file d'attente à l'entrée de l'établissement. On peut d'ailleurs s'étonner que l'endroit soit si populaire avec un accueil si éloigné de la convivialité latino.\n\nQuelle critique est faite à ce restaurant ?",
+      "image_url": null,
+      "options": {
+        "A": "La salle a besoin d'une rénovation complète",
+        "B": "Le personnel manque de chaleur et d'amabilité",
+        "C": "Les artistes jouent trop fort pour le lieu",
+        "D": "Les tarifs sont élevés une cuisine ordinaire"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 25,
+      "question_text": "Localiser un boucher, trouver un hôtel, calculer son itinéraire, observer sa maison par satellite... les cartes fleurissent sur le web et les internautes y sont accros. Plus de 13 millions de Français consultent régulièrement des sites de localisation sur internet. Sans oublier le succès phénoménal des photos-satellite mises en ligne. Ces services gratuits pour les internautes cachent un véritable business. De grandes sociétés rémunèrent les sites de localisation pour être bien placées sur les cartes. C'est d'autant plus efficace que les utilisateurs ne perçoivent pas immédiatement ces liens sponsorisés comme une publicité, mais comme un service.\n\nQu'apprend-on sur les services de localisation sur Internet ?",
+      "image_url": null,
+      "options": {
+        "A": "Ce sont des réseaux de commerçants qui les ont créés",
+        "B": "Ils sont financés discrètement par des entreprises",
+        "C": "Les prestations qu'ils proposent sont payantes",
+        "D": "Leur maintenance est assurée par des bénévoles"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 26,
+      "question_text": "À l'école de chiens guides d'aveugles de l'Ouest, nos amis à quatre pattes bénéficient depuis juin dernier de conditions d'apprentissage plus propices avec la création d'un parcours permettant de repérer les obstacles présents dans la vie quotidienne. L'association, forte d'une trentaine de salariés, procédé à la remise annuelle de 30 à 40 chiens guides d'aveugles et compte aujourd'hui sur une soixantaine de familles bénévoles pour pré éduquer les chiens. « C'est toujours insuffisant », estime Christine Vaillant, qui recherche de nouveaux maitres, en maison ou en appartement, disponible un an minimum et très motivé. Les frais vétérinaires, alimentaires et matériels sont pris en charge par l'établissement.\n\nDe quoi se plaint Christine Vaillant ?",
+      "image_url": null,
+      "options": {
+        "A": "Du manque de salariés motivés",
+        "B": "Du manque de moyens financiers",
+        "C": "Du manque de chiens à former",
+        "D": "Du manque de familles d'accueil"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Ce n'est pas tout de se prétendre festival vert et responsable. Encore faut-il le prouver. C'était le rôle, tout le week-end, du festival de musique des Eurockéennes, de quatre enquêteurs missionnés par L'ONG Prioriterre et le bureau de conseil Atemia. « Il s'agit de savoir où le festival en est vraiment, ce qu'il fait bien, ce qu'il doit changer, ce qu'il ne fait pas encore », détaillait Raphaël Bouju, responsable environnement chez Atemia. Les « Eurocks » sont souvent un moteur parmi les festivals français, il a donc peu à peu imposé les déplacements en train, le tri sélectif, les gobelets réutilisables.\n\nQue cherche à mesurer cette enquête ?",
+      "image_url": null,
+      "options": {
+        "A": "La proportion de spectateurs écologistes",
+        "B": "La réelle dimension écologique du festival",
+        "C": "Le degré de popularité de ce festival en France",
+        "D": "L'impact négatif du festival sur l'environnement"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Les publicités vantant les vertus supposées des produits alimentaires sur la santé seront soumises à des règles strictes. Les allégations liées à la santé se multipliant et sont de nature à tromper le public, car des aliments sont présentés comme des antidotes. Ainsi, une marque de yaourts suggère les effets antibactériens de son produit en montrant un enfant qui remet à la bouche son gâteau tombé dans le sable. Ce spot a été interdit d'antenne. Il serait criminel de laisser croire que l'aliment immunise l'enfant alors qu'il vient d'un endroit qui pullule de bactéries.\n\nPourquoi cette publicité pour le yaourt a-t-elle été interdite ?",
+      "image_url": null,
+      "options": {
+        "A": "L'image proposée par la publicité nuisait au fabricant",
+        "B": "Le produit vendu par la publicité était nocif pour la santé",
+        "C": "Le message véhiculé par la publicité était inacceptable",
+        "D": "L'usage du produit promu par la publicité était illicite"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 29,
+      "question_text": "Depuis plus de deux siècles, les violons fabriqués par le célèbre artisan Antonio Stradivari sont réputés pour la supériorité de leur sonorité. Des spécialistes ont voulu le vérifier par une petite expérience. Ils ont demandé à des participants de fermer les yeux et d'écouter des musiciens jouer sur des violons, trois étaient modernes et trois avaient été fabriqués par Stradivari. Que les participants aient ou non une expérience dans le domaine musical, tous ont préféré la sonorité des premiers.\n\nÀ quelle conclusion aboutit cette expérience ?",
+      "image_url": null,
+      "options": {
+        "A": "Ce sont les violons récents qui sont les plus estimés",
+        "B": "Il est difficile de maîtriser les violons anciens",
+        "C": "La qualité des violons évolue avec le temps",
+        "D": "Voir le violon modifier l'appréciation de l'auditeur"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Trouver un logement dans une ville étudiante est un parcours du combattant pour un grand nombre d'inscrits dans l'enseignement supérieur, la barrière est parfois infranchissable. Non seulement les loyers sont élevés mais la sélection des candidats par les propriétaires est très dure, souvent basée sur le niveau de revenus des garants. Pour lever ce frein, la caution locative étudiante (CLE) vient d'être généralisée à l'ensemble du territoire national après avoir été expérimentée dans quatre régions pendant un an. Avec ce dispositif, c'est l'Etat qui se porte garant du versement des loyers des étudiants en cas de non-paiement.\n\nQuel est le principal obstacle à l'accès au logement des étudiants selon cette analyse ?",
+      "image_url": null,
+      "options": {
+        "A": "La méfiance des propriétaires",
+        "B": "La rareté des offres de logement",
+        "C": "L'absence d'engagement de l'Etat",
+        "D": "Le montant de la caution exigée"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Ah ! Le bel été ! Par trente-cinq degrés à l'ombre, les enfants réclament le goûter après la baignade et coup de chance, le vendeur de beignets se profile à l'horizon. Résultat visite aux urgences car les beignets à la crème avaient passé la journée au soleil. Des histoires comme celle-là circulent dans toutes les associations de consommateurs. La direction générale de la répression des fraudes dresse tout de même un bilan encourageant. Peu d'endroits publics échappent aux vérifications et les escroqueries ont diminué. Mais tout de même, en matière d'hygiène, le bon sens du consommateur doit prévaloir et lui permettre de prévenir tout incident.\n\nQuelle est la position de la direction générale de la répression des fraudes ?",
+      "image_url": null,
+      "options": {
+        "A": "Les problèmes liés à l'hygiène sont insolubles",
+        "B": "Tout le monde doit dénoncer les tricheries",
+        "C": "La sagesse doit l'emporter sur la tentation",
+        "D": "L'honnêteté des vendeurs est indéniable"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Désormais, c'est soi, son plaisir et les relations avec son environnement qui comptent. Tel est le nouveau schéma de pensée des jeunes vis-à-vis de la société et de l'entreprise en particulier. Un jeune a appris d'abord, à miser sur lui. Ce n'est qu'en accumulant des compétences et des expériences qu'il pense pouvoir tirer son épingle du jeu. L'entreprise peut espérer le séduire en lui proposant un vrai métier et une stratégie d'accroissement de ses compétences mais il sera de toute façon difficile de compter sur sa fidélité : le jour où vous ne lui proposez plus d'évoluer rapidement, il n'hésitera pas à vérifier si l'herbe n'est pas plus verte chez le voisin. Il a l'image de l'entreprise qui dans un contexte économiques difficile ne s'engage plus envers le salarié. Il s'approprie cette logique de rentabilité et d'efficacité en la retournant à son avantage. Désormais il ne compte plus sur une entreprise pour mener sa carrière. Son objectif sera de développer ses compétences en multipliant ses expériences afin de se valoriser sur le marché du travail. Profitant de toutes les opportunités, il quittera une entreprise sans aucun remords.\n\nQuel est le comportement des jeunes dans le monde de l'entreprise ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils apprennent à être patients",
+        "B": "Ils évoluent selon l'ancienneté",
+        "C": "Ils saisissent toutes les occasions",
+        "D": "Ils tâchent de conserver leur emploi"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 33,
+      "question_text": "Dans le monde de l'entreprise, les jeunes et les seniors éprouvent des sentiments analogues d'éviction et de dévalorisation. Pourtant, des actions de mentorat, menées par des seniors pour guider les jeunes sur le marché du travail ou lors de la création de leur entreprise, existent depuis de nombreuses années. Plus étonnant, est apparu récemment le mentorat renversé, où les jeunes habitués aux outils numériques initient les seniors à leur usage. Les seniors y gagnent de nouvelles compétences, et les jeunes élargissent leur réseau. En période de crise, cette coopération peut constituer un moyen de désamorcer les tensions sociales. Favoriser les échanges intergénérationnels, c'est contribuer à établir des relations où chacun prend conscience qu'il peut apporter quelque chose à l'autre.\n\nQuel est l'intérêt des mentorats décrits ?",
+      "image_url": null,
+      "options": {
+        "A": "Créer de nouvelles sources d'emploi",
+        "B": "Éviter la solitude des personnes âgées",
+        "C": "Instaurer des rapports de réciprocité",
+        "D": "Répondre à l'allongement de la durée de vie"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Une exposition de l'Institut d'Art Contemporain de Villeurbanne est consacrée à l'Américain Jimmie Durham et la Brésilienne Maria Theraza Alvez. Depuis vingt ans, ils parcourent, au fil de leurs déplacements, le territoire méditerranéen et sont réunis au sein de cette exposition à la forme inédite. Le parcours se veut éloigné de tout didactisme, laissant assez d'espace au spectateur pour construire son propre récit autour d'une mer connue pour être le berceau fertile des civilisations. Dans un jeu de matières, de couleurs et d'objets, tous tangibles, Durham et Alvez tentent de décrypter une certaine pensée historique et mythologique notamment en déjouant les codes classiques utilisés dans les musées.\n\nQu'est ce qui fait la singularité de cette exposition ?",
+      "image_url": null,
+      "options": {
+        "A": "La liberté accordée aux visiteurs",
+        "B": "La simplicité des moyens artistiques",
+        "C": "Le classicisme de sa présentation",
+        "D": "Le discours politique des plasticiens"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Le discours écologique actuel est très factuel, « pratico-pratique », comme si on n'osait pas parler de cette beauté dont nous avons pourtant besoin pour nous épanouir. C'est peut-être l'une des raisons pour laquelle l'écologie politique ne rallie pas tant que ça. Si on n'est pas sensible à la terre, aux végétaux. On devient un technicien de l'écologie, on emploie un langage neutre et rassurant, fait d'environnement » et de « développement durable ». Mais il faut pouvoir parler de la beauté spécifique de la nature qui nous enchante, qui nous fait vibrer. Nous avons besoin de nous nourrir de sa splendeur, de son mystère, et pas seulement de ses aspects matériels, pratiques, biologiques.\n\nSelon l'intervenant, qu'est-ce qui caractérise le discours écologique actuel ?",
+      "image_url": null,
+      "options": {
+        "A": "Il apaise les tensions de la société",
+        "B": "Il insiste sur le point de vue matériel",
+        "C": "Il propose des programmes utopiques",
+        "D": "Il traite les problèmes liés aux sols"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 36,
+      "question_text": "On connait Cézanne surtout pour ses paysages, mais le Musée d'Orsay montre, pour la première fois, une partie méconnue de l'œuvre de l'artiste. On y croisera ainsi le visage de son épouse, seul motif autant étudié par le peintre que la montagne Sainte-Victoire. Au fil des versions, Hortense Fiquet devient l'objet d'une recherche plastique, de mise en scène et de géométrisation des formes. Mais Cézanne peut aussi avoir le pinceau cruel. Dès ses débuts, les figures de son père et de sa mère sont tourmentées. Lui-même se représente à 27 ans, patibulaire, et le regard injecté de sang. À la fin de sa vie. Cézanne choisit des anonymes du monde rural. Ses tableaux ne sont alors qu'une autre forme de paysage.\n\nQue souligne cette exposition sur Paul Cézanne ?",
+      "image_url": null,
+      "options": {
+        "A": "L'influence de ses contemporains",
+        "B": "La singularité de ses portraits",
+        "C": "Son engouement pour la nature",
+        "D": "Son travail postimpressionniste"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 37,
+      "question_text": "On connaissait les vélos en acier, en alliage d'aluminium, en carbone ou même en titane. On peut désormais y ajouter le bambou. Le principal avantage de ce matériau c'est qu'il est léger, sa résistance à la traction serait même sensiblement supérieure à celle de l'acier. Il offre aussi une bonne élasticité qui absorbe mieux les vibrations, un argument qui n'est pas à sous-estimer quand on ambitionne de s'attaquer aux pistes africaines et c'est précisément la vocation de ce projet de fabrication massive de bicyclettes en bambou à destination du continent africain. Pour le promoteur du projet, plus de 600 000 foyers pourraient être intéressés par ce produit dont le prix de vente est estimé à 55 dollars, un coût encore élevé pour le marché local.\n\nQuelles caractéristiques de ce vélo intéressent les Africains ?",
+      "image_url": null,
+      "options": {
+        "A": "Insensible aux variations climatiques",
+        "B": "Sa rigidité",
+        "C": "Léger et absorbe les vibrations",
+        "D": "Son prix d'achat"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 38,
+      "question_text": "NOVECENTO\nD'Alessandro Baricco\nCompagnie vertigo\n\nDécouvrez la vie de Lemon Novecento, un pianiste extraordinaire abandonné à sa naissance sur un paquebot qui fait la liaison entre l'Europe et l'Amérique. Il passera son existence à jouer pour les voyageurs se nourrissant de leurs récits et de sa musique. Sans trouver le courage de descendre à terre. Porté par l'écriture riche, fluide et musicale du texte de Baricco. Le comédien principal nous entraîne avec une étonnante facilité dans un extraordinaire voyage ou résonnent les notes de jazz. (...)\n\nQuelle est, selon le texte, la qualité principale de ce spectacle ?",
+      "image_url": null,
+      "options": {
+        "A": "L'aisance de l'acteur qui tient le rôle principal",
+        "B": "La finesse de l'humour présent dans la pièce",
+        "C": "Le mystère qui entoure le personnage",
+        "D": "Le talent de l'ensemble des musiciens"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Les entreprises dans les secteurs scientifiques, techniques et numériques ont un besoin crucial de se développer et d'embaucher, et redoublent notamment d'attention envers les femmes. Problème : les femmes, qui furent les premières à programmer, se détournent désormais de ces métiers. Non seulement le nombre de filles s'engageant dans des études scientifiques décroît fortement, mais en plus la grogne s'accroît chez leurs collègues masculins, affolés par le discours sur la parité et la concurrence potentielle. Si les jeunes femmes, un temps attirées par ces métiers, ne les convoitent plus aujourd'hui, c'est bien parce qu'elles trouvent des opportunités dans des secteurs où elles sont mieux acceptées.\n\nQu'apprend-on dans ce texte au sujet des femmes ?",
+      "image_url": null,
+      "options": {
+        "A": "Elles ont été pionnières en informatique",
+        "B": "Elles sont victimes d'inégalités salariales",
+        "C": "Les sociétés craignent de les engager",
+        "D": "Leurs compétences sont méconnues"
+      },
+      "correct_answer": "A"
+    }
+  ]
+}

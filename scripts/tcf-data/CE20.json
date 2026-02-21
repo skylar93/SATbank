@@ -1,0 +1,475 @@
+{
+  "exam_title": "TCF CE20",
+  "description": "",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "Salut Justine,\n\nEst-ce que tu es libre samedi ? J'organise une soirée pour mes 25 ans. Ce sera chez moi à partir de 20h. Il y aura de la musique et on pourra danser !\n\nBastien,\n\nPS: est-ce que tu pourrais apporter un gâteau ?\n\nOù Justine est-elle invitée ?",
+      "image_url": null,
+      "options": {
+        "A": "À un cours de pâtisserie",
+        "B": "À un déjeuner chez un ami",
+        "C": "À une fête d'anniversaire",
+        "D": "À une sortie en discothèque"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 2,
+      "question_text": "Coucou Maman,\n\nJe suis bien arrivée à Cannes et il fait très chaud ! Heureusement, j'ai pris des vêtements légers. Avec mon ami Tom, nous avons trouvé un hôtel pas cher à côté de la plage. Hier soir, nous sommes allés au théâtre. Aujourd'hui, nous visitons le musée du cinéma.\n\nBisous,\nClémence,\n\nPourquoi est-ce que Clémence écrit à sa mère ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour lui conseiller un film",
+        "B": "Pour lui demander des nouvelles",
+        "C": "Pour lui proposer une sortie",
+        "D": "Pour lui raconter ses vacances"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 3,
+      "question_text": "Chers élèves,\n\nAttention ! A partir de la semaine prochaine, les cours d'anglais du mardi et du jeudi avec M. Rutherford ne commenceront plus à 10h30, mais à 12h30. M. Rutherford vous attendra dans la même salle.\n\nQu'est-ce qui est annoncé ?",
+      "image_url": null,
+      "options": {
+        "A": "Un changement de lieu",
+        "B": "Un nouvel horaire",
+        "C": "Une absence de professeur",
+        "D": "Une rencontre entre étudiants"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 4,
+      "question_text": "Adrien,\n\nUrgent,\n\nVincent Jade a téléphoné à midi. Rappelez-le aujourd'hui, il part à 20 heures en Inde pour tout l'été.\n\nQuand Adrien doit-il rappeler Vincent Jade ?",
+      "image_url": null,
+      "options": {
+        "A": "Avant ce soir",
+        "B": "Cette semaine",
+        "C": "Dans trois mois",
+        "D": "Pendant le déjeuner"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 5,
+      "question_text": "Salon gastronomique le 17 mars:\n\nVenez à la rencontre des agriculteurs, producteurs et chefs de votre région ! Vous pourrez discuter avec eux et goûter leurs délicieux produits : pommes, fromages, beurre, miel, etc. Participez au concours de la meilleure recette !\n\nQu'est-ce qu'on peut faire dans ce salon ?",
+      "image_url": null,
+      "options": {
+        "A": "Découvrir la nourriture locale",
+        "B": "Gagner un repas traditionnel",
+        "C": "Prendre un cours de cuisine",
+        "D": "Visiter une ferme française"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 6,
+      "question_text": "Salut Éric !\n\nJ'ai fini les cours et je suis maintenant à Montpellier. Je suis serveuse dans un restaurant depuis une semaine. C'est fatigant, mais j'apprends beaucoup ! Je serai à Paris à la fin des vacances d'été pour te voir avec les copains.\n\nCamille,\n\nQu'est-ce que Camille explique ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est en voyage à Montpellier",
+        "B": "Elle rencontre des amis à Paris",
+        "C": "Elle suit des cours à l'université",
+        "D": "Elle travaille dans un restaurant"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 7,
+      "question_text": "JE N'AI PLUS DE VOITURE... J'AI CITIZ\n\nDes voitures en libre-service 24/24, pour 1 heure, 1 jour ou plus. Un service accessible à partir de 18 ans. Essence et assurance comprises, sans abonnement. Permis B obligatoire.\n\nQue propose Citiz ?",
+      "image_url": null,
+      "options": {
+        "A": "De réparer des automobiles",
+        "B": "D'apprendre à conduire",
+        "C": "De voyager plus rapidement",
+        "D": "D'utiliser des véhicules"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 8,
+      "question_text": "Je ne connaissais pas www.lamode.com mais sur un forum, j'ai lu des avis positifs. Alors, je suis allée sur le site et j'ai trouvé une jolie robe pas chère du tout. Je l'ai commandée et je la portais 5 jours après. Je suis ravie !\n\nQu'explique cette personne ?",
+      "image_url": null,
+      "options": {
+        "A": "Comment elle a acheté un article en ligne",
+        "B": "Où elle a cherché un cadeau bon marché",
+        "C": "Pourquoi elle a eu un chèque de réduction",
+        "D": "Quand elle a échangé un vêtement soldé"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 9,
+      "question_text": "De : Jean.Roussel@epicesexotiques.com\nÀ : georges.Rouault@epicesexotiques.com\n\nGeorges, je reste à Montélimar une semaine de plus parce que les ventes sur les marchés sont très bonnes. Est-ce que tu peux rencontrer les gens des magasins Biotopia à ma place ? Appelle-moi si tu as besoin.\n\nJean,\n\nQue va faire Jean Roussel ?",
+      "image_url": null,
+      "options": {
+        "A": "Continuer ses ventes",
+        "B": "Déménager à Montélimar",
+        "C": "Rencontrer des clients",
+        "D": "Téléphoner à Biotopia"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 10,
+      "question_text": "Rendez-vous à Londres !\n\n15% de réduction sur nos vols Air France Paris-Londres en juillet ! Consultez notre site www.airfrance.fr (Offre valable pour un départ aéroport Charles de Gaulle).\n\nQue propose cette publicité ?",
+      "image_url": null,
+      "options": {
+        "A": "Une visite de Londres",
+        "B": "Un billet d'avion",
+        "C": "Un séjour à Paris",
+        "D": "Un voyage en train"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 11,
+      "question_text": "NE JETEZ PLUS VOS BOUTEILLES EN PLASTIQUE À LA POUBELLE, DONNEZ-LES À VOTRE VILLE ET ELLE VA EN FAIRE DES BICYCLETTES ! AVEC DIX MILLIONS DE BOUTEILLES, ON PEUT FAIRE 1 BICYCLETTE !\n\nRENSEIGNEZ-VOUS SUR LE SITE INTERNET DE VOTRE MAIRIE !\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "De changer les poubelles",
+        "B": "De collecter du plastique",
+        "C": "De gagner une bicyclette",
+        "D": "De travailler pour la mairie"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 12,
+      "question_text": "Connaître deux langues présente des avantages !\n\nLa gymnastique mentale du passage d'une langue à une autre est aussi une gymnastique des émotions et du comportement : quand on change de langue, on change de culture. Quand le bilingue utilise une langue, la deuxième est aussi activée dans le cerveau, comme pour une traduction. Cette activité mentale est bénéfique pour le cerveau : elle aide à lutter contre certaines maladies.\n\nSelon cet article, qu'apporte la pratique de deux langues ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle est bonne pour la santé",
+        "B": "Elle facilite la socialisation",
+        "C": "Elle développe la mémoire",
+        "D": "Elle enrichit la personnalité"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 13,
+      "question_text": "Bonjour,\n\nj'ai commandé une robe (réf. 351 00) sur votre site « mamode.com » il y a deux mois. Je devais la recevoir le 5 octobre. Or nous sommes le 5 novembre et, malgré mes nombreuses réclamations, je ne l'ai toujours pas reçue. Je vous demande de me rembourser le plus rapidement possible. Un geste commercial sous la forme d'un cadeau serait bienvenu.\n\nMerci,\n\nQu'est-ce que la cliente souhaite ?",
+      "image_url": null,
+      "options": {
+        "A": "Annuler son achat",
+        "B": "Échanger son article",
+        "C": "Obtenir une réduction",
+        "D": "Rendre le vêtement"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 14,
+      "question_text": "Un moment de détente dans votre entreprise. Chacun peut en bénéficier. Une pause, une parenthèse suffit pour retrouver de l'énergie.\n\nSTAGE « GESTION DU STRESS » — SAMEDI 25 JUIN À L'HEURE DU DÉJEUNER\n\nAcquérir des outils de relaxation, améliorer sa concentration et son efficacité professionnelle, comprendre les mécanismes du stress et savoir les gérer sont les bases d'une sérénité tant professionnelle que personnelle. Vous découvrirez une technique de détente efficace.\n\nPlaces limitées, pensez à réserver. Prévoir une tenue confortable.\n\nQuel est l'objectif principal du stage « Gestion du stress » proposé dans le texte ?",
+      "image_url": null,
+      "options": {
+        "A": "Faire une pause et reprendre de l'énergie",
+        "B": "Acquérir des outils de relaxation et améliorer sa concentration",
+        "C": "Apprendre à identifier les causes du stress et à le maîtriser",
+        "D": "Découvrir une technique de détente efficace"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 15,
+      "question_text": "Delphine Peras a enquêté sur les clubs de lecture pour notre magazine. Elle a eu des difficultés à les trouver car il s'agit souvent de groupes privés. Il fallait faire une liste des clubs durables, car beaucoup suivent la mode et ont une durée de vie très courte. Ce n'est pas le cas de « Voix au chapitre » qui existe depuis 1986 ! Les rencontres fonctionnent suivant une formule simple : autour d'un café, chaque participant donne son avis sur un livre puis tous en discutent.\n\nQuelle difficulté Delphine Peras a-t-elle rencontrée lors de son enquête ?",
+      "image_url": null,
+      "options": {
+        "A": "Les clubs disparaissaient vite après leur création",
+        "B": "Les groupes concernés étaient trop nombreux",
+        "C": "Les lecteurs refusaient de parler à des journalistes",
+        "D": "Les rencontres se faisaient de manière irrégulière"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 16,
+      "question_text": "Pas facile de trouver le juste équilibre entre respect et liberté. Le principal du lycée Charles-de-Gaulle a décidé de demander à ses élèves de ne plus porter de vêtements de sport en cours. Les survêtements sont réservés aux cours de sport. Le principal estime que « c'est une question de respect et de propreté. Un survêtement, ce n'est pas assez habillé pour venir au lycée ». Les élèves qui n'étaient pas du même avis n'ont pas été acceptés en cours.\n\nPourquoi la direction de cet établissement interdit-elle la tenue de sport en classe ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour aider les élèves à ne pas s'enrhumer",
+        "B": "Pour enseigner le droit à la tolérance",
+        "C": "Pour respecter des normes d'hygiène",
+        "D": "Pour supprimer les différences sociales"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 17,
+      "question_text": "Mal de tête, de ventre ou de dos, allergies... Combien de fois ces petits désagréments du quotidien vous ont-ils conduit à consulter votre médecin ? Un neurochirurgien parisien a imaginé une application capable de fournir un pré-diagnostic et de conseiller la personne sur la marche à suivre à partir d'une série de questions. « Bien sûr, il ne s'agit pas de remplacer les médecins généralistes ou les spécialistes, rassure le créateur. L'idée est simplement de faire un tri entre les petits maux du quotidien, qui peuvent être traités par les gens eux-mêmes, et les maladies plus graves qui nécessitent une visite médicale. »\n\nQue permet cette application ?",
+      "image_url": null,
+      "options": {
+        "A": "D'acheter des médicaments sans ordonnance",
+        "B": "D'avoir le choix entre différents spécialistes",
+        "C": "De prendre rapidement rendez-vous",
+        "D": "De traiter seul des affections bénignes"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 18,
+      "question_text": "Spécial étudiant\n\nVous avez trouvé un logement (chambre, studio, deux pièces, ...) ? N'oubliez pas de vous assurer. Promotion exceptionnelle, 3 mois d'assurance gratuits si vous vous inscrivez avant le 30 septembre.\n\nQu'est-ce que cette annonce propose ?",
+      "image_url": null,
+      "options": {
+        "A": "Un abonnement mensuel",
+        "B": "Un choix d'appartements",
+        "C": "Une location moins chère",
+        "D": "Une offre intéressante"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 19,
+      "question_text": "La télévision, les jeux vidéo, les ordinateurs ont envahi les foyers. Alors, certains parents craignent le risque d'addiction pour leurs enfants. Quel est le quota d'heures quotidien devant les écrans à ne pas dépasser ? Pour les psychologues, le critère à prendre en compte est celui de l'exclusivité. Si les jeux vidéo et Internet sont l'unique source de relation et de distraction pour un adolescent, alors, il faut s'inquiéter et agir. Réguler la consommation d'images, c'est le travail des parents qui doivent faire des écrans des objets d'échange familial et non un refuge individuel.\n\nQue devraient faire les parents concernant les jeux vidéo et Internet ?",
+      "image_url": null,
+      "options": {
+        "A": "Donner à ces activités une fonction éducative",
+        "B": "Faire de ces loisirs des moments de partage",
+        "C": "Fixer des plages horaires pour jouer en ligne",
+        "D": "S'informer auprès des professionnels de santé"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 20,
+      "question_text": "La Ligue de Football Professionnel vient d'annoncer que l'assistance vidéo sera prochainement introduite en première ligue. Mais la polémique demeure sur sa nécessité. « Quand il y aura un but dans un stade, les gens devront attendre », s'inquiète un ancien défenseur de première ligue. Pour lui, « on oublie l'essence même du football, qui est la joie, la folie. On ne va même plus profiter des buts ». Généralement, un arrêt de jeu ne doit pas dépasser 30 secondes, or « actuellement on est souvent à 50 secondes parce que le système n'est pas encore tout à fait performant. »\n\nQuelle est la conséquence de l'assistance vidéo pour le football ?",
+      "image_url": null,
+      "options": {
+        "A": "Un manque d'intérêt du grand public",
+        "B": "Un risque de déconcentration des joueurs",
+        "C": "Une moindre crédibilité des arbitres",
+        "D": "Une perte de spontanéité des matchs"
+      },
+      "correct_answer": "D"
+    },
+        {
+      "question_number": 21,
+      "question_text": "Ralentissement du traitement de l'information, baisse de l'attention et de notre mémorisation à court terme... Avec l'âge, le vieillissement du cerveau semble inévitable. Pourtant, notre santé cognitive dépend aussi de notre mode de vie. Il est ainsi primordial, après la soixantaine, de conserver une vie active, physiquement par une pratique sportive régulière et aussi intellectuellement en sollicitant nos fonctions mentales par un apprentissage permanent. Pour cela, il est essentiel de garder une vie sociale riche d'interactions avec les autres et également de cultiver des activités, associatives ou sportives, par exemple.\n\nQuel est l'objectif des conseils donnés dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Améliorer les capacités physiques",
+        "B": "Découvrir de nouveaux types de sports",
+        "C": "Développer le cercle de ses relations sociales",
+        "D": "Maintenir les performances de la mémoire"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 22,
+      "question_text": "Le tourisme en France a longtemps été perçu comme un filon, mais il pourrait à l'avenir se transformer en calamité : celle du « surtourisme ». Ce phénomène résulte d'une mauvaise gestion de foules sans cesse plus nombreuses qui pourraient bientôt toucher la France, où nombre de sites mythiques sont inadaptés à une affluence en forte croissance, le Louvre et la Tour Eiffel, à Paris, en tête. « L'objectif de 100 millions de touristes par an pourrait bien être atteint, précise un directeur d'agence organisant des séjours en France. Mais, en l'absence de tout aménagement et alors que 20% du pays accueillent 80% des touristes, cela pourrait devenir un danger. »\n\nQu'apprend-on au sujet du « surtourisme » ?",
+      "image_url": null,
+      "options": {
+        "A": "Il est à l'origine d'une pratique de diminution des flux",
+        "B": "Il nécessite une réorganisation des lieux les plus visités",
+        "C": "Il permet de répartir les voyageurs sur tout le territoire",
+        "D": "Il suscite l'engagement des professionnels du secteur"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 23,
+      "question_text": "Vancouver s'affirme depuis plusieurs années comme un lieu de croisement inédit des humanismes et dispose de nombreuses connexions internationales, entre Shanghai et Tokyo, la Californie et l'Europe. Le colloque « L'avenir du contemporain » fait partie d'une série d'initiatives conduites par le consulat général de France à Vancouver pour renforcer les relations entre la France et l'Ouest canadien dans le domaine des arts. Il s'intéressera notamment aux nouveaux rôles des musées face aux contraintes et aux chances offertes, d'une part, par la mondialisation et, d'autre part, par la circulation intensifiée des artistes et des œuvres.\n\nQuel atout de Vancouver l'auteur met-il en avant dans cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "Elle concentre une intense activité diplomatique",
+        "B": "C'est un carrefour culturel intercontinental",
+        "C": "C'est une plaque tournante du marché de l'art",
+        "D": "Elle héberge de multiples lieux d'exposition"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 24,
+      "question_text": "On réserve trop facilement le covoiturage aux étudiants sans un sou. Les clichés sont tenaces. Pourtant, le temps de la petite annonce papier accrochée près de la machine à café est bel et bien terminé, les nouveaux moyens de communication ont changé les choses. L'organisation d'un trajet entre plusieurs personnes qui se rendent dans la même direction est devenue si simple et si efficace avec les sites spécialisés que le covoiturage est en train d'élargir son public et de gagner son statut de mode de transport à part entière.\n\nQuel développement connaît le covoiturage ?",
+      "image_url": null,
+      "options": {
+        "A": "Il devient la solution idéale des voyages organisés à la dernière minute",
+        "B": "Il est accessible à un nombre croissant d'utilisateurs grâce à Internet",
+        "C": "Il occupe une place grandissante dans les petites annonces des journaux",
+        "D": "Il s'impose comme le moyen de déplacement à la mode chez les jeunes"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 25,
+      "question_text": "SEIS sera le premier sismomètre déployé sur un autre sol que celui de la Terre. Sur Mars, cet instrument français va ausculter les séismes qui secouent la planète rouge et récolter des données qui permettront de déterminer si le noyau de la planète est liquide ou solide. Mars a le même âge que la planète Terre, mais il y a 3 ou 4 milliards d'années, toute vie y a cessé et elle est devenue une planète morte. Si nous savons déjà de quoi sont constituées son atmosphère et sa surface, nous ignorons encore ce qui s'est produit à ce moment-là et ce qu'elle recèle dans son sous-sol.\n\nPourquoi SEIS a-t-il été envoyé sur Mars ?",
+      "image_url": null,
+      "options": {
+        "A": "Pour comparer son histoire à celle de la Terre",
+        "B": "Pour évaluer les possibilités d'aller y vivre",
+        "C": "Pour expliquer son grand nombre de séismes",
+        "D": "Pour obtenir des données sur sa composition"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 26,
+      "question_text": "La revue Science et Avenir cite une étude de l'université de Cambridge dans laquelle des chercheurs en psychologie et en éducation rapportaient les attitudes des écoliers à l'égard des mathématiques. Les scientifiques décrivent chez les petits Britanniques un sentiment de dégoût, de frustration ou de peur. Des observations qui reflètent exactement ce qui se passe en France. De nombreux enfants sont confrontés à un véritable blocage en manifestant tous les signes du stress, ce qui entraîne des effets négatifs sur les fonctions cognitives. Selon certains professeurs, les mathématiques apparaissent beaucoup trop techniques et déconnectées du monde qui nous entoure, alors que pour réconcilier les écoliers avec les maths, il faudrait les enseigner comme un outil de réflexion ancré dans le quotidien.\n\nQu'explique ce texte à propos de l'enseignement des mathématiques ?",
+      "image_url": null,
+      "options": {
+        "A": "De nouvelles pédagogies semblent nécessaires",
+        "B": "Il conviendrait d'améliorer les résultats des élèves",
+        "C": "L'Europe doit engager une réforme des programmes",
+        "D": "Un soutien scolaire journalier serait bénéfique"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 27,
+      "question_text": "Pourrait-on nourrir les 9 milliards d'humains que comptera la Terre en 2050 uniquement par l'agriculture biologique ? Oui, répondent certains chercheurs. Mais selon eux, la tâche sera difficile car pour se défaire des pesticides, des engrais de synthèse et des OGM, il faudrait absolument diminuer la consommation de viande et le gaspillage alimentaire. Et même à ces conditions, il resterait encore des obstacles au « tout bio ». Alors, agriculture biologique ou conventionnelle ? Les incertitudes scientifiques demeurent quant à leurs réels impacts sur les rendements et les prédictions sur ce sujet sont encore floues.\n\nSur quoi insiste l'auteur de ce texte ?",
+      "image_url": null,
+      "options": {
+        "A": "Les conséquences d'un régime végétarien",
+        "B": "Les doutes sur les méthodes de production",
+        "C": "Les effets de l'usage de produits chimiques",
+        "D": "Les problèmes causés par la surpopulation"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 28,
+      "question_text": "Avez-vous déjà observé des familles en train de remplir des sachets de bonbons sur un stand de confiserie ? Un chercheur américain a montré qu'elles en achètent davantage lorsque les bonbons sont de couleurs différentes. De nombreuses observations similaires prouvent que les entreprises agroalimentaires connaissent nos comportements et la manière dont nous prenons certaines de nos décisions. Par exemple, elles exploitent notre préférence innée pour le sucre, à tous les âges. Elles savent que l'éducation nutritionnelle des enfants et des jeunes est défaillante dans certaines familles et en profitent.\n\nQue dénonce l'auteur de cet article ?",
+      "image_url": null,
+      "options": {
+        "A": "La manipulation des clients par les industriels",
+        "B": "L'attitude imprévisible des consommateurs",
+        "C": "L'uniformisation des saveurs et des goûts",
+        "D": "L'utilisation abusive des produits de synthèse"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 29,
+      "question_text": "L'association « Savoir-faire et expérience » a huit ans.\n\nSa philosophie : une personne en situation de handicap n'est pas nécessairement une personne en fauteuil roulant. De la même manière qu'il existe de nombreuses formes de handicap, il existe une multitude de métiers et de postes qui peuvent leur correspondre. C'est pourquoi cette association souhaite faire évoluer la vision commune du handicap et encourager les entreprises à s'engager dans cette voie. Elle œuvre ainsi pour une ouverture aussi large que possible des dispositifs de formation professionnelle aux personnes en situation de handicap. Pour qu'enfin, on considère le savoir-faire et l'expérience avant le handicap.\n\nQuelle est la mission de l'association « Savoir-faire et expérience » ?",
+      "image_url": null,
+      "options": {
+        "A": "Faire évoluer les mentalités au sujet du handicap au travail",
+        "B": "Permettre de modifier la législation sur le handicap au travail",
+        "C": "Recenser les discriminations dont sont victimes les handicapés",
+        "D": "Subventionner les entreprises qui recrutent des handicapés"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 30,
+      "question_text": "Les recherches actuelles sur la motivation indiquent que la confiance en ses capacités permet d'agir efficacement et joue un rôle crucial dans l'engagement et les performances d'un élève. Cette confiance peut varier d'un domaine à l'autre ainsi que d'une matière scolaire à l'autre. Tout comme on peut se sentir très à l'aise avec des instruments de musique mais maladroit sur un terrain de basket, on peut se sentir très compétent en français mais peu brillant en mathématiques. Les recherches ont montré que les élèves confiants en leurs capacités dans une matière choisissent de préférence des activités présentant pour eux un défi et leur donnant l'occasion de développer leurs habiletés. Inversement, ils ont tendance à se désintéresser des activités dans lesquelles ils se sentent peu efficaces.\n\nComment réagissent les élèves qui sont à l'aise dans certaines disciplines ?",
+      "image_url": null,
+      "options": {
+        "A": "Ils finissent par maîtriser l'ensemble des matières",
+        "B": "Ils font des efforts dans les autres matières étudiées",
+        "C": "Ils négligent les matières trop faciles pour eux",
+        "D": "Ils se fixent des objectifs élevés dans ces matières"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 31,
+      "question_text": "Il ne viendrait à personne l'idée d'entrer dans un cinéma ou un théâtre sans payer sa place, ni à ces industries de ne pas rémunérer leurs auteurs. De nombreux festivals ou lieux dédiés à la photographie se targuent pourtant de la gratuité de leurs expositions. D'autant plus que, dans la majorité des cas, il est admis qu'aucun budget ni aucun droit d'auteur ne soient prévus pour le photographe. Même si le but initial de rendre la photographie accessible à tous est parfaitement légitime, ce qui serait choquant dans n'importe quel autre secteur ou corps de métier ne semble offusquer personne dès qu'il s'agit des photographes — pourtant producteurs de la matière première utilisée par ces activités.\n\nQue constate l'auteur de l'article ?",
+      "image_url": null,
+      "options": {
+        "A": "C'est la photographie qui est la forme d'art la moins valorisée",
+        "B": "Il y a peu d'événements culturels consacrés à la photographie",
+        "C": "Les photographies sont commercialisées à bas prix",
+        "D": "N'importe qui peut s'improviser photographe"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 32,
+      "question_text": "Au début de l'adolescence, vers 11-12 ans, les enfants aspirent à l'autonomie. C'est à cette période que les écrans jouent un rôle important dans leur intégration sociale, mais aussi que les risques d'excès apparaissent. « Les parents doivent abandonner leur position de prescription et adopter une position d'accompagnement. » Le docteur Huerre leur recommande donc d'explorer avec leur enfant les jeux qui l'intéressent ainsi que sa manière de naviguer sur la toile, afin de faciliter les échanges. « Au lieu d'avoir peur des jeux vidéo, demandez-lui de vous les montrer et n'hésitez pas à jouer avec lui. Certains procurent un réel plaisir visuel et esthétique », conseille-t-il.\n\nQue préconise le médecin aux parents ?",
+      "image_url": null,
+      "options": {
+        "A": "De participer à l'exploration du monde numérique",
+        "B": "De restreindre le temps consacré aux jeux vidéo",
+        "C": "De sélectionner des contenus adaptés aux enfants",
+        "D": "De surveiller la navigation des jeunes sur la toile"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 33,
+      "question_text": "En France, entre 200.000 et 500.000 cas de troubles psychiques sont liés au monde du travail. L'apparition de nouvelles méthodes de travail, plus intenses et contraignantes, serait à l'origine de l'augmentation des cas de syndrome d'épuisement professionnel : c'est le mal du siècle et pourtant, il n'est pas encore reconnu. Les salariés, prisonniers de l'idéologie ambiante, s'imaginent trop souvent, quand ils craquent, qu'un collègue plus solide qu'eux aurait été capable de résister. Mais cela s'avère faux la plupart du temps. Une reconnaissance de la maladie obligerait les entreprises à réfléchir à leur fonctionnement et représenterait une réelle mesure d'utilité publique.\n\nQuel constat est dressé à propos de ce syndrome ?",
+      "image_url": null,
+      "options": {
+        "A": "Il inquiète les patrons de sociétés",
+        "B": "Il touche les employés les plus faibles",
+        "C": "Son existence doit être officialisée",
+        "D": "Son traitement est peu efficace"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 34,
+      "question_text": "Un nouveau mot se banalise sur les campus américains : « microagression ». Qualifiant les blessures subtiles qui affectent les individus exposés à une forme de dévalorisation par le langage, il alimente le débat sur la liberté d'expression. Forgé dans les années 1970, le terme a été développé à partir de 2007 par Derald Wing Sue qui le définit ainsi : des insultes ou attitudes intentionnelles ou non qui communiquent des messages hostiles ou méprisants envers des personnes sur la seule base de leur appartenance à un groupe marginalisé. Des universités ont mis en place des mécanismes de prévention et de dénonciation de ces microagressions, mais certains redoutent que l'excès de précaution ne vienne tuer le débat d'idées.\n\nQu'apprend-on sur les microagressions ?",
+      "image_url": null,
+      "options": {
+        "A": "Ce sont des blessures corporelles superficielles",
+        "B": "Elles sont commises par des groupes minoritaires",
+        "C": "Les autorités universitaires s'en préoccupent peu",
+        "D": "Lutter contre elles peut nuire à certaines libertés"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "question_number": 35,
+      "question_text": "Je suis persuadée que tous les enfants possèdent en eux la volonté de mettre en route leur imaginaire qui les pousse naturellement vers la littérature. Mais si elle n'est pas stimulée, cette force peut s'éteindre. C'est la mission de l'école que de sensibiliser les élèves aux grands textes classiques. Malheureusement, elle y a renoncé. Trop souvent, les enseignants ont tendance à penser qu'ils sont réservés à l'élite. Alors qu'au contraire, l'école devrait donner un accès à la haute culture aux élèves qui arrivent avec un bagage moins fourni que les autres.\n\nSelon l'auteur de ce texte, quelle ambition devraient avoir les enseignants ?",
+      "image_url": null,
+      "options": {
+        "A": "Aborder des œuvres réputées difficiles avec leurs élèves",
+        "B": "Encourager leurs élèves à écrire des textes littéraires",
+        "C": "Inviter régulièrement des écrivains célèbres dans leur classe",
+        "D": "Monter des pièces de théâtre d'auteurs classiques"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "question_number": 36,
+      "question_text": "On connaît Cézanne surtout pour ses paysages, mais le musée d'Orsay met en lumière, pour la première fois, une partie méconnue de l'œuvre de l'artiste. On y croise ainsi le visage de son épouse, seul motif autant étudié par le peintre que la montagne Sainte-Victoire. Au fil des versions, Hortense Fiquet devient l'objet d'une recherche plastique, d'une mise en scène et d'une géométrisation des formes. Mais Cézanne peut aussi manier le pinceau avec cruauté. Dès ses débuts, les figures de son père et de sa mère sont tourmentées. Il se représente lui-même à 27 ans, l'air patibulaire et le regard injecté de sang. À la fin de sa vie, Cézanne choisit des anonymes du monde rural. Ses tableaux ne sont alors qu'une autre forme de paysage.\n\nQue souligne cette exposition sur Paul Cézanne ?",
+      "image_url": null,
+      "options": {
+        "A": "L'influence de ses contemporains",
+        "B": "La singularité de ses portraits",
+        "C": "Son engouement pour la nature",
+        "D": "Son travail postimpressionniste"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 37,
+      "question_text": "La bataille de Bouvines, remportée le 27 juillet 1214 par le roi de France Philippe Auguste contre un empereur allemand, est l'un des actes fondateurs de la dynastie capétienne et l'un des épisodes les plus célèbres du « roman national » français. Du XIIIe siècle à nos jours, elle a donné naissance à de multiples légendes que le spécialiste du monde médiéval Dominique Barthélemy confronte à la réalité des faits. À l'issue d'une enquête approfondie, il décrit un affrontement plus modeste et moins épique que celui construit et enrichi au fil des nécessités politiques. Ainsi, il nous invite à poursuivre la réflexion sur l'idée que les Français se font d'eux-mêmes.\n\nSelon l'article, que fait Dominique Barthélemy ?",
+      "image_url": null,
+      "options": {
+        "A": "Il analyse l'établissement d'une dynastie royale",
+        "B": "Il explique l'origine d'une légende médiévale",
+        "C": "Il explore la construction identitaire des Français",
+        "D": "Il renforce le mythe de la bataille de Bouvines"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "question_number": 38,
+      "question_text": "Faire cohabiter la vie citadine haletante et la déconnexion en pleine nature dans le même emploi du temps : voici ce que propose la micro-aventure. Popularisé par l'aventurier britannique Alastair Humphreys, ce terme désigne une aventure courte et accessible, pour « les gens qui ont des vies normales ». Le concept est simple : plutôt que de renoncer à sa soif de voyage, il est possible d'en réduire l'échelle pour bousculer son quotidien. Ouvrir la porte et partir à l'aventure, passer une nuit ou deux en pleine nature, suffirait même pour ceux qui habitent en ville. Pour ceux qui croient encore que la véritable aventure se trouve à l'autre bout du monde, ce concept représente une douce piqûre de rappel.\n\nQue démontre Alastair Humphreys avec le concept de micro-aventure ?",
+      "image_url": null,
+      "options": {
+        "A": "Il est déconseillé de rester enfermé chez soi",
+        "B": "Il est inutile de partir loin pour être dépaysé",
+        "C": "Il faut organiser les voyages avec des proches",
+        "D": "Il suffit d'apprendre à profiter du quotidien"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "question_number": 39,
+      "question_text": "Aujourd'hui, de nombreux enfants cumulent les activités en dehors des cours. Selon une étude, l'origine de cette tendance serait liée aux mutations sociales contemporaines. Ainsi, le recours à de telles activités serait un moyen, pour les parents, de pallier l'absence des mères — de plus en plus souvent actives — et de développer les compétences des enfants afin de les armer face à la compétitivité du marché du travail. Cependant, coûteuses en temps et en énergie, ces activités empiètent sur le quotidien à la maison et épuisent les enfants. Elles n'en apparaissent pas moins, aux yeux des parents, comme des marqueurs de leur bonne parentalité. Un phénomène entretenu par l'expansion constante de l'offre, ainsi que par la surenchère qui s'instaure entre les foyers.\n\nQue veulent faire les parents ?",
+      "image_url": null,
+      "options": {
+        "A": "Améliorer les résultats scolaires",
+        "B": "Avoir plus de temps pour eux",
+        "C": "Resserrer les liens familiaux",
+        "D": "Se donner bonne conscience"
+      },
+      "correct_answer": "D"
+    }
+  ]
+}
