@@ -1205,7 +1205,7 @@ export function QuestionDisplay({
       }
 
       return (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {Object.entries(localQuestion.options || {}).map(([key, value]) => {
             // Normalize comparison - ensure both are strings and trim whitespace
             const normalizedCorrectAnswer = String(
@@ -1222,34 +1222,41 @@ export function QuestionDisplay({
             const isUserAnswer = normalizedUserAnswer === normalizedKey
             const isEliminated = eliminatedAnswers.has(key)
 
+            // Determine card style (B&W/gray)
+            const cardStyle = isEliminated
+              ? 'opacity-40 bg-white border-gray-100'
+              : showExplanation && isCorrectAnswer && !isUserAnswer
+                ? 'bg-white border-gray-200 shadow-sm'  // correct answer (not selected)
+                : isUserAnswer
+                  ? showExplanation || disabled
+                    ? isCorrect !== undefined
+                      ? isCorrect
+                        ? 'bg-gray-50 border-gray-300 shadow-sm'  // correct selection
+                        : 'bg-white border-gray-200'               // wrong selection
+                      : 'bg-gray-50 border-gray-400 shadow-sm'    // selected, pending
+                    : 'bg-gray-50 border-gray-400 shadow-sm'       // selected
+                  : disabled
+                    ? 'bg-gray-50 border-gray-100 opacity-60'
+                    : 'bg-white border-gray-100 hover:bg-gray-50 hover:border-gray-200'
+
+            // Determine circle badge style
+            const circleBadgeStyle = showExplanation && isCorrectAnswer
+              ? 'bg-green-500 text-white border-green-500'     // correct answer revealed
+              : showExplanation && isUserAnswer && !isCorrectAnswer
+                ? 'bg-red-400 text-white border-red-400'       // user's wrong pick
+                : isUserAnswer
+                  ? 'bg-gray-900 text-white border-gray-900'   // selected
+                  : 'bg-transparent text-gray-400 border-gray-200' // default
+
             return (
               <label
                 key={key}
                 className={`
-                flex items-start p-3 rounded-lg transition-all
-                ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-                ${isEliminated ? 'opacity-40' : ''}
-                ${
-                  // Priority 1: If this is the correct answer and student got it wrong, show green styling
-                  showExplanation && isCorrectAnswer && !isUserAnswer
-                    ? 'bg-green-100 border-2 border-green-500 ring-2 ring-green-300 shadow-md'
-                    : // Priority 2: If this is the student's answer
-                      isUserAnswer
-                      ? showExplanation || disabled
-                        ? isCorrect !== undefined
-                          ? isCorrect
-                            ? isSecondTryCorrect
-                              ? 'bg-yellow-50 border-2 border-yellow-400 ring-2 ring-green-300 shadow-md'
-                              : 'bg-green-50 border-2 border-green-500 ring-1 ring-green-200'
-                            : 'bg-red-50 border-2 border-red-500 ring-1 ring-red-200'
-                          : 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200'
-                        : 'bg-blue-50 border-2 border-blue-500 ring-1 ring-blue-200'
-                      : // Priority 3: Default styling
-                        disabled
-                        ? 'bg-gray-50 border-2 border-gray-200'
-                        : 'bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                }
-              `}
+                  flex items-center gap-3 p-2.5 sm:p-3 rounded-2xl border
+                  transition-all duration-150 select-none
+                  ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
+                  ${cardStyle}
+                `}
                 onContextMenu={(e) => {
                   e.preventDefault()
                   if (!disabled && !showExplanation) {
@@ -1269,26 +1276,26 @@ export function QuestionDisplay({
                   value={key}
                   checked={isUserAnswer}
                   onChange={(e) => onAnswerChange(e.target.value)}
-                  className="mt-1 mr-3 text-blue-600 focus:ring-blue-500"
+                  className="sr-only"
                   disabled={
                     disabled || (showExplanation && !showPerQuestionAnswers)
                   }
                 />
-                <div className={`flex-1 ${isEliminated ? 'line-through' : ''}`}>
-                  <div className="flex items-center mb-1">
-                    <span className="font-semibold text-gray-700 mr-2">
-                      {key}.
-                    </span>
-                    {isEliminated && (
-                      <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">
-                        Eliminated
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-gray-900 leading-relaxed">
-                    {renderOptionContent(value, key)}
-                  </div>
+                {/* Circle letter badge */}
+                <div className={`
+                  w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center
+                  text-sm font-semibold shrink-0 border-2 transition-all duration-150
+                  ${circleBadgeStyle}
+                `}>
+                  {key}
                 </div>
+                {/* Option content */}
+                <div className={`flex-1 text-gray-700 text-sm sm:text-base leading-relaxed ${isEliminated ? 'line-through' : ''}`}>
+                  {renderOptionContent(value, key)}
+                </div>
+                {isEliminated && (
+                  <span className="text-xs text-gray-400 shrink-0">✕</span>
+                )}
               </label>
             )
           })}
@@ -1460,7 +1467,7 @@ export function QuestionDisplay({
   return (
     <div className="h-full flex flex-col lg:flex-row bg-white">
       {/* Question Content Area */}
-      <div className="flex-1 lg:w-1/2 p-6 lg:pr-3 border-b lg:border-b-0 lg:border-r border-gray-200 overflow-visible">
+      <div className="flex-1 lg:w-1/2 p-3 sm:p-6 lg:pr-3 border-b lg:border-b-0 lg:border-r border-gray-200 overflow-visible">
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-3">
@@ -2012,13 +2019,12 @@ export function QuestionDisplay({
       </div>
 
       {/* Answer Selection Area */}
-      <div className="flex-1 lg:w-1/2 p-6 lg:pl-3">
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {localQuestion.question_type === 'multiple_choice'
-              ? 'Select your answer:'
-              : 'Enter your answer:'}
-          </h3>
+      <div className="flex-1 lg:w-1/2 p-3 sm:p-6 lg:pl-3">
+        <div className="mb-4">
+          {/* Grid-in only label */}
+          {localQuestion.question_type === 'grid_in' && (
+            <p className="text-xs text-gray-400 mb-3 uppercase tracking-wide">Enter your answer</p>
+          )}
 
           {renderAnswerOptions()}
 
@@ -2030,11 +2036,11 @@ export function QuestionDisplay({
             userAnswer &&
             userAnswer.trim() &&
             onCheckAnswer && (
-              <div className="mt-4">
+              <div className="mt-4 flex justify-center">
                 <button
                   onClick={onCheckAnswer}
                   disabled={disabled}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-3 px-6 rounded-lg font-semibold text-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+                  className="px-6 py-2 text-sm font-semibold text-gray-900 rounded-full border-2 border-gray-900 hover:bg-gray-900 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   Check Answer
                 </button>

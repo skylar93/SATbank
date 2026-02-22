@@ -397,3 +397,17 @@ export function MobileMenuButton() {
     </button>
   )
 }
+
+export function MobileTopBar() {
+  const pathname = usePathname()
+
+  // Hide on exam pages — ExamInterface has its own header
+  if (pathname.match(/\/exam\//)) return null
+
+  return (
+    <div className="md:hidden sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-gray-100/70 px-4 py-2.5 flex items-center gap-3 shadow-[0_1px_8px_rgba(0,0,0,0.05)]">
+      <MobileMenuButton />
+      <span className="text-sm font-semibold text-gray-800">SAT Practice</span>
+    </div>
+  )
+}
