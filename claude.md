@@ -66,26 +66,41 @@
 2. **Medium**: Question display, answer storage, results screen
 3. **Low**: Problem bank, admin dashboard, optimization
 
-## ⚠️ File Edit Rules — Read Before Touching Any File
+## ⚠️ Worktree Workflow — 반드시 읽을 것
 
-### Correct Paths (ALWAYS edit these)
-- **Next.js app**: `/Users/skylar/Desktop/SATbank/apps/web/`
-- **`pnpm dev` runs from**: `/Users/skylar/Desktop/SATbank/` (root)
-
-### NEVER Edit These (git worktrees — separate branches, not reflected in pnpm dev)
+### 구조 이해
 ```
-/Users/skylar/Desktop/SATbank/.claude/worktrees/*/   ← ❌ 절대 수정 금지
+SATbank/                          ← git main 브랜치 (production 기준)
+  apps/web/                       ← main 브랜치의 실제 앱 코드
+  .claude/worktrees/
+    feature-xyz/                  ← Claude가 작업하는 feature 브랜치 (별도 격리)
+      apps/web/                   ← 이 브랜치만의 앱 코드
+    other-feature/
+      apps/web/
 ```
 
-### Before Editing Any File — Run This Check
+### Claude 작업 원칙
+- Claude는 **항상 worktree(feature 브랜치)에서 작업**한다 → main이 보호됨
+- main을 직접 수정하는 것은 긴급 버그픽스 외에는 금지
+- 작업 완료 후 반드시 사용자에게 **어떤 worktree에서 작업했는지** 알려줄 것
+
+### 사용자가 Claude 작업을 테스트하는 방법
 ```bash
-# 수정할 파일이 메인 프로젝트에 있는지 반드시 확인
-ls /Users/skylar/Desktop/SATbank/apps/web/<수정할 경로>
+# 방법 A: worktree 안에서 직접 실행 (가장 간단)
+cd /Users/skylar/Desktop/SATbank/.claude/worktrees/<worktree-이름>
+pnpm dev
+
+# 방법 B: main 폴더에서 브랜치 전환 후 실행
+cd /Users/skylar/Desktop/SATbank
+git checkout <feature-브랜치명>   # Claude가 작업한 브랜치명 확인 후
+pnpm dev
+git checkout main                 # 테스트 완료 후 복귀
 ```
 
-### What Are Worktrees?
-`.claude/worktrees/` 안의 폴더들은 git worktree로, **다른 브랜치**를 별도 폴더에 체크아웃한 것.
-거기서 파일을 수정해도 메인 `apps/web/`에는 전혀 반영되지 않음.
+### 작업 완료 후 main 반영 흐름
+```
+Claude 작업 (worktree) → 사용자 테스트 (위 방법 중 하나) → PR 또는 merge → main 반영
+```
 
 ---
 
