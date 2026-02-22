@@ -66,6 +66,29 @@
 2. **Medium**: Question display, answer storage, results screen
 3. **Low**: Problem bank, admin dashboard, optimization
 
+## ⚠️ File Edit Rules — Read Before Touching Any File
+
+### Correct Paths (ALWAYS edit these)
+- **Next.js app**: `/Users/skylar/Desktop/SATbank/apps/web/`
+- **`pnpm dev` runs from**: `/Users/skylar/Desktop/SATbank/` (root)
+
+### NEVER Edit These (git worktrees — separate branches, not reflected in pnpm dev)
+```
+/Users/skylar/Desktop/SATbank/.claude/worktrees/*/   ← ❌ 절대 수정 금지
+```
+
+### Before Editing Any File — Run This Check
+```bash
+# 수정할 파일이 메인 프로젝트에 있는지 반드시 확인
+ls /Users/skylar/Desktop/SATbank/apps/web/<수정할 경로>
+```
+
+### What Are Worktrees?
+`.claude/worktrees/` 안의 폴더들은 git worktree로, **다른 브랜치**를 별도 폴더에 체크아웃한 것.
+거기서 파일을 수정해도 메인 `apps/web/`에는 전혀 반영되지 않음.
+
+---
+
 ## Development & Deployment Workflow
 **IMPORTANT**: Always follow the development workflow documented in `Workflow.md`
 
