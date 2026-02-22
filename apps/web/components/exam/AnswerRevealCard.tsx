@@ -5,7 +5,6 @@ import { Question } from '../../lib/exam-service'
 import { renderHtmlContent } from './question-display'
 import { CheckCircle, XCircle, ArrowRight } from 'lucide-react'
 import { isEmptyHtml } from '../../lib/content-converter'
-import { Button } from '../ui/button'
 
 interface AnswerRevealCardProps {
   question: Question
@@ -33,22 +32,19 @@ export function AnswerRevealCard({
       const correctOption =
         question.options &&
         Object.entries(question.options).find(
-          ([key, value]) => key === question.correct_answer
+          ([key]) => key === question.correct_answer
         )
 
       if (correctOption) {
         let optionText = correctOption[1]
-
-        // Handle JSON string options
         if (typeof optionText === 'string' && optionText.startsWith('{')) {
           try {
             const parsed = JSON.parse(optionText)
             optionText = parsed.text || optionText
           } catch {
-            // Keep original if parsing fails
+            // keep original
           }
         }
-
         return `${question.correct_answer}. ${optionText}`
       }
       return question.correct_answer
@@ -56,150 +52,94 @@ export function AnswerRevealCard({
     return question.correct_answer
   }
 
-  const getUserAnswerDisplay = () => {
-    if (question.question_type === 'multiple_choice') {
-      const userOption =
-        question.options &&
-        Object.entries(question.options).find(
-          ([key, value]) => key === userAnswer
-        )
-      return userOption ? `${userAnswer}. ${userOption[1]}` : userAnswer
-    }
-    return userAnswer
-  }
+  const hasBody =
+    (!isCorrect && showCorrectAnswer) ||
+    (showExplanation && question.explanation && (isCorrect || showCorrectAnswer))
 
   return (
-    <div className="bg-white rounded-lg border shadow-lg p-6 mt-6">
-      {/* Result Header */}
-      <div
-        className={`flex items-center gap-3 p-4 rounded-lg mb-6 ${
-          isCorrect
-            ? 'bg-green-50 border-green-200'
-            : 'bg-red-50 border-red-200'
-        }`}
-      >
-        {isCorrect ? (
-          <CheckCircle className="w-6 h-6 text-green-600" />
-        ) : (
-          <XCircle className="w-6 h-6 text-red-600" />
-        )}
-        <div>
-          <h3
-            className={`text-lg font-semibold ${
-              isCorrect ? 'text-green-800' : 'text-red-800'
-            }`}
-          >
-            {isCorrect ? 'Correct!' : 'Incorrect'}
-          </h3>
-          <p
-            className={`text-sm ${
-              isCorrect ? 'text-green-600' : 'text-red-600'
-            }`}
-          >
-            {isCorrect ? 'Well done!' : "Don't worry, keep practicing!"}
-          </p>
+    <div className="bg-white/90 backdrop-blur-md border border-gray-100/80 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.07)] mt-4 overflow-hidden">
+      {/* Single-line result header */}
+      <div className={`flex items-center justify-between px-4 py-3 ${hasBody ? 'border-b border-gray-100' : ''} bg-gray-50/80`}>
+        <div className="flex items-center gap-2">
+          {isCorrect ? (
+            <CheckCircle className="w-4 h-4 text-green-500 shrink-0" />
+          ) : (
+            <XCircle className="w-4 h-4 text-red-400 shrink-0" />
+          )}
+          <span className="text-sm font-semibold text-gray-700">
+            {isCorrect ? 'Correct' : 'Incorrect'}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {!isCorrect && onTryAgain && (
+            <button
+              onClick={onTryAgain}
+              className="px-4 py-1.5 text-xs font-semibold text-gray-800 rounded-full border-2 border-gray-800 hover:bg-gray-800 hover:text-white transition-all duration-200"
+            >
+              Try Again
+            </button>
+          )}
+          {isCorrect && (
+            <button
+              onClick={onContinue}
+              className="px-4 py-1.5 text-xs font-semibold text-white rounded-full bg-gray-900 hover:bg-gray-700 transition-all duration-200 flex items-center gap-1"
+            >
+              Continue
+              <ArrowRight className="w-3 h-3" />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Answer Comparison */}
-      {!isCorrect && showCorrectAnswer && (
-        <div className="space-y-4 mb-6">
-          <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-2">
-              Correct Answer:
-            </h4>
-            <div className="p-3 rounded-lg border bg-green-50 border-green-200">
-              <div className="text-sm">
-                {(() => {
-                  const correctAnswer =
-                    getCorrectAnswerDisplay() || 'Answer not available'
-                  // For simple text answers, just display as text
-                  return <span className="text-gray-900">{correctAnswer}</span>
-                })()}
+      {/* Body: correct answer + explanation (only if needed) */}
+      {hasBody && (
+        <div className="px-4 py-3 space-y-3">
+          {!isCorrect && showCorrectAnswer && (
+            <div>
+              <p className="text-xs text-gray-400 uppercase tracking-wide mb-1.5">Correct Answer</p>
+              <div className="p-3 rounded-xl border border-gray-100 bg-gray-50/80 text-sm text-gray-800">
+                {getCorrectAnswerDisplay() || 'Answer not available'}
               </div>
             </div>
-          </div>
+          )}
+
+          {showExplanation &&
+            question.explanation &&
+            (isCorrect || showCorrectAnswer) && (
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-xs text-gray-400 uppercase tracking-wide">Explanation</p>
+                  {question.explanation.length > 300 && (
+                    <button
+                      onClick={() => setShowDetailedExplanation(!showDetailedExplanation)}
+                      className="text-xs text-gray-500 hover:text-gray-700 underline"
+                    >
+                      {showDetailedExplanation ? 'Show Less' : 'Show More'}
+                    </button>
+                  )}
+                </div>
+                <div className="p-3 bg-gray-50/80 border border-gray-100 rounded-xl text-sm text-gray-700">
+                  {(() => {
+                    const explanationContent =
+                      showDetailedExplanation || question.explanation.length <= 300
+                        ? question.explanation
+                        : question.explanation.substring(0, 300) + '...'
+
+                    if (question.explanation_html && !isEmptyHtml(question.explanation_html)) {
+                      const htmlContent =
+                        showDetailedExplanation || question.explanation_html.length <= 300
+                          ? question.explanation_html
+                          : question.explanation_html.substring(0, 300) + '...'
+                      return renderHtmlContent(htmlContent)
+                    }
+                    return <span>{explanationContent}</span>
+                  })()}
+                </div>
+              </div>
+            )}
         </div>
       )}
-
-      {/* Explanation */}
-      {showExplanation &&
-        question.explanation &&
-        (isCorrect || showCorrectAnswer) && (
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="text-sm font-medium text-gray-700">
-                Explanation:
-              </h4>
-              {question.explanation.length > 300 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setShowDetailedExplanation(!showDetailedExplanation)
-                  }
-                >
-                  {showDetailedExplanation ? 'Show Less' : 'Show More'}
-                </Button>
-              )}
-            </div>
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="text-sm text-gray-700">
-                {(() => {
-                  const explanationContent =
-                    showDetailedExplanation ||
-                    question.explanation.length <= 300
-                      ? question.explanation
-                      : question.explanation.substring(0, 300) + '...'
-
-                  // Priority: HTML first, then fallback to markdown rendering
-                  if (
-                    question.explanation_html &&
-                    !isEmptyHtml(question.explanation_html)
-                  ) {
-                    const htmlContent =
-                      showDetailedExplanation ||
-                      question.explanation_html.length <= 300
-                        ? question.explanation_html
-                        : question.explanation_html.substring(0, 300) + '...'
-                    return renderHtmlContent(htmlContent)
-                  } else {
-                    // Fallback to simple text rendering for now
-                    return (
-                      <span className="text-gray-700">
-                        {explanationContent}
-                      </span>
-                    )
-                  }
-                })()}
-              </div>
-            </div>
-          </div>
-        )}
-
-      {/* Action Buttons */}
-      <div className="flex justify-end gap-3">
-        {/* Try Again button - show for incorrect answers when onTryAgain is provided */}
-        {!isCorrect && onTryAgain && (
-          <Button
-            onClick={onTryAgain}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 flex items-center gap-2 font-semibold"
-          >
-            Try Again
-          </Button>
-        )}
-        <Button
-          onClick={onContinue}
-          className={`px-6 py-2 flex items-center gap-2 ${
-            isCorrect
-              ? 'bg-green-600 hover:bg-green-700 text-white font-semibold'
-              : 'bg-gray-500 hover:bg-gray-600 text-white'
-          }`}
-        >
-          {isCorrect ? 'Great! Continue' : 'Skip & Continue'}
-          <ArrowRight className="w-4 h-4" />
-        </Button>
-      </div>
     </div>
   )
 }

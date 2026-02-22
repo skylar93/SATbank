@@ -147,11 +147,11 @@ const ExamTimerComponent = function ExamTimer({
   // Don't render timer if no time limit
   if (initialTimeSeconds <= 0) {
     return (
-      <div className="flex items-center space-x-3">
-        <div className="px-4 py-2 rounded-lg border-2 bg-gray-50 text-gray-600 border-gray-200">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-current"></div>
-            <span className="font-mono text-lg font-bold">No Time Limit</span>
+      <div className="flex items-center">
+        <div className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-full border border-gray-200 bg-white/80 backdrop-blur-sm text-gray-500">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-current"></div>
+            <span className="font-mono text-xs font-semibold">∞</span>
           </div>
         </div>
       </div>
@@ -161,31 +161,35 @@ const ExamTimerComponent = function ExamTimer({
   const timerColor = getTimerColor(remainingSeconds)
   const isLowTime = remainingSeconds <= initialTimeSeconds * 0.15 // Warning when < 15% time left
 
+  // Extract just the text color class from timerColor (e.g. "text-green-600 bg-green-50" → "text-green-600")
+  const textColorClass = timerColor.split(' ').find(c => c.startsWith('text-')) || 'text-gray-700'
+
   return (
-    <div className="flex items-center space-x-3">
+    <div className="flex items-center gap-2">
       <div
         className={`
-        px-4 py-2 rounded-lg border-2 transition-all duration-300
-        ${timerColor}
-        ${isLowTime ? 'animate-pulse border-current' : 'border-gray-200'}
-      `}
+          px-2 py-1 sm:px-3 sm:py-1.5 rounded-full border bg-white/80 backdrop-blur-sm
+          transition-all duration-300
+          ${textColorClass}
+          ${isLowTime ? 'animate-pulse border-current' : 'border-gray-200'}
+        `}
       >
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-current"></div>
-          <span className="font-mono text-lg font-bold">
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-current"></div>
+          <span className="font-mono text-xs font-semibold">
             {formatTime(remainingSeconds)}
           </span>
         </div>
       </div>
 
       {isLowTime && (
-        <div className="text-sm text-red-600 font-medium animate-pulse">
-          Time Running Low!
+        <div className="hidden sm:block text-xs text-red-500 font-medium animate-pulse">
+          Low time
         </div>
       )}
 
       {remainingSeconds === 0 && initialTimeSeconds > 0 && (
-        <div className="text-sm text-red-700 font-bold">TIME'S UP</div>
+        <div className="text-xs text-red-700 font-bold">TIME'S UP</div>
       )}
     </div>
   )

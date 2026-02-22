@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { SidebarProvider } from '../../contexts/sidebar-context'
-import { Sidebar } from '../../components/sidebar'
+import { Sidebar, MobileTopBar } from '../../components/sidebar'
 import { ImpersonationBanner } from '../../components/admin/ImpersonationBanner'
 
 export const metadata = {
@@ -18,7 +18,10 @@ export default function DashboardLayout({
       <ImpersonationBanner />
       <div className="flex h-screen bg-gray-50">
         <Sidebar />
-        <div className="flex-1 overflow-auto">{children}</div>
+        <div className="flex-1 overflow-auto">
+          <MobileTopBar />
+          {children}
+        </div>
       </div>
     </SidebarProvider>
   )

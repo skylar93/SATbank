@@ -206,33 +206,35 @@ const selectionChangeRaf = useRef<number | null>(null)
       : selectedVocabText
     : undefined
 
+  const moduleDisplayLabel =
+    (currentModule.module as string) === 'practice'
+      ? 'Practice Mode'
+      : (currentModule.module as string) === 'tcf_reading'
+      ? 'TCF 독해'
+      : currentModule.module.replace(/(\d)/, ' $1').toUpperCase()
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col overflow-x-hidden">
       {/* Header with Timer */}
-      <div className="bg-white shadow-sm border-b px-6 py-4">
+      <div className="bg-white/90 backdrop-blur-md border-b border-gray-100/70 shadow-[0_1px_10px_rgba(0,0,0,0.05)] px-3 py-2 sm:px-6 sm:py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 min-w-0">
             <button
               onClick={onExitAttempt}
-              className="text-gray-500 hover:text-gray-700 text-sm"
+              className="text-gray-500 hover:text-gray-700 text-sm shrink-0"
             >
               ←{' '}
-              {exam.title.includes('Practice') ? 'Exit Practice' : 'Exit Exam'}
+              <span className="hidden sm:inline">
+                {exam.title.includes('Practice') ? 'Exit Practice' : 'Exit Exam'}
+              </span>
             </button>
             <ReferenceSheetModal />
-            <h1 className="text-xl font-semibold text-gray-900">
+            <h1 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
               {exam.title}
             </h1>
-            <span className="text-sm text-gray-500">
-              {(currentModule.module as string) === 'practice'
-                ? 'Practice Mode'
-                : (currentModule.module as string) === 'tcf_reading'
-                ? 'TCF 독해'
-                : currentModule.module.replace(/(\d)/, ' $1').toUpperCase()}
-            </span>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 shrink-0">
             <HighlightToolbar
               isHighlightMode={isHighlightMode}
               onToggleMode={toggleHighlightMode}
@@ -255,7 +257,7 @@ const selectionChangeRaf = useRef<number | null>(null)
       </div>
 
       {/* Main Question Area */}
-      <div className="flex-1 overflow-visible relative">
+      <div className="flex-1 overflow-x-hidden relative">
         <QuestionDisplay
           question={currentQuestion}
           questionNumber={currentModule.currentQuestionIndex + 1}
