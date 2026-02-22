@@ -15,7 +15,7 @@ import {
 } from '../../lib/content-converter'
 import { updateQuestionWithDualFormat } from '../../lib/actions/question-actions'
 import { ImageUpload } from '../image-upload'
-import { HelpCircle } from 'lucide-react'
+import { HelpCircle, Bookmark } from 'lucide-react'
 import { TableEditor } from '../admin/TableEditor'
 import { parseTableFromMarkdown, buildTableMarkdown } from '../../lib/utils'
 import { HighlightedTextRendererMemo } from './HighlightedTextRenderer'
@@ -1467,7 +1467,7 @@ export function QuestionDisplay({
   return (
     <div className="h-full flex flex-col lg:flex-row bg-white">
       {/* Question Content Area */}
-      <div className="flex-1 lg:w-1/2 p-3 sm:p-6 lg:pr-3 border-b lg:border-b-0 lg:border-r border-gray-200 overflow-visible">
+      <div className="flex-1 lg:w-1/2 p-3 sm:p-6 lg:pr-3 lg:border-r border-gray-200 overflow-visible">
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-3">
@@ -1497,18 +1497,22 @@ export function QuestionDisplay({
                   onClick={onToggleMarkForReview}
                   disabled={disabled}
                   className={`
-                    px-3 py-1 text-xs font-medium rounded transition-colors
+                    w-8 h-8 rounded-full flex items-center justify-center border-2
+                    transition-all duration-150 shrink-0
                     ${
                       isMarkedForReview
-                        ? 'bg-yellow-100 text-yellow-800 border border-yellow-300 hover:bg-yellow-200'
-                        : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
+                        ? 'bg-yellow-400 border-yellow-400 text-white shadow-sm'
+                        : 'bg-transparent border-gray-200 text-gray-400 hover:border-yellow-300 hover:text-yellow-500'
                     }
-                    disabled:opacity-50 disabled:cursor-not-allowed
+                    disabled:opacity-40 disabled:cursor-not-allowed
                   `}
+                  title={isMarkedForReview ? 'Remove mark' : 'Mark for review'}
+                  aria-label={isMarkedForReview ? 'Remove mark' : 'Mark for review'}
                 >
-                  {isMarkedForReview
-                    ? '🏷️ Marked'
-                    : '🏷️ Mark'}
+                  <Bookmark
+                    size={14}
+                    fill={isMarkedForReview ? 'currentColor' : 'none'}
+                  />
                 </button>
               )}
               {isAdminPreview && (
@@ -2042,7 +2046,7 @@ export function QuestionDisplay({
                   disabled={disabled}
                   className="px-6 py-2 text-sm font-semibold text-gray-900 rounded-full border-2 border-gray-900 hover:bg-gray-900 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
                 >
-                  Check Answer
+                  Check
                 </button>
               </div>
             )}

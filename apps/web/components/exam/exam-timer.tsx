@@ -151,7 +151,7 @@ const ExamTimerComponent = function ExamTimer({
         <div className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-full border border-gray-200 bg-white/80 backdrop-blur-sm text-gray-500">
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-current"></div>
-            <span className="font-mono text-sm font-semibold">∞</span>
+            <span className="font-mono text-xs font-semibold">∞</span>
           </div>
         </div>
       </div>
@@ -176,7 +176,7 @@ const ExamTimerComponent = function ExamTimer({
       >
         <div className="flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full bg-current"></div>
-          <span className="font-mono text-sm font-semibold">
+          <span className="font-mono text-xs font-semibold">
             {formatTime(remainingSeconds)}
           </span>
         </div>

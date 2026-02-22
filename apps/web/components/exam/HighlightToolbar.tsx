@@ -27,93 +27,79 @@ export function HighlightToolbar({
   selectedSnippet,
 }: HighlightToolbarProps) {
   return (
-    <div className="flex items-center space-x-2">
-      {/* Highlight Mode Toggle Button */}
+    <div className="flex items-center gap-1.5">
+      {/* Highlight Mode Toggle — circle icon button */}
       <button
         onClick={onToggleMode}
         disabled={disabled}
         className={`
-          flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200
+          w-8 h-8 rounded-full flex items-center justify-center border-2
+          transition-all duration-150 shrink-0
           ${
             isHighlightMode
-              ? 'bg-yellow-100 text-yellow-800 border border-yellow-300 shadow-sm'
-              : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'
+              ? 'bg-yellow-400 border-yellow-400 text-white shadow-sm'
+              : 'bg-transparent border-gray-200 text-gray-400 hover:border-gray-400 hover:text-gray-600'
           }
-          ${
-            disabled
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-1'
-          }
+          ${disabled ? 'opacity-40 cursor-not-allowed' : 'focus:outline-none'}
         `}
         title={`${isHighlightMode ? 'Exit' : 'Enter'} highlight mode`}
         aria-label={`${isHighlightMode ? 'Exit' : 'Enter'} highlight mode`}
         aria-pressed={isHighlightMode}
       >
-        <Highlighter
-          size={16}
-          className={isHighlightMode ? 'text-yellow-600' : 'text-gray-500'}
-        />
-        {isHighlightMode && (
-          <div className="w-2 h-2 bg-yellow-500 rounded-full" />
-        )}
+        <Highlighter size={14} />
       </button>
 
-      {/* Add to vocab button */}
+      {/* Add to vocab — circle icon button */}
       <button
         onClick={onAddToVocab}
         disabled={disabled || !canAddToVocab || isAddingToVocab || !onAddToVocab}
         className={`
-          flex items-center space-x-1 px-3 py-1.5 rounded-md text-sm transition-all duration-200
+          w-8 h-8 rounded-full flex items-center justify-center border-2
+          transition-all duration-150 shrink-0
           ${
             canAddToVocab && !disabled
-              ? 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100'
-              : 'bg-gray-100 text-gray-400 border border-gray-200'
+              ? 'bg-blue-500 border-blue-500 text-white shadow-sm'
+              : 'bg-transparent border-gray-200 text-gray-300'
           }
-          ${
-            disabled || !canAddToVocab
-              ? 'cursor-not-allowed opacity-60'
-              : 'hover:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1'
-          }
+          ${disabled || !canAddToVocab ? 'cursor-not-allowed' : 'focus:outline-none'}
         `}
         title={
           canAddToVocab
-            ? 'Add selected text to vocabulary'
+            ? selectedSnippet
+              ? `Add "${selectedSnippet}" to vocabulary`
+              : 'Add selected text to vocabulary'
             : 'Select text to add to vocabulary'
         }
         aria-label="Add selected text to vocabulary"
       >
         {isAddingToVocab ? (
-          <Loader2 size={16} className="animate-spin" />
+          <Loader2 size={14} className="animate-spin" />
         ) : (
-          <BookMarked size={16} />
-        )}
-        {selectedSnippet && (
-          <span className="max-w-[12rem] truncate text-xs text-gray-600">
-            {selectedSnippet}
-          </span>
+          <BookMarked size={14} />
         )}
       </button>
 
-      {/* Clear All Highlights Button */}
+      {/* Clear All Highlights — circle icon button with count badge */}
       {highlightCount > 0 && onClearAll && (
-        <button
-          onClick={onClearAll}
-          disabled={disabled}
-          className={`
-            flex items-center space-x-1 px-2 py-1.5 rounded-md text-sm transition-all duration-200
-            text-red-600 bg-red-50 border border-red-200 hover:bg-red-100
-            ${
-              disabled
-                ? 'opacity-50 cursor-not-allowed'
-                : 'hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1'
-            }
-          `}
-          title={`Clear all ${highlightCount} highlights`}
-          aria-label={`Clear all ${highlightCount} highlights`}
-        >
-          <Trash2 size={14} />
-          <span>{highlightCount}</span>
-        </button>
+        <div className="relative shrink-0">
+          <button
+            onClick={onClearAll}
+            disabled={disabled}
+            className={`
+              w-8 h-8 rounded-full flex items-center justify-center border-2
+              transition-all duration-150
+              border-red-200 text-red-400 hover:bg-red-50 hover:border-red-300
+              ${disabled ? 'opacity-40 cursor-not-allowed' : 'focus:outline-none'}
+            `}
+            title={`Clear all ${highlightCount} highlights`}
+            aria-label={`Clear all ${highlightCount} highlights`}
+          >
+            <Trash2 size={14} />
+          </button>
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-400 rounded-full text-white text-[10px] flex items-center justify-center font-bold leading-none pointer-events-none">
+            {highlightCount}
+          </span>
+        </div>
       )}
     </div>
   )

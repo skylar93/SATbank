@@ -232,9 +232,6 @@ const selectionChangeRaf = useRef<number | null>(null)
             <h1 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
               {exam.title}
             </h1>
-            <span className="hidden sm:inline text-sm text-gray-500">
-              {moduleDisplayLabel}
-            </span>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
@@ -256,10 +253,6 @@ const selectionChangeRaf = useRef<number | null>(null)
               isPaused={status !== 'in_progress'}
             />
           </div>
-        </div>
-        {/* Mobile-only: module label below header row */}
-        <div className="sm:hidden text-xs text-gray-400 mt-0.5 pl-1 truncate">
-          {moduleDisplayLabel}
         </div>
       </div>
 

@@ -332,8 +332,6 @@ export function ExamNavigation({
       {/* Mobile: compact status bar with grid toggle */}
       <div className="sm:hidden flex items-center justify-between mb-2">
         <div className="flex items-center gap-2 text-sm">
-          <span className="font-medium text-gray-700">{getModuleName(currentModule)}</span>
-          <span className="text-gray-300">·</span>
           <span className="text-gray-500">Q {currentQuestion}/{totalQuestions}</span>
           <span className={`w-1.5 h-1.5 rounded-full ${hasAnswer ? 'bg-green-400' : 'bg-orange-300'}`} />
         </div>
@@ -343,11 +341,6 @@ export function ExamNavigation({
         >
           {isGridOpen ? '▲ 접기' : '▼ 전체'}
         </button>
-      </div>
-
-      {/* Desktop: module label */}
-      <div className="hidden sm:flex items-center mb-2">
-        <span className="text-sm font-medium text-gray-600">{getModuleName(currentModule)}</span>
       </div>
 
       {/* Question Grid: collapsed by default on mobile */}
@@ -429,7 +422,7 @@ export function ExamNavigation({
       <div className="flex items-center justify-between gap-3">
         {/* Left: progress info */}
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-500">
+          <span className="hidden sm:inline text-sm text-gray-500">
             Q <span className="font-medium text-gray-800">{currentQuestion}</span>/{totalQuestions}
           </span>
           {/* Progress bar — desktop only */}
