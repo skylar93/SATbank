@@ -100,7 +100,7 @@ export function ImpersonationBanner() {
     }
   }, [impersonationData, isClient])
 
-  if (!isImpersonating() || !impersonationData) {
+  if (!isClient || !isImpersonating() || !impersonationData) {
     return null // Don't render anything if not in impersonation mode
   }
 

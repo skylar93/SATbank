@@ -1,5 +1,7 @@
 'use client'
 
+import { useId } from 'react'
+
 interface ScoreProgressProps {
   data: {
     labels: string[]
@@ -313,7 +315,9 @@ function MiniLineChart({ data, color }: MiniLineChartProps) {
   )
 
   // Create a unique gradient ID to avoid conflicts
-  const gradientId = `gradient-${color.replace('#', '')}-${Math.random().toString(36).substr(2, 9)}`
+  // useId() is server/client consistent — Math.random() caused hydration mismatch
+  const uid = useId()
+  const gradientId = `gradient-${color.replace('#', '')}-${uid.replace(/:/g, '')}`
 
   // Handle edge cases
   if (validData.length === 0) {

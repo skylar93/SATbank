@@ -51,6 +51,7 @@ export default function Home() {
               id: i,
               d: `M-${380 - i * 5} -${189 + i * 6}C-${380 - i * 5} -${189 + i * 6} -${312 - i * 5} ${216 - i * 6} ${152 - i * 5} ${343 - i * 6}C${616 - i * 5} ${470 - i * 6} ${684 - i * 5} ${875 - i * 6} ${684 - i * 5} ${875 - i * 6}`,
               width: 0.5 + i * 0.03,
+              duration: 20 + (i * 7919) % 10, // 결정적 값으로 대체 (Math.random() → hydration 불일치)
             })).map((path) => (
               <motion.path
                 key={path.id}
@@ -65,7 +66,7 @@ export default function Home() {
                   pathOffset: [0, 1, 0],
                 }}
                 transition={{
-                  duration: 20 + Math.random() * 10,
+                  duration: path.duration,
                   repeat: Number.POSITIVE_INFINITY,
                   ease: 'linear',
                 }}
