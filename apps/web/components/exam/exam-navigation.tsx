@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import { ModuleType } from '../../lib/exam-service'
 
 interface MarkedQuestion {
@@ -87,11 +88,11 @@ export function ExamNavigation({
 
   const getButtonText = () => {
     if (isLastQuestion && isLastModule) {
-      return 'Submit Exam'
+      return 'Submit'
     } else if (isLastQuestion) {
-      return 'Complete Module'
+      return 'Done'
     } else {
-      return 'Next Question'
+      return 'Next'
     }
   }
 
@@ -328,23 +329,9 @@ export function ExamNavigation({
 
   // Regular Student Navigation
   return (
-    <div className="bg-white/90 backdrop-blur-md border-t border-gray-100/70 shadow-[0_-2px_10px_rgba(0,0,0,0.04)] px-3 py-3 sm:px-6 sm:py-4">
-      {/* Mobile: compact status bar with grid toggle */}
-      <div className="sm:hidden flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-gray-500">Q {currentQuestion}/{totalQuestions}</span>
-          <span className={`w-1.5 h-1.5 rounded-full ${hasAnswer ? 'bg-green-400' : 'bg-orange-300'}`} />
-        </div>
-        <button
-          onClick={() => setIsGridOpen(!isGridOpen)}
-          className="px-2.5 py-1 text-xs text-gray-500 bg-gray-100 border border-gray-200 rounded-full hover:bg-gray-200 transition-colors"
-        >
-          {isGridOpen ? '▲ 접기' : '▼ 전체'}
-        </button>
-      </div>
-
-      {/* Question Grid: collapsed by default on mobile */}
-      <div className={`mb-3 ${isGridOpen ? '' : 'hidden sm:block'}`}>
+    <div className="bg-white/90 backdrop-blur-md border-t border-gray-100/70 shadow-[0_-2px_10px_rgba(0,0,0,0.04)] px-3 py-2 sm:px-6 sm:py-4">
+      {/* Question Grid: hidden on mobile when collapsed */}
+      <div className={`${isGridOpen ? 'mb-2' : 'hidden sm:block'} sm:mb-3`}>
         <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {Array.from({ length: totalQuestions }, (_, index) => {
             const questionNum = index + 1
@@ -418,28 +405,57 @@ export function ExamNavigation({
         )}
       </div>
 
-      {/* Bottom controls: compact on mobile */}
-      <div className="flex items-center justify-between gap-3">
-        {/* Left: progress info */}
+      {/* Mobile: single-line row — Q info + chevron toggle + Next */}
+      <div className="sm:hidden flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-500">
+            Q <span className="font-medium text-gray-700">{currentQuestion}</span>/{totalQuestions}
+          </span>
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${hasAnswer ? 'bg-green-400' : 'bg-orange-300'}`} />
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsGridOpen(!isGridOpen)}
+            className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 border border-gray-200 hover:bg-gray-200 transition-colors text-gray-500 shrink-0"
+          >
+            {isGridOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </button>
+          <button
+            onClick={handleClick}
+            disabled={disabled}
+            className={`
+              px-4 py-1.5 text-sm font-semibold text-white rounded-full shadow-sm
+              disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200
+              ${isLastQuestion && isLastModule
+                ? 'bg-red-500 hover:bg-red-600'
+                : isLastQuestion
+                  ? 'bg-green-600 hover:bg-green-700'
+                  : 'bg-gray-800 hover:bg-gray-900'
+              }
+            `}
+          >
+            {getButtonText()}
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop controls */}
+      <div className="hidden sm:flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="hidden sm:inline text-sm text-gray-500">
+          <span className="text-sm text-gray-500">
             Q <span className="font-medium text-gray-800">{currentQuestion}</span>/{totalQuestions}
           </span>
-          {/* Progress bar — desktop only */}
-          <div className="hidden sm:block w-24 bg-gray-200 rounded-full h-1.5">
+          <div className="w-24 bg-gray-200 rounded-full h-1.5">
             <div
               className="bg-gray-700 h-1.5 rounded-full transition-all duration-300"
               style={{ width: `${(currentQuestion / totalQuestions) * 100}%` }}
             />
           </div>
-          {/* Answer status — desktop only */}
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-gray-400">
+          <div className="flex items-center gap-1.5 text-xs text-gray-400">
             <span className={`w-1.5 h-1.5 rounded-full ${hasAnswer ? 'bg-green-400' : 'bg-orange-300'}`} />
             {hasAnswer ? 'Answered' : 'Unanswered'}
           </div>
         </div>
-
-        {/* Right: primary action button */}
         <button
           onClick={handleClick}
           disabled={disabled}
