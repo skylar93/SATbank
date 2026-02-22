@@ -210,6 +210,15 @@ function ExamPageContent() {
     isUserSelecting,
   ])
 
+  // Migaku 익스텐션 SPA 호환: 질문 변경 시 URL hash 업데이트
+  // hashchange 이벤트를 통해 Migaku가 새 페이지로 인식하고 re-scan
+  useEffect(() => {
+    const questionIndex = modules[currentModuleIndex]?.currentQuestionIndex
+    if (questionIndex !== undefined) {
+      window.location.hash = `q-${questionIndex}`
+    }
+  }, [modules[currentModuleIndex]?.currentQuestionIndex, currentModuleIndex])
+
   // Handle exam start
   const handleStartExam = async () => {
     await startExam()

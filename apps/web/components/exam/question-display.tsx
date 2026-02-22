@@ -1904,7 +1904,7 @@ export function QuestionDisplay({
                 if (!isHtml) {
                   // Markdown path (unchanged)
                   return (
-                    <div ref={questionContentRef}>
+                    <div key={localQuestion.id} ref={questionContentRef}>
                       <HighlightedTextRendererMemo
                         text={localQuestion.question_text}
                         highlights={highlights}
@@ -1937,7 +1937,7 @@ export function QuestionDisplay({
                         {renderHtmlContent(prefaceHtml)}
                       </div>
                     )}
-                    <div ref={questionContentRef}>
+                    <div key={localQuestion.id} ref={questionContentRef}>
                       <HighlightedTextRendererMemo
                         text={passageHtml}
                         highlights={highlights}
