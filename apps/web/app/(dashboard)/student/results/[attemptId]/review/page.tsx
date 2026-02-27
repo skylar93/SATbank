@@ -50,6 +50,11 @@ export default function ReviewPage() {
     const lower = raw.toLowerCase()
     const sanitized = lower.replace(/[^a-z0-9]/g, '')
 
+    // TCF must be detected before the 'reading' check below (tcfreading contains 'reading')
+    if (sanitized.startsWith('tcf') || lower.includes('tcf')) {
+      return 'tcf_reading'
+    }
+
     const moduleTwoPatterns = [
       /(module|mod|section)[\s_-]*2\b/,
       /\bsecond\b/,
@@ -320,7 +325,10 @@ export default function ReviewPage() {
       } else {
         // Handle regular exam sessions
         // Smart detection: Determine which system this exam uses
-        const examSystem = attempt.exams?.template_id ? 'template' : 'direct'
+        // 'tcf_reading_only' is a marker set by the import script, not a real template
+        const examSystem = (attempt.exams?.template_id && attempt.exams.template_id !== 'tcf_reading_only')
+          ? 'template'
+          : 'direct'
         console.log('🔍 Exam system detected:', examSystem)
         console.log('🔍 Template ID:', attempt.exams?.template_id)
         console.log('🔍 Module composition:', attempt.exams?.module_composition)

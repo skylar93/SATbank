@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Next.js Web App",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "MAIN=$(dirname $(git rev-parse --git-common-dir)) && ln -sf \"$MAIN/apps/web/.env.local\" apps/web/.env.local && echo '✅ .env.local linked from main repo' && pnpm --filter @satbank/web dev"
+      ],
+      "port": 3001
+    }
+  ]
+}

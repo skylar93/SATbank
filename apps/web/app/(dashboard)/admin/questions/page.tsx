@@ -32,6 +32,13 @@ interface Exam {
   created_at: string
 }
 
+// Row-limit safety ceilings for Supabase PostgREST queries.
+// Supabase's default max-rows is 1,000. These values exceed known dataset sizes.
+// Largest exam: 98 questions (SAT) | Largest module: 1,513 (english1) | Search: results are always small
+const EXAM_QUERY_LIMIT = 199
+const MODULE_QUERY_LIMIT = 1999
+const SEARCH_QUERY_LIMIT = 999
+
 export default function ManageExamsPage() {
   const { user, isAdmin } = useAuth()
   const [questions, setQuestions] = useState<Question[]>([])
@@ -41,6 +48,8 @@ export default function ManageExamsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [fetchMode, setFetchMode] = useState<'filtered' | 'search' | 'empty'>('empty')
 
   // Utility functions removed to fix TypeScript errors
 
@@ -117,6 +126,18 @@ export default function ManageExamsPage() {
           return
         }
 
+        const hasSearch = debouncedSearch.trim().length > 0
+        const hasExamFilter = selectedExam !== 'all'
+        const hasModuleFilter = selectedModule !== 'all'
+
+        // If nothing is active, skip the DB query entirely and show the info banner
+        if (!hasSearch && !hasExamFilter && !hasModuleFilter) {
+          setFetchMode('empty')
+          setQuestions([])
+          setLoading(false)
+          return
+        }
+
         let query = supabase
           .from('questions')
           .select(
@@ -131,8 +152,23 @@ export default function ManageExamsPage() {
           .order('module_type', { ascending: true })
           .order('question_number', { ascending: true })
 
-        if (selectedExam !== 'all') {
-          query = query.eq('exam_id', selectedExam)
+        if (hasSearch) {
+          // Server-side ilike on question_text searches across all 5,116+ questions.
+          // Options text is matched client-side after fetch via getOptionsText().
+          setFetchMode('search')
+          query = query.ilike('question_text', `%${debouncedSearch.trim()}%`)
+          if (hasExamFilter) query = query.eq('exam_id', selectedExam)
+          if (hasModuleFilter) query = query.eq('module_type', selectedModule)
+          query = query.range(0, SEARCH_QUERY_LIMIT)
+        } else {
+          // Filtered browse: apply exam/module filters with a safe row ceiling
+          setFetchMode('filtered')
+          if (hasExamFilter) query = query.eq('exam_id', selectedExam)
+          if (hasModuleFilter) query = query.eq('module_type', selectedModule)
+          // Exam-only: max 98 rows (SAT) or 39 (TCF) — EXAM_QUERY_LIMIT is ample
+          // Module or both: up to 1,513 rows (english1) — MODULE_QUERY_LIMIT covers all
+          const rangeEnd = hasExamFilter && !hasModuleFilter ? EXAM_QUERY_LIMIT : MODULE_QUERY_LIMIT
+          query = query.range(0, rangeEnd)
         }
 
         const { data, error } = await query
@@ -157,15 +193,20 @@ export default function ManageExamsPage() {
         setLoading(false)
       }
     },
-    [selectedExam]
+    [selectedExam, selectedModule, debouncedSearch]
   )
+
+  // Debounce search input to avoid re-filtering on every keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 300)
+    return () => clearTimeout(timer)
+  }, [searchTerm])
 
   useEffect(() => {
     if (user && isAdmin) {
       fetchExams()
-      fetchQuestions()
     }
-  }, [user, isAdmin, fetchExams, fetchQuestions])
+  }, [user, isAdmin, fetchExams])
 
   // Utility functions (keeping for potential future use)
   // const isMarkdown = (text: string) => {
@@ -208,15 +249,55 @@ export default function ManageExamsPage() {
     if (isAdmin) {
       fetchQuestions()
     }
-  }, [selectedExam, isAdmin, fetchQuestions])
+  }, [selectedExam, selectedModule, isAdmin, fetchQuestions])
 
+  // Strip HTML tags to make plain-text search work on HTML-formatted question content
+  const stripHtml = (html: string) =>
+    html
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+  // Extract searchable plain text from the options object (supports string values and {text, imageUrl} shapes)
+  const getOptionsText = (options: Record<string, unknown> | undefined | null): string => {
+    if (!options) return ''
+    return Object.values(options)
+      .map((v) => {
+        if (typeof v === 'string') {
+          try {
+            const parsed = JSON.parse(v)
+            return typeof parsed === 'object' && parsed !== null && 'text' in parsed
+              ? stripHtml(String(parsed.text))
+              : stripHtml(v)
+          } catch {
+            return stripHtml(v)
+          }
+        }
+        if (typeof v === 'object' && v !== null && 'text' in v) {
+          return stripHtml(String((v as Record<string, unknown>).text))
+        }
+        return ''
+      })
+      .join(' ')
+  }
+
+  // Module filtering is handled server-side; search is client-side (debounced) across question text + options
   const filteredQuestions = questions.filter((question) => {
-    const matchesModule =
-      selectedModule === 'all' || question.module_type === selectedModule
-    const matchesSearch =
-      question.question_text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      question.id.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesModule && matchesSearch
+    if (!debouncedSearch) return true
+    const term = debouncedSearch.toLowerCase()
+    const questionText = stripHtml(question.question_text || '').toLowerCase()
+    const optionsText = getOptionsText(question.options).toLowerCase()
+    const questionNum = String(question.question_number)
+    return (
+      questionText.includes(term) ||
+      optionsText.includes(term) ||
+      question.id.toLowerCase().includes(term) ||
+      questionNum.includes(term)
+    )
   })
 
   if (!isAdmin) {
@@ -317,6 +398,7 @@ export default function ManageExamsPage() {
                 <option value="english2">English 2</option>
                 <option value="math1">Math 1</option>
                 <option value="math2">Math 2</option>
+                <option value="tcf_reading">TCF Reading</option>
               </select>
             </div>
           </div>
@@ -373,7 +455,22 @@ export default function ManageExamsPage() {
           </div>
         </div>
 
+        {/* Empty State Banner — shown when no filter or search is active */}
+        {fetchMode === 'empty' && !loading && (
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 text-center mb-6">
+            <div className="text-3xl mb-3">🔍</div>
+            <div className="text-blue-700 text-lg font-semibold mb-2">
+              시험 또는 모듈을 선택하거나 검색어를 입력하세요
+            </div>
+            <p className="text-blue-600 text-sm">
+              검색어 입력 시 전체 문제에서 서버사이드 검색합니다.
+              필터 없이 전체 로드 시 Supabase 쿼리 한도(1,000개)를 초과해 결과가 잘릴 수 있습니다.
+            </p>
+          </div>
+        )}
+
         {/* Questions List */}
+        {fetchMode !== 'empty' && (
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100">
           {viewMode === 'table' ? (
             <div className="overflow-hidden">
@@ -671,8 +768,9 @@ export default function ManageExamsPage() {
             </div>
           )}
         </div>
+        )} {/* end fetchMode !== 'empty' guard */}
 
-        {filteredQuestions.length === 0 && (
+        {filteredQuestions.length === 0 && fetchMode !== 'empty' && (
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-12 text-center">
             <p className="text-purple-600/70">
               No questions found matching your criteria.
