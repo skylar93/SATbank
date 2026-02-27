@@ -47,7 +47,7 @@ export function useExamReviewState(reviewData: ReviewData) {
   // Create a flat array of all questions in order
   const allQuestionsOrdered = useMemo(() => {
     const orderedQuestions: Question[] = []
-    const moduleOrder: ModuleType[] = ['english1', 'english2', 'math1', 'math2']
+    const moduleOrder: ModuleType[] = ['english1', 'english2', 'math1', 'math2', 'tcf_reading']
 
     moduleOrder.forEach((moduleType) => {
       const moduleQuestions = moduleData[moduleType] || []
@@ -118,7 +118,7 @@ export function useExamReviewState(reviewData: ReviewData) {
 
   // Get all modules data for navigation
   const getAllModules = (): ModuleData[] => {
-    const moduleOrder: ModuleType[] = ['english1', 'english2', 'math1', 'math2']
+    const moduleOrder: ModuleType[] = ['english1', 'english2', 'math1', 'math2', 'tcf_reading']
 
     return moduleOrder
       .filter((moduleType) => (moduleData[moduleType] || []).length > 0)
@@ -143,7 +143,7 @@ export function useExamReviewState(reviewData: ReviewData) {
 
   // Get current module index
   const getCurrentModuleIndex = () => {
-    const moduleOrder: ModuleType[] = ['english1', 'english2', 'math1', 'math2']
+    const moduleOrder: ModuleType[] = ['english1', 'english2', 'math1', 'math2', 'tcf_reading']
     const modulesWithQuestions = moduleOrder.filter(
       (moduleType) => (moduleData[moduleType] || []).length > 0
     )

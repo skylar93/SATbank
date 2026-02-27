@@ -145,6 +145,7 @@ export default function ReviewPageClient({
       english2: 'English Module 2',
       math1: 'Math Module 1',
       math2: 'Math Module 2',
+      tcf_reading: 'TCF Reading',
     }
     return names[moduleType as keyof typeof names] || moduleType
   }
